@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-复杂遗传现象的分析与计算教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高一学生，最近学复杂遗传现象，红绿色盲的伴性遗传让我有点迷糊。你作为我的学习助手，能帮我理解一下吗？最好讲讲遗传机制、怎么计算，还有生活里的例子。
+  - question: 我儿子高二，理科还行，就是生物课上搞不懂共显性和不完全显性。你作为知识导师，讲讲看这两种遗传现象怎么分辨、怎么计算，举几个例子让他能明白。
+  - question: 我是高三生物竞赛兴趣小组成员，对基因连锁和交叉有很多疑问，尤其是重组率怎么计算、哪些实验最经典，还有怎么在考试题里用。你作为生物教育专家，能讲得详细点吗？希望能帮我系统地理清思路。
+  - question: 我是刚入职的高中生物老师，备课时发现学生对多基因遗传和环境影响分析很难入门，比如人类身高的遗传计算总是搞不懂。你作为教学顾问，能讲得详细点吗？希望能给我讲讲原理、统计分析方法、案例和教学建议，帮我提高学生的理解和兴趣。
+  - question: 我高三，准备参加生物竞赛，但对复杂遗传现象的系统分析和计算还是感觉很模糊，像伴性遗传、多基因遗传、基因连锁、基因互作这些都不太会。你作为专业生物知识导师，能给我一份完整的分析吗？希望能帮我梳理知识体系、讲清原理和计算方法，还能指出常见误区、给些科学探究建议。
+  - question: 我高二，生物成绩一般但特别喜欢遗传学。老师最近让我们研究复杂遗传现象在实际生活中的应用，比如怎么根据遗传规律预测家族疾病风险。你是教育专家，能全方位地讲解一下吗？最好系统地说说复杂遗传现象有哪些、怎么计算、家族健康管理和遗传咨询方面的内容，还能鼓励我科学思考和传承家族责任这种价值观。
+  - question: 我是高一学生，学血型遗传的时候发现ABO血型是共显性，但具体遗传规律和怎么计算还不太明白。你作为我的学习助手，能帮我理解一下吗？最好举例说明一下，并说说生活里的相关案例。
+  - question: 我是高二学生，刚学多基因遗传，老师讲得有点快我还没完全明白。你作为AI老师，能概括一下多基因遗传是什么、有什么特点，再举个简单例子吗？
+  - question: 我女儿高一，生物课上学到基因互作，问我我也不懂。你作为学习助手，说说主要的基因互作类型和实际意义吧，简单点就行。
+  - question: 我是高三学生，最近复习复杂遗传现象时，不完全显性遗传的计算方法还不太熟悉。你作为专业生物学习助手，能解释一下吗？最好结合例子讲讲计算过程和注意事项，帮我理解一下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-复杂遗传现象的分析与计算进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与精准响应_理由
+    type: str
+    description: 解释个性化画像识别与精准响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与精准响应
+    type: float
+    description: 评估教师是否基于学生具体画像（学习基础、兴趣、困惑、认知风格等）进行精准识别，并动态调整教学策略、内容与资源。高分要求能细致区分不同学生特征，针对性提供差异化支持，实时跟进学生反馈，促进个体成长。
+  - field: 流程规范性与结构清晰度_理由
+    type: str
+    description: 解释流程规范性与结构清晰度评分的详细理由，引用具体例子。
+  - field: 流程规范性与结构清晰度
+    type: float
+    description: 评估教学内容是否严格遵循明晰的教学流程（如‘引入-讲解-例题-练习-总结’），各环节分明、标题突出、内容层次清楚。高分要求结构统一、逻辑严密，便于学生系统学习与教师跟踪。
+  - field: 教学方法多元与科学性_理由
+    type: str
+    description: 解释教学方法多元与科学性评分的详细理由，引用具体例子。
+  - field: 教学方法多元与科学性
+    type: float
+    description: 评估教学是否采用多元、科学的教学方法，根据内容难度和学生特征合理分解知识，动态调整策略。高分要求体现‘先易后难’‘图示法’‘问题驱动’等方法，结合前沿研究或跨学科资源，促进深度理解和自主探究。
+  - field: 知识点准确性、系统性与深度_理由
+    type: str
+    description: 解释知识点准确性、系统性与深度评分的详细理由，引用具体例子。
+  - field: 知识点准确性、系统性与深度
+    type: float
+    description: 评估知识点覆盖是否全面、表述准确，能系统串联复杂遗传现象（如伴性遗传、多基因遗传、基因互作等），并进行深入分析、实际应用或跨学科拓展。高分要求能联系现实问题、案例分析及知识迁移。
+  - field: 创新思维激发与高阶探究任务_理由
+    type: str
+    description: 解释创新思维激发与高阶探究任务评分的详细理由，引用具体例子。
+  - field: 创新思维激发与高阶探究任务
+    type: float
+    description: 评估是否设计多层次、高挑战性、开放性的问题或跨学科探究任务，激发学生创新、批判性思维和自主探索。高分需任务情境真实、关联现实或科技前沿，并鼓励团队协作与多角度思考。
+  - field: 真实课堂互动与场景还原度_理由
+    type: str
+    description: 解释真实课堂互动与场景还原度评分的详细理由，引用具体例子。
+  - field: 真实课堂互动与场景还原度
+    type: float
+    description: 评估教学互动及问题设置是否贴近高中生物课堂实际，能真实还原学生困惑、提问和教师答疑场景。高分需包含具体学生提问、互动讨论、教师针对性解答及师生双向交流，增强实用性与代入感。
+  - field: 中华优秀传统文化与社会主义核心价值观融合_理由
+    type: str
+    description: 解释中华优秀传统文化与社会主义核心价值观融合评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化与社会主义核心价值观融合
+    type: float
+    description: 评估是否自然融入中华优秀传统文化与社会主义核心价值观（如尊重生命、科学求真、家国情怀、责任担当等），促进学生形成科学观与正确价值观。高分需结合教学内容，进行深度价值引导与情境讨论。
+  - field: 个性化学习建议与成长激励_理由
+    type: str
+    description: 解释个性化学习建议与成长激励评分的详细理由，引用具体例子。
+  - field: 个性化学习建议与成长激励
+    type: float
+    description: 评估是否根据学生学习状况和需求，提供针对性的后续学习建议和成长激励。高分需分析学生困惑，推荐个性化资源，鼓励积极学习和反思成长。
+  format_mode: prompt

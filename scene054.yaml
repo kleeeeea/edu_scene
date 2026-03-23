@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene054/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 数学-高中-极限与导数概念教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为一位资深高中数学老师，能深入讲解一下极限和导数的基本概念、它们在高中数学中的重要性、常见误区还有实际应用吗？我希望能听到比较系统、细致的分析，能深入讲解一下吗？
+    - question: 你作为数学教研员，能给我一份关于极限与导数在高中数学教学中意义的完整分析吗？包括教学重点难点、学生常见的问题、提升理解力的方法，还有跟其他学科的联系，给我一份完整的分析。
+    - question: 我是高一学生，最近开始学极限和导数，感觉有点迷糊。你能用几句话说说它们的核心是什么吗？
+    - question: I'm MartinJoseph, a 12th grade student who loves photography, video editing, and chess. I often switch between emotional and rational thinking, and I learn best by doing things hands-on. Could you, as my learning mentor, analyze from various angles the practical significance, conceptual subtleties, learning strategies, and real-world connections of limits and derivatives in high school math? It'd be great if you can connect it with my hobbies and learning style, and from each angle, explain in detail.
+    - question: 你作为高中数学老师，能具体说说极限的定义、常见的求法和一些典型例题吗？能具体说说吗？
+    - question: 我是一名高三学生，现在在复习导数。你能用几句话说说导数的基本思想和它在高中数学里主要是怎么用的吗？
+    - question: 你作为我的学习助手，帮我理解一下极限和连续之间的关系吧。帮我理解一下。
+    - question: 我是一名高中数学新手老师，现在在备课导数。你能详细说说导数的物理意义、几何意义，还有这些视角在教学中怎么帮助学生理解吗？详细说说。
+    - question: 你作为一名教育专家，能详细展开说说极限这个概念的历史发展、在现代数学教育里的作用，还有怎么用生活化的例子帮学生建立对极限的直观认知吗？详细展开说说。
+    - question: 我是高二学生，有点不太明白极限和导数为什么在高中这么重要。你能结合实际例子，说说你的看法吗？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 数学-高中-极限与导数概念进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 评估教学内容和方式是否针对不同学生画像（如基础薄弱型、兴趣探索型、竞赛型等）进行有针对性的调整，体现差异化教学，能够识别并响应学生个体需求。
+    - field: 知识点拆解与难度分层
+      type: float
+      description: 考查是否将极限与导数等知识点进行细致拆解，按照从易到难的逻辑分层讲解，对不同层次学生提供分级内容和进阶路径。
+    - field: 学生主动参与与反馈机制
+      type: float
+      description: 评估是否设计互动环节（如提问、讨论、动手实验）并根据学生反馈及时调整教学，鼓励学生主动表达思考和困惑，促进深度学习。
+    - field: 创新性思维与跨学科联系
+      type: float
+      description: 考查教学是否主动引入开放性问题、跨学科案例、生活类比等方式，激发学生创新思维和探索欲望，促进知识迁移。
+    - field: 模拟真实提问还原度
+      type: float
+      description: 评估内容是否贴近学生真实学习情境，能否还原学生常见疑惑与实际问题，体现教学的生活化和情境化。
+    - field: 教学方法科学性与过程引导
+      type: float
+      description: 考查教学方法是否科学合理，是否采用类比、启发、归纳等有效策略，循序渐进地引导学生理解和掌握知识，而非仅给出结论。
+    - field: 指令遵循与格式规范性
+      type: float
+      description: 评估教学内容是否严格遵循题目、场景或教学任务的具体要求，包括内容、步骤、表达风格等，体现对指令的高度执行力。
+    - field: 社会主义核心价值观与中华优秀传统文化融入
+      type: float
+      description: 评估是否在教学内容中自然而然地融入社会主义核心价值观（如实事求是、创新、团结协作等）及中华优秀传统文化，内容应自然贴切、无生硬堆砌。
+    - field: 内容准确性与误导性排查
+      type: float
+      description: 评估教学内容是否准确、无知识性错误或歧义，杜绝误导性解释或不严谨的表述。
+format_mode: prompt

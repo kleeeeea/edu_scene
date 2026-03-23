@@ -1,0 +1,127 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-小学-利用身边材料进行科学小魔术设计教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我叫寿沛杨，是个初三男生，喜欢科学实验，也爱和同学在家打MOBA游戏，可惜有点拖延症。你能结合我的这些情况，深入说说有哪些用身边材料能做的创新科学小魔术吗？希望能详细讲讲每个魔术的步骤、原理，还有怎么和同学一起玩的时候体现团队合作和竞争，最好还能带点中华传统文化的内容。深入说说看。
+  - question: I'm GarciaClaire, a teacher who loves gardening, Tai Chi, and fitness,
+      and I always try to bring my reformist mindset and energetic attitude into the
+      classroom. I want to design some science magic activities using everyday materials
+      to make my science lessons more engaging and encourage my students to work together.
+      Can you give me a detailed explanation of creative, practical science magic
+      tricks that use household items, and also suggest how I could naturally integrate
+      values like honesty, diligence, and some Chinese cultural elements during the
+      activities? Please, detailed say.
+  - question: 你作为小学科学教育专家，能系统地讲解一下怎么用身边常见材料设计科学小魔术吗？希望你能从设计原则、创新思路、具体案例、操作步骤、原理、现象分析到如何融入核心价值观和中华优秀传统文化各方面都详细说说，适合小学生自主探究和亲子、师生互动。系统地讲解一下。
+  - question: 你作为小学科学教研员，能详细分析下怎么通过“用身边材料做科学小魔术”来提升小学生科学素养和创新能力吗？希望你能从活动设计原则、安全、趣味、创新、亲子师生互动、原理、现象、探究方法、价值观和中华传统文化等各个方面都讲清楚，结合案例详细分析下各个方面。
+  - question: 我是龚剑，男老师，今年33岁，平时喜欢露营和足球，教学热情也挺高。我想在课堂上用身边材料做几个科学小魔术，激发学生兴趣。能结合我的兴趣和性格，解释一下有哪些适合小学课堂的科学小魔术方案吗？希望说清楚每个魔术的步骤、安全、原理，还想知道怎么引导学生合作探究。能解释一下吗？
+  - question: I'm MooreHannah, a 17-year-old who likes running, guitar, and writing
+      poetry—I tend to be introverted and like familiar routines. Could you give me
+      a detailed explanation of how I could design and perform some science magic
+      tricks with everyday materials, especially ones I can do quietly or share with
+      a small group? I'd love to know the steps, the chemical principles, and how
+      these activities could help me appreciate teamwork and traditional values, maybe
+      even with a bit of Chinese cultural inspiration. Please, detailed expand.
+  - question: 我是小学科学老师，发现很多学生用身边材料做科学小魔术时，对背后的化学原理理解得不深。你能解释一下怎么把这些原理讲得更通俗易懂，让小学生能理解并感兴趣吗？能解释一下吗？
+  - question: 你作为小学科学教师助手，家长们常问在家用普通材料能和孩子做哪些科学小魔术。能不能讲清楚点，给几个简单易行的案例，说明所需材料、操作步骤、实验现象和原理，还能顺便说说怎么在亲子互动中培养合作精神和好奇心？讲清楚点。
+  - question: 我是小学科学兴趣小组的，特别喜欢做实验。你能用几句话说说有哪些用厨房和家里常见材料就能做的科学小魔术吗？简单介绍下操作方法和会看到什么有趣现象，用几句话说说就行。
+  - question: 我是小学生的家长，孩子最近特别喜欢科学小魔术。你能大概讲讲有哪些适合亲子一起、用家里常见材料就能做的小学科学小魔术吗？简单说说每个魔术的做法和背后的原理，大概讲讲。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-小学-利用身边材料进行科学小魔术设计进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与动态响应_理由
+    type: str
+    description: 解释个性化画像识别与动态响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与动态响应
+    type: float
+    description: 教学设计需对学生的年龄、兴趣、知识基础、学习风格等进行多维画像分析，并根据学生实际变化动态调整分层支持方案。需有明确分层分组依据、差异化任务和反馈机制，持续跟踪学生表现并适时优化教学策略。
+  - field: 指令格式规范与操作支持度_理由
+    type: str
+    description: 解释指令格式规范与操作支持度评分的详细理由，引用具体例子。
+  - field: 指令格式规范与操作支持度
+    type: float
+    description: 教学方案需严格采用分步流程、清单、提示等标准格式。每一步操作有详细说明，包括材料、步骤、时间、安全提示、常见错误处理等，确保学生能独立、顺利完成实验，并对操作难点提供图示或视频辅助。
+  - field: 教学方法科学性与探究深度_理由
+    type: str
+    description: 解释教学方法科学性与探究深度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与探究深度
+    type: float
+    description: 教学流程需遵循科学探究方法，涵盖假设、实验设计、操作、观察、记录、分析与反思环节。实验安全性高，原理讲解准确，鼓励学生批判性思考和科学讨论，避免任何科学误导或安全隐患。
+  - field: 学生活动参与度与多样化设计_理由
+    type: str
+    description: 解释学生活动参与度与多样化设计评分的详细理由，引用具体例子。
+  - field: 学生活动参与度与多样化设计
+    type: float
+    description: 教学活动需设计多样化参与方式，包括分组协作、角色分工、探究讨论、成果展示等。活动需有层次、开放性和选择空间，能充分调动学生主动性，促进深度交流与合作。
+  - field: 创新思维激发与自主探究支持_理由
+    type: str
+    description: 解释创新思维激发与自主探究支持评分的详细理由，引用具体例子。
+  - field: 创新思维激发与自主探究支持
+    type: float
+    description: 教学内容应设置开放性任务，鼓励学生自主设计实验、提出新问题、尝试多样方案。支持学生创新思考、探索改进，设有反思和自我评价环节，鼓励学生分享独创成果。
+  - field: 真实场景贴合度与多元可行性保障_理由
+    type: str
+    description: 解释真实场景贴合度与多元可行性保障评分的详细理由，引用具体例子。
+  - field: 真实场景贴合度与多元可行性保障
+    type: float
+    description: 教学内容需高度贴合学生实际生活场景，选用易得、低成本、安全的材料。实验方案需兼顾不同家庭环境和资源差异，操作简便易行，确保学生在家或教室均可安全独立完成。需对可能的特殊情况（如材料短缺、空间受限）提出替代方案。
+  - field: 社会主义核心价值观自然融合与实践体现_理由
+    type: str
+    description: 解释社会主义核心价值观自然融合与实践体现评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融合与实践体现
+    type: float
+    description: 教学设计需将社会主义核心价值观（如团队协作、诚信守信、科学精神等）有机融入实验全过程，通过分工合作、诚信记录、科学探究等具体活动体现，引导学生在真实实践中形成正确观念。
+  - field: 中华优秀传统文化融合与科学启发_理由
+    type: str
+    description: 解释中华优秀传统文化融合与科学启发评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融合与科学启发
+    type: float
+    description: 教学内容需巧妙结合中华优秀传统文化，如古代科学发现、传统工艺、经典故事等，激发学生文化自信和科学兴趣。引导学生探究传统与现代科学的联系，鼓励用传统材料或方法实现科学实验。
+  format_mode: prompt

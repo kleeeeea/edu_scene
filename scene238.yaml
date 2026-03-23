@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-探究性地理问题的设计与实施教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二地理老师，最近设计城市热岛效应的探究性问题时，发现学生分析实际案例不是很有头绪。你作为地理教育专家，能简单说说怎么引导学生结合身边城市现象开展地理探究吗？简单说说就行。
+  - question: 我是西部地区的高中地理老师，班里学生对本地水资源保护很有兴趣。你作为地理教学顾问，能系统地讲解一下怎么设计和实施一个关于“本地水资源保护现状与对策”的探究性地理教学活动吗？系统地讲解一下。
+  - question: 我是高一学生，地理课上老师让我们自己设计一个关于气候变化影响的探究问题。你作为地理学习助手，能说说主要的设计思路和关键步骤吗？说说主要的。
+  - question: 我刚成为高中地理老师，最近在准备探究性教学活动时碰到一些难题。你作为地理教育专家，能详细说说高中地理探究性问题设计的流程和注意事项吗？详细说说。
+  - question: 我是东部沿海某市的地理老师，班里学生对海岸线变化很感兴趣，想做相关探究。你作为地理教学顾问，能详细说说怎么把“海岸线变化”这个主题融入高中地理探究性问题的设计和实施吗？详细说说。
+  - question: 我是一名高三学生，准备参加地理竞赛，最近设计生态环境保护的探究性问题时碰到一些瓶颈。你作为地理学习助手，能解释一下设计探究性地理问题时怎么结合实际案例和数据分析吗？有哪些常见误区需要注意？能解释一下吗？
+  - question: 我是高中地理教研员，最近组织教师培训时发现大家对探究性地理问题的实施环节不是很清楚。你作为地理教育专家，能详细分析一下高中地理探究性问题的实施流程、教师引导策略和学生评价机制吗？最好能举例说明，我想深入了解。
+  - question: 我是浙江的地理老师，最近带学生做城市交通拥堵的探究项目。你作为地理教学顾问，能从各个角度详细说说高中地理探究性问题设计和实施时怎么结合城市交通拥堵的实际情况，做到科学系统又有创新性吗？从各个角度详细说说。
+  - question: 我是任行才，老师，46岁，平时喜欢3D建模打印、园艺种植和研究充电头，也常和同事分享这方面技术。你作为地理教育专家，能结合我的兴趣和背景，详细分析一下怎么把3D建模打印、园艺种植这些元素融合进高中地理探究性问题的设计和实施吗？我想深入了解。
+  - question: 我是高中地理老师，最近带学生探究本地垃圾分类和资源回收的情况。你作为地理教学顾问，说说你的看法，设计和实施垃圾分类探究性地理问题时应该重点关注哪些方面？说说你的看法。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-探究性地理问题的设计与实施进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 教学设计需基于学生具体画像（学习水平、兴趣、地域、生活经验等）进行深度个性化定制，确保内容、活动与资源选择高度贴合学生实际，避免表面化差异。高分要求能针对多维画像特征，制定差异化且动态调整的探究方案。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 教学设计内容必须严格按照指定结构（如‘探究问题-探究步骤-预期成果’），分点清晰、逻辑严密，涵盖所有环节。高分要求各环节内容完整、相互衔接，并有明确分段和标题，便于评审。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学方法需紧密结合地理学科特点与探究性教学理论，包含实地调查、数据分析、模型建构等具体环节，并设有过程性反馈和科学评价机制。高分要求方法多样、理论与实践结合，能动态调整教学策略促进地理核心素养。
+  - field: 问题设计专业度_理由
+    type: str
+    description: 解释问题设计专业度评分的详细理由，引用具体例子。
+  - field: 问题设计专业度
+    type: float
+    description: 探究性问题需具备地理学科深度、开放性、多层次，能引导学生应用地理理论、方法及多源数据进行跨学科、创新性探究。高分要求问题兼具现实意义、理论挑战、数据分析与创新方案设计，能引发多角度讨论与实践。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 教学活动应鼓励学生主动创新、跨学科思考，支持使用新工具、新方法或自主提出改进方案，促进创造性解决地理问题。高分要求学生能自主设计并尝试独特方案，探索未知领域，产出原创成果。
+  - field: 学生自主性引导度_理由
+    type: str
+    description: 解释学生自主性引导度评分的详细理由，引用具体例子。
+  - field: 学生自主性引导度
+    type: float
+    description: 教学设计需赋权学生自主提出问题、制定方案、调整流程，过程允许学生根据实际情况自主决策与反思。高分要求学生拥有充分选择权，教师主要提供方法支持与资源，鼓励自我管理和团队协作。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 教学内容需自然融合社会主义核心价值观（如社会责任、生态文明、合作共进等），通过地理探究情境引导学生形成正确价值观。高分要求价值观融入实际问题分析与行动方案，强调行为引导与反思，避免口号化。
+  - field: 中华优秀传统文化体现度_理由
+    type: str
+    description: 解释中华优秀传统文化体现度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化体现度
+    type: float
+    description: 教学内容应有机融入中华优秀传统文化（如因地制宜、尊重自然、和谐共生等），结合地理学科内容启发学生理解传统智慧在现代地理问题中的价值。高分要求将传统理念与现代实践结合，促进学生创新应用和深度理解。
+  format_mode: prompt

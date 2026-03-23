@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-细胞结构与功能讲解教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初一生物老师，班里有几位学生基础比较薄弱，课堂上经常分不清细胞结构的各个部分。你作为生物学学习助手，能不能用浅显易懂的方式讲讲看细胞的结构和主要功能？
+  - question: 我是初二的学生，最近觉得细胞结构和功能内容挺复杂的。作为我的学习顾问，你能深入说说看细胞各个结构及功能吗？最好能结合实际生活例子讲讲。
+  - question: Hi, I'm ThompsonHarry, 18, in senior high (12th Grade). I spend a lot
+      of time on photography, music production, and sports, but my comprehension is
+      just average, and I only focus on certain academic areas. You're an education
+      expert—can you detailedly analyze all aspects of cell structure and function,
+      and, if possible, connect them to creative or athletic interests? Please, detailed
+      analysis on all sides.
+  - question: 我是一名生物课代表，想给同学们介绍细胞结构和功能。你能说说主要的细胞结构和它们的基本功能吗？
+  - question: 我女儿现在初一，最近学细胞结构和功能，总是分不清细胞核和细胞质。你作为生物学习助手，能帮我讲清楚点这两者的区别和作用吗？
+  - question: 老师最近讲了细胞膜的结构和功能，我还是有点不太明白。你能详细说说细胞膜是怎么工作的吗？顺便讲讲它在细胞里的重要作用。
+  - question: 我是五年级学生曹哲，平时喜欢围棋、电竞和吉他，但比赛时总觉得自己不行，更多是观战。你作为我的生物学习助手，能不能全面深入地讲讲细胞结构和功能？最好结合有趣的活动，帮我多点自信和参与感。
+  - question: 我在辅导邻居家孩子学生物，他搞不清动植物细胞的区别。你作为生物老师，说说你的看法，能详细解释一下动植物细胞结构和功能的主要异同点吗？
+  - question: Hi, I'm RobinsonHenry, 8 years old, 3rd grade. I love swimming and VR
+      games, and like learning through quick, hands-on activities. Can you, as my
+      study assistant, detailedly tell me about cell structure and function, give
+      examples, and suggest some physical or game-like ways to help me understand?
+      Please, detailed explanation.
+  - question: 我是初二女生万雨婷，逻辑性比较强，喜欢羽毛球和养植物。你作为我的生物学习助手，能帮我简短回答下细胞结构和功能的核心要点吗？逻辑关系要讲清楚。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-细胞结构与功能讲解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 能够基于学生的知识基础、兴趣特征、学习困惑和反馈动态，持续调整教学内容、方法和支持策略。关注不同学生的学习进程，提供分层资源和个性化辅导，体现持续追踪与精准响应。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 严格遵循教学流程和格式要求，内容分层合理、结构清晰、环节分明，模块标题突出，步骤明确，重点突出，便于理解与操作。模块之间有自然过渡，避免内容混杂。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 采用启发式、探究式、合作式等多样科学教学方法，合理安排教学流程，促进学生主动思考、实践探究与合作学习，体现学科特点与教育学原理，避免单一灌输或机械讲授。
+  - field: 知识内容准确性与系统性_理由
+    type: str
+    description: 解释知识内容准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识内容准确性与系统性
+    type: float
+    description: 知识点表述科学准确、无错误，内容系统且逻辑递进，能构建完整知识网络，体现核心概念间的内在联系。能够结合前后章节、跨学科或实际应用进行拓展，指出常见误区并进行辨析。
+  - field: 互动性与学生参与度设计_理由
+    type: str
+    description: 解释互动性与学生参与度设计评分的详细理由，引用具体例子。
+  - field: 互动性与学生参与度设计
+    type: float
+    description: 设计多样化、层次丰富的互动环节（如开放性问题、小组讨论、实验操作、角色扮演等），有效激发学生主动参与、表达和深度思考，关注全员参与和互动质量，能根据学生反馈调整互动策略。
+  - field: 激发创新思维与创造力_理由
+    type: str
+    description: 解释激发创新思维与创造力评分的详细理由，引用具体例子。
+  - field: 激发创新思维与创造力
+    type: float
+    description: 通过设问、应用、跨学科融合等方式，鼓励学生提出新观点、设计新方案或进行创意表达。对创新表达、独立设计、实际应用等高阶能力有明确支持和评价，促进创新思维和实际能力发展。
+  - field: 模拟真实学生提问响应度_理由
+    type: str
+    description: 解释模拟真实学生提问响应度评分的详细理由，引用具体例子。
+  - field: 模拟真实学生提问响应度
+    type: float
+    description: 能够捕捉并细致回应学生真实或典型疑问，深入分析学生困惑，提供具体、有启发性的解答，鼓励学生进一步思考和探究，体现理解、共情与引导能力。
+  - field: 社会主义核心价值观与中华优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入
+    type: float
+    description: 在教学内容中自然、深入地融入社会主义核心价值观和中华优秀传统文化，通过实例、类比或讨论启发学生思考团结协作、创新、尊重生命等价值观，强调价值观与学科内容的内在联系，避免机械生硬。
+  format_mode: prompt

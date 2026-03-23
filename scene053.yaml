@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene053/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 数学-高中-逻辑与证明教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你是我的学习助手，能简单说说什么是数学里的逻辑与证明吗？说说主要的就行。
+    - question: 我是高中数学老师，最近在备课时遇到逻辑与证明这个知识点。你作为教育专家，能说说你的看法吗？想听听具体的教学意义和例子。
+    - question: 我是沈怀，54岁，供应链分析师，业余喜欢桌游和旅行，平时多做技术执行，实践能力要求高但领导力不太强。我挺好奇逻辑与证明这个数学主题在我工作和生活中有什么实际用处？你作为数学教育专家，能讲得详细点吗？最好结合我的这些情况说说。
+    - question: I'm GarciaPenelope, a 15-year-old student who likes piano and reading, and I usually work in groups to balance my avoidant tendencies and strong logical thinking. I value logical problem-solving but often look for outside feedback. Could you say your thoughts on how learning mathematical logic and proof might help me with critical thinking and teamwork in school?
+    - question: 你作为数学老师，能简要说明下直接证明和间接证明是什么吗？它们各有什么特点？说重点就行。
+    - question: 我是高中数学教研员，最近在组织教师培训。你作为教育专家，能全方位地讲解一下逻辑与证明在高中数学里的知识结构、重点难点以及教学创新吗？希望能系统了解各方面内容。
+    - question: 我刚当上高中数学老师，对逻辑与证明这一章的教学设计挺迷茫。你作为教学顾问，能彻底说清楚这部分的教学目标、重点难点、方法和活动设计吗？希望你能全面详细地讲讲。
+    - question: 你是有经验的数学老师，能具体说说归纳法在高中数学逻辑证明里的作用和常见应用吗？举几个例子说明下。
+    - question: 我是高中生，最近学逻辑与证明时，证明题总觉得不好下手。你作为我的学习助手，能具体说说做证明题有哪些常见思路和方法吗？最好能举几个例子讲讲。
+    - question: 你是高中数学教学专家，能全面分析一下逻辑谬误在高中数学学习中常见的类型、发生原因，以及怎么有效避免吗？希望你能详细说说例子和方法。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 数学-高中-逻辑与证明进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化回应深度
+      type: float
+      description: 评估回答是否充分结合学生的具体画像（如学习基础、兴趣、认知风格等），在内容选择、表达方式和难度设定上体现针对性，避免模板化或一刀切。
+    - field: 格式与结构指令遵循度
+      type: float
+      description: 评估是否严格按照题目或教学要求的格式、结构进行表述（如分步、编号、分段、用表格等），并在内容组织上体现清晰结构。
+    - field: 教学方法科学性与创新性
+      type: float
+      description: 评估教学设计是否遵循教育学原理（如启发式、合作探究、情境导入、活动驱动等），并体现方法多样性与创新性，避免单一灌输。
+    - field: 知识点覆盖与准确性
+      type: float
+      description: 评估内容是否全面、准确地涵盖‘逻辑与证明’的核心知识点（如命题、证明方法、反证法等），无概念混淆、知识遗漏或错误。
+    - field: 创新思维激发度
+      type: float
+      description: 评估教学内容是否有效激发学生的创新思考，鼓励提出新问题、尝试不同证明方法、进行开放性探索等。
+    - field: 真实提问与互动模拟度
+      type: float
+      description: 评估语料中的问题和互动是否贴近真实课堂情境，反映学生真实疑惑和学习需求，避免生硬、理论化设计。
+    - field: 价值观自然融入度
+      type: float
+      description: 评估是否能将社会主义核心价值观或中华优秀传统文化（如诚信、求实、合作、创新等）自然融入教学内容，表达润物细无声，避免生硬说教。
+    - field: 表达清晰与逻辑严密性
+      type: float
+      description: 评估回答的语言是否简明易懂，结构分明，逻辑链条完整，推理过程连贯，让学生易于理解和跟进。
+format_mode: prompt

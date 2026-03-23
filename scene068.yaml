@@ -1,0 +1,124 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-小学-自制酸碱指示剂并进行测试教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: I'm WilsonMarcus, a 58-year-old teacher. Lately, I've felt pretty exhausted
+      and sensitive to stress, so I want to make sure my students have a safe, engaging
+      experience when making and testing homemade acid-base indicators. Can you, as
+      a chemistry education expert, say the main steps and safety tips I should focus
+      on? Keep it practical and clear—I'm looking to encourage a scientific spirit
+      in my class. Just say the essentials.
+  - question: 我是郝梦，初三女生，性格有点完美主义，理解慢一些，还容易理想和现实纠结，偶尔会拖延。我喜欢跆拳道和插花，和同学关系大致不错。你作为化学学习助手，能详细说说自制酸碱指示剂并测试的具体流程吗？希望你举例子讲清楚，还能针对我的情况给点鼓励和建议，让我能顺利完成实验。
+  - question: 我是一名小学老师，最近想在课堂上带领孩子们做自制酸碱指示剂并测试的实验。我想深入了解整个实验的原理、具体操作、材料选择，以及怎样激发学生的好奇心和科学精神。你能帮我详细讲讲吗？注重生活里的例子和分析，越细致越好。
+  - question: I'm TaylorSamuel, a first grader who loves martial arts and model making,
+      and I usually like figuring things out with my friends. Can you, as an AI teacher,
+      give me a really detailed and full explanation about how to make and test homemade
+      acid-base indicators? I'd like to know all the safety tips, step-by-step instructions,
+      and maybe some fun ways to connect this experiment to things I enjoy. Please
+      explain everything—I'm excited to learn!
+  - question: 我是一名小学教师，最近在思考让学生做自制酸碱指示剂并测试的实验。你作为化学教育专家，能说说你的看法吗？希望你能讲清楚这种实验的教育意义、安全性，以及怎么激发孩子们的兴趣。
+  - question: 我是南宫峰，初二男生，逻辑性不算强，平时喜欢自己做3D建模和视频剪辑，篮球社团活动时一般会跟着别人做。你作为化学学习助手，可以详细展开说说自制酸碱指示剂并测试的全过程吗？希望你能结合我的特点帮我一步步理解，鼓励我主动纠错和探索。
+  - question: 我是一名家长，想在家陪孩子做自制酸碱指示剂并测试的实验。你能解释一下这个实验的意义和基本做法吗？希望你能讲讲安全、环保材料，还能说说怎么引导孩子合作和分享。
+  - question: 我是小学科学老师，想系统地带学生做自制酸碱指示剂并测试的实验。你作为科学教育专家，能系统地讲解一下全过程吗？希望你能从原理、操作、团队合作、环保等方面全面说明，还能结合教学场景举例分析。
+  - question: 我是小学新老师，最近带学生做自制酸碱指示剂实验时遇到不少问题。你能解释一下常见问题和解决办法吗？希望你能讲讲安全细节，还能说说怎么引导学生主动发现并解决问题。
+  - question: 我是三年级学生，老师让我们做自制酸碱指示剂和测试。能简要说明下整个流程和要注意的安全问题吗？只要说说主要步骤就行。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-小学-自制酸碱指示剂并进行测试进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学设计是否针对学生多样性（能力、兴趣、性格、学习风格等）提供分层支持与个性化建议。要求在内容、表达、活动安排等环节具体体现个体差异，至少涵盖两类学生需求，并能根据实际班级情况灵活调整。
+  - field: 指令遵循完整性_理由
+    type: str
+    description: 解释指令遵循完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循完整性
+    type: float
+    description: 评估教学内容是否严格按照流程和格式展开，涵盖材料准备、实验步骤、观察记录、结果分析、安全提示等所有核心环节。流程需清晰、环环相扣，表达顺序合理，术语和语言贴合小学生认知水平。中间表现可允许部分环节简略，但核心流程不能缺失。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学活动设计是否符合小学科学教育原则。实验材料安全易得，步骤合理，知识讲解准确、适龄，并能促进学生科学理解和兴趣。需避免危险品、复杂仪器和超龄内容。中等表现为材料安全但讲解略显抽象或部分内容超出认知水平。
+  - field: 实验安全性与可操作性_理由
+    type: str
+    description: 解释实验安全性与可操作性评分的详细理由，引用具体例子。
+  - field: 实验安全性与可操作性
+    type: float
+    description: 评估实验方案对小学生安全和操作能力的考虑。材料需易得且安全，步骤简明，风险低，并有明确的成人指导或安全提醒。需涵盖家庭、学校等多场景安全建议。中间表现为材料安全但操作略复杂或安全提示不够细致。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评估教学活动是否鼓励学生主动探索、提出问题、尝试创新方法或进行自主记录与总结。需有具体措施促进发散性思维和个性表达，允许学生尝试多种方法或材料。中间表现为允许部分自主尝试，但激发方式较为单一或记录形式固定。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估教学内容中模拟的小学生提问是否贴近真实表达习惯和兴趣点，语言自然、口语化，问题与学生实际认知和生活经验相关。允许多样化表达，包括好奇、疑惑、生活联想等，同时允许教师适度引导。中间表现为问题略显规范但能反映学生真实兴趣。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估内容是否自然融入社会主义核心价值观和中华优秀传统文化，如合作、责任、环保、节约等。表达需结合实际活动或案例，避免生硬灌输。中间表现为价值观提及但未结合具体活动或表达略显生硬。
+  - field: 表达适龄性与易懂性_理由
+    type: str
+    description: 解释表达适龄性与易懂性评分的详细理由，引用具体例子。
+  - field: 表达适龄性与易懂性
+    type: float
+    description: 评估内容表达是否贴合小学生认知水平，语言简明、生动、形象，避免生僻词和复杂句式。表达方式适合小学阶段，便于理解和操作。中间表现为部分表达通俗，部分内容略显生硬或抽象。
+  format_mode: prompt

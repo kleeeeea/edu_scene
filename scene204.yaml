@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene204/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 历史-高中-历史进程中的“变与不变”分析教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是26岁的历史老师AllenHarold，平时喜欢AI研究、足球和野外露营，做事动力有周期性变化，生活中兼顾工作和个人兴趣。你作为历史教学专家，能具体说说我该如何带领学生有效分析历史进程中的“变与不变”吗？最好结合我的兴趣和实际教学，多举些例子和建议。
+    - question: 我是初一女生WilliamsValentina，喜欢乐高、英语和攀岩，积极参加团体活动，但有时自学力弱、容易焦虑，社交时会在疏离和融入间摇摆。你是我的学习助手，能系统地讲解一下历史进程中怎么分析“变与不变”吗？希望举些有趣的例子，比如用乐高、攀岩之类的比喻，并给我一些适合我们小组探究的方法。
+    - question: 我是一名高中历史老师，最近在备课中国近代史。你能帮我详细说说“变与不变”这个主题在近代史里是怎么体现的吗？最好用对比表或者分点的方式，结合文化传承和价值观一起讲讲。
+    - question: 我是高一新生，对‘变与不变’这个历史主题有点不懂。你能说说主要的内涵吗？最好举个身边的例子，再推荐一种简单的探究方法。
+    - question: 我是对历史很感兴趣的高中生，但‘变与不变’这块总觉得很抽象。你能帮我理解一下这个主题在世界史里的意义吗？讲讲细节，最好再给点结合兴趣的小组活动建议。
+    - question: 我是一名喜欢时尚穿搭的高中女生，历史课提到‘变与不变’这个分析方法。你能大概讲讲怎么用服饰变化来理解这个主题吗？
+    - question: 我是高中历史教研组的骨干老师，准备组织一次关于‘变与不变’主题的教学研讨。你能详细展开说说有哪些多元教学方法和案例，能帮助学生深入理解这个主题吗？希望结合价值观和传统文化一起分析。
+    - question: 我是39岁的历史老师吕川，平时喜欢健身和养殖珊瑚，教学热情和倦怠交替。你作为教研顾问，能全方位地讲解一下历史课堂上‘变与不变’主题的教学设计吗？希望结合我的兴趣和教学风格，分析具体流程、案例和活动，还想请你谈谈怎么兼顾价值观引领和缓解教师倦怠。
+    - question: 我是一名新手历史老师，最近在设计课程时很关注‘变与不变’在现代社会发展里的现实意义。你作为AI历史专家，能深入讲解一下怎么引导学生思考历史与现实、个人成长之间的联系吗？希望给出丰富的例子和教学建议。
+    - question: 我是55岁的老师晁兰淇，平时喜欢弹古筝、养宠物和做心理辅导，对压力比较敏感。你作为教学助手，能具体说说怎么结合音乐或动物陪伴等方式，帮助学生理解历史‘变与不变’吗？也请给些缓解压力的课堂活动建议。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 历史-高中-历史进程中的“变与不变”分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估答案是否基于学生多元画像（学习水平、兴趣、认知风格、历史基础等）进行针对性调整，体现差异化教学。高阶表现为能针对多类画像提供具体适配策略和个性化内容，基础达标为有针对性调整，未达标为完全无差异。
+    - field: 格式与指令遵循度
+      type: float
+      description: 评估答案是否严格、完整地按照题目要求的格式（如表格、流程图、分步说明等）与指令输出。高阶表现为格式结构严谨且细节丰富，基础达标为基本遵循但细节有缺，未达标为明显偏离或遗漏核心格式。
+    - field: 教学方法科学性
+      type: float
+      description: 评估答案是否根据教学目标合理选择并融合科学教学方法（如启发式、探究式、案例教学、合作学习等），鼓励学生主动思考与深度参与。高阶表现为多元方法融合且与目标高度契合，基础达标为单一方法但能促进参与，未达标为机械灌输或无启发性。
+    - field: 教学内容专业准确性
+      type: float
+      description: 评估答案中的历史知识点、分析框架是否符合高中历史课程标准，史料运用准确，逻辑严谨，无知识性错误。高阶表现为结合史料、时间线、观点多元且论述细致，基础达标为无明显错误，未达标为事实混淆或逻辑漏洞。
+    - field: 历史进程分析深度
+      type: float
+      description: 评估答案对‘变与不变’主题分析是否涵盖政治、经济、社会、思想等多维度，揭示历史进程内在逻辑与因果关系。高阶表现为深层结构分析与阶段比较，基础达标为多维度罗列但无深入联系，未达标为仅表面事件罗列。
+    - field: 创新思维引导性
+      type: float
+      description: 评估答案是否通过设问、开放性讨论、模拟情境等方式激发学生创新性思考，鼓励独立见解和多元假设。高阶表现为能引导学生提出新观点并进行论证，基础达标为有开放性设问，未达标为完全封闭、仅记忆复述。
+    - field: 多样化表达与探究
+      type: float
+      description: 评估答案是否鼓励或引导学生采用多种表达方式（如辩论、绘图、角色扮演、案例分析、时间轴、情境剧等）探究‘变与不变’主题，促进创造性学习。高阶表现为针对不同学习风格提供多元选择并指导实施，基础达标为提出多样化建议，未达标为仅书面回答无多样化。
+    - field: 社会主义核心价值观融入度
+      type: float
+      description: 评估答案是否在分析过程中自然融合社会主义核心价值观，强调家国情怀、历史担当、民族精神等正面价值，表达方式润物细无声、结合中华优秀传统文化。高阶表现为结合具体历史内容自然引发价值观思考，基础达标为有价值观元素但表达生硬，未达标为完全缺失或机械灌输。
+format_mode: prompt

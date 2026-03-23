@@ -1,0 +1,117 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-综合思维解决区域地理问题教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高一学生，最近在准备地理竞赛，老师让我们分析中国东部沿海城市化对生态环境的影响。你能详细讲讲从地理综合思维的角度应该怎么系统分析吗？最好能结合我的学习阶段给点建议。
+  - question: 我是地理老师，发现学生分析区域资源开发和可持续发展问题时经常只看一个方面。你作为教育专家，能说说你的看法吗？我想知道怎么培养学生的综合分析能力。
+  - question: 我在高中地理兴趣小组，最近我们讨论中国西南山区的交通建设对经济和社会发展的影响。你能全面分析一下这个问题吗？希望能帮我们梳理各个方面，还想听听有哪些创新的学习方法可以激发大家的探究兴趣。
+  - question: 你是地理学习助手，能用几句话说说中国东北人口流动对农业发展的主要影响吗？简单点讲，突出重点。
+  - question: 我是四年级女生程琴，老师说我理想主义，有运动和美术特长。你作为地理教育专家，能全面深入地讲讲怎么结合我的特点设计一套适合我的区域地理问题解决和综合思维训练方案吗？希望能有创新方法，也能体现中华传统文化和核心价值观。
+  - question: 我是初二女生卓颖，老师说我有想法但有时和同伴合作会有分歧。你作为地理老师，能大概讲讲在区域地理小组探究活动里，怎么发挥我的优势又能提升团队协作吗？
+  - question: Hi, I'm WilsonJohn, a middle-aged teacher who enjoys gardening and football,
+      and I tend to stick to rules and social expectations. As a geography coach,
+      could you please explain how I can help students develop comprehensive thinking
+      skills when solving regional geography problems? Please讲清楚点，最好结合我的个人背景给些具体建议。
+  - question: 你是地理教研专家，能给我一份完整的分析吗？就是中国不同区域在城镇化过程中主要遇到哪些地理问题，以及科学和创新的解决方法。希望能系统全面一点，也能结合核心价值观和中华传统文化讲讲。
+  - question: 我是三年级男生程锋，喜欢乐高和观星，但有时候和同伴容易争执，也常常拖延。你作为地理学习助手，能详细说说怎么通过区域地理实践活动帮我提升合作能力和学习动力吗？希望有具体方法和例子。
+  - question: 我是一名高中生，最近对区域地理问题解决方法特别感兴趣。你作为地理老师，能说说你的看法吗？希望能举一些例子，帮我理解综合思维在这方面的作用。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-综合思维解决区域地理问题进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学设计及活动能基于学生兴趣、能力、认知风格等多维特征进行深度个性化调整，动态跟踪学生学习表现，及时反馈并优化教学策略，实现内容、难度、表达方式的差异化支持。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 教学内容与答题严格依照任务要求结构、步骤和要素展开，分段标注清晰，内容分布合理，逻辑顺序明确，便于学生理解与教师评价；能根据不同任务类型灵活调整格式和组织方式。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 教学活动基于地理学与教育学理论，融合探究、合作、情境模拟、数据分析等多种有效策略，方法选择与教学目标紧密契合，鼓励主动参与、深度思考及多元能力发展，并结合学生实际灵活调整。
+  - field: 问题解决过程完整性与逻辑性_理由
+    type: str
+    description: 解释问题解决过程完整性与逻辑性评分的详细理由，引用具体例子。
+  - field: 问题解决过程完整性与逻辑性
+    type: float
+    description: 系统、清晰地展现区域地理问题的分析与解决全过程，包括背景、现状、成因、影响、方案制定、可行性反思等环节，分析多角度、层次分明，推理严密，形成可操作方案并有反思。
+  - field: 创新思维激发与跨学科融合_理由
+    type: str
+    description: 解释创新思维激发与跨学科融合评分的详细理由，引用具体例子。
+  - field: 创新思维激发与跨学科融合
+    type: float
+    description: 通过开放性任务、跨学科视角和鼓励独特见解等方式，激发学生创新思考，结合经济、环境、信息技术等多领域知识，提出新颖、可行的区域地理解决方案或观点，并用数据、案例或工具论证。
+  - field: 真实场景模拟与互动性_理由
+    type: str
+    description: 解释真实场景模拟与互动性评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与互动性
+    type: float
+    description: 以真实或典型区域地理问题为情境，设计角色扮演、实地调研、虚拟仿真、情境决策等高参与度活动，活动有明确分工、协作和成果展示，过程有反思环节，促进学生现实感和互动体验。
+  - field: 社会主义核心价值观与中华优秀文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀文化融入
+    type: float
+    description: 自然、深入地将社会主义核心价值观（如公平、协作、可持续发展）和中华优秀传统文化（如治水智慧、生态观念）融入区域地理问题分析与解决方案，与学科内容紧密结合，引导学生价值思考与行为实践。
+  - field: 激发学生自主学习动力与资源推荐_理由
+    type: str
+    description: 解释激发学生自主学习动力与资源推荐评分的详细理由，引用具体例子。
+  - field: 激发学生自主学习动力与资源推荐
+    type: float
+    description: 通过开放性设问、任务驱动或目标引导，激发学生主动探究区域地理问题，分层、针对性推荐后续学习资源（如数据平台、拓展书目、实践项目），并指导具体使用方法，鼓励持续学习和成果分享。
+  format_mode: prompt

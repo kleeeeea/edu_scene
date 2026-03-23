@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-不同地域的民居与生活教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名小学四年级学生，最近地理课老师讲了北方的窑洞、南方的吊脚楼和新疆的毡房，我还是搞不太懂为什么各地的房子差那么多。你能用真实故事、比喻和小学生能懂的例子，详细讲讲这些不同地域民居的特点、生活方式，还有这些房子跟当地气候、习惯、传统文化、人与环境的关系吗？详细讲讲吧！
+  - question: 你作为小学地理教学助手，我班同学都对蒙古包、藏族碉房、南方竹楼这种房子很感兴趣，但不太懂为什么这些房子会长成这样。能解释一下这些不同地域民居为什么要这样建造吗？举些例子，讲清楚原因和和环境文化的关系吧！
+  - question: 我是班南武，20岁男空乘，喜欢旅行摄影、咖啡品鉴和瑜伽，平时在机组和社交圈认识了不少人。我挺好奇不同地域的民居有什么特点，它们和当地气候、文化、生活习惯有什么联系？能简要说明下，并结合我的兴趣和工作，给点个性化建议吗？
+  - question: 我是小学地理老师，你作为地理教育专家，能帮我从房屋类型、结构特点、气候环境、生活方式、历史文化、环保创新、人与自然和谐等多个角度，详细说说中国不同地域民居和生活方式的差异及价值吗？请结合丰富案例、故事和适合孩子的表达方式，从各个角度详细说说吧！
+  - question: 我是小学地理教研组老师，准备做‘不同地域的民居与生活’主题教学，想要一份完整的分析，包括中国各区域民居类型、结构设计、气候适应、生活方式、传统文化、环保创新、人与自然关系等内容。能结合案例、故事和适合孩子的表达方式，给我一份完整的分析吗？
+  - question: 我是伯珍，高一女生，喜欢乒乓球、视频剪辑和心理学，性格有点容易分心和自信不足。最近想了解下不同地域民居的结构和生活方式，你能结合我的兴趣、性格和实际情况，用生动例子和互动方式讲清楚点吗？
+  - question: 你作为地理知识专家，我最近在地理课上学到藏族碉房、南方竹楼、北方窑洞这些民居，但还是觉得有点复杂，不太明白它们为什么要这样建。能讲得详细点吗？举例说明下怎么通过体验和观察理解这些民居的奥妙，也鼓励我们小学生主动思考和讨论！
+  - question: 我是一名三年级小学生，地理课上学到蒙古包、吊脚楼、窑洞这些房子，但分不太清它们的区别和原因。能帮我概括一下中国各地民居的主要类型和跟环境的关系吗？
+  - question: 我是一名小学五年级学生，对中国各地的民居很感兴趣，尤其是南方吊脚楼和北方窑洞。你能用有趣的例子和故事，讲讲看这些房子的结构特点、为什么要这样建，还有它们和当地环境、生活习惯、文化的联系吗？
+  - question: Hi, I’m JonesVictoria, a 12th grade student who loves economics research
+      and running. I’m a perfectionist and visual learner, but I struggle with time
+      management and understanding new topics quickly. Can you explain in detail the
+      main types of traditional dwellings in different regions of China, their structures,
+      the lifestyle of people living there, and how these relate to the local environment
+      and culture? Also, please give me some tips or interactive ideas suited to my
+      learning style. Can you be specific?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-不同地域的民居与生活进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学画像匹配度_理由
+    type: str
+    description: 解释个性化教学画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化教学画像匹配度
+    type: float
+    description: 评价教学内容和表达是否深入结合小学生的年龄、认知水平、兴趣爱好及能力差异，针对不同学生采取差异化支持与挑战。高分要求能主动识别并持续响应个体特征，促进每个学生的有效参与和成长。
+  - field: 个性化指令遵循度_理由
+    type: str
+    description: 解释个性化指令遵循度评分的详细理由，引用具体例子。
+  - field: 个性化指令遵循度
+    type: float
+    description: 评价教学内容是否细致且完整地响应学生或题目提出的具体个性化指令（如分步骤、举例、对比等），并能在教学过程中主动检查学生理解，鼓励学生进一步提问或表达观点。高分需体现多轮互动和对学生反馈的及时调整。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价是否采用多样且科学的教学方法（如情境模拟、启发式提问、小组合作、角色扮演等），并根据学生特点灵活调整，促进主动参与、思考和表达。高分需体现方法多样、针对性强，且能有效激发学生兴趣和思维。
+  - field: 知识结构与逻辑清晰度_理由
+    type: str
+    description: 解释知识结构与逻辑清晰度评分的详细理由，引用具体例子。
+  - field: 知识结构与逻辑清晰度
+    type: float
+    description: 评价教学内容结构是否层次分明、逻辑递进，便于学生梳理和掌握知识点。高分需体现知识点间清晰关联，有辅助工具（如思维导图、结构图），并鼓励学生自主梳理和迁移应用。
+  - field: 激发创新思维能力_理由
+    type: str
+    description: 解释激发创新思维能力评分的详细理由，引用具体例子。
+  - field: 激发创新思维能力
+    type: float
+    description: 评价是否通过开放性任务、鼓励想象和创意表达等方式，激发学生创新思维和创造力。高分需体现学生主动提出新观点、进行创意设计，并能相互启发和完善思路。
+  - field: 模拟真实提问回应度_理由
+    type: str
+    description: 解释模拟真实提问回应度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应度
+    type: float
+    description: 评价能否准确理解并充分回应学生真实、具体的问题，回应内容结合学生实际经验，能引发后续思考或讨论。高分需体现多轮互动和知识迁移能力的培养。
+  - field: 中国价值观自然融入度_理由
+    type: str
+    description: 解释中国价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入度
+    type: float
+    description: 评价教学过程中是否自然地融入社会主义核心价值观和中华优秀传统文化，价值引导与知识点紧密结合，能引发学生共鸣和实际行动。高分需体现学生对价值观的理解、认同及践行意愿。
+  - field: 表达方式适龄性_理由
+    type: str
+    description: 解释表达方式适龄性评分的详细理由，引用具体例子。
+  - field: 表达方式适龄性
+    type: float
+    description: 评价教学语言是否针对小学生，表达通俗、生动、有趣，遇到难懂词汇能及时解释或用形象例子说明。高分需体现语言富有感染力，能激发学生兴趣和主动表达。
+  format_mode: prompt

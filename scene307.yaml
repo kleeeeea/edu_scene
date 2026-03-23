@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-小学-穿越障碍赛教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学体育老师，班里有几个孩子体能比较弱，我想组织穿越障碍赛。你能详细说说怎么安排活动内容，既能让他们安全参与，又能激发兴趣和自信吗？
+  - question: 我是四年级学生的家长，我女儿有点胆小，第一次参加学校的穿越障碍赛。你作为体育专家，能解释一下我该怎么帮她做好心理准备和安全防护吗？
+  - question: 我是三年级体育老师，班里有几个特别好动的孩子，穿越障碍赛时总是争抢、不太守规则。你作为体育教育专家，能详细讲讲怎么通过活动设计和团队协作，引导他们学会遵守规则、合作共赢，还要兼顾安全措施吗？
+  - question: 我是五年级学生，学校要办穿越障碍赛，我有点不自信，怕自己做不好。你作为体育小助手，能详细说说怎么准备，保证安全又提升自信，还有什么创新方式让活动更好玩？
+  - question: 我是尹根，43岁的室内设计师，平时喜欢家居收纳和艺术展览。这次公司有亲子活动，要带孩子玩穿越障碍赛，我对这种体育活动不太懂。你作为体育专家，能大概讲讲主要安全注意事项和怎么让孩子发挥创造力吗？
+  - question: 我是小学体育教研组组长，准备给全校三到六年级学生设计大型穿越障碍赛。你作为体育专家，能全方位地讲解一下科学活动流程吗？包括安全预案、分层设置、团队协作、创新培养，还有怎么自然融入体育精神和中华美德。
+  - question: 我是六年级学生，老师让我们自己设计障碍赛环节，可我不太会团队协作和创新设计。你作为体育小助手，能简要说明下怎么做吗？
+  - question: 我是新入职的小学体育老师，第一次组织穿越障碍赛。班里既有胆小的孩子，也有特别活跃的。你作为体育专家，能详细讲讲针对不同性格学生怎么制定科学方案，确保安全和心理疏导，还能激发积极参与和团队合作吗？
+  - question: 我是白芝，38岁的女老师，平时喜欢烘焙和健身，教学上喜欢民主管理但有些思维定式。最近组织穿越障碍赛，发现有些学生对创新环节不太感兴趣。你作为体育教育专家，说说你的看法，怎么科学引导，激发学生创新能力和体育精神？
+  - question: 我是二年级班主任，想带班里孩子们玩穿越障碍赛，班里既有体能弱的、胆小的，也有好动的。你作为体育教育专家，能全方位地讲解一下怎么给不同学生制定科学安全的活动方案吗？包括器材、场地、分组、心理疏导和体育精神培养等各方面。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-小学-穿越障碍赛进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个体差异识别与分层响应_理由
+    type: str
+    description: 解释个体差异识别与分层响应评分的详细理由，引用具体例子。
+  - field: 个体差异识别与分层响应
+    type: float
+    description: 系统识别学生的体能、性格、兴趣等多维特征，采用多元工具（如前测、问卷、观察、家校沟通等），并据此设定分层目标、差异化任务与支持措施，确保每一类学生均获得适宜的发展和挑战。
+  - field: 教学设计结构化与专业表达_理由
+    type: str
+    description: 解释教学设计结构化与专业表达评分的详细理由，引用具体例子。
+  - field: 教学设计结构化与专业表达
+    type: float
+    description: 教学方案结构分明，严格按照教学设计流程分板块、分步骤呈现，表达规范、逻辑清晰，涵盖目标、材料、流程、评价、注意事项等，便于教师直接理解和实施，体现体育学科专业术语。
+  - field: 目标明确性与方法科学性_理由
+    type: str
+    description: 解释目标明确性与方法科学性评分的详细理由，引用具体例子。
+  - field: 目标明确性与方法科学性
+    type: float
+    description: 教学目标具体、可量化，涵盖技能、认知、情感等多维发展，方法符合儿童身心发展规律，循序渐进、可调节，活动流程科学，包含安全保障与成效评估环节。
+  - field: 安全保障与可实施性_理由
+    type: str
+    description: 解释安全保障与可实施性评分的详细理由，引用具体例子。
+  - field: 安全保障与可实施性
+    type: float
+    description: 活动全面预判潜在风险，设有详细防控措施，器材与场地安全、适用小学条件，流程便于实施，设有应急预案和责任分工，确保学生安全和活动顺利进行。
+  - field: 创新性与学生自主创造力_理由
+    type: str
+    description: 解释创新性与学生自主创造力评分的详细理由，引用具体例子。
+  - field: 创新性与学生自主创造力
+    type: float
+    description: 设计为学生提供主动探索、自主设计、团队协作创新的空间，鼓励学生提出新想法、尝试多样表达，设有创新任务与评价，创新表现影响最终评价。
+  - field: 针对性应对与持续优化_理由
+    type: str
+    description: 解释针对性应对与持续优化评分的详细理由，引用具体例子。
+  - field: 针对性应对与持续优化
+    type: float
+    description: 针对实际教学情境（如特殊学生、场地受限、突发状况等）提供多层次、具体、可操作的应对措施，活动后收集成效反馈并提出修正建议，形成持续优化机制。
+  - field: 价值观融入的自然性与实效性_理由
+    type: str
+    description: 解释价值观融入的自然性与实效性评分的详细理由，引用具体例子。
+  - field: 价值观融入的自然性与实效性
+    type: float
+    description: 教学环节自然融入社会主义核心价值观和中华优秀传统文化，通过具体活动、讨论、评价等方式引导学生体验、理解并内化价值观，避免形式化堆砌口号。
+  - field: 多元激励与正向反馈机制_理由
+    type: str
+    description: 解释多元激励与正向反馈机制评分的详细理由，引用具体例子。
+  - field: 多元激励与正向反馈机制
+    type: float
+    description: 设置多样化、及时的激励与正向反馈方式，激励内容覆盖创新、协作、努力等多维表现，关注过程性成长，激发学生持续参与和自我提升。
+  format_mode: prompt

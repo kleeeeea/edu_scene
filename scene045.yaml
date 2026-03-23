@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-知识点梳理与总结教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二男生，最近在学一次函数，总觉得公式和图像之间的关系有点混乱，尤其不太明白它到底在表达什么。平时我喜欢打篮球，也想数学能跟运动一样有趣。你能结合我的情况，说说你的看法，把初中函数知识点系统梳理一下吗？
+  - question: 我是初三数学老师，班里学生基础不太均衡，马上就要中考了，大家对几何证明和图形变换的题特别头疼。你作为数学专家，能彻底说清楚初中几何的核心知识点、易错点和提升建议吗？
+  - question: 你作为数学学习助手，我叫黎慧娟，今年12岁，六年级女生，喜欢茶艺、吉他和编程，老师说我专注力很强。平时我学习挺自主，但偶尔也会比较依赖老师指导。帮我理解一下六年级数学里分数运算的知识点，可以系统梳理一下吗？
+  - question: I'm RodriguezSadie, a 6th grade girl who loves Go and table tennis.
+      I plan things well and am good at self-learning, but my logical thinking isn't
+      that strong, so I use self-correction and like to keep clear boundaries. As
+      a mathematics education expert, could you please detailedly explain the key
+      topics and common pitfalls in 6th grade math, and share some strategies that
+      suit someone like me? Please, just detailedly talk about it.
+  - question: 我是初一新生，最近学正负数的时候老是搞不清加减法，遇到括号和绝对值就更容易出错。你能系统梳理一下这部分知识点，并把容易混淆的地方讲清楚点吗？
+  - question: 我是初二学生，期中考试刚结束，二元一次方程组的应用题总是做不好，主要是建模和理解题意方面容易出错。你作为数学学习顾问，能全方位地讲解一下初中方程组知识体系，特别是应用题怎么分析和提升吗？
+  - question: 我刚开始带初中数学，讲函数和图像时发现学生反应一般，很难提起兴趣。你作为有经验的数学老师，能详细展开说说初中函数教学的知识点梳理、课堂互动和创新方法吗？
+  - question: 我是汪慧秀，13岁，初一女生。喜欢美妆和朗诵，理解数学有点慢，老师总说要多点耐心教我。你能结合我的情况，把初一数学里的整数和因数知识点讲清楚点吗？
+  - question: 你作为数学教育专家，能不能说说初中阶段几何学习的主要知识点和容易混淆的地方？说说主要的就行。
+  - question: 我是初一学生，最近学概率和统计，老师让我们总结知识点，可我觉得有些地方很容易混淆。你能简单说说这块主要知识点吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-知识点梳理与总结进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估内容是否充分结合学生的具体画像（如学习基础、兴趣、目标、性格等），并据此调整讲解方式、难度、举例和练习，体现针对性和差异化支持。高分需体现对个体需求的深度响应和动态调整。
+  - field: 指令遵循与结构规范性_理由
+    type: str
+    description: 解释指令遵循与结构规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范性
+    type: float
+    description: 评估内容是否严格、完整地按照任务或提问指令的结构、格式、层次和内容要求，包含必要的标题、分层、要点、例题，逻辑清晰，条理分明。高分需无结构疏漏、无随意增减，且呈现方式规范。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评估内容是否采用科学、合理且多样的教学方法，符合教育学原理，如启发式、图示、类比、分层、探究等，能促进理解和应用。高分需体现方法融合、递进设计和针对性。
+  - field: 知识点梳理系统性与深度_理由
+    type: str
+    description: 解释知识点梳理系统性与深度评分的详细理由，引用具体例子。
+  - field: 知识点梳理系统性与深度
+    type: float
+    description: 评估知识点梳理是否结构清晰、内容全面、逻辑递进，涵盖核心内容、常见应用、易错点、拓展延伸等，帮助学生建立整体认知与深入理解。高分需体现板块完整、内容详实、深入浅出。
+  - field: 创新思维激发与探究引导度_理由
+    type: str
+    description: 解释创新思维激发与探究引导度评分的详细理由，引用具体例子。
+  - field: 创新思维激发与探究引导度
+    type: float
+    description: 评估内容是否主动通过开放性问题、探究活动、跨学科联系等方式激发创新思考和主动学习。高分需有多层次探究引导、创新任务设计、鼓励自主表达与发现。
+  - field: 真实学习困惑与提问贴近度_理由
+    type: str
+    description: 解释真实学习困惑与提问贴近度评分的详细理由，引用具体例子。
+  - field: 真实学习困惑与提问贴近度
+    type: float
+    description: 评估内容是否贴合真实初中学生的提问习惯和实际学习困惑，体现常见疑问、表达风格和思考痕迹。高分需主动回应学生视角、常见误区和思维难点，并引导深入思考。
+  - field: 价值观与文化元素自然融入度_理由
+    type: str
+    description: 解释价值观与文化元素自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观与文化元素自然融入度
+    type: float
+    description: 评估内容是否在讲解过程中自然融入社会主义核心价值观和中华优秀传统文化，通过恰当方式引导学生，促进品格养成和文化认同。高分需融合自然、贴合情境、润物无声。
+  - field: 个性化回应深度与关怀性_理由
+    type: str
+    description: 解释个性化回应深度与关怀性评分的详细理由，引用具体例子。
+  - field: 个性化回应深度与关怀性
+    type: float
+    description: 评估内容是否能深刻回应学生的内在需求，包括学习动力、心理状态、兴趣、困惑等，给予针对性鼓励、建议和方法，体现持续关怀和支持。高分需有具体建议、情感支持和成长引导。
+  format_mode: prompt

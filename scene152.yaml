@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene152/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 英语-小学-看图讲故事与口头表达教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是WilsonHenry，一名喜欢摄影、视频编辑、围棋和AI研究的老师，平时很注重生活仪式感和周期性动力。针对小学英语的看图讲故事与口头表达活动，你有什么建议能帮助学生既锻炼英语表达，又激发创造力？简短回答下，最好结合我的兴趣和教学风格。
+    - question: 你作为小学英语教育专家，能彻底说清楚看图讲故事和口头表达活动的教学设计吗？包括目标、流程、图片和故事内容、能力培养、创造力激发、评价方式、案例和教师成长建议等，系统梳理一下，务必全面深入。
+    - question: 我是金慧妍，55岁女老师，在学校有威望但也依赖上级指导，经常参加社区活动。小学英语看图讲故事与口头表达活动中，怎样根据学生表现灵活调整流程？详细说说，结合我的经验和性格特点举例说明。
+    - question: 我是洪洲彪，一名传统价值观浓厚、跨学科教学能力强的老师，对木工和路由器配置很感兴趣，管理风格宽松但很重仪式感。你能讲讲看在小学英语看图讲故事与口头表达活动中，怎么把科学、艺术或技术这些跨学科元素自然融进去吗？最好结合我的兴趣和风格举例说明。
+    - question: 我是14岁的轩辕颖，初二学生，喜欢街舞和电子竞技，学习有时靠情绪和功利目标驱动，课余时间主要和社团、战队朋友一起。小学英语看图讲故事和口头表达活动，怎么才能让我既有成就感又提升英语能力？请深入说说看，结合我的兴趣和学习特点分析具体策略。
+    - question: 作为小学英语教学顾问，你怎么看待看图讲故事和口头表达在英语学习中的重要性？说说你的看法，最好结合理论和实际例子。
+    - question: 我是14岁的姜婉清，喜欢线描水彩、美妆和朗诵，逻辑思维有点跳跃，自信有波动也容易焦虑，和同学关系也有点复杂。你能详细分析下各个方面，怎么结合我的兴趣和性格设计小学英语看图讲故事与口头表达活动的提升方案？请系统梳理一下，适合我和同龄人参考。
+    - question: 你能大概讲讲在小学英语看图讲故事和口头表达活动中，老师怎么帮助那些胆小或表达能力弱的学生积极参与吗？给点实用建议和例子。
+    - question: 看图讲故事和口头表达活动中，老师怎么用信息技术（录音、视频、互动平台等）来提升学生的表达能力和兴趣？讲讲看，最好举例说明。
+    - question: 我想深入了解小学英语看图讲故事与口头表达活动的评价体系，怎么设计才能既关注表达能力又激发创造力和合作意识？请详细讲讲评价标准、方法、过程改进和激励机制，最好结合案例分析一下。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 英语-小学-看图讲故事与口头表达进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与响应
+      type: float
+      description: 评估教学设计和表达是否充分考虑学生的年龄、英语水平、兴趣爱好等个性化特点，并针对不同学生进行差异化指导，而非一刀切。
+    - field: 格式指令遵循度
+      type: float
+      description: 评估回答是否严格按照教师或任务给出的分步骤、分角色、口语表达等格式要求，确保流程清晰，环节完整。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评估回答是否采用多样化、分层次、科学的教学方法，如启发式提问、情境创设、分层指导等，并能针对不同学生需求调整策略，而非单一灌输。
+    - field: 语言表达适宜性
+      type: float
+      description: 评估所用英语语句是否贴合小学阶段学生的认知和表达能力，语言简明易懂，句型适中，避免复杂、抽象或生硬表达。
+    - field: 创造力激发引导
+      type: float
+      description: 评估是否通过开放性提问、鼓励想象、引导创新表达等方式有效激发学生的创造性思维和表达能力，鼓励学生独立续写、拓展故事。
+    - field: 真实场景模拟度
+      type: float
+      description: 评估问题和回答是否贴近实际小学英语课堂场景，能反映学生常见困惑、互动方式及教师常用引导，避免脱离实际教学环境。
+    - field: 价值观润物细无声融入度
+      type: float
+      description: 评估回答是否自然、适龄地融入社会主义核心价值观或中华优秀传统文化（如团结、友爱、诚信等），以故事或互动方式潜移默化传递价值观，而非生硬灌输。
+    - field: 个性化回应深度
+      type: float
+      description: 评估回答是否深刻回应学生的具体需求和情感状态，如针对胆怯学生给予更多鼓励，针对活跃学生提出更高挑战，体现对学生心理和能力的关注。
+format_mode: prompt

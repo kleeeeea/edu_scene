@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-平等对待每一个人教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是濮凤，高三男生，在动漫社很活跃但社交圈比较固定，也喜欢吉他和攀岩。平时在群体活动中容易缺乏自信，还爱模仿别人。我特别想系统地理解小学政治课里‘平等对待每一个人’这个主题，尤其是怎么在班级、社团、家庭和日常生活里真正做到平等，不同兴趣、性格、能力的人要怎么相处？能帮我全面分析一下各个角度吗？
+  - question: 我们班老师总说要平等对待每一个人，可是同学们性格、兴趣、成绩都不一样，到底怎么才能真的做到平等？你能大概讲讲吗？
+  - question: I'm a teacher who likes basketball and power adapter research, and I
+      try to balance teaching with my hobbies in a structured way. How can I promote
+      'treating everyone equally' in my primary school classroom? Could you sum it
+      up in a few sentences with some practical strategies?
+  - question: 最近我注意到班里有些同学因为外貌或成绩不同被冷落了。你作为小学老师，能帮我理解一下‘平等对待每一个人’到底是什么意思，实际生活中要怎么做才能让每个人都被尊重和接纳？帮我理解一下吧。
+  - question: 我是程夏，茶艺师，喜欢古琴、插花和书法，平时工作喜欢独立，朋友圈也多是传统文化爱好者。我想明白小学政治课里‘平等对待每一个人’到底怎么理解，班级、家庭、朋友圈该怎么做，能结合传统文化和我的性格讲清楚点吗？
+  - question: I'm a primary school teacher who enjoys cycling and nature observation,
+      and I'm very meticulous and follow routines. How can I teach and practice 'treating
+      everyone equally' in my classroom? Could you explain in detail with examples
+      and practical ideas that fit my style?
+  - question: 我在三年级，我们班有同学觉得自己没被公平对待，很难过。‘平等对待每一个人’到底是什么意思？我们平时要怎么做才算真的平等？能解释一下吗？
+  - question: 我是贺生，老师，喜欢采集植物标本和瑜伽冥想，教学方式很灵活，也有跨学科的社交圈。你能结合我的兴趣和教学方法讲清楚小学政治课里怎么教孩子理解和做到‘平等对待每一个人’吗？最好有具体活动建议和案例，讲清楚点。
+  - question: 我们班同学家庭背景、成绩、兴趣都不一样，老师总说要平等对待每一个人。到底该怎么在这种多元的班级里实现真正的平等？会遇到什么难题？心理和价值观方面要注意什么？能给我一份完整的分析吗？
+  - question: 我们政治课正在讨论‘平等对待每一个人’，老师让我们思考在班级、家庭、社会里怎么做才能真正做到。你能全面分析一下具体做法、心理需求、常见误区和创新活动建议吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-平等对待每一个人进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否深度结合小学生的年龄、认知水平、兴趣和生活经验，并针对不同学生类型（性格、爱好、学习方式等）提供切实可行的差异化表达与引导。高分需体现具体差异化策略和实际应用，低分为内容一刀切或仅泛泛提及个性化。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估是否完整、细致地执行所有输入指令，包括表达形式、内容重点、场景设定等，无遗漏或偏离。高分需逐项落实且内容严密，低分为部分遗漏、主题偏离或仅表面符合。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否采用符合小学生认知和心理发展的多样化教学方法（如启发式、合作学习、情境体验、游戏化），并确保学生真实参与和情感体验。高分为方法创新且高度贴合年龄，低分为机械灌输或缺乏互动体验。
+  - field: 知识传递专业度_理由
+    type: str
+    description: 解释知识传递专业度评分的详细理由，引用具体例子。
+  - field: 知识传递专业度
+    type: float
+    description: 评估内容是否准确、系统、层次分明地传递‘平等对待每一个人’的核心知识，包括基础概念、实际案例、误区澄清、批判性思考等。高分需有递进结构、针对性举例、有效澄清误区并引导学生思考，低分为解释模糊、过度简化或有事实性错误。
+  - field: 创造力激发潜力_理由
+    type: str
+    description: 解释创造力激发潜力评分的详细理由，引用具体例子。
+  - field: 创造力激发潜力
+    type: float
+    description: 评估是否有效激发学生主动思考与创新表达‘平等’的理解，鼓励学生多样化、个性化表达，并支持学生参与内容设计与创作。高分为学生能提出新观点或创作作品并有展示机会，低分为仅被动接受、无自主表达或创新。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估内容是否贴近真实小学课堂，能预测并回应小学生可能提出的疑问，用亲切、易懂语言结合生活实际耐心解答。高分为模拟真实交流、用生活化语言回应，低分为答复生硬、理论化或脱离学生实际。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估内容是否将社会主义核心价值观及中华优秀传统文化自然融入教学，结合学生生活实际，语言亲和、表达润物细无声。高分为价值观深度融合具体活动或故事，并引发学生共鸣与行动，低分为机械灌输、无实际联系或仅口号化表达。
+  - field: 多样化表达能力_理由
+    type: str
+    description: 解释多样化表达能力评分的详细理由，引用具体例子。
+  - field: 多样化表达能力
+    type: float
+    description: 评估内容是否采用故事、活动、游戏、图片、视频等多种表达方式帮助学生理解‘平等对待每一个人’，并鼓励学生从多个角度思考和表达。高分为多维度、创新性呈现，低分为单一说教或仅书面定义，学生无法参与多样体验。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-小学-遗传与变异现象启蒙教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名三年级小学生，老师让我们了解遗传和变异的现象，你能结合生活中的例子，简单说说主要的内容吗？
+  - question: 我是姜劲松，60岁退休老师，现在在太极拳协会担任指导老师，平时喜欢中医养生。你作为生物教育专家，能结合养生和运动方面的实际例子，讲讲看遗传和变异现象的本质和意义吗？
+  - question: 我是小学生家长，最近孩子学遗传和变异现象，老师让我们帮孩子查找生活中的相关例子。你能详细说说遗传和变异现象在生活中的表现，还有它们对我们的成长有什么影响吗？
+  - question: 我是小学老师，想给学生归纳遗传和变异现象的重点，你能用几句话说说它们的核心内容吗？
+  - question: 我是小学科学老师，你作为生物教育专家，能不能从各个角度全面深入地讲讲遗传与变异现象？比如包括它的定义、原理、例子、社会意义、教学方法、家校合作、探究活动等。
+  - question: 我是一名小学班主任，最近教学遗传与变异现象时发现学生既好奇又有点困惑，你能讲得详细点吗？
+  - question: 我是小学科学兴趣小组的辅导老师，最近准备开展遗传与变异现象的主题活动。你作为生物教育专家，能全面深入地讲讲相关内容吗？
+  - question: 我是钟依依，退休老师，喜欢视频剪辑、健康饮食和书法，经常带学生做课外活动。最近学生讨论遗传和变异现象，我想结合生活例子帮他们理解。你能详细说说吗？
+  - question: 我是小学生，对遗传和变异现象很感兴趣，但还不太明白它们的区别和联系，你能说说你的看法吗？
+  - question: 我是小学生的家长，最近和孩子一起学遗传和变异现象，他问了很多问题，比如为什么有的人像爸爸，有的人和妈妈不像。你能深入讲解一下吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-小学-遗传与变异现象启蒙进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学内容能主动识别并回应学生的年龄、兴趣、知识基础等个性特征，针对不同学生定制举例、提问或活动。高分要求能体现学生画像的动态调整与持续关注，而非一次性泛泛识别。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 教学内容严格按任务/场景要求组织结构（如分点、举例、互动、总结等），内容完整、条理清晰，所有环节均有明确呈现。高分要求结构严谨且各环节有机衔接，低分为缺环节或结构混乱。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学方法符合小学认知特点，采用启发式、情境创设、递进式引导等科学策略，能促进学生思考与探索。高分要求方法创新、活动丰富且与主题深度融合，低分为机械灌输、死记硬背。
+  - field: 知识表达准确性与适龄性_理由
+    type: str
+    description: 解释知识表达准确性与适龄性评分的详细理由，引用具体例子。
+  - field: 知识表达准确性与适龄性
+    type: float
+    description: 生物学知识表达科学准确，语言简明、生动，结合生活实际，避免复杂术语。高分能将复杂原理转化为贴近小学生的易懂表述，低分为知识性错误或术语堆砌。
+  - field: 创造力激发环节设计_理由
+    type: str
+    description: 解释创造力激发环节设计评分的详细理由，引用具体例子。
+  - field: 创造力激发环节设计
+    type: float
+    description: 教学设计包含鼓励学生创新表达、探索实践的开放性活动，能激发学生主动思考与创造。高分要求活动新颖、开放，能引导学生表达独特见解、开展探索。低分为仅要求复述或做选择题，缺乏创意空间。
+  - field: 模拟真实提问互动性_理由
+    type: str
+    description: 解释模拟真实提问互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问互动性
+    type: float
+    description: 教学过程能够真实模拟小学课堂互动，包含多样化提问、鼓励学生表达观点、参与讨论等。高分要求师生、生生互动充分，能调动多数学生积极参与。低分为单向讲述，无任何互动。
+  - field: 社会主义核心价值观自然融合_理由
+    type: str
+    description: 解释社会主义核心价值观自然融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融合
+    type: float
+    description: 教学内容能在具体情境中自然融入社会主义核心价值观，如尊重多样性、团结互助、勤于探索等。高分要求价值观与课程内容深度结合，体现为具体行为或讨论，非机械添加。
+  - field: 分层讲解与差异化支持_理由
+    type: str
+    description: 解释分层讲解与差异化支持评分的详细理由，引用具体例子。
+  - field: 分层讲解与差异化支持
+    type: float
+    description: 教学内容根据学生能力和兴趣差异，提供分层讲解和支持措施。高分要求为不同层次学生设计具体支持方案（如简化内容、形象比喻、拓展任务），并有实际落实与反馈。低分为全班统一讲解，无任何差异化措施。
+  format_mode: prompt

@@ -1,0 +1,117 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-小学-古今对比大发现教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是邓萍，今年31岁，是一名电竞选手，平时喜欢听音乐、看其他电竞比赛和健身锻炼。我和团队成员配合很紧密但也保持一定距离，社交主要靠健身和看比赛。你能结合我的这些情况，深入说说古代和现代在团队合作、娱乐方式和职业规划上的差别吗？还有这些历史变化怎么和我的日常及职业发展联系起来，多举些例子讲讲吧。
+  - question: 我最近在学习历史，老师让我们全面分析古代和现代在经济、科技、家庭结构、社会分工、文化娱乐、教育方式这些方面的不同。你能全面分析一下吗？最好能结合真实的生活和故事举些例子。
+  - question: I'm MartinNora, a teacher who likes dance and opera, and I usually keep
+      things professional at work but enjoy artistic activities in my free time. Can
+      you briefly explain how cultural entertainment—like dance and opera—has changed
+      from ancient times to now? Just give the main points.
+  - question: 我是韩钰，13岁，初一学生，喜欢足球、摄影剪辑和跆拳道，平时会和爸妈住、每周参加三次足球和跆拳道训练，还常和同学拍短视频。你能彻底说清楚古代和现代在体育活动、家庭生活、同学互动和技术娱乐方面的变化吗？最好结合我喜欢的这些项目，举些身边的例子和活动建议，把各方面都讲明白。
+  - question: 我最近在学历史，总是分不清古代和现代的教育方式有啥区别。你能帮我理解一下吗？举些真实生活里的例子说明这些变化带来的影响就更好了。
+  - question: 我们班同学最近在讨论古代和现代的家庭结构，老师也提到这些不同会影响孩子成长。你能简要说明下吗？说说主要的区别和影响就行。
+  - question: 我是三年级学生，很喜欢画画。你能具体说说古代和现代人们在娱乐方式上有什么变化吗？能给我举几个能用画画表现出来的例子，让我也能画出来试试？
+  - question: 你作为历史学习助手，我们班很多同学都爱科技，最近大家一起研究古代和现代科技发展的不同。能具体说说主要的变化是什么吗？还可以推荐几个适合我们做的小调查或者实验活动，帮我们理解得更透彻吗？
+  - question: 我是小学老师，班里有很多喜欢运动的小朋友。你能讲讲古代和现代在体育活动和社会分工上有哪些变化吗？最好能结合一些体育小游戏或者班级互动活动的建议，让孩子们能亲身体验这些历史变化。
+  - question: 我是马卫，42岁老师，喜欢Python编程、自驾游和游泳，平时喜欢和同事搞编程小组，假期自驾探险拍视频发社交平台。你能详细分析下古代和现代在经济、科技、家庭结构、社会分工、文化娱乐、教育方式这些方面的变化吗？最好结合我的兴趣和日常活动，推荐一些适合的教学方法或课外活动，让学生能主动发现并珍惜这些历史变迁，从各个角度详细说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-小学-古今对比大发现进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学设计是否充分考虑学生的兴趣、基础、性格等个体差异，提供多样化的学习路径和活动选择，支持不同学生获得最佳学习体验。高分要求针对学生差异有具体调整和分层支持，低分为完全无差异化。
+  - field: 教学流程与格式规范性_理由
+    type: str
+    description: 解释教学流程与格式规范性评分的详细理由，引用具体例子。
+  - field: 教学流程与格式规范性
+    type: float
+    description: 评估教学方案是否结构清晰、环节完整，严格按照教学任务要求分步组织，便于教师操作与学生理解。高分为分点明确、结构合理，低分为流程混乱、环节遗漏或格式不规范。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估教学活动与‘古今对比大发现’主题及小学历史课程目标的贴合度。高分要求活动紧扣主题，能引导学生理解古今社会发展与变化，思考原因和意义，并激发探究兴趣。仅停留在表面列举或简单比较、未引导深入思考为低分。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评估教学方法是否多元、科学，兼顾小学生认知发展特点及兴趣，包括启发式、探究式、合作、体验等方式。高分为方法多样且适龄，低分为单一、被动或超出学生能力。
+  - field: 知识点准确性与适宜性_理由
+    type: str
+    description: 解释知识点准确性与适宜性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与适宜性
+    type: float
+    description: 评估历史知识内容是否准确、无误，并以适合小学生认知水平的语言、图文或故事表达。高分为内容正确、表达生动易懂，低分为知识错误、用词晦涩或超出学生理解能力。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放性任务、创意表达等方式激发学生主动思考和创新。高分为学生能提出独特见解、以多样方式表达，活动有创新空间。低分为仅限标准答案或机械模仿，无创新要求。
+  - field: 真实提问与情境模拟度_理由
+    type: str
+    description: 解释真实提问与情境模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问与情境模拟度
+    type: float
+    description: 评估问题和活动设置是否贴近学生的实际生活和课堂情境，符合小学生认知特点，能激发真实兴趣和参与。高分为问题具体、生活化、有讨论空间，低分为问题抽象或脱离实际。
+  - field: 价值观与传统文化自然融入度_理由
+    type: str
+    description: 解释价值观与传统文化自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观与传统文化自然融入度
+    type: float
+    description: 评估在古今对比过程中，是否自然融合社会主义核心价值观和中华优秀传统文化。高分为价值观和传统美德融入活动内容、与实际体验结合，低分为生硬灌输或与活动无关。
+  format_mode: prompt

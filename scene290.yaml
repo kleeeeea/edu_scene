@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-初中-“生活中的仪式感”主题创作（美育+德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中生，家里每到节日妈妈都会布置餐桌和房间，有点小仪式感，但我还不太明白仪式感在生活中的意义，尤其是和美育和德育有什么关系，你能详细说说吗？
+  - question: 你作为美育与德育融合课程专家，我是初一男生陈宏，今年13岁，喜欢3D建模与打印、观星活动和动漫绘画，但逻辑性和自主学习能力偏弱，理想与现实常有冲突，容错率高，社交圈子主要是技术爱好者和动漫、天文社团的同龄人。详细展开说说，如何结合我的兴趣和性格，通过生活中的仪式感主题创作，提升我的美育和德育素养？
+  - question: 我是初中老师，班里不少学生对仪式感活动提不起兴趣，尤其是那些不太擅长艺术的孩子，你能具体说说吗：在班级里如何开展既有仪式感又能让不同特长的学生都参与其中的美育+德育融合活动？
+  - question: 我是一名初二学生，平时喜欢写日记，家里气氛比较随意，大家不太注重仪式感。我想知道，生活中的仪式感有什么简单的培养方法？简单说说就行。
+  - question: 我是初中美育与德育融合校本课程负责人，学校学生家庭背景差异很大，部分学生缺乏家庭仪式感，部分家长工作繁忙难以陪伴。你作为美育和德育融合课程专家，能全面深入地讲讲：如何设计‘生活中的仪式感’主题的课程，让每个学生都能感受到仪式感的意义和美育、德育的融合？
+  - question: 我是家长，孩子最近参加学校的‘生活中的仪式感’主题创作活动，回家后问我仪式感到底有什么用，你能说说你的看法吗？
+  - question: 我是一名初中美育教师，班级学生性格和兴趣差异很大，有的喜欢艺术表达，有的更倾向理科探究，还有的对仪式感活动不太感兴趣。你作为德育美育融合课程专家，能详细分析下各个方面，如何在‘生活中的仪式感’主题创作中实现多元融合和全员参与？
+  - question: 我是初二女生段萍萍，喜欢古筝和书法，理解东西比较慢，最近老师让我们用自己的才艺去表现生活中的仪式感。我想不太明白仪式感和美育、德育有什么关系，你能帮我理解一下吗？
+  - question: 我是班级里性格比较内向的学生，家里平时不太重视仪式感。我想知道，有哪些简单又实用的方式可以在日常生活中自己创造一些仪式感？简单说说就行。
+  - question: 你作为我的学习助手，我最近对摄影很感兴趣，想在家里用拍照记录一些有仪式感的瞬间，但不知道怎么提升照片的美感和意义。你能深入说说看有哪些具体方法和创意吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-初中-“生活中的仪式感”主题创作（美育+德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学设计是否针对初中生的性格、兴趣、能力等多元差异，提供个性化分组、任务调整和表达方式选择。高分要求能主动识别并回应学生特质，支持差异化参与和发展。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估教学内容是否严格按照题目和流程要求，结构完整、环节清晰，每一步有明确目标、操作指引和产出要求，流程衔接顺畅，无遗漏或重复。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否科学融合美育与德育，强调体验、反思、创作、交流等多环节，促进学生情感、认知、行为多维发展。高分要求方法创新、环节丰富、学生主动参与，教师引导有针对性。
+  - field: 活动设计多样性与适切性_理由
+    type: str
+    description: 解释活动设计多样性与适切性评分的详细理由，引用具体例子。
+  - field: 活动设计多样性与适切性
+    type: float
+    description: 评估活动类型是否丰富（至少三种表达方式），内容贴合初中生兴趣和能力差异，鼓励自主选择和深度参与。高分要求活动既多样、可选，又有层次性和适应性。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评估教学设计是否鼓励学生创新表达，支持个性化创作和新颖展示。高分要求活动能激发学生主动探索、独立思考，创作具有原创性和独特视角。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估教学问题或情境是否贴近初中生真实生活，能够反映学生实际困惑、兴趣或需求。高分要求提问具有生活化背景、情境多样性、深度和学生自主性，能引发学生共鸣和讨论。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估活动或内容是否在真实生活情境中自然融入社会主义核心价值观和中华优秀传统美德，通过体验、故事或活动潜移默化引导学生理解并践行。高分要求内容贴近生活、体验深刻，学生有情感共鸣和行为转化。
+  - field: 语言表达适龄性_理由
+    type: str
+    description: 解释语言表达适龄性评分的详细理由，引用具体例子。
+  - field: 语言表达适龄性
+    type: float
+    description: 评估教学用语是否贴合初中生认知和表达水平，语言亲切、易懂，支持学生理解和参与，鼓励学生用自己的话表达。高分要求语言既有亲和力又能启发思考，避免过度学术化或幼稚化。
+  format_mode: prompt

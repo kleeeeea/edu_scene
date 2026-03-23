@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-小学-教学资源生成教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是许慧莹，19岁采购专员，平常喜欢戏曲表演、数字绘画和参观红色景点，性格上有点依赖他人、竞争意识强但行动上容易拖延。最近朋友让我帮她三年级的孩子讲《草船借箭》，我担心自己讲得不够生动，怕孩子听不懂诸葛亮的智慧和团队合作精神。你作为小学语文教育专家，能解释一下该怎么讲才好吗？
+  - question: 我是小学语文教研员，学校要组织关于‘如何培养学生自主阅读能力’的培训，你能彻底说清楚吗？希望内容涵盖理论、策略、活动设计、家校协同、评价和具体案例，越详细越好。
+  - question: 我是四年级语文老师，班里有学生表达能力弱，写作文没思路，内容单调。你作为语文教学顾问，能详细展开说说原因和改进办法吗？希望有具体的活动和案例。
+  - question: 我是新手小学语文老师，马上要给孩子们讲《悯农》。你作为教育专家，大概讲讲怎么让学生既懂诗意又能体会劳动的辛苦和珍惜粮食的美德？
+  - question: 我是曹雪芬，高二学生，喜欢钢琴、跆拳道和茶艺，但做语文阅读理解分析总是很浅。你作为小学语文老师，说说主要的小学语文阅读理解有哪些核心方法，能帮我打好基础吗？
+  - question: 我是一名三年级学生家长，孩子最近背古诗觉得枯燥还问‘这些诗有什么用’。你作为小学语文老师，说说你的看法，怎么让孩子喜欢学古诗，还能体会到传统文化的美好？
+  - question: 我是五年级学生，你是我的语文助手。写作文总用重复的词，老师让我多积累好词好句和成语。你能解释一下怎么积累和用好这些，让作文更有亮点吗？
+  - question: 我是小学语文骨干教师，最近在研究‘语文主题学习单元设计’。你作为教育专家，能从各个角度详细说说单元设计的思路和注意事项吗？希望内容系统全面，还有结合传统文化的案例。
+  - question: 我是三年级语文老师，班里有几个性格内向的孩子不太发言。你作为教学顾问，说说你的看法，怎么引导他们敢于表达、增强自信？想听听你的具体建议。
+  - question: 我是六年级学生，你是语文老师。写读后感总觉得难，不知道怎么具体表达自己的想法，总是写得很空。你能详细展开说说，有哪些办法可以让我写得既有感情又有条理吗？想听听你的详细建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-小学-教学资源生成进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 考察资源对学生多维画像（年级、兴趣、能力、学习风格等）的精准、深度适配。高分需体现对不同学生特征的差异化设计，能结合细致画像动态调整内容和难度，低分为仅泛泛适配或完全忽略个体差异。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估输出内容是否严格按照指令要求的类型、结构、数量和格式呈现，细节规范（如编号、分区、答案标注等）无误。高分为完全准确、结构清晰，低分为类型、数量、结构或答案标注等出现任何疏漏或混乱。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 考察内容是否系统、深入地契合小学语文阶段知识与能力目标，兼顾阅读、表达、语言积累与思维发展，任务具备递进性、层级性和素养融合。高分为任务设计有逻辑递进、素养全面融合，低分为仅表面覆盖知识点、无层次推进或素养缺失。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估资源设计是否融合多样、科学且富有创新的教学方法（如分层引导、任务驱动、合作探究、启发式提问等），能因材施教、促进高阶思维。高分为方法多样、创新、针对性强，低分为单一讲授、伪分层、缺乏互动或创新。
+  - field: 学生主动参与度_理由
+    type: str
+    description: 解释学生主动参与度评分的详细理由，引用具体例子。
+  - field: 学生主动参与度
+    type: float
+    description: 评估任务能否有效激发学生主动思考、表达与多样参与，包含自主探究、观点表达、实践体验等。高分为任务能让大部分学生表达个性、参与互动，低分为只需机械完成，无需个人思考或表达。
+  - field: 创造力激发性_理由
+    type: str
+    description: 解释创造力激发性评分的详细理由，引用具体例子。
+  - field: 创造力激发性
+    type: float
+    description: 考察内容是否为学生提供创新思维和创造性表达空间（如想象作文、情境创编、跨学科任务等），引导学生突破常规、形成独特表达。高分为任务具备开放性、创新空间大，低分为答案唯一、无创新机会。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 考察内容是否将社会主义核心价值观和中华优秀传统文化以真实、自然的方式融入，情境贴近生活、引导润物细无声。高分为价值观与任务深度融合，学生能在体验中体会，低分为未涉及或生硬灌输。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估内容是否贴近真实小学语文课堂与学生生活经验，提问自然、情境真实、难度适宜，具备实际应用价值。高分为问题贴近生活、易于学生理解和表达，低分为内容脱离实际或超出学生能力水平。
+  format_mode: prompt

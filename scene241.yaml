@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-我是社区小主人教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是社区的小学生，老师让我们学习“我是社区小主人”，你能讲清楚点，具体说说我们有哪些责任和可以做的事情吗？最好结合实际例子帮我理解。
+  - question: 我是一名小学政治老师，班里要搞“我是社区小主人”活动，能不能帮我概括一下，社区小主人主要要有些什么素质和做法？说说主要的就行。
+  - question: 你是社区活动指导老师，我是六年级的汪可馨，田径和羽毛球社团里很活跃，性格比较自信、总喜欢批判性思考，和同学既竞争也合作，小组讨论经常有观点碰撞。在“我是社区小主人”活动里，我该怎么发挥自己的优势、改进不足、和同学更好合作呢？能详细展开说说吗？最好有些案例和具体建议。
+  - question: 我是社区的家长，最近学校有“我是社区小主人”活动，家长能做些什么具体事情去支持孩子参加社区活动？详细说说，能举点实际例子吗？
+  - question: 你作为小学政治教研员，能不能从各个角度详细说说“我是社区小主人”这个主题活动在小学阶段怎么设计、实施、评价和改进？希望能结合核心价值观和传统文化，全面讲讲看。
+  - question: 我是房地产经纪人竺镇，喜欢品茶、室内设计和健身运动，性格比较喜欢理论、也不太喜欢权力，平时社交喜欢安静方式。作为社区居民，“我是社区小主人”这个活动对我有什么启发？简单说说就行，最好结合我的兴趣和性格讲讲。
+  - question: 你是社区政治课专家，能不能彻底说清楚“我是社区小主人”主题教育的整体目标、内容、活动怎么开展、学生成长路径，还有和社会发展的关系？希望能系统讲讲，越详细越好。
+  - question: 我是小学班主任，现在带着学生参与“我是社区小主人”活动，怎么引导他们发现社区问题、提出改进建议，还能主动参与实践？详细说说，最好有具体步骤和例子。
+  - question: 你是资深社区教育专家，“我是社区小主人”主题活动怎么帮助小学生培养社会责任感？能详细展开说说吗？最好举一些活动方案和家校社协同的例子。
+  - question: 你是社区教育指导老师，有个像TaylorNora这样的学生：10岁，5年级女生，喜欢瑜伽、手机摄影和芭蕾，注意力不太稳定，时而孤独时而融入，既喜欢独自创作又参加团队活动。“我是社区小主人”这个主题在小学阶段怎么帮助她实现自我成长和社区归属感提升？讲讲看，最好结合她的兴趣和性格举例说明。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-我是社区小主人进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评价答案是否充分结合小学生的年龄、兴趣、知识基础和情感特点，主动关注学生个体差异，提出针对性建议或活动设计。高分要求能识别并回应学生的具体兴趣、困惑或成长需求。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评价答案是否严格按照任务要求回应，对复杂指令能准确拆解、逐条完整作答，结构清晰、要素齐全。高分需展现细致的指令理解和规范表达，避免遗漏或混淆。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价是否采用符合小学生认知特点的科学教学方法，如体验式、合作探究、情境模拟等，并结合内容创新设计具体活动。高分需有详细的实施步骤和互动环节。
+  - field: 教学目标明确性_理由
+    type: str
+    description: 解释教学目标明确性评分的详细理由，引用具体例子。
+  - field: 教学目标明确性
+    type: float
+    description: 评价是否设定具体、可衡量、符合小学生发展阶段的教学目标，并确保活动与目标紧密对应。高分要求目标分解明确，评价标准清晰，内容服务于目标实现。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价是否通过开放性问题、创新任务等方式，主动引导学生提出新想法、尝试新方法，培养创造力和问题解决能力。高分需有具体创新活动和评价机制。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价问题是否贴近小学生在‘我是社区小主人’场景下的真实疑问，语言生活化、具体，能引发学生共鸣。高分要求问题具有实际意义、可操作性，可包括引导学生思考生活实际的开放性问题。
+  - field: 中国价值观自然融入度_理由
+    type: str
+    description: 解释中国价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入度
+    type: float
+    description: 评价答案是否将社会主义核心价值观和中华优秀传统文化自然、具体地融合进活动设计和案例讲解，避免口号化、灌输化。高分需结合实际情境或故事，激发学生共鸣和行动力。
+  - field: 表达方式适宜性_理由
+    type: str
+    description: 解释表达方式适宜性评分的详细理由，引用具体例子。
+  - field: 表达方式适宜性
+    type: float
+    description: 评价答案语言是否简明、亲切、易懂，词句难度适合小学生，语气积极正向。高分需语言生动、贴近儿童心理，避免生僻词、长句或晦涩表达。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评价答案是否根据学生兴趣、困惑、动机等给予有针对性和深度的回应，体现对学生成长的关注。高分需主动挖掘潜在需求，提出具体成长建议和激励措施。
+  format_mode: prompt

@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene171/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 英语-高中-议论文的论点构建与论证教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为高中英语老师，能详细说说在写英语议论文时，学生怎么才能有效构建论点并进行有说服力的论证吗？比如遇到社会话题的时候，有哪些关键环节和实用技巧需要注意？详细说说
+    - question: 我是高中英语教研员，你作为教育专家，能全方位地讲解一下高中英语议论文的论点构建与论证吗？希望你能从理论、常见误区、教学策略到案例分析和批判性思维培养等各方面系统地说明一下
+    - question: 我是高一学生，英语议论文写作时，论点该怎么选？论据要怎么用才能让文章更有说服力？讲讲看
+    - question: 我叫张昌铭，今年9岁，四年级，喜欢虚拟现实游戏、编程和围棋，学习比较理性但动力不太强，平时喜欢独自钻研这些爱好，父母都在科技行业。我想深入了解针对我这种情况，怎么才能学好英语议论文的论点构建和论证？有没有什么适合我的方法或者建议？我想深入了解
+    - question: 你作为高中英语老师，能全面分析一下议论文常见的论证方式吗？比如举例、对比、引用权威之类，每种方式有哪些优缺点，适合在哪些场景用？希望你能详细说说
+    - question: 你能用几句话说说，英语议论文写作时为什么要提前规划好论点和论据？这样做对文章结构有什么好处？
+    - question: 我是高二学生，英语议论文论证的时候总是容易出现逻辑问题，你能讲讲看怎么避免这些漏洞，以及怎么自查和完善自己的论证结构吗？
+    - question: 我是韩晶，今年55岁，是一名老师，最近一直觉得教学压力很大，有点身心疲惫。我逻辑性一般，但表达还算精准。你能简要说明下议论文论点构建时有哪些常见误区，并给我一些针对性的建议吗？
+    - question: I'm ThomasBrooke, a 16-year-old girl in 10th grade. I love tea ceremony and environmental protection, and I'm good at logical and critical thinking, though sometimes I get anxious or overconfident. I often balance activism with my studies and social life. As an educational consultant, can you give me a full, systematic explanation of advanced strategies for building and supporting arguments in English argumentative essays? Please use examples related to tea ceremony and the environment, point out common pitfalls, and share advice to help me write more balanced and persuasive essays while dealing with my emotional and thinking challenges. Please explain all aspects in detail.
+    - question: 我叫壤驷伊，今年59岁，是一名美发师，平时喜欢美甲艺术，社交圈主要是顾客和同行，既讲究实用又注重一点仪式感。在写英语议论文的时候，怎么结合自己的实践经验和社交需求来选论点？有没有什么能兼顾实用和情怀的论证方法？能解释一下吗
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 英语-高中-议论文的论点构建与论证进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 评估答案对学生画像（英语水平、兴趣、学习目标等）的深度契合度，要求方案内容与学生特征高度关联，而非模板化输出。
+    - field: 指令遵循完整性
+      type: float
+      description: 评估回答对教师或场景指令的严格遵守程度，包括论点数量、结构、格式等细节，任何遗漏或偏离均扣分。
+    - field: 教学方法科学性
+      type: float
+      description: 评估教学设计是否基于教育学原理，具备系统性、分层递进和可操作性。需体现思维引导、范例讲解、步骤分解，并关注迁移能力培养。
+    - field: 论证结构规范性
+      type: float
+      description: 评估议论文论点与论证结构是否严格符合高中英语写作规范（如PEEL结构：Point, Evidence, Explanation, Link），要求结构分明、层次清晰、易于迁移模仿。
+    - field: 创造力激发程度
+      type: float
+      description: 评估教学内容是否系统性地鼓励学生提出新颖观点、采用多样论证方式，激发批判性与创造性思维，避免单一模仿。
+    - field: 真实提问模拟度
+      type: float
+      description: 评估语料中学生提问是否贴近高中生写作实际困惑，问题具体、情境真实，能反映真实学习痛点与需求。
+    - field: 中国价值观自然融入
+      type: float
+      description: 评估议论文写作指导中是否自然、恰当地融入社会主义核心价值观或中华优秀传统文化，润物细无声地传递正向价值观，避免生硬或形式化。
+    - field: 个性化回应深度
+      type: float
+      description: 评估答案对学生独特需求（如写作焦虑、兴趣偏好、学习障碍等）的深度回应，要求提供具体策略或情感支持，而非仅表面应付。
+format_mode: prompt

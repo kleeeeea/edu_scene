@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene163/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 英语-初中-段落写作的结构与衔接教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是一名基础比较薄弱的初中生，老师最近要求我们学英语段落写作的结构和衔接，但我总觉得思路很乱，你能给我一份完整的分析，系统讲讲怎么做好这部分吗？最好能结合我的情况设计练习和反馈方法，谢谢！
+    - question: 你作为我的AI学习助手，能说说你的看法吗？初中英语段落写作的结构和衔接怎么做才能让文章更有条理和连贯？举几个具体例子帮我理解就更好了。
+    - question: 我是小学班主任何晶，平时很重视社区和亲子活动，也喜欢茶艺和看电影，做事比较务实但有教育理想。你作为教育专家，能帮我全面分析一下初中英语段落写作结构和衔接教学的有效策略吗？希望能结合我的实际教学场景，聊聊分层练习、反馈机制和老师成长建议。
+    - question: 你是英语写作指导专家，我家MillerMelanie今年9岁，四年级女生，喜欢花艺和围棋，性格比较需要空间，注意力也有波动。你能彻底说清楚怎么帮她系统掌握英语段落写作的结构和衔接吗？希望能结合她的兴趣和特点设计分层练习和创新反馈建议，让她学得开心又专注。
+    - question: 我是高一女生韩珊珠，喜欢攀岩和乒乓球，理解力一般，偶尔会有理想和现实冲突，情绪和理性交替。你能详细说说初中英语段落写作结构和衔接的方法吗？最好能结合我的性格和兴趣，帮我设计合适的练习和自我评价方式。
+    - question: 我最近学初中英语写作，总是在段落结构和衔接方面搞不清句子顺序，你能详细说说怎么科学安排英语段落结构吗？顺便给我一些练习建议和自我检查的方法吧。
+    - question: 我是一名初中英语老师，发现学生写段落时句子之间总是不连贯，很乱。你能讲讲看怎么培养学生段落衔接能力吗？最好能说说具体练习和有效反馈的方法。
+    - question: 你是英语写作教练，能详细讲讲初中生在英语段落写作结构和衔接方面容易出的问题吗？希望你介绍一下解决策略，也能说说创新教学和分层练习怎么帮助不同水平的学生提升写作。
+    - question: 我是一名初中生，写英语作文时总觉得段落结构和衔接很难掌握，你能简要说明下这部分的核心要点吗？帮我理清思路就行。
+    - question: 你是我的英语学习助手，能简要说明下初中英语段落写作中怎么有效衔接句子吗？最好能举个例子。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 英语-初中-段落写作的结构与衔接进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像精准匹配
+      type: float
+      description: 教学内容和方法需根据学生的具体画像（学习水平、兴趣、常见问题、差异化需求）进行有针对性的调整。要求教师能在实际教学设计中体现对不同学生的深入理解，灵活调整目标、材料和指导策略。
+    - field: 指令遵循与格式准确性
+      type: float
+      description: 教学内容必须严格按照既定教学流程和格式要求展开，包括内容结构、讲解顺序、语言风格及环节分隔，确保结构清晰、逻辑严密，易于学生理解和操作。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 教学方法应遵循教育学原理，包含有效的策略（如分层指导、互动反馈、同伴互评等），并能根据不同学生情况灵活调整，体现高度专业性和可操作性。
+    - field: 结构与衔接讲解深度
+      type: float
+      description: 段落结构与衔接讲解需系统深入，包括主题句、支持句、结尾句的功能解析，连接词、句间逻辑、语篇连贯性的具体操作指导，并能结合实例说明常见失误和改进方法。
+    - field: 创新思维激发
+      type: float
+      description: 教学设计应通过开放性任务、表达方式多样化、情境创设等手段，主动激发学生创新思考和个性化表达能力。需有具体环节鼓励尝试新颖表达和观点，支持学生探索多样写作风格。
+    - field: 模拟真实提问回应
+      type: float
+      description: 教学内容需针对学生在真实教学场景中的典型困惑和实际提问做出具体、细致且多样化的回应，能够覆盖不同层次学生的常见问题，并提供精准的操作建议或解决方案。
+    - field: 价值观自然融入
+      type: float
+      description: 教学内容应在写作主题、案例或评价环节中自然而然地融合社会主义核心价值观或中华优秀传统文化，通过情境创设和表达引导，使价值观融入内容且能激发学生主动思考与表达。
+    - field: 多样化练习与反馈设计
+      type: float
+      description: 需根据学生能力层次和学习需求，提供多样化、递进式的写作练习（如填空、仿写、开放写作、句子排序等），并设置明确、有效、可追踪的反馈机制，促进学生持续进步。
+format_mode: prompt

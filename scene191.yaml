@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-历史事件的因果关系探究教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是刚带初三的历史老师，班里有几个学生虽然很努力，但总是分不清历史事件的直接原因和深层原因，特别是在复习‘新文化运动’和‘五四运动’的因果关系时容易搞混。你作为历史学习顾问，能全面深入地讲讲这两个事件的因果链条、历史背景及其联系，并给我一些针对不同学生的教学建议和互动任务吗？
+  - question: 我女儿现在上初二，历史基础一般，但是很喜欢看历史类影视剧。她老是问我‘甲午战争’的真正原因是什么，还有这场战争对中国历史的影响。你作为历史教育专家，能具体说说怎么结合家庭辅导帮她理解甲午战争的因果关系吗？
+  - question: 我是初中历史兴趣小组的成员，平时喜欢自己查资料，但总会把‘鸦片战争’的原因和影响搞混。你是我的历史成长伙伴，帮我理解一下鸦片战争爆发的主要原因和深远影响，还有什么好方法可以帮我梳理因果关系？
+  - question: 我是一名初三学生，很喜欢历史，但总觉得‘辛亥革命’的原因特别复杂，写因果分析题时经常出错。你作为历史学习助手，能具体说说辛亥革命爆发的多重原因和历史意义吗？顺便帮我推荐点好理解的分析方法。
+  - question: 我是初一学生，最近在课堂上学到‘土地改革’，老师让我简单总结一下土地改革的因果关系。你作为历史学科小助手，能帮我概括一下吗？
+  - question: 我是刚入职的初中历史老师，发现有些学生虽然能背出事件名称，但总是把‘抗日战争全面爆发’的因果链搞混，特别容易把直接的导火索和长期原因混在一起。你作为教学顾问，能系统地讲解一下‘抗日战争全面爆发’的历史背景、主要原因和影响吗？另外，能帮我设计一些适合不同基础学生的教学和互动活动吗？
+  - question: 我是初二的学生，平时历史考试总在‘文化大革命’的因果分析题上丢分，老是搞不清它的起因和经过。你作为历史学习助手，能不能讲清楚点‘文化大革命’发生的主要原因和过程，还能教教我怎么理清这些因果关系？
+  - question: 我是历史老师，班里有学生问我‘戊戌变法’失败的主要原因和后果，我想给他们一个简明扼要的答案。你作为历史学科支持助手，可以用几句话说说戊戌变法失败的因果关系和历史影响吗？
+  - question: 我是初三历史老师，班上有几位同学历史基础比较薄弱，经常把‘太平天国运动’的成因和后果搞混。你是历史教学专家，能讲得详细点，帮我分析太平天国运动的多重原因、发展阶段和历史影响吗？另外，能给基础弱的学生一些实用的教学建议和互动练习吗？
+  - question: WilliamsFaith是一位6岁的女生，现在上一年级，喜欢钢琴、朗诵和运动，性格活泼但有时会有点小紧张。她最近很好奇地问：‘为什么美国会有南北战争？这场战争之后发生了什么？’你作为她的历史学习伙伴，能深入说说看，用她能听懂的方式，讲讲这场战争的原因和后果吗？还可以用一些有趣的故事和互动方法，帮她理解和表达自己的想法吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-历史事件的因果关系探究进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学过程能精准识别学生的能力、兴趣和历史基础，动态调整教学内容、方法和任务，持续收集并分析学生反馈，针对不同学生实施个性化支持，并在实际成效基础上优化策略。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 教学内容严格按照预设的结构化流程分段，逻辑清晰，各环节目标明确、操作指引具体，便于师生理解和参与，流程完整且有序。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学方法多元且科学，合理结合启发式、探究式、合作学习等方式，针对学习目标动态选择，能有效促进学生主动思考、交流与因果理解。优秀课堂应体现方法创新与灵活切换。
+  - field: 因果关系探究深度_理由
+    type: str
+    description: 解释因果关系探究深度评分的详细理由，引用具体例子。
+  - field: 因果关系探究深度
+    type: float
+    description: 教学内容引导学生从多角度、多层次深入分析历史事件因果链，涵盖直接原因、间接背景、人物动机、社会影响及历史争议，鼓励学生提出独立见解、质疑和反思，课堂有实质性因果探究成果。
+  - field: 提问与认知契合度_理由
+    type: str
+    description: 解释提问与认知契合度评分的详细理由，引用具体例子。
+  - field: 提问与认知契合度
+    type: float
+    description: 教师提问设计贴合初中生认知发展阶段，递进合理，既能激发兴趣又有挑战性，涵盖事实、理解、应用、分析等层级，能引导学生深入历史因果思考和批判性探索。
+  - field: 互动与反馈机制_理由
+    type: str
+    description: 解释互动与反馈机制评分的详细理由，引用具体例子。
+  - field: 互动与反馈机制
+    type: float
+    description: 教学设计包含多样化师生互动环节（如小组讨论、开放提问、即时反馈），教师能根据学生表现给予具体、个性化反馈，对普遍性和个体性问题均有针对性改进措施，促进深度交流和持续优化。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 通过情境创设、开放性任务与多元表达方式，积极激发学生历史创新思考和想象力，鼓励学生提出独立见解、假设和创造性表达，并能将创新成果用于历史解释或现实联系。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 教学内容在历史分析中自然而然融入社会主义核心价值观和中华优秀传统文化，结合具体历史情境引导学生联系现实生活，理解价值观的历史逻辑与当代意义，避免生硬灌输。
+  format_mode: prompt

@@ -1,0 +1,124 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-初中-设计班级运动会队徽和口号教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是白杨，初中体育老师，班级气氛比较内敛，学生表达不算积极。我平时注重边界、喜欢露营和自驾，运动会要设计队徽和口号，你作为体育赛事顾问，怎么结合我们班的氛围和我的风格，帮我想个能激发学生兴趣又有团队精神的设计？讲清楚点。
+  - question: 我们班准备开运动会，学生能力差异大，有些同学很有创意但不太懂团队合作。你作为班级活动设计助手，能不能说说你的看法，怎么带着大家一起参与队徽和口号设计，还能让班级更团结？
+  - question: 我是初中班主任，我们班马上要设计运动会队徽和口号，有些学生很有艺术天分但不太会合作。你作为体育教育专家，能不能深入说说看，怎么通过这个活动既激发个人创意又让班级沟通协作更好？具体流程、分工、激励和注意事项都希望你能讲清楚，还能举例说明怎么自然融入体育精神。
+  - question: 我是叶炫宇，初中老师，做事讲究条理，喜欢航拍和骑行。现在班上要做运动会队徽和口号设计，学生有点分心，目标感不强。你作为班级活动设计助手，讲讲看怎么结合我的风格和学生的现状，科学地设计队徽和口号，既突出班级特色又能让大家更有目标和协作感？
+  - question: 我们班学生性格、兴趣都很不一样，有的活泼有的安静，运动会要做队徽和口号设计，你作为体育赛事顾问，给我一份完整的分析，怎么让每个人的特点都能被看到，又能让大家团结起来有集体荣誉感？最好系统说说设计理念、流程、协作、创新和家校互动，还有正面价值观怎么自然融进去。
+  - question: I'm JacksonBruce, an 8th grader who loves swimming and making robots.
+      Our class is designing a team emblem and slogan for the sports meet, but I want
+      the design to be both creative and meaningful. I like things structured but
+      also want a bit of personal touch. As a class activity assistant, can you use
+      a few sentences to suggest how we can make a team emblem and slogan that show
+      personal style and teamwork?
+  - question: 我是初中体育老师，班上有些学生很喜欢表现自己，有些却常常被忽视。运动会要设计队徽和口号，你作为教育专家，详细展开说说，怎么让每个人都参与、特长都能发挥，班级还能有合力？希望你能讲讲具体流程、分组方法、设计思路，还有怎么自然引导积极价值观。
+  - question: I'm BrownPeter, a 10th grader who loves electronic music, astronomy,
+      and 3D modeling, and I'm pretty competitive and independent. Our class is designing
+      a team emblem and slogan for the sports meet. As a class activity consultant,
+      can you explain in detail how I can use my skills and personality to help the
+      team, but also make sure the emblem and slogan show both personal excellence
+      and team spirit?
+  - question: 我是班主任，班里有些同学很会设计，但怕运动会队徽和口号变成他们几个人的事。你作为班级活动助手，简单说说就行，怎么让大家都参与，有创意也有凝聚力？
+  - question: 我是初中体育老师，班级气氛很积极但有点浮躁，学生都喜欢表现自己但容易争吵。运动会队徽和口号设计要顺利推进，你作为体育赛事顾问，能不能彻底说清楚，怎么全流程组织和设计，让大家既能发挥创意又能团结合作，还能减少冲突？希望你能系统讲讲活动策划、分工、过程管理、设计要素、冲突调节和价值观引导等所有环节。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-初中-设计班级运动会队徽和口号进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估教师能否基于学生兴趣、能力、性格、文化等多维特征，主动收集并运用学生画像，提出针对性、差异化的设计与分组建议，体现对个体差异的尊重与响应。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估教师是否严格按照教学任务要求，分条、分点、分层次地列出队徽设计建议（图案、色彩、寓意等）和口号建议（8字以内，积极向上），结构清晰，便于学生理解和操作。高阶表现为能引导学生自主梳理和完善建议结构。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教师能否结合初中生认知发展，采用科学系统的教学流程（如启发式提问、小组协作、展示互评、反思改进等），并灵活调整教学策略，促进学生深度理解与能力提升。高阶表现为能根据学生反馈动态调整流程。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教师是否通过开放性提问、范例对比、头脑风暴等方法激发学生原创性思考，鼓励多样化表达，并能识别和引导学生突破常规，产出新颖、具有班级特色的成果。高阶表现为学生能主动提出独特创意并自信表达。
+  - field: 模拟真实师生互动还原度_理由
+    type: str
+    description: 解释模拟真实师生互动还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实师生互动还原度
+    type: float
+    description: 评估教学过程是否真实还原初中体育课堂师生互动，语言自然具体，能体现学生常见疑问、困惑及教师的耐心引导、鼓励和追问。高阶表现为能激发学生之间的互动讨论和合作。
+  - field: 价值观融入的自然性_理由
+    type: str
+    description: 解释价值观融入的自然性评分的详细理由，引用具体例子。
+  - field: 价值观融入的自然性
+    type: float
+    description: 评估教师是否能自然地在设计建议中融入社会主义核心价值观或中华优秀传统文化，通过故事、象征、寓意等方式潜移默化引导学生理解与认同，表达自然、不生硬。
+  - field: 多样性与包容性体现_理由
+    type: str
+    description: 解释多样性与包容性体现评分的详细理由，引用具体例子。
+  - field: 多样性与包容性体现
+    type: float
+    description: 评估教师是否积极鼓励并接纳不同文化、兴趣、能力、性格等多元表达，允许多样风格和观点，营造包容、尊重、多元融合的班级氛围。高阶表现为学生成果能体现多样性和融合性。
+  - field: 反思与自我评价引导_理由
+    type: str
+    description: 解释反思与自我评价引导评分的详细理由，引用具体例子。
+  - field: 反思与自我评价引导
+    type: float
+    description: 评估教师是否在设计完成后组织学生进行深入自评和互评，围绕创新性、协作、班级特色、改进建议等方面发现优点与不足，并鼓励提出具体优化措施，促进持续成长。高阶表现为学生能自发提出改进方案并落实。
+  format_mode: prompt

@@ -1,0 +1,130 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-初中-校园欺凌情景剧与对策讨论（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中班主任，最近班级里有同学嘲笑和孤立性格内向的新同学，班里气氛有些紧张。你作为德育专家，觉得我可以采取哪些措施缓解这种校园欺凌现象？用几句话说说。
+  - question: 我是初二学生的家长，最近孩子参与了校园欺凌情景剧的排练，但她觉得剧情太片面，不能真实反映同学之间的心理变化。你作为成长导师怎么看校园欺凌情景剧在德育美育中的作用？说说你的看法。
+  - question: I'm ThompsonAlan, a 46-year-old male teacher who values democratic decision-making
+      and teamwork, and enjoys astronomy, router configuration, and chess. In my collaborative
+      work environment, I've noticed more peer bullying, especially during group activities.
+      As a teaching advisor, can you give a thorough analysis of effective anti-bullying
+      strategies for junior high students, especially how to integrate bullying drama
+      and discussion into classroom management? Can you delve into this?
+  - question: 我是四年级学生贾蔚，课间喜欢做科学实验，但不太喜欢功利性的社交活动，竞争意识比较强。最近学校准备组织校园欺凌情景剧，我觉得没什么意义，也不太想和大家合作。你作为德育导师，能解释一下校园欺凌情景剧的意义，以及怎么帮助像我这样以竞争为主的学生主动参与吗？能解释一下吗？
+  - question: I'm JacksonEllie, an 8-year-old 3rd grader who loves jump rope, ballet,
+      and dance. I'm creative but sometimes get anxious when my ideals don't match
+      reality, and I often look for help with stress. My teachers encourage creativity,
+      but I also want to fit in with my classmates. As a growth mentor, can you explain
+      how joining a campus bullying drama and group discussions could help me balance
+      my ideals with reality, manage anxiety, and build good relationships? Please
+      explain in detail.
+  - question: 我是刚入职的初中老师，最近在班级管理中遇到校园欺凌问题，学生之间有言语和行为上的伤害。你作为教育专家，能全面深入地讲讲校园欺凌情景剧和对策讨论在德育美育教育中的作用吗？能全面深入地讲讲吗？
+  - question: 我是德育教研员，最近要推进校园欺凌情景剧和对策讨论的校本课程。你作为教学顾问，能给我一份完整的分析吗？包括情景剧设计、学生参与、心理疏导、家庭协同和中华优秀传统文化的融入等方面。
+  - question: 我是高一学生潘石，喜欢3D建模和山地骑行，经常自己研究技术。最近学校有校园欺凌情景剧，但我觉得实际效果可能有限。你作为德育专家，能简要说明下校园欺凌情景剧的优势和局限吗？简要说明下。
+  - question: I'm MartinezMelanie, a 14-year-old 8th grader with average comprehension
+      who likes meditation and flower arranging. Sometimes I find campus bullying
+      discussions hard to follow and understand deeply. As a learning assistant, can
+      you help me understand how discussing and performing campus bullying drama can
+      improve empathy and awareness, and make the topic easier for students like me?
+      Help me understand.
+  - question: 我是一名初中班主任，最近发现学生对校园欺凌的讨论很消极，大家不愿主动参与情景剧或发表见解。你是我的成长指导老师，能结合学生主体性和科学教学方法，深入说说看怎么激发学生参与校园欺凌情景剧和对策讨论的积极性，并提升班级德育美育氛围吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-初中-校园欺凌情景剧与对策讨论（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化学生画像匹配度_理由
+    type: str
+    description: 解释个性化学生画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化学生画像匹配度
+    type: float
+    description: 教学内容与支持措施应充分考虑学生的性格、家庭环境、心理状态及欺凌经历，对不同学生群体制定分层、个性化方案，确保差异化关照与包容性。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 教学流程需严格依照教师设定，包括角色分配、剧本结构、环节顺序、分组对策讨论等，流程应清晰、规范，且每一步均有明确执行和反馈。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学策略需依据教育学、心理学原理，采用启发式、体验式、合作式等多元互动方法，并根据学生反馈及时调整内容与方式，强调科学性、创新性与个体适应性。
+  - field: 对策实用性与有效性_理由
+    type: str
+    description: 解释对策实用性与有效性评分的详细理由，引用具体例子。
+  - field: 对策实用性与有效性
+    type: float
+    description: 针对校园欺凌问题，提出可操作、分步骤的应对策略，能帮助不同类型学生实际解决问题，并提供具体资源、操作流程和持续支持。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 教学内容应系统性激励学生提出原创解决方案，表达独特见解，鼓励创新表达与自主探索，成果具有创新性和现实意义。
+  - field: 模拟真实提问贴合度_理由
+    type: str
+    description: 解释模拟真实提问贴合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问贴合度
+    type: float
+    description: 课堂问题与回答应紧密贴合真实校园欺凌场景，反映学生真实困惑、情感和需求，回答具体、具有针对性和同理心。
+  - field: 中国价值观自然融入度_理由
+    type: str
+    description: 解释中国价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入度
+    type: float
+    description: 教学内容应将社会主义核心价值观与中华优秀传统文化自然融入情境剧和对策讨论，结合学生体验进行润物细无声的价值引领，避免生硬灌输。
+  - field: 学生主体性体现_理由
+    type: str
+    description: 解释学生主体性体现评分的详细理由，引用具体例子。
+  - field: 学生主体性体现
+    type: float
+    description: 教学设计应以学生为中心，尊重并激发学生自主参与、表达和决策能力，学生主导关键环节并能影响活动进程和成果，教师以引导为主。
+  format_mode: prompt

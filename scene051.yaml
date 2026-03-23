@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-高中-复杂公式推导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是刚入职的高中数学老师，你作为数学教育专家，能不能从各个角度帮我系统地讲讲三角函数诱导公式的推导和教学方法？从各个角度详细说说
+  - question: 你是我的学习助手，我最近在学椭圆的标准方程，总是搞不清楚a、b怎么来的和它们的几何意义，你能讲讲看椭圆标准方程怎么推导吗？
+  - question: 我是高中数学教研员，你作为资深知识导师，能不能系统地讲解一下高次函数求导公式的推导全过程？系统地讲解一下
+  - question: 我高三了，备考时老是在柯西不等式的推导和判定上犯错，你作为我的学习助手，能解释一下柯西不等式推导过程和常见错误吗？
+  - question: 我刚入职当数学老师，学生对数列通项公式的推导很困惑，特别是递推关系和通项公式之间的联系，你作为教学顾问，能不能深入说说看数列通项公式的推导和教学建议？
+  - question: 我是高二学生，空间向量法求空间距离总是弄不明白，你作为我的学习助手，我想深入了解空间两点距离公式的推导和应用，能帮我详细讲讲吗？
+  - question: 我高三备赛，复数的三角形式推导总是容易搞混，你作为知识导师，能帮我分步骤讲讲复数三角形式的推导和常见错误吗？帮我理解一下
+  - question: 我是高一学生，函数奇偶性判定公式总是记不住，推导过程也有点迷糊，你作为我的学习助手，能不能简短回答下公式推导思路？
+  - question: 我是吕晨曦，55岁空乘，最近陪朋友孩子做高中数学，复合函数求导公式推导感觉有点复杂，你作为知识导师，能不能大概讲讲这个公式是怎么来的？大概讲讲
+  - question: 我是高二学生，概率统计里二项式定理的推导过程让我很困惑，你作为我的学习助手，能不能讲清楚点二项式定理的推导和应用？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-高中-复杂公式推导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学响应_理由
+    type: str
+    description: 解释个性化教学响应评分的详细理由，引用具体例子。
+  - field: 个性化教学响应
+    type: float
+    description: 答复需基于学生的知识基础、兴趣、学习习惯等个体特征，主动调整讲解内容、方法和难度，关注差异化需求，促进每个学生理解和成长。优秀表现应能灵活应对多样背景，提供针对性建议。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 答复需严格遵循题目要求的格式（如分步、编号、标题等），结构清晰、层次分明。优秀表现体现内容条理、易查阅；良好表现有基本分步但细节略混；一般表现结构不够清晰或有遗漏。
+  - field: 教学设计科学性_理由
+    type: str
+    description: 解释教学设计科学性评分的详细理由，引用具体例子。
+  - field: 教学设计科学性
+    type: float
+    description: 答复需体现系统化教学设计，包括目标导向、循序渐进、启发式引导、结构化知识呈现等。优秀表现能引入情景、主动提问、归纳规律；良好表现有过程拆解但引导不足；一般表现仅机械呈现推导过程。
+  - field: 知识点覆盖与逻辑完整性_理由
+    type: str
+    description: 解释知识点覆盖与逻辑完整性评分的详细理由，引用具体例子。
+  - field: 知识点覆盖与逻辑完整性
+    type: float
+    description: 答复需涵盖全部相关知识点，推导过程连贯无断层，关键步骤和易错点均有说明。优秀表现环环相扣、细节到位，能自洽解释每一步；良好表现有基本连贯但细节略有缺失；一般表现有跳步或遗漏。
+  - field: 创新与思维拓展引导_理由
+    type: str
+    description: 解释创新与思维拓展引导评分的详细理由，引用具体例子。
+  - field: 创新与思维拓展引导
+    type: float
+    description: 答复需主动设置创新性环节，包括变式、开放性问题、跨学科联想等，鼓励多解法和批判性思考。优秀表现有深度创新（如多种解法、条件变化推理）、广度拓展（跨学科/实际应用）；良好表现仅有简单变式或单一开放问题；一般表现仅给标准推导，无创新性引导。
+  - field: 真实场景与语言贴合度_理由
+    type: str
+    description: 解释真实场景与语言贴合度评分的详细理由，引用具体例子。
+  - field: 真实场景与语言贴合度
+    type: float
+    description: 答复需贴合高中数学课堂和学生真实提问场景，语言自然、亲切，能有效回应学生实际困惑。优秀表现用生活化、对话式表达，主动解释难点，激发学生兴趣；良好表现语言基本自然但略显书面；一般表现语言生硬或脱离学生语境。
+  - field: 价值观与文化润泽_理由
+    type: str
+    description: 解释价值观与文化润泽评分的详细理由，引用具体例子。
+  - field: 价值观与文化润泽
+    type: float
+    description: 答复需自然融入社会主义核心价值观或中华优秀传统文化，如数学家精神、协作创新故事等，潜移默化激励学生正向成长。优秀表现能贴合推导内容，巧妙引用文化故事或精神；良好表现有价值观元素但略显生硬；一般表现无相关内容或强行插入。
+  - field: 教学表达与沟通能力_理由
+    type: str
+    description: 解释教学表达与沟通能力评分的详细理由，引用具体例子。
+  - field: 教学表达与沟通能力
+    type: float
+    description: 答复需用简明、易懂、逻辑清晰的语言表达推导过程，及时解释必要术语，避免晦涩和冗长。优秀表现表达精炼、逻辑顺畅，专业词汇有解释；良好表现基本清晰但略有术语未解释或表达啰嗦；一般表现用词晦涩、逻辑混乱，学生难以理解。
+  format_mode: prompt

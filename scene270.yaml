@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-高中-社会存在与社会意识：历史唯物主义的基本原理教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高一学生贾棋，兴趣是3D建模、机器人竞赛和武术，但性格有点内向，社交互动不多，最近学到政治课里的‘社会存在与社会意识’、历史唯物主义基本原理，感觉‘社会存在决定社会意识’这块很难理解，特别是怎么和我的兴趣和团队协作联系起来。你作为理论专家，能全面深入地讲讲吗？希望能结合我的实际情况帮我梳理清楚，还能给我一些合适的学习建议。
+  - question: 我是一名高中政治老师，最近备课到‘社会存在与社会意识’这部分，学生觉得挺抽象的，不太明白两者的关系和现实中的表现。你能讲清楚点吗？最好能给我举几个贴近学生生活的例子，方便我在课堂上解释。
+  - question: 我是高三学生，老师让我们复习历史唯物主义的基本原理，特别是‘社会存在决定社会意识’这点。我总感觉理论和生活有点脱节，你能具体说说吗？最好结合实际生活和社会变化举些例子，让我更容易理解。
+  - question: 我是高中政治教研员，老师们反映学生理解‘社会存在与社会意识’很困难，分不清内涵和联系。你能解释一下吗？希望系统说明下二者的区别、关系和现实意义，还能推荐些适合课堂讨论的案例。
+  - question: 我刚开始学历史唯物主义，对‘社会存在与社会意识’的关系有点迷糊，你能概括一下吗？希望能帮我梳理清楚主要内容。
+  - question: 你是我的政治学习顾问，我对历史唯物主义的基本原理很感兴趣，尤其想深入了解‘社会存在与社会意识’之间的逻辑关系和现实意义。能帮我详细分析一下吗？希望能举些例子和给我一些创新的学习方法。
+  - question: 我是32岁的男老师贺传，喜欢观星、天文摄影、电竞直播和3D建模，平时负责学校天文社团，也在电竞平台做直播。你作为历史唯物主义教学专家，能全面深入地讲讲‘社会存在与社会意识’的基本原理吗？希望结合我的兴趣和实际教学背景，帮我理解这个知识点，还能给我一些创新教学建议和案例。
+  - question: 我是高中生，老师要求我们简单梳理历史唯物主义‘社会存在与社会意识’的核心观点。你简单说说就行，抓住最主要的内容。
+  - question: 你是我的高中政治学习助手，最近老师让我们结合生活讨论‘社会存在与社会意识’的现实意义。我有点不知道怎么表达，你说说你的看法，最好结合实际举些例子，帮我理清思路。
+  - question: 我是高二政治老师，准备讲‘社会存在与社会意识’专题。学生挺感兴趣历史唯物主义的基本原理，但总是理论和实际分不清。你能全面分析一下吗？想请你详细说明怎么把理论和生活结合起来，还能给我一些课堂活动设计建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-高中-社会存在与社会意识：历史唯物主义的基本原理进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容和方法是否充分结合学生的学习基础、兴趣、认知特点等，采用差异化和动态调整策略。高分要求能针对具体学生群体定制教学方案，并依据学生反馈持续优化，体现个体差异和成长轨迹。
+  - field: 格式与结构规范度_理由
+    type: str
+    description: 解释格式与结构规范度评分的详细理由，引用具体例子。
+  - field: 格式与结构规范度
+    type: float
+    description: 评估内容组织是否严谨、层次分明，结构递进合理，各部分逻辑衔接紧密。高分要求不仅形式规范，还体现理论、案例、现实应用等环节有机融合，且总结有深度。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估教学方法是否符合教育学原理，能促进学生主动参与、深度理解。高分要求多元化方法（如探究、合作、情境创设等）与创新设计并举，能引发学生自主探索和观点碰撞，并根据课堂动态灵活调整。
+  - field: 知识结构完整性与深度_理由
+    type: str
+    description: 解释知识结构完整性与深度评分的详细理由，引用具体例子。
+  - field: 知识结构完整性与深度
+    type: float
+    description: 评估内容是否系统、全面覆盖历史唯物主义基本原理，深入剖析社会存在与社会意识的关系及其互动机制，结合现实案例进行拓展分析。高分要求理论、机制、现实结合，层次递进，能辨析应用与局限。
+  - field: 真实提问回应度与灵活性_理由
+    type: str
+    description: 解释真实提问回应度与灵活性评分的详细理由，引用具体例子。
+  - field: 真实提问回应度与灵活性
+    type: float
+    description: 评估教师能否准确理解并回应学生真实问题，提供具体、针对性解决方案。高分要求灵活应对不同类型问题，能延伸和引导学生深度思考，鼓励多角度探究。
+  - field: 创新思维激发性_理由
+    type: str
+    description: 解释创新思维激发性评分的详细理由，引用具体例子。
+  - field: 创新思维激发性
+    type: float
+    description: 评估是否通过启发性问题、情境创设、跨学科联系等方式，有效激发学生创新思考和批判性分析。高分要求提出开放性问题，引导学生发表独立见解，鼓励不同观点碰撞与反思。
+  - field: 价值观与文化融入自然度_理由
+    type: str
+    description: 解释价值观与文化融入自然度评分的详细理由，引用具体例子。
+  - field: 价值观与文化融入自然度
+    type: float
+    description: 评估社会主义核心价值观及中华优秀传统文化是否与教学内容有机融合，并能结合实际案例进行渗透，避免生硬灌输。高分要求价值观与理论结合紧密，能引发学生对社会责任和文化传承的自觉思考。
+  - field: 语言表达清晰度与适宜性_理由
+    type: str
+    description: 解释语言表达清晰度与适宜性评分的详细理由，引用具体例子。
+  - field: 语言表达清晰度与适宜性
+    type: float
+    description: 评估语言表达是否准确、清晰、流畅，能根据高中生认知水平调整表达难度，兼顾科学性与可理解性。高分要求用简明规范语言解释抽象理论，辅以生活化比喻或案例，确保表达既严谨又易懂。
+  format_mode: prompt

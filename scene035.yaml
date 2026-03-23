@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene035/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 数学-小学-教学难点讲解教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是彭逸，44岁的小学数学老师，平时喜欢研究股市、下围棋和玩航拍，性格理性又有点防备心，在同事之间相处也比较有距离。你作为教育专家，能不能从各个角度详细说说小学分数除法教学的难点、误区、学生常见障碍和有效教学策略？另外也希望你结合一下我个人的性格和兴趣，聊聊怎么更好地带动课堂氛围、融入理性思维和仪式感等元素。
+    - question: 我是一名小学数学老师，最近发现学生在学分数大小比较的时候总是搞混，特别是分子分母都变的时候。你能讲得详细点吗？最好能说说常见误区、原因，还有具体的教学建议和课堂活动。
+    - question: 你作为小学数学辅导专家，能深入讲解一下小学生在学两步计算应用题时，常见会犯哪些错误、原因是什么？能举例说明，并说说如何针对不同基础的学生进行辅导和练习设计吗？
+    - question: 我是一名小学生，老师让我们推导平行四边形面积公式，我觉得挺难懂的，你能简单说说就行，让我明白推导的思路吗？
+    - question: 我是小学生家长，孩子学到用数轴表示正负数时总是搞不清楚正方向和负方向。你能用几句话说说，怎么跟孩子讲明白这个概念吗？
+    - question: 我是汪爽，初二女生，喜欢跑步和瑜伽，学习时有点靠直觉，逻辑不算强，对分式的化简老是步骤乱，不知道有没有规律。你作为学习助手，能具体说说分式化简的思路和注意事项吗？最好举点例子。
+    - question: 你作为小学数学教研员，能不能详细分析下分数乘法教学的各个方面？比如教学重难点、学生常见问题、课堂互动方法、家庭辅导建议，还有怎么让学生真正理解分数的意义和实际应用。详细分析下各个方面。
+    - question: 我是一名小学数学老师，这两天发现班里的学生在学平均数时老是搞混。你能不能讲清楚点，帮我梳理一下平均数的核心概念、常见误区，还有什么教学方法比较有效？
+    - question: 你是小学数学知识导师，能详细说说小学生学长方形和正方形周长时，常见会遇到哪些理解难点？最好能给些教学建议和例题说明。详细说说。
+    - question: 我是小学数学新老师，最近在备课‘简单方程’。你说说你的看法，小学生刚接触方程最容易出什么问题？你有什么建议吗？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 数学-小学-教学难点讲解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 评估教学方案是否结合学生的学习基础、兴趣、性格等画像特征，进行有针对性的内容设计和方法调整，体现因材施教。要求体现一定的差异化关注，但不强制极致匹配。
+    - field: 结构与内容完整性
+      type: float
+      description: 评估教学方案是否按照指定结构（如教学目标、难点分析、策略等）完整回应，内容充实且顺序合理。允许适度灵活调整，但各部分不可遗漏。
+    - field: 教学方法科学性与适宜性
+      type: float
+      description: 评估所采用的教学方法是否符合小学生认知发展特点，采用适合的操作、演示、游戏、情境等，促进学生理解和参与。方法多样且贴合学生实际。
+    - field: 难点拆解与分步突破
+      type: float
+      description: 评估是否对数学难点进行分层拆解，并针对各子难点提供具体的解决策略，帮助学生逐步理解和掌握。
+    - field: 互动反馈与启发引导
+      type: float
+      description: 评估是否设计了师生、生生互动环节，鼓励学生表达、提问、反思，并及时给予过程性反馈，注重启发式引导。
+    - field: 创新思维与探究激发
+      type: float
+      description: 评估教学内容是否融入开放性问题、生活探究或跨学科联系，激发学生创新思考和自主探索，鼓励多角度分析。
+    - field: 价值观自然融入
+      type: float
+      description: 评估是否将核心价值观或中华优秀传统文化内涵自然、贴合地融入教学内容或活动，方式生活化、润物细无声，无生硬说教。
+    - field: 真实情境与学生疑问贴合度
+      type: float
+      description: 评估问题情境或学生疑惑是否贴近实际小学课堂和认知水平，能反映真实困惑和兴趣点，表达自然，避免成人化理论化。
+format_mode: prompt

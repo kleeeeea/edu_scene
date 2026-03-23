@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-高中-化学平衡移动原理的综合应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三学生，最近复习化学平衡移动原理时有点糊涂。你能说说主要的化学平衡移动原理以及它在高中考试里的核心用法吗？说说主要的就行。
+  - question: 你作为化学教育专家，我是郭欣怡，今年六岁，一年级，平时喜欢京剧、田径和乒乓球，性格有点内向但很独立，经常一个人练习。爸爸常年出差，妈妈照顾我。我对新鲜事物挺好奇，也喜欢用自己的方法记东西，老师说我创新性强。最近听哥哥说高中化学里的化学平衡移动原理，觉得特别新奇。你能不能从各个角度详细说说什么是化学平衡移动原理，在生活和实验中有哪些有趣的应用，还有以后学化学怎么用创新的方法理解和发现它？从各个角度详细说说。
+  - question: 在课堂上有同学问我，为什么改变温度、压强或浓度会影响化学平衡的移动？能解释一下这些背后的原理，并举个生活里的例子吗？
+  - question: 我是一名刚参加工作的高中化学老师，班上有几位学生基础薄弱但很喜欢做实验。你作为教学指导专家，能不能深入说说看怎么通过做实验、设计情境和用生活案例帮助学生理解和应用化学平衡移动原理？深入说说看。
+  - question: 我是家长，孩子最近在学化学平衡移动原理，对化学兴趣一般。我想知道化学平衡移动原理的本质是什么，在生活中有什么实际意义？简要说明下。
+  - question: 你是化学学习顾问，我是高一学生，经常觉得化学平衡移动原理很抽象，做题时总是分不清正逆反应和外界条件变化的关系。你能详细说说怎么用图像、模型或者比喻帮助我们更好地理解化学平衡移动原理吗？详细说说。
+  - question: 我是化学兴趣小组的成员，最近我们讨论化学平衡移动原理和环境保护的关系。你能具体说说化学平衡移动原理在工业污染治理、绿色化工等方面有哪些实际应用案例吗？能具体说说吗？
+  - question: 你是我的化学学习助手，我做化学平衡移动原理的题经常出错，特别是遇到多步平衡和复杂条件变化时很容易混淆。能帮我理解一下怎么分步骤分析、总结这类题目的解题思路吗？帮我理解一下。
+  - question: 我是一名高二学生，对化学很感兴趣，喜欢用生活案例联想知识。你作为我的学习顾问，能不能详细讲讲化学平衡移动原理在食品加工、药品合成等实际生活场景中的应用？详细讲讲。
+  - question: 我是曹清，47岁，男，是一名高中化学老师，喜欢攀树、钓鱼和瑜伽冥想，团队协作能力强，喜欢带同事和学生一起参加户外活动，也经常在教研会议上促进团队合作。你作为化学教育专家，能不能详细分析下各个方面：怎么把化学平衡移动原理的综合应用和团队合作、户外活动、实验探究等方式结合，激发学生创新精神和合作意识？希望能结合实际案例、教学方法和学生特点，提出系统性的教学建议。详细分析下各个方面。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-高中-化学平衡移动原理的综合应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容和活动是否根据学生的学习基础、兴趣、认知风格和具体困惑进行差异化设计。重点考察是否在讲解、任务、资源分配等环节体现针对性和个别化调整，并能动态响应学生表现。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学输出是否完全按照教学设计要求的结构、步骤和格式展开，包括环节标题、内容分段、逻辑顺序、任务指令等，确保内容易于理解与执行。
+  - field: 教学方法科学性与分层深度_理由
+    type: str
+    description: 解释教学方法科学性与分层深度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与分层深度
+    type: float
+    description: 评估教学方法是否采用启发式、探究式、合作学习等现代教育策略，并针对不同学生层次设计差异化任务和活动，促进学生主动探索、深度理解和能力提升。需体现分层目标和具体分层行为。
+  - field: 知识点解释准确性与表达深度_理由
+    type: str
+    description: 解释知识点解释准确性与表达深度评分的详细理由，引用具体例子。
+  - field: 知识点解释准确性与表达深度
+    type: float
+    description: 评估对化学平衡移动原理及其综合应用的解释是否科学、精准，表达条理清晰，能结合理论、实验、实际案例、图表等多角度拓展知识深度，并解释原理与现实问题的联系。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评估课堂提问与回答是否贴近真实教学情境，能反映学生常见困惑、兴趣点及实际应用问题。提问需具体、情境化，回答需针对学生实际需求并拓展相关知识。
+  - field: 创新思维激发程度_理由
+    type: str
+    description: 解释创新思维激发程度评分的详细理由，引用具体例子。
+  - field: 创新思维激发程度
+    type: float
+    description: 评估教学内容是否主动激发学生创新与批判性思维，鼓励提出新问题、设计开放性实验、探讨多种解决方案，推动学生自主探索和跨学科思考。
+  - field: 个性化反馈针对性与可操作性_理由
+    type: str
+    description: 解释个性化反馈针对性与可操作性评分的详细理由，引用具体例子。
+  - field: 个性化反馈针对性与可操作性
+    type: float
+    description: 根据学生具体表现和疑难，给予个性化、具体、可操作的反馈，包括针对性建议、工具推荐、学习方法指导等，帮助学生有效解决问题和提升能力。
+  - field: 核心价值观与科学精神自然融入_理由
+    type: str
+    description: 解释核心价值观与科学精神自然融入评分的详细理由，引用具体例子。
+  - field: 核心价值观与科学精神自然融入
+    type: float
+    description: 在教学过程中有机融合社会主义核心价值观、科学精神和中华优秀传统文化，强调社会责任、环保意识、创新精神等，并能结合化学内容和中国实际发展案例，避免生硬说教。
+  format_mode: prompt

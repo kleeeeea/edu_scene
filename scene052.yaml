@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-高中-解题策略与思想方法教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是谢素蕾，13岁，初一女生，平时喜欢舞蹈和书法，学习上习惯高效规划。父母很重视素质教育，每周都会安排我参加舞蹈和书法培训。你作为数学教育专家，能给我一份完整的分析，系统讲讲高中数学解题里‘数形结合’的方法吗？最好分结构说明一下，并结合我的兴趣和习惯举例。
+  - question: 我是高二学生，最近学分类讨论法有点迷糊。你作为智能教学助手，能不能讲清楚点，分结构说说分类讨论法怎么用？最好结合我喜欢用思维导图整理知识给点建议。
+  - question: 我是曹锦，58岁老师，比较关注职称晋升，也喜欢游泳和维修电路，平时不太社交。你作为数学学习顾问，能不能大概讲讲高中数学解题里的‘化归与转化’方法？说说主要的怎么用就行。
+  - question: I'm MillerOlivia, a 16-year-old 10th grader who loves DIY crafts and
+      fashion styling. Sometimes I feel a bit distant socially but try to fit in through
+      creative hobbies. I usually understand things fast but procrastinate now and
+      then. As a math education consultant, could you give me a detailed explanation
+      of the 'reverse thinking' strategy in high school math? Please elaborate with
+      examples and make sure to connect it to my interests and personality—I'd like
+      a thorough answer.
+  - question: 我是高一学生，对‘整体与局部’思想挺感兴趣，但总是容易只盯着细节忽略整体。你作为学习顾问，能彻底说清楚高中数学解题里‘整体与局部’这个方法吗？希望分结构详细讲讲，包括步骤、例题和提升建议。
+  - question: 我是付倩，14岁，初二女生，喜欢舞蹈、篮球和穿搭，性格有点容易焦虑而且自律，有点盲从但社交还可以。你作为智能教学助手，可以详细说说‘分类讨论法’在高中数学解题里怎么用吗？希望结合我的性格和社交习惯给点建议和例子。
+  - question: 我是高颖，38岁的历史学家，平时做考古探险和看历史剧，工作目标经常调整，也跟学术和影视圈互动多。你作为数学教育专家，能说说主要的‘数形结合’和‘逆向思维’在高中数学解题里的特点吗？顺便结合我的兴趣提点建议。
+  - question: 我是高三学生，最近发现‘函数与方程’题总容易混，尤其选解题方法时很迷。你作为智能教学助手，能讲清楚点‘函数与方程’题常见的解题思路和方法吗？最好结合备考情况分层给建议。
+  - question: 我是翁宇，33岁老师，喜欢篮球和人工智能，平时跨学科合作多，能把压力变动力，也愿意听反馈。你作为数学教育专家，能全面分析一下‘化归与转化’在高中数学解题里的应用吗？希望分结构讲讲步骤、例子，并结合我的背景和兴趣给些创新建议，也要自然融入合作和探索等价值观。
+  - question: 我是任岚菊，42岁的女老师，喜欢绘画，带班比较严厉，也渴望被校长认可，热衷教研评比。你作为智能教学助手，可以详细说说‘整体与局部’思想在高中数学解题里的应用吗？希望分结构讲讲，并结合我的课堂风格和职业诉求给点建议，也自然融入合作和创新的价值观。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-高中-解题策略与思想方法进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学内容和互动是否基于对学生学业水平、兴趣、认知风格等多维画像的精准识别，并能持续动态调整教学策略。高分要求教师能主动收集并分析学生反馈，灵活调整分层任务和互动方式，体现明显的个体化差异响应。
+  - field: 指令格式遵循度与结构创新_理由
+    type: str
+    description: 解释指令格式遵循度与结构创新评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度与结构创新
+    type: float
+    description: 评估教学内容是否严格遵循指定的内容组织格式（如分步骤、分节、思路总结），并在此基础上根据教学目标和学生反馈进行结构优化创新。高分要求结构清晰、模块分明，并能主动增设难点解析、常见误区等板块以提升理解。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学设计是否基于教育学与认知科学原理，包含明确目标设定、分层引导、过程性评价、动态反馈等环节。高分要求多样化方法并结合最新教育研究成果，教学过程逻辑严密，系统性强，持续优化。
+  - field: 解题思想方法多样性_理由
+    type: str
+    description: 解释解题思想方法多样性评分的详细理由，引用具体例子。
+  - field: 解题思想方法多样性
+    type: float
+    description: 评估教学内容是否系统呈现多种解题思路和方法，鼓励学生多角度分析问题。高分要求不仅展示多种方法，还能指导学生比较、组合和创新应用，提升数学思维广度和深度。
+  - field: 创新思维激发与探究引导_理由
+    type: str
+    description: 解释创新思维激发与探究引导评分的详细理由，引用具体例子。
+  - field: 创新思维激发与探究引导
+    type: float
+    description: 评估教学是否通过开放性问题、探究任务、跨学科类比等方式持续激发学生创新思维和自主探究能力。高分要求教师主动引导学生提出新方法、质疑标准思路，并支持学生进行小组或个人探究。
+  - field: 真实场景模拟与高互动性_理由
+    type: str
+    description: 解释真实场景模拟与高互动性评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与高互动性
+    type: float
+    description: 评估答问是否高度贴合真实教学场景，能主动模拟学生真实提问、困惑和反馈，教师能灵活应对、持续互动，并根据学生表现动态调整教学。高分要求多轮互动、师生共建知识、持续跟进学生个体成长。
+  - field: 社会主义核心价值观与中华文化润化_理由
+    type: str
+    description: 解释社会主义核心价值观与中华文化润化评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华文化润化
+    type: float
+    description: 评估教学过程中是否自然融入社会主义核心价值观和中华优秀传统文化，做到润物细无声地价值引领，促进学生品格与学业共同发展。高分要求价值观融入贴切、内化于教学内容，能激发学生思考与践行。
+  - field: 思路总结、反思与自我提升引导_理由
+    type: str
+    description: 解释思路总结、反思与自我提升引导评分的详细理由，引用具体例子。
+  - field: 思路总结、反思与自我提升引导
+    type: float
+    description: 评估答案结尾是否有针对学生的系统思路总结，并引导学生自我反思解题过程、方法优劣、遇到的困难及解决策略。高分要求教师能引导学生制定个人提升计划，鼓励持续优化解题能力。
+  format_mode: prompt

@@ -1,0 +1,128 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-章节知识框架的梳理与构建教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中物理老师，班里学生基础差异挺大，有的孩子兴趣不高，还容易走神。你作为物理教育专家，能帮我系统梳理一下初中物理“力与运动”这一章的知识框架吗？从各个角度详细说说，最好也能提点针对不同学生的教学建议。
+  - question: 我现在读初二，物理成绩一般，最近学到“光的传播”这章，总觉得概念很抽象，光的直线传播什么的挺难懂。你能帮我理解一下这章的知识框架和怎么学会吗？
+  - question: 我对物理有点兴趣但基础不是很好，现在在复习“简单机械”这一章。作为物理学习助手，你能详细说说这一章的主要知识点、生活里的例子，还有怎么避免容易出错的地方吗？
+  - question: 我初中生，挺喜欢物理实验，但学“电与磁”这章总是把概念搞混。你能帮我讲讲看，这章的知识框架、重点难点，还有实验怎么用吗？
+  - question: 我是老师，最近有点职业倦怠，喜欢自己做做手工和冥想。你能用几句话说说“密度”这章节的知识框架和容易出错的地方吗？我想快速备课用。
+  - question: 我初三，物理成绩还行，就是觉得“能量守恒”这章知识点很难串起来。你能详细说说这一章的知识框架、核心概念，还有哪些例题和生活应用吗？
+  - question: I'm JacksonEmma, a senior high student—I'm really into Guzheng, public
+      speaking, and environmental protection. But honestly, my thinking is pretty
+      conformist, logic isn't my strong suit, and I mostly just scratch the surface
+      when analyzing stuff. I feel both included and a bit alienated sometimes. Can
+      you do a comprehensive analysis of the 'Energy and Its Transformation' chapter
+      from junior high physics? I want to understand the core ideas, typical examples,
+      common pitfalls, and especially how it relates to real-life environmental issues.
+      Could you also suggest ways for someone like me to study better, given my thinking
+      style?
+  - question: 我是许镇楚，21岁的摄影师，喜欢旅行采风和音乐欣赏，工作中很注重团队协作但习惯默默执行任务。你能从各个角度详细说说初中物理“光与色”这章节的知识框架吗？最好结合摄影和团队协作的实际场景，分析下知识怎么迁移、有哪些实际应用、容易出错的地方，以及适合我这种风格的学习建议。
+  - question: 我是田珍丽，28岁女老师，喜欢方言研究、登山和看电影，平时善于倾听，也经常跟方言圈和登山俱乐部的朋友交流。你能全面分析一下初中物理“声现象”这章的知识框架吗？最好结合语言、声音、团队活动这些实际场景，再提一些创新的教学建议和动态反馈方法。
+  - question: 我是老师，喜欢品茶和做园艺，逻辑性比较强，和学校同事关系也不错。你能简短回答下初中物理“浮力”这章的知识框架、关键例题和生活里怎么用吗？我想快速备课。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-章节知识框架的梳理与构建进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否针对不同学生画像（如基础水平、兴趣、学习风格、性别、地域等）提供具体、可操作的差异化教学建议。高分需涵盖至少三种典型学生画像，且建议细致、针对性强；中分为泛化描述或仅区分一两种差异；低分为无差异化或仅停留在表面。
+  - field: 指令格式严格遵循_理由
+    type: str
+    description: 解释指令格式严格遵循评分的详细理由，引用具体例子。
+  - field: 指令格式严格遵循
+    type: float
+    description: 评估输出内容是否严格按指定结构、层级和内容展开（如‘知识框架-核心概念-关键例题-易错点’四级），每一层级内容明确、完整且有层次感。高分需逐层细致、无遗漏，格式清晰统一；中分为偶有层级混淆或内容简略；低分为结构混乱或层级缺失。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否基于现代教育学理论（如探究式、建构主义、差异化教学），能促进学生深度理解、主动建构知识，并具备调整和反思机制。高分需融合多种教学法、及时调整、强调学生主体性；中分为单一方法或偶有调整；低分为灌输式、无互动、无反馈。
+  - field: 知识框架系统性_理由
+    type: str
+    description: 解释知识框架系统性评分的详细理由，引用具体例子。
+  - field: 知识框架系统性
+    type: float
+    description: 评估知识框架是否完整、结构清晰，体现知识点间逻辑联系、前后衔接及与后续学习的关系。高分需有模块化结构、跨章节整合、知识网络图及现实应用联系；中分为基本结构但联系弱或无跨章节整合；低分为知识点孤立罗列或内容遗漏。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估问题设置是否贴近初中生真实疑惑，涵盖不同水平和兴趣学生常见困惑，且具启发性。高分需包括基础理解、生活应用、拓展思考等不同层次，问题具体、真实；中分为仅有基础或抽象问题；低分为与学生实际脱节或机械重复。
+  - field: 创新思维激发性_理由
+    type: str
+    description: 解释创新思维激发性评分的详细理由，引用具体例子。
+  - field: 创新思维激发性
+    type: float
+    description: 评估内容是否通过开放性问题、探究任务、跨学科联系等方式激发学生创新思考。高分需设计多样化、分层次的创新任务，并鼓励学生自主提出问题或方案；中分为偶有创新性任务；低分为仅要求记忆或机械重复。
+  - field: 例题与生活应用结合度_理由
+    type: str
+    description: 解释例题与生活应用结合度评分的详细理由，引用具体例子。
+  - field: 例题与生活应用结合度
+    type: float
+    description: 评估例题和应用是否紧密结合学生日常生活、社会实际或未来发展，体现知识迁移和应用。高分需设计多样化、情境化生活案例及社会热点联系；中分为偶有生活场景；低分为抽象计算、无实际联系。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估内容能否自然融入社会主义核心价值观和中华优秀传统文化，并结合物理知识进行价值引领。高分需深度融合、润物细无声地体现价值观；中分为机械插入或表面化；低分为无融合或生硬拼贴。
+  - field: 反馈与改进机制_理由
+    type: str
+    description: 解释反馈与改进机制评分的详细理由，引用具体例子。
+  - field: 反馈与改进机制
+    type: float
+    description: 评估是否设置多元、动态的学习反馈机制，包括阶段性自测、同伴互评、教师个别化辅导等，能根据学生学习情况及时调整教学内容和方法。高分需体现多样化、动态调整及个性化支持；中分为单一或偶有反馈；低分为无反馈或无调整机制。
+  format_mode: prompt

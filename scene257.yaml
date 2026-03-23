@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-“一国两制”的含义与实践教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初三学生，最近政治课讲到“一国两制”，但我感觉还是挺抽象的。你作为政治教育专家，能不能详细展开说说‘一国两制’到底是什么意思，以及它是怎么在实际中应用的？我更喜欢用生活例子来理解知识，也容易对理论内容有点抵触，所以希望你能讲得生动点，帮我更好接受这个知识点。
+  - question: 我是初中政治老师，班里有些学生对‘一国两制’兴趣不高，上课容易走神。你作为学习顾问，说说你的看法，怎么通过案例和互动让他们更有兴趣参与进来？
+  - question: 我是一名教育教研员，最近想设计初中‘一国两制’专题课程，但发现学生对政策背景和实际案例理解不一。你作为政治学知识导师，能全面深入地讲讲‘一国两制’的含义、历史、实施过程、现实意义及面临的挑战吗？希望你能结合中华优秀传统文化和社会主义核心价值观，引导学生多元和批判性思考。
+  - question: 我是初中学生家长，我家孩子性格内向，对政治话题不太感兴趣，但喜欢历史故事。你作为学习助手，我想深入了解‘一国两制’的含义和实践，希望你用生动的故事或历史案例帮孩子建立兴趣，也给我点建议怎么在家里激发孩子学习动力。
+  - question: 我是初一学生，最近刚学‘一国两制’，觉得有点复杂。你能帮我概括一下它的基本意思和实际应用吗？
+  - question: 我是初中政治教师，也负责思政课教研。你作为政治教育专家，能全方位地讲解一下‘一国两制’的理论基础、历史发展、现实成就、面临的挑战和未来展望吗？希望你能结合案例和启发式教学建议，帮助我们提升课堂深度和互动性。
+  - question: My name is WhiteDennis, I'm a male 11th grader who enjoys independent
+      exploration—things like tree climbing, astronomy, and AI research. I like clear
+      boundaries and balance solitary hobbies with structured academic work. Can you
+      briefly summarize what ‘One Country, Two Systems’ means and how it's put into
+      practice, with an explanation that suits someone who likes analytical thinking
+      and real-world examples?
+  - question: 我是三年级学生东郭雨嫣，兴趣挺广泛，不过还是很关心学习成绩，最近老师讲到‘一国两制’，我觉得有点难懂。你作为学习小助手，能帮我理解一下‘一国两制’是什么意思、有什么作用，还能举个简单例子让我容易明白吗？
+  - question: 我是权真，今年60岁，是老师，平时喜欢烹饪和广场舞，也经常和学生家长聚会。现在家长和学生对‘一国两制’有不少疑问。你作为政治教育专家，能详细说说‘一国两制’的核心内容、实际案例，还有在家长沟通中怎么用生活化的例子解释吗？
+  - question: My name is GarciaSamantha, I'm a female 11th grader who likes creative
+      writing, floral arrangement, and programming. I value intuitive and creative
+      approaches to learning, and my focus sometimes shifts. Can you explain ‘One
+      Country, Two Systems’ in a way that suits my learning style? Please include
+      enough detail and examples so I can really understand it.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-“一国两制”的含义与实践进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估回答是否充分结合学生的具体学习水平、兴趣、疑惑等个体差异，进行针对性讲解和互动，包括主动追问、动态调整内容。高分需体现教师对学生反馈的敏感和深入回应，低分为机械一致、无个体差异。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估回答是否严格按照指定结构、分段、字数等格式要求输出，内容条理分明，便于理解和批改。高分需无遗漏且逻辑清晰，低分为结构混乱或格式不符。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估所用教学方法是否符合教育学原理，如启发式、互动式、情境教学等，能促使学生积极思考、参与和自主探索。高分需有多样化互动和动态调整，低分为单向灌输、无参与。
+  - field: 知识结构清晰度_理由
+    type: str
+    description: 解释知识结构清晰度评分的详细理由，引用具体例子。
+  - field: 知识结构清晰度
+    type: float
+    description: 评估内容层次是否分明、逻辑严密，知识点之间有明确因果和递进关系，重点突出，能通过结构图或简明总结帮助学生理清整体框架。高分需有结构可视化和重点提示，低分为层次混乱、无总结。
+  - field: 激发创造性思维能力_理由
+    type: str
+    description: 解释激发创造性思维能力评分的详细理由，引用具体例子。
+  - field: 激发创造性思维能力
+    type: float
+    description: 评估是否通过高质量开放性问题、案例分析或情境模拟等方式，引导学生主动提出新观点、创新思考或自主设计方案。高分需体现学生主动创新和观点差异，低分为只要求记忆，无创新空间。
+  - field: 模拟真实问题能力_理由
+    type: str
+    description: 解释模拟真实问题能力评分的详细理由，引用具体例子。
+  - field: 模拟真实问题能力
+    type: float
+    description: 评估问题设计是否贴近学生生活及真实学习场景，能反映实际困惑、兴趣点或体验，增强内容现实意义。高分需有具体情境、生活联系和学生共鸣，低分为抽象或脱离生活。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估是否自然、深入地融入社会主义核心价值观（如国家统一、法治、包容等），通过具体案例、情感引导和现实联系帮助学生理解其意义。高分需有案例分析和学生主动表达感受，低分为机械灌输、无情感或现实联系。
+  - field: 中华优秀传统文化传承性_理由
+    type: str
+    description: 解释中华优秀传统文化传承性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承性
+    type: float
+    description: 评估是否在教学中深度融合中华优秀传统文化理念（如‘和而不同’、包容、协商等），用文化视角解释政治内容，激发学生文化自信。高分需有具体文化思想与政策结合的分析和学生思考，低分为缺乏文化内涵或仅表面提及。
+  format_mode: prompt

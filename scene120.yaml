@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene120/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 生物-小学-动植物生长条件探索教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为科学教育专家，我是三年级科学老师，最近带学生做动植物生长条件探索，他们很活跃、喜欢合作学习。能全面深入地讲讲，针对这样的班级，如何系统设计这类课程和创新活动吗？
+    - question: 我是小学一年级孩子的家长，他最近喜欢自己种豆芽，对植物怎么长出来特别好奇。能不能概括一下，低年级孩子适合怎么理解动植物生长的条件？有啥简单的家庭活动建议吗？
+    - question: 你是小学科学学习助手，能解释一下吗？三年级动植物生长实验时，为什么要只改一个条件，比如只加水或只调光？
+    - question: 我是刚入职的小学科学老师，动植物生长条件探索课上，学生喜欢观察但不爱记数据，也不太愿讨论。帮我理解一下，怎么引导他们主动记录和交流，让他们更深入探索？
+    - question: 我是毛坤，34岁老师，喜欢潜水和天文摄影，平时在学校专业交流，周末常跟潜水和天文俱乐部的朋友玩。作为科学教育专家，你能解释一下，怎么把动植物生长条件探索和水下生态、天文或环境保护结合起来，设计点创新的教学活动吗？我喜欢跨学科尝试。
+    - question: 我是四年级班主任，学生动手很厉害但理论基础差，做动植物生长条件实验时经常自由发挥，容易跑题。你能详细分析下，怎么在保护他们兴趣的同时，引导他们规范实验设计和科学思考吗？举些教学策略和活动的例子，我想深入了解。
+    - question: 你作为科学教育专家，能讲得详细点吗？通过动植物生长条件探索，怎么培养学生合作精神和尊重自然的态度？最好有具体活动和示例。
+    - question: 我是三年级学生，科学课学动植物生长条件探索，水分、阳光、空气、土壤各自有什么作用？能不能讲讲看，举点例子？
+    - question: 你是科学学习助手，能不能用几句话说说，动植物生长条件探索里最容易被大家忽视但其实很重要的环节是哪一个？为什么？
+    - question: 你作为科学教育专家，我家刘双，8岁三年级男生，喜欢书法、乐高、游泳，性格内外向混合，课余和同学、书法班和游泳队伙伴都玩得好，每周五放学去爷爷奶奶家，周日父母接回。能不能从兴趣、社会关系、家庭环境、课堂活动和科学素养等角度，从各个方面详细说说，怎么设计适合他的动植物生长条件探索项目，让他课内外都能积极成长？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 生物-小学-动植物生长条件探索进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像精准识别
+      type: float
+      description: 评估教学内容和互动方式是否深入分析并响应学生具体年龄、兴趣、认知能力和学习基础，能针对多样化画像精准调整教学策略，而非仅泛泛适应小学阶段。
+    - field: 个性化教学方案定制
+      type: float
+      description: 评估教学方案是否根据学生个体差异（动手能力、学习风格、兴趣取向）提供多样化选择与分层任务，确保每位学生能在适合自己的路径上参与、成长和挑战。
+    - field: 格式与结构规范性
+      type: float
+      description: 评估内容组织是否严格遵循题目或指令结构，段落分明、流程清晰，并突出每个教学环节的核心要点，便于理解与执行。
+    - field: 科学性与专业性
+      type: float
+      description: 评估教学内容是否基于科学原理，表达准确且符合小学阶段认知发展，能引导学生思考关键生长条件及其相互关系，避免过度简化或错误传递，鼓励科学探究方法。
+    - field: 教学活动创新性
+      type: float
+      description: 评估教学活动是否采用探究式、项目式或跨学科融合等创新方法，鼓励学生主动设计实验、合作探究、并通过多种表达方式呈现成果，超越传统讲授与模仿。
+    - field: 学生创造力激发程度
+      type: float
+      description: 评估教学环节是否设置开放性任务、假设与讨论，引导学生独立思考、提出新问题并创新表达，培养其科学探究和创造性解决问题的能力。
+    - field: 模拟真实提问与互动匹配度
+      type: float
+      description: 评估教学内容能否贴近真实小学课堂场景，回应学生常见疑问、困惑和兴趣点，设计互动环节促进学生主动提问、交流和深入理解。
+    - field: 社会主义核心价值观及中华优秀传统文化融入度
+      type: float
+      description: 评估教学活动能否将社会主义核心价值观（如尊重自然、合作探究、勤奋学习、劳动实践等）和中华优秀传统文化自然融合到活动设计、过程体验和成果表达中，促进学生品格养成和文化认同。
+format_mode: prompt

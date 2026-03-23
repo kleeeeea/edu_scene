@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-小学-两人三足跑教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我叫郑慧妍，是一名42岁的女教师，平时喜欢越剧和太极拳，性格比较自信、善于团队协作。最近在小学组织两人三足跑的时候，发现学生间有配合不顺畅、容易产生摩擦的问题。你作为体育专家，说说你的看法，怎么有效培养他们的团队协作能力？有没有什么新颖的玩法能让活动更有趣、更能促进合作？
+  - question: 我是小学体育老师，最近要组织两人三足跑，但有些孩子因为怕摔倒，参与积极性不高。你能解释一下吗，孩子们在这个活动里会有哪些心理障碍和安全顾虑？怎么科学地引导他们，提升参与度和勇气？有实际教学经验的话麻烦举个例子。
+  - question: 我是四年级学生，平时爱运动，但在两人三足跑总是和同伴步伐不一致，经常摔倒或者跑得慢。你是体育学习助手，简短回答下，有哪些简单的方法能帮我们配合得更好，少出错？
+  - question: 我是家长，我女儿胆子小，参加两人三足跑总怕摔倒，不太想参与。你作为体育教育顾问，概括一下我可以怎么鼓励她勇敢尝试，又能注意安全，让她感受到团队合作的快乐？
+  - question: 我是小学体育教研员，负责设计全年级的两人三足跑教学方案，学生性格和身体条件都很不一样。你作为体育教学专家，全方位地讲解一下，怎么从分层、分组、创新玩法、安全保障、合作精神培养等方面，系统提升两人三足跑的教育价值，让每个孩子都能有所收获，团队协作、勇敢挑战这些核心价值观也能自然融入教学？
+  - question: 我是小学一年级体育老师，班里孩子性格和动作协调能力差异很大。你作为小学体育专家，能全面深入地讲讲吗？怎么设计两人三足跑活动，让不同的孩子都能积极参与、体验乐趣？教学流程、分组、创新玩法、安全措施、情感引导这些方面请都讲讲，最好结合实际案例，还要自然带出团队合作、勇气和互助这些价值观。
+  - question: 我是三年级体育老师，发现两人三足跑时有些孩子很爱创新，有些却被规则限制住，活动不够有趣。你作为体育专家，能深入讲解一下吗，怎么在课堂里引导孩子们既敢创新，又能尊重规则，还能提升团队协作和运动兴趣？希望你能结合实际教学案例和具体方法详细分析。
+  - question: 我是小学体育老师，班里有几个孩子在两人三足跑里总闹矛盾，影响团队氛围。你作为体育教学顾问，详细说说怎么通过分组、沟通训练、合作游戏等方法，改善他们的相互理解和团队精神？能分享一些实用的小技巧或活动设计吗？
+  - question: 我是五年级学生，身体比较瘦，和同伴参加两人三足跑时总怕拖后腿，觉得自己速度慢。你是体育学习助手，深入说说看，在两人三足跑里怎么发挥个人优势、弥补不足、互相支持，提升自信和运动能力？如果有实际例子和心理疏导的方法就更好了。
+  - question: 我是小学体育老师，班里有孩子总抢着当队长，两人三足跑分组时就会有冲突。你作为体育教学专家，讲清楚点，怎么通过活动设计和规则引导，让大家学会合理分工、互相尊重、提升团队协作和公平意识？能举个具体做法的例子吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-小学-两人三足跑进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学方案是否能细致识别并响应学生的多样个体特征，包括性格、运动能力、兴趣及身体状况，针对不同学生设计具体、可操作的分层措施，并在课堂互动中持续追踪和调整，确保个体差异得到充分关注和支持。
+  - field: 指令遵循与结构完整性_理由
+    type: str
+    description: 解释指令遵循与结构完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构完整性
+    type: float
+    description: 评估教学设计是否严格按照教学任务和场景要求展开，流程环节不仅齐全、连贯，还能根据实际课堂问题灵活调整，明确每一环节的核心目标和衔接方式，避免机械罗列或关键细节缺失，保障教学逻辑与有效性。
+  - field: 教学方法科学性与分层设计_理由
+    type: str
+    description: 解释教学方法科学性与分层设计评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与分层设计
+    type: float
+    description: 评估教学方法是否依据小学体育发展规律，针对学生不同基础与成长阶段分层、分步设计练习，兼顾技能、体能、心理等多维发展，体现系统性和动态适应，鼓励教师根据实际反馈灵活调整。
+  - field: 安全与协作意识培养_理由
+    type: str
+    description: 解释安全与协作意识培养评分的详细理由，引用具体例子。
+  - field: 安全与协作意识培养
+    type: float
+    description: 评估教学内容是否系统细致地关注学生安全，明确操作流程和预防措施，持续指导团队沟通与协作，在练习过程中反复强化安全与协作意识，并能及时识别和处理潜在风险。
+  - field: 创新与探索能力激发_理由
+    type: str
+    description: 解释创新与探索能力激发评分的详细理由，引用具体例子。
+  - field: 创新与探索能力激发
+    type: float
+    description: 评估教学活动是否主动设置开放性任务，鼓励学生尝试创新合作方式、改进策略或设计新玩法，支持学生自主探究、交流和反思效果，并在课堂中展示与评价创新成果，激发创造性与问题解决能力。
+  - field: 问题情境真实性与贴近度_理由
+    type: str
+    description: 解释问题情境真实性与贴近度评分的详细理由，引用具体例子。
+  - field: 问题情境真实性与贴近度
+    type: float
+    description: 评估教学设计和互动能否紧密结合小学体育课堂实际，精准反映师生真实互动、学生常见困惑及现场应对措施，并针对典型问题提出有效解决方案，避免脱离实际或空泛讨论。
+  - field: 价值观自然融入与深度_理由
+    type: str
+    description: 解释价值观自然融入与深度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入与深度
+    type: float
+    description: 评估教学过程中是否将团结协作、友善互助、积极应对挑战等核心价值观具体融入行为指导、互动反馈和过程性引导，针对学生实际表现深入分析和引导，避免表面化或口号化处理，促进学生价值观的内化与实践。
+  - field: 语言表达规范性与适龄性_理由
+    type: str
+    description: 解释语言表达规范性与适龄性评分的详细理由，引用具体例子。
+  - field: 语言表达规范性与适龄性
+    type: float
+    description: 评估教学语言是否简明、规范，结构清晰，表达贴合小学生认知水平，避免生僻词或复杂句式，确保学生易于理解和积极参与。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-关键生物学术语的辨析与关联教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二男生吕迪，最近在生物课上总是把“渗透”和“扩散”这两个术语弄混了。老师让我们分析这两个概念的区别和联系，还要求结合生活实例详细说明。你作为我的学习助手，能不能详细展开说说，把它们的定义、机制、真实生活中的例子，以及怎么更高效区分的方法都讲清楚吗？最好能结合我喜欢轮滑、机器人制作和动漫绘画这些兴趣点，让我更容易理解。
+  - question: 我是23岁的作家夏仲，平时喜欢品茶、阅读和旅行。最近在查资料写科幻小说时发现“基因”和“染色体”这两个生物学术语容易混淆。我职业规划很明确，也习惯主导创作团队管理事务。你作为专业的生物学知识顾问，能不能讲清楚点，详细解释一下“基因”和“染色体”各自的定义、关系、在真实生物体中的作用，并举个茶树或人类遗传的例子说明？希望内容既能满足我的感性理解，也能方便我在团队讨论时精准表达。
+  - question: 我最近在生物课小组讨论时发现大家对“生态系统”这个概念理解得不太一致，有人说就是动植物的集合，有人说还包括环境。你能详细展开说说，什么是生态系统？它有哪些重要组成部分？最好能结合城市和农村的生活案例，让我们小组成员都能准确理解并在讨论时用得上。
+  - question: 我是JacksonJulia，一名31岁的生物老师，平时热爱自然观察和写作，喜欢用清晰沟通和户外活动来平衡工作与生活。最近发现学生们在学习“细胞分裂”时很容易混淆有丝分裂和减数分裂。你能简要说明下这两个过程的主要区别，并举一个生活化的例子方便课堂讲解吗？内容要够清晰、便于学生理解。
+  - question: 我是WilsonSkylar，今年10岁，在五年级读书。我喜欢讲故事、玩手机摄影和街舞，但生物课上听老师讲“光合作用”和“呼吸作用”总是觉得很难理解。你是我的学习支持者，能不能系统地讲解一下这两个过程的区别和联系？最好多举些生活化例子，比如植物和人呼吸、运动时的能量变化，还能推荐些适合我这种喜欢动手、故事、拍照的学习方法，帮我建立信心。
+  - question: 我在复习初中生物时，发现“遗传”和“变异”常被当作一回事，但老师说它们有本质区别。帮我理解一下，这两个术语分别指什么、有什么联系和区别？适合自学时参考。
+  - question: 我是RogersJulian，45岁的针灸师，平时喜欢练瑜伽和太极，注重身心平衡和气流的畅通。最近在和病人聊健康时，想把“自养”和“异养”这两个生物学术语讲清楚，但担心解释得不够贴切。你能具体说说吗？最好结合中医养生或日常饮食的例子说明，让我能在交流时既科学又易懂。
+  - question: 我在备考生物时发现“原核细胞”和“真核细胞”这两个词总记不住具体区别。能不能彻底说清楚它们在结构、功能和进化上的异同？内容要全面系统，最好结合常见生物实例和学习建议，帮助我形成整体认识。
+  - question: 最近生物课上老师提到“酶”和“激素”时，很多同学分不清它们的作用和区别。详细说说，这两个词各指什么？有哪些联系和不同？最好能举些生活中的具体例子，适合我们班同学课后复习用。
+  - question: 有同学问我“动物细胞”和“植物细胞”到底有什么不同，我自己也有点模糊。用几句话说说，主要区别和联系是什么？核心要点要清楚，方便大家记忆。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-关键生物学术语的辨析与关联进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价回答是否充分考虑学生的具体画像（基础水平、兴趣、认知风格等），能灵活调整讲解内容、表达方式和辅导策略，体现对个体差异的敏感与响应。强调对学生反馈的动态适配与个性化支持。
+  - field: 指令遵循精准性_理由
+    type: str
+    description: 解释指令遵循精准性评分的详细理由，引用具体例子。
+  - field: 指令遵循精准性
+    type: float
+    description: 评价回答是否严格、完整地按照题目或教师指令作答，涵盖所有要求，步骤与内容无遗漏、偏离，体现对流程和细节的高度把控。对指令理解有误或遗漏，均视为扣分点。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价答案采用的教学方法是否系统、科学，能有效促进学生理解、迁移与应用，包括但不限于启发式、情境模拟、对比分析等。关注方法的层次性、结构化和激发学生主动学习的能力。
+  - field: 知识逻辑严谨性_理由
+    type: str
+    description: 解释知识逻辑严谨性评分的详细理由，引用具体例子。
+  - field: 知识逻辑严谨性
+    type: float
+    description: 评价生物学术语解释及其联系、区别是否准确、细致，能兼顾常规与特殊情境（如例外、边界情况），避免混淆、遗漏或知识性错误。对术语之间的内在逻辑和层次关系有清晰、合理的说明。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价答案是否通过多层次开放性提问、启发引导、跨学科拓展、小实验设计等方式，分阶段激发学生创新思维、探究欲和实际应用能力，从基础创新到复杂探究均有体现。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评价问题与回答是否贴近真实初中课堂环境，涵盖学生常见疑惑、表达习惯与生活实际，语言自然，体现真实学习需求和互动氛围。关注师生互动的真实性和情境感。
+  - field: 价值观润物细无声融入_理由
+    type: str
+    description: 解释价值观润物细无声融入评分的详细理由，引用具体例子。
+  - field: 价值观润物细无声融入
+    type: float
+    description: 评价是否将社会主义核心价值观或中华优秀传统文化（如尊重生命、科学精神、合作意识等）自然、恰当地融入知识讲解，做到有机结合、潜移默化，避免生硬堆砌或与内容脱节。关注融合的细腻度和情境适配性。
+  - field: 多样化表达与辅助工具应用_理由
+    type: str
+    description: 解释多样化表达与辅助工具应用评分的详细理由，引用具体例子。
+  - field: 多样化表达与辅助工具应用
+    type: float
+    description: 评价是否根据内容特点和学生需求，灵活、有效地运用图表、类比、实例、视频等多种表达方式和辅助工具，提升理解与记忆。工具选择需与内容和学生特征高度匹配，避免形式化、无效堆砌。
+  format_mode: prompt

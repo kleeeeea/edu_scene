@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-重大历史事件的要素分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为历史教育专家，能不能全方位地讲解一下辛亥革命？我希望能从背景、过程、人物、影响等方面系统梳理，内容越全面越好。
+  - question: 我是四年级的李力，喜欢科学实验和篮球，最近在学鸦片战争这个历史事件，你能结合我的兴趣和性格，说说你的看法吗？举点例子帮我理解下原因和影响。
+  - question: 我是初三学生，历史成绩一直不好，感觉新中国成立这段历史特别难记。你能不能深入说说看，从各方面分析下它的重大意义？最好多举点例子，还能教我点记忆的小方法。
+  - question: 你是历史教研员，能给我全方位地讲解一下抗日战争吗？希望能从背景到过程、人物、影响都系统梳理，还能给出一些启发学生思考的教学建议。
+  - question: 我是初中历史老师，学生学五四运动总是停留在表面，你能详细说说它的历史背景、过程、人物和影响吗？最好举点例子，帮我让学生更好理解五四运动的意义。
+  - question: 你是历史老师，能详细讲讲甲午战争吗？希望能从背景、过程、人物、影响和历史反思都说说，还能结合民族精神引导我们思考。
+  - question: 我是老师詹沛杨，喜欢直接表达观点。你能帮我简要说明下土地改革的历史要素吗？想在课上快速梳理给学生听，核心要点就行。
+  - question: 你是历史教学助手，能帮我理解一下文化大革命吗？希望能详细解释下它的背景、过程、人物和影响，还能结合点教学建议。
+  - question: 我是初一学生，历史事件老是记不清。你能具体说说改革开放的主要内容吗？最好用简单点的语言和举例子帮我理解下。
+  - question: 我是老师孙萍，喜欢旅行和视频剪辑。你能大概讲讲长征的重大历史要素吗？核心内容简单说说就行，方便我在课上用。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-重大历史事件的要素分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学设计能够基于学生的多维画像（如学习能力、兴趣、认知水平、特殊需求等），实施分层分组、差异化任务、个性化反馈等具体措施，有效支持不同类型学生的发展。关注并响应特殊学生群体，促进全体学生参与和进步。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 严格按照教学任务或试题要求，内容结构分明、层级清晰，按要求完整覆盖所有分析要素。各部分有明确小标题，逻辑顺畅，语言规范，无格式混乱或内容遗漏，便于理解和评阅。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 采用多样化、以学生为中心的教学方法，促进学生主动参与、合作探究、批判性思维和自主学习。教学设计能结合学科特点，合理安排小组合作、探究式、情境模拟等活动，并结合反思与多元评价。避免单向灌输和机械记忆。高分需体现方法创新、理论联系实际。
+  - field: 历史事件要素分析的系统性与深度_理由
+    type: str
+    description: 解释历史事件要素分析的系统性与深度评分的详细理由，引用具体例子。
+  - field: 历史事件要素分析的系统性与深度
+    type: float
+    description: 对历史事件进行多维、系统、深度分析，涵盖背景、过程、结果、影响等要素。能够结合多种史料与不同观点，分析事件的因果关系、历史逻辑和长远影响。高分需展示对事件复杂性的理解、历史争议的辨析及现实意义的关联。
+  - field: 创新思维激发与开放性问题设置_理由
+    type: str
+    description: 解释创新思维激发与开放性问题设置评分的详细理由，引用具体例子。
+  - field: 创新思维激发与开放性问题设置
+    type: float
+    description: 教学中能设计开放性、探究性的问题，激发学生创新思维、批判性思维和历史想象力。问题设置具备多角度、现实联系和多答案可能性，鼓励学生自主探究和表达独立见解。高分需问题有挑战性、能引发深入讨论与多元解读。
+  - field: 学生创造性表达空间_理由
+    type: str
+    description: 解释学生创造性表达空间评分的详细理由，引用具体例子。
+  - field: 学生创造性表达空间
+    type: float
+    description: 为学生提供多元表达渠道，鼓励个性化和创造性地展示历史分析与观点。支持漫画、剧本、演讲、短视频、手工模型等多种表达方式，设有成果展示与互评环节，尊重多元成果。高分需体现学生自主选择、表达深度与创新性。
+  - field: 社会主义核心价值观与中华优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入
+    type: float
+    description: 在教学中自然、恰当地将社会主义核心价值观和中华优秀传统文化融入历史分析，通过具体史实、人物、典故等引导学生思考民族认同、责任意识和文化传承，避免口号化或生硬灌输。高分需能结合历史事件深入挖掘价值观与文化内涵，启发学生自主思考。
+  - field: 模拟真实提问场景的贴合度_理由
+    type: str
+    description: 解释模拟真实提问场景的贴合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景的贴合度
+    type: float
+    description: 问题设计贴合初中历史课堂实际，关注学生真实疑惑、兴趣和发展需求。问题具备层次性、探究性和现实适应性，兼顾基础知识和高阶思维，能激发学生深度思考和主动学习。高分需体现问题的情境性、开放性和现实关联。
+  format_mode: prompt

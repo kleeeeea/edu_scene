@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-解题方法的选择与条件判断教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是14岁的初二学生谭义，平时喜欢跆拳道和游泳，性格有时候情绪化有时候理性，社交圈比较固定，主要和跆拳道馆教练每周训练，学校也有几个游泳的好朋友。最近在物理学习中，遇到题目时经常不知道该选用哪种解题方法，也不太清楚怎么判断条件。你作为物理知识导师，能不能详细讲讲初中物理解题方法的选择和条件判断？我想深入了解，最好能结合我的兴趣和性格，多举举例子。
+  - question: 你作为物理教育专家，我是一名35岁的女老师冯美琳，平时喜欢园艺、健美操和自然观察，现实与理想之间常常妥协，表达精准，有革新思维，善于倾听。在同事中因创新和表达获得认可，也和社区环保组织有联系。能简短回答下，在初中物理教学中，针对学生常见的解题方法选择和条件判断的困惑，有哪些实用的引导或策略？说说核心要点。
+  - question: 我是一名初中物理老师，班里有几位学生在做题时总是纠结于选择哪种解题方法，也经常在判断题目隐含条件时出错。你是我的教学顾问，能帮我分析一下初中物理解题方法的选择思路和条件判断的基本原则吗？帮我理解一下，最好能结合具体案例。
+  - question: 你作为一名物理学习助手，我是初三学生，最近在复习物理时发现有些题目可以用多种方法解决，但我总是不确定该选哪种方法比较高效。说说你的看法，解题方法选择时应该考虑哪些因素？可以举例说明。
+  - question: 我是新入职的物理教师，面对初中生解题方法选择与条件判断教学感到迷茫。你是资深物理教育专家，能不能彻底说清楚初中物理解题方法选择与条件判断的教学原则、常见误区、创新策略和典型案例？希望内容全面、系统，帮我建立完整的教学思路。
+  - question: 你作为物理知识导师，我是一名48岁的电商运营屠亦，喜欢摄影和数据分析，在公司推动创新项目时有时比较疏离，但在摄影圈又很想融入，经常需要提升实践能力。能说说主要的，初中物理常用的解题方法选择与条件判断有哪些主要技巧？突出核心要点，适合实践派。
+  - question: 我是初中物理新教师，班级里有几个学生做题时常常卡在判断已知条件和方法选择上。你作为我的教学顾问，能不能详细说说，怎么在教学中引导学生掌握物理解题方法的选择与条件判断？最好结合课堂实际举例。
+  - question: 你作为物理教育专家，我是一名教研员，最近在组织初中物理解题方法教学研讨。能给我一份完整的分析，系统梳理解题方法选择与条件判断的理论依据、教学策略、创新做法和实际案例吗？希望内容全面，便于推广。
+  - question: 我是初中物理老师，班里有一组学生解题时总是陷入方法选择的纠结，也常忽略题目的条件。你是教学顾问，能不能详细展开说说，怎么培养学生科学判断条件和灵活选择解题方法的能力？最好有理论、案例和创新建议。
+  - question: 你是物理学习助手，我是一名初中学生，最近做题总是在条件判断和方法选择上犹豫。说说你的看法，有哪些有效的判断和选择技巧？能举些常见例子吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-解题方法的选择与条件判断进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 根据学生的知识基础、兴趣、认知特点等个体差异，动态调整教学内容和方式，并明确反馈调整依据，体现持续追踪和差异化指导，支持学生个体成长。
+  - field: 指令遵循完整性_理由
+    type: str
+    description: 解释指令遵循完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循完整性
+    type: float
+    description: 严格按照指定答题流程和格式，逐步呈现全部要求环节，并在每一环节提供具体、详实内容，确保无遗漏、无随意增减，对流程中的每一步均有明确体现。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 采用符合初中物理认知规律的多元教学方法，结合原理讲解、情境应用、实验探究、图像分析等，注重知识体系构建和迁移，避免机械记忆或过度简化，促进学生系统性思维和主动探究。
+  - field: 条件判断准确性_理由
+    type: str
+    description: 解释条件判断准确性评分的详细理由，引用具体例子。
+  - field: 条件判断准确性
+    type: float
+    description: 全面分析题目显性与隐性条件，准确识别关键影响因素与干扰项，深入解释条件对方法选择和解题过程的具体作用，避免遗漏或误判。
+  - field: 方法选择合理性_理由
+    type: str
+    description: 解释方法选择合理性评分的详细理由，引用具体例子。
+  - field: 方法选择合理性
+    type: float
+    description: 根据题目难度和学生实际水平，选择最适宜的解题方法，既不过度复杂也不过度简化，并在方法应用过程中帮助学生理解选择依据和方法优劣，促进能力提升。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 通过开放性问题、变式探究、反思性提问等方式，主动引导学生提出不同解法、质疑现有思路，鼓励学生尝试创新表达和探究，评价学生实际创新产出和思维深度。
+  - field: 模拟真实提问贴合度_理由
+    type: str
+    description: 解释模拟真实提问贴合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问贴合度
+    type: float
+    description: 答题内容与真实初中物理课堂场景密切贴合，关注学生常见困惑、兴趣点和表达方式，能准确回应学生实际问题并引导深入探究，体现真实教学互动氛围。
+  - field: 中华优秀文化与价值观融入_理由
+    type: str
+    description: 解释中华优秀文化与价值观融入评分的详细理由，引用具体例子。
+  - field: 中华优秀文化与价值观融入
+    type: float
+    description: 在教学过程中自然、适度融入社会主义核心价值观和中华优秀传统文化，如实事求是、合作探究、勤奋学习等，结合物理学科特点和具体情境，促进学生品格成长和科学精神养成，避免生硬植入或形式化表达。
+  format_mode: prompt

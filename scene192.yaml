@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-中外历史时间线并行梳理教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中历史老师，发现学生总是把中国和世界历史的时间线混淆，能帮我讲清楚点吗？想要一份中外历史并行梳理的详细解释，最好有具体细节和例子，方便学生理解。
+  - question: 我是七年级学生的家长，孩子学习中外历史时间线时总觉得很混乱，你作为历史教育专家，能全方位地讲解一下怎么系统梳理初中阶段的中外历史时间线吗？希望内容够全面，也能激发孩子兴趣和全球视野。
+  - question: 我初中在学中外历史时间线，老记不住中国和世界历史的对应大事，能简短回答下，概括主要的并行节点吗？
+  - question: 我是GriffinChristian，50岁男老师，平时做AI研究和打篮球，教学风格偏保守单向交流。最近想用英文带学生并行梳理中外历史时间线，但他们总把事件顺序搞混。你作为教育AI助手，能不能讲清楚点，帮我设计个合适的教学方案？最好细节具体点。
+  - question: 我叫方日，26岁男老师，最近有点教学倦怠，平时喜欢骑行和露营。备课时碰到中外历史时间线并行梳理，不知道怎么快速理清主要并行节点。你能大概讲讲吗？有点教学建议就更好了。
+  - question: 我是初三学生，老师要求我们对照梳理中外历史时间线，但我总感觉两边内容很难对应。你是历史学习顾问，能深入讲解下怎么系统并行梳理初中中外历史时间线吗？希望能有详细分析和例子。
+  - question: 我是初中历史教研员，培训新老师时发现大家对中外历史时间线并行梳理的方法掌握得不够系统，学生总是分不清同一时期中国和世界发生了什么。你作为历史教育专家，能彻底说清楚怎么系统设计和实施中外历史时间线并行梳理的教学吗？希望内容够全面、深入。
+  - question: 我是历史爱好者，最近整理中外历史时间线，发现有些时期中国和世界历史发展的节奏和内容特别不一样。你能具体说说吗？讲讲主要的并行和差异节点，最好举点例子。
+  - question: 我是初一学生，老师让我们用时间轴对比中外历史主要事件，但我不太明白为什么要这样做。你能帮我理解一下，中外历史时间线并行梳理到底有什么意义？最好有细节和例子。
+  - question: 我是初中历史老师，班里有几个学生注意力不集中，对世界历史兴趣也不高。你作为历史教学助手，能深入讲解下怎么用并行梳理中外历史时间线提升他们的兴趣和专注力吗？希望有科学创新的教学方法和具体建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-中外历史时间线并行梳理进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学设计是否精准结合学生的学习基础、兴趣、认知风格等个体差异，针对不同层次学生提供差异化资源、任务与支持，并建立动态反馈与调整机制。高分需体现资源多样性、分层任务、持续追踪与个体化调整。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教学内容是否严格按教学要求分层、分栏呈现，结构清晰、格式规范，便于并行对比和理解，能适应不同展示媒介（纸质、电子、互动板等），并在细节上保证标题、分段、标注等规范性。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估教学设计是否采用科学的历史教学策略（如并行时间线、对比分析、跨学科融合），并在表达形式、互动方式、任务设计等方面体现创新，能持续激发学生历史思维与兴趣。高分需体现多种方法融合、创新表达与学生主动参与。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 评估历史事件及时间节点的准确性，内容系统全面，涵盖主要历史阶段与关键节点，逻辑连贯，注重事件间联系和背景解释，能够体现历史发展的因果关系。高分需体现知识结构完整、事件关联分析及无明显遗漏或错误。
+  - field: 启发式提问与创新引导_理由
+    type: str
+    description: 解释启发式提问与创新引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与创新引导
+    type: float
+    description: 评估教学内容是否设计多层次、开放性、启发式问题或任务，引导学生自主思考、表达观点、开展创新探索，覆盖历史比较、个人体验、未来展望等多维度。高分需体现问题层次丰富、任务创新、多样表达与学生深度参与。
+  - field: 模拟真实提问回应度_理由
+    type: str
+    description: 解释模拟真实提问回应度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应度
+    type: float
+    description: 评估教学内容能否针对学生提出的具体问题，做出深度、个性化回应，包括原因分析、背景阐释、相关知识补充，鼓励持续追问与互动。高分需体现针对性强、分析深入、持续互动与学生主体性。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估教学内容是否在历史讲述中自然融入社会主义核心价值观和中华优秀传统文化，结合历史情境，启发学生理解多元文化、团结合作等价值，表达细腻、贴合具体事件，避免口号化。高分需体现价值观与历史内容深度融合，启发学生自我思考。
+  - field: 表达清晰与易理解性_理由
+    type: str
+    description: 解释表达清晰与易理解性评分的详细理由，引用具体例子。
+  - field: 表达清晰与易理解性
+    type: float
+    description: 评估教学内容语言是否简明、结构分明，逻辑清晰，表达方式多样（分点、图示、简短句），符合初中生认知特点，重点突出，便于理解和掌握历史知识。高分需体现语言通俗、结构合理、重点突出与多样表达。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-小学-能量形式与简单转换的认知教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是四年级的小学生，最近在科学课上学到能量的知识，但我还是不太明白，像弹簧玩具为什么能跳起来，这里面的能量是怎么转换的？简单说说就行。
+  - question: 我是三年级学生的家长，你作为物理老师，能不能全面分析一下能量有哪些主要形式？生活中都有哪些常见的能量转换现象？我的孩子对这些概念总是混淆，麻烦你全面分析一下。
+  - question: 你作为小学物理教育专家，我是老师陈满，喜欢茶道品鉴、钓鱼、珊瑚缸养殖，平时善于跨学科教学和家长沟通。请结合我的教学风格，说说能量转换在小学课堂上怎么用跨学科方式呈现？说说你的看法。
+  - question: 我是一年级的小学生，最近看到爸爸用电池让小风扇转起来，我很好奇电池里的能量是怎么让风扇动起来的？能具体说说吗？
+  - question: 我上三年级，喜欢画画，老师说能量可以互相转换，但我还是不太懂，比如太阳能和电能怎么转化的？能具体说说吗？
+  - question: 你作为小学物理学习助手，我是老师黎诗梅，喜欢摄影和自然观察，平时对教学有些倦怠但富有同理心，偶尔疏忽。请系统地讲解一下小学阶段‘能量形式与简单转换’的教学重点、难点和易混淆点，并结合我的兴趣和性格，提供教学建议和活动设计。系统地讲解一下。
+  - question: 你是知识小帮手，我叫阚倩，高二学生，喜欢动漫设计、服装设计和攀岩，平时容易受同龄人影响。请彻底说清楚能量的各种形式以及它们如何在生活和自然中发生转换，最好结合我喜欢的活动举例。彻底说清楚。
+  - question: 我是一名小学老师，最近班里有同学问我，为什么踢足球时球会滚得远又慢慢停下来？这里涉及到哪些能量转换？能讲得详细点吗？
+  - question: 你作为物理学习助手，我是南宫雪雁，化学家，平时喜欢园艺和烹饪，沟通风格善辩。能量转换在厨房烹饪和花园种植中有哪些应用？举几个简单例子，大概讲讲。
+  - question: 我是三年级的小学生，最近老师讲了能量可以从一种形式转变成另一种形式，但我还是不太清楚，比如灯泡为什么能亮起来？能量是怎么转的？详细说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-小学-能量形式与简单转换的认知进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学内容与方式是否基于学生的学习水平、兴趣、学习习惯等特征进行针对性调整，并在教学过程中根据学生反馈动态优化，确保不同学生都能获得适合自身发展的学习体验。
+  - field: 格式规范与指令遵循_理由
+    type: str
+    description: 解释格式规范与指令遵循评分的详细理由，引用具体例子。
+  - field: 格式规范与指令遵循
+    type: float
+    description: 评估教学内容是否严格按照指定格式、分块和逻辑顺序组织，环节完整，标题清晰，步骤详细，便于学生逐步理解和操作，且无遗漏或混淆。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评估教学方案是否基于教育学原理，科学运用启发式、探究式、合作学习、情境模拟等多种方法，促进知识理解、能力培养与思维发展，并能灵活结合实际教学情境。
+  - field: 认知水平与表达适配性_理由
+    type: str
+    description: 解释认知水平与表达适配性评分的详细理由，引用具体例子。
+  - field: 认知水平与表达适配性
+    type: float
+    description: 评估教学内容和表达是否充分考虑小学阶段学生的认知特点，语言简明易懂、贴近生活，实例具体，难点有辅助说明，避免使用难以理解的术语或抽象概念。
+  - field: 真实情境与提问模拟度_理由
+    type: str
+    description: 解释真实情境与提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实情境与提问模拟度
+    type: float
+    description: 评估互动提问是否紧密结合学生真实生活和兴趣点，问题设计具有层次性和深度，能够激发学生思考、表达和探究，并通过追问、讨论等方式引导学生深入分析和自主发现规律。
+  - field: 创造力激发与自主探索引导_理由
+    type: str
+    description: 解释创造力激发与自主探索引导评分的详细理由，引用具体例子。
+  - field: 创造力激发与自主探索引导
+    type: float
+    description: 评估教学方案是否积极鼓励学生自主提出问题、设计实验或创意作品，支持学生表达新观点和创新思路，提供展示和交流平台，推动创造性思维和自主探索能力的发展。
+  - field: 互动性与学生参与度_理由
+    type: str
+    description: 解释互动性与学生参与度评分的详细理由，引用具体例子。
+  - field: 互动性与学生参与度
+    type: float
+    description: 评估教学过程中是否设置多样化互动环节，充分调动学生主动思考、表达和实践操作的积极性，确保每位学生均有参与和展示的机会，课堂氛围积极活跃。
+  - field: 价值观与文化自然融入度_理由
+    type: str
+    description: 解释价值观与文化自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观与文化自然融入度
+    type: float
+    description: 评估教学内容是否将社会主义核心价值观和中华优秀传统文化有机融合，表达自然、贴合物理主题，并通过实际活动或讨论潜移默化引导学生形成正确价值观和行为习惯。
+  format_mode: prompt

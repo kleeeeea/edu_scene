@@ -1,0 +1,144 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene274/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 德育美育-小学-色彩与心情的游戏（美育）教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为美育教育专家，能讲讲看在小学开展“色彩与心情的游戏”时，怎么用色彩引导孩子表达和认识自己的情绪？最好能结合一些具体细节和例子
+    - question: 我是小学美育老师，发现孩子们不太懂色彩和心情有什么关系，你能帮我理解一下色彩是怎么影响或反映情绪的吗？最好能结合教学建议和一些例子
+    - question: 我是三年级学生，老师说不同颜色会让人有不同的心情，你能大概讲讲有哪些常见颜色和它们带来的心情吗？说说主要的就行
+    - question: 我是王奇，57岁小学老师，喜欢日光浴、修电路、晨练八段锦，平时和学生、同事、邻居关系都很好。你作为美育专家，能全方位地讲解一下小学“色彩与心情的游戏”这类美育课的教学设计吗？请结合我的兴趣和特点，说说理念、方法、活动案例和评价方式，越详细越好
+    - question: 我是琴文，三年级女生，喜欢写作和芭蕾舞，担任学校文艺委员，和妈妈很亲，经常练舞和读故事。你觉得“色彩与心情的游戏”对我有什么帮助？能具体说说怎么参与会更适合我吗？
+    - question: 你作为小学美育教研员，能给我一份完整的分析吗？就是关于“色彩与心情的游戏”在德育美育融合课程里的价值、理论基础、教学策略、活动设计和学生发展的影响，还有未来的趋势，可以结合具体案例说说
+    - question: 我是刚入职的小学美育老师，想多了解“色彩与心情的游戏”这节课。你能解释一下它的主要内容、教学目标和适合开展的活动吗？最好说说细节和例子
+    - question: 我是MooreHailey，60岁女老师，喜欢阅读、越剧、广场舞，性格比较灵活，喜欢社区活动但逻辑思维较弱，有时动机起伏。你作为美育专家，能全面分析一下小学“色彩与心情的游戏”怎么帮助学生提升情感认知吗？也请结合我的教学环境和个性，给些具体建议
+    - question: 我是一名小学美育课程设计者，最近想深入了解“色彩与心情的游戏”在儿童社会情绪学习方面的作用。能详细讲讲这个游戏是怎么帮助孩子识别、表达和调节情绪的吗？也请说说它对班级氛围和同伴互动的价值
+    - question: 我是NelsonJason，58岁的咖啡师，喜欢用甜点和咖啡搭配，也爱摄影，注重内容和传统协作，压力大时会更有动力。你作为美育课程顾问，能简要说明下“色彩与心情的游戏”在小学美育课上的意义吗？也结合我的特点给条美育启发建议
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 德育美育-小学-色彩与心情的游戏（美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化学生画像响应度
+      type: float
+      description: 评估教学设计是否充分考虑学生的性格、兴趣、能力等个体差异，针对不同类型学生进行差异化指导和内容调整，体现因材施教。
+    - field: 指令遵循与格式规范性
+      type: float
+      description: 评估回答内容是否严格遵循既定格式要求（如部分划分、步骤展开、内容完整），结构清晰，环节齐全，便于教师实际操作和复现。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评估所用教学方法是否基于美育理论和小学阶段认知发展规律，教学流程系统，理论与实践紧密结合，能有效促进色彩认知与情感表达。
+    - field: 活动环节设计完整性
+      type: float
+      description: 评估活动是否包含明确目标、分阶段指导、成果展示、师生评价与反馈等完整教学环节，体现系统性，便于实际落地。
+    - field: 激发学生创造力与创新思维
+      type: float
+      description: 评估活动是否鼓励学生多样化表达，设置开放性任务或问题，引导学生突破常规、提出独特见解，支持个性化和创新性创作。
+    - field: 模拟真实提问情境的贴合度
+      type: float
+      description: 评估内容是否贴合小学美育教学实际场景，问题设定自然流畅，反映真实师生互动及学生实际需求。
+    - field: 社会主义核心价值观与中华文化润物细无声融入
+      type: float
+      description: 评估活动是否以自然、隐性的方式融入社会主义核心价值观及中华优秀传统文化，体现在学生行为、互动和创作中，避免生硬灌输。
+format_mode: prompt

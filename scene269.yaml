@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-高中-实践与认识的辩证关系教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三学生，最近复习政治时总觉得实践与认识的辩证关系很抽象，课本里说“实践是认识的基础”“认识反过来指导实践”这些我总是搞不太清楚。能具体说说吗？最好能结合生活例子和历史故事帮我理解。
+  - question: Hi, I'm JonesPenelope, a 39-year-old teacher who loves baking and table
+      tennis. I lead with strong organizational skills but often need to compromise
+      practically, especially balancing family expectations and an interdisciplinary
+      approach to teaching (sometimes a bit disorganized!). You are my political learning
+      assistant—could you give me a complete analysis of the dialectical relationship
+      between practice and cognition in high school politics? I'd love to see theory,
+      historical and real-life examples, teaching strategies for diverse students,
+      and ways to naturally blend core socialist values and traditional Chinese culture.
+      Creative classroom ideas and interdisciplinary connections would be a bonus!
+      Give me a full analysis, please.
+  - question: 我是高一学生，老师布置了关于实践与认识的辩证关系的作业，但我基础比较薄弱，还是不太明白它们怎么互相影响。简单说说就行，能举个生活例子吗？
+  - question: 我高三复习政治，老师说实践与认识的辩证关系很重要。你能说说主要的内容吗？帮我梳理下核心观点就行。
+  - question: 我是新入职的高中政治老师，你作为教育内容设计专家，能不能全方位地讲解一下实践与认识的辩证关系？希望你能系统讲理论基础、历史发展、现实案例、教学难点和突破方法，还能自然融合核心价值观和中华传统文化，帮我教学设计上理论和生活结合起来。
+  - question: 我是高二学生，老师讲到实践与认识的辩证关系时我有点困惑，为什么说实践是认识的基础，认识又怎么反过来影响实践呢？说说你的看法吧，能举些生活例子帮我理解，还能谈谈和我们做决定有什么关系吗？
+  - question: 你是我的政治学习助手，我叫梁诗蕾，12岁，六年级学生，喜欢诗歌创作、越剧和瑜伽，性格比较喜欢竞争也常常模仿偶像。老师让我们思考实践与认识的辩证关系，我觉得挺难懂。你能全面分析一下这个知识点吗？最好结合我喜欢的诗歌、越剧或瑜伽举例，让我能理解它和我的学习、生活有什么联系，再分享一些鼓励和建议吧。
+  - question: 我是高三学生，最近复习政治老师讲实践与认识的辩证关系，但课本内容太理论化了，难联系实际。你能讲讲看怎么理解这个知识点吗？最好结合社会热点或身边的实际例子帮我分析下。
+  - question: 我是尹洋，14岁，初二男生，喜欢轮滑、电竞和游泳，有点拖延但自律，平时成熟稳重。老师最近讲实践与认识的辩证关系，我觉得有点复杂，尤其是怎么应用到学习和生活中。你能讲得详细点吗？最好结合我的兴趣和实际举例，还能分享一些提升学习效率的方法。
+  - question: 我高二，最近复习政治课本里的实践与认识的辩证关系。老师说理解这个对高考很重要，但我觉得理论很抽象。你能详细说说吗？最好结合生活案例和价值观帮我更好理解。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-高中-实践与认识的辩证关系进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容、活动设计是否充分考虑并针对学生的学习基础、兴趣、认知差异，采用分层、分组、差异化任务，体现个体化和包容性教学理念。
+  - field: 指令遵循与结构规范性_理由
+    type: str
+    description: 解释指令遵循与结构规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范性
+    type: float
+    description: 评估教学设计是否严格按照既定流程，内容完整、层次分明，结构紧凑，环节间逻辑清晰，便于学生理解和评委评价。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评估教学方法是否多样，能针对不同教学目标和学生特点灵活运用，有效激发兴趣、促进参与与深度学习，体现现代教育理念。
+  - field: 知识点讲解准确性、系统性与深度_理由
+    type: str
+    description: 解释知识点讲解准确性、系统性与深度评分的详细理由，引用具体例子。
+  - field: 知识点讲解准确性、系统性与深度
+    type: float
+    description: 评估对核心知识点的讲解是否准确、系统，能结合历史、现实、跨学科或多角度深入分析，体现批判性和迁移应用能力，对知识联系与局限有清晰剖析。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过分层次、开放性任务、多角度讨论等方式，有效激发学生创新思维、批判性分析和迁移应用能力，鼓励独立见解和观点碰撞。
+  - field: 模拟真实提问与学生困惑匹配性_理由
+    type: str
+    description: 解释模拟真实提问与学生困惑匹配性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与学生困惑匹配性
+    type: float
+    description: 评估教学内容是否主动回应学生在学习过程中的真实疑惑或难点，提问贴近实际课堂情境，能敏锐捕捉并有效引导学生思维解决问题。
+  - field: 社会主义核心价值观与传统文化自然融入度_理由
+    type: str
+    description: 解释社会主义核心价值观与传统文化自然融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与传统文化自然融入度
+    type: float
+    description: 评估教学内容是否将社会主义核心价值观及中华优秀传统文化自然融合于知识讲解、案例分析和课堂讨论，情境真实，避免生硬灌输或口号化，提升学生认同和思考深度。
+  - field: 互动引导与反馈质量_理由
+    type: str
+    description: 解释互动引导与反馈质量评分的详细理由，引用具体例子。
+  - field: 互动引导与反馈质量
+    type: float
+    description: 评估课堂互动是否设计多样、递进，能针对学生不同层次的回答给予具体、有针对性的反馈和引导，促进学生观点完善和深度思考，体现教师对学生思维的敏锐捕捉与二次激发。
+  format_mode: prompt

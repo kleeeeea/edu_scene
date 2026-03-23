@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-小学-趣味识字与辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是二年级孩子的家长，我女儿很喜欢画画和编故事，就是老把“晴”和“睛”搞混。你作为语文专家，能帮我理解一下，有哪些有趣又有效的方法适合爱创作的孩子区分这两个字？帮我理解一下
+  - question: 我是周晖，一年级男生，喜欢数独和机器人搭建，平时和同学、家里人关系都挺好。我总是把“左”和“右”搞混，你作为语文学习助手，有没有简单又有趣的方法让我记住这两个字？说说主要的
+  - question: 我是小学语文老师，班里有几个学生对“近义字”很感兴趣，但像“看”和“瞧”、“听”和“聆”他们总是混淆。你作为教育顾问，能不能讲清楚点，怎么用小组游戏或编故事的方式让孩子们有趣地分清这些字？
+  - question: 我是一年级家长，我孩子喜欢唱歌和模仿动画角色，但他觉得背生字很无聊。你作为语文专家，能不能帮我理解一下，有哪些办法能结合动画和表演，让识字变得更有趣？帮我理解一下
+  - question: 我是三年级语文老师，班里有几个学生喜欢自己编口诀记生字，也很喜欢和同学合作。你作为语文专家，能深入讲解一下，怎么鼓励他们自己发明有趣的记忆办法和造词造句，帮助提升识字和辨析能力吗？能深入讲解一下吗
+  - question: 我是小学教研员，最近要组织全校的趣味识字活动，既要考虑不同年级和兴趣的孩子，还想让活动里自然融合中华传统文化和核心价值观。你作为教育顾问，能不能给我一份完整的分析，系统梳理一下创新的趣味识字与辨析活动设计方案？
+  - question: 我是新手二年级语文老师，班上很多学生喜欢角色扮演游戏。你作为语文教育专家，能不能全方位地讲解一下，怎么利用角色扮演和故事接龙，让孩子们有趣地识字和辨析形近字，还能融入中华文化和正面价值观？
+  - question: 我是五年级女生的家长，我女儿喜欢历史故事和小组讨论，但她最近总把“传”和“傅”、“赏”和“赏”这些形近字混了。你作为语文专家，能讲得详细点吗，怎么结合历史故事和小组活动，让她有趣地分清这些字，还能感受到中华文化的魅力？
+  - question: 我是小学语文老师，最近发现有些学生总是分不清多音字，比如“乐”和“行”这种。你作为语文专家，说说你的看法，怎么通过有趣的课堂互动和小组活动帮助孩子们准确理解这些多音字？
+  - question: I'm SmithHolly, a 51-year-old teacher who enjoys yoga, opera, and meditation.
+      I value mindfulness and a balanced, methodical teaching style. As a Chinese
+      language education consultant, could you briefly share some core strategies
+      for making character recognition and differentiation engaging for primary students,
+      maybe with some interactive or mindfulness-based activities? Just a short summary
+      is fine.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-小学-趣味识字与辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容与策略是否基于学生的年龄、认知发展、兴趣、能力、学习风格，进行动态分层与个性化调整。高分要求能根据学生持续表现及时调整方案，并提供针对性反馈与支持；低分为仅表面分层或无持续追踪，缺乏具体适配措施。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估内容对用户指令（包括格式、内容、风格、数量等要求）的执行细致程度。高分需严格逐项满足所有指令，无遗漏或随意变通，能处理复杂、复合指令。低分为部分满足、随意增减内容、格式混乱或遗漏关键要求。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学设计是否遵循小学生认知发展规律，包含启发式引导、分层递进、有效互动、及时反馈和多元评价。高分要求教学流程完整，能根据学生反应动态调整教学策略，并落实反馈与评价；低分为单一灌输、应试导向，缺乏互动和反馈环节。
+  - field: 辨析深度与准确性_理由
+    type: str
+    description: 解释辨析深度与准确性评分的详细理由，引用具体例子。
+  - field: 辨析深度与准确性
+    type: float
+    description: 评估对汉字的辨析是否系统、深入、准确，涵盖字形、字义、用法、历史演变、易混点及常见错误，并结合具体生活情境帮助理解。高分需多维度、具体分析并有例证，能帮助学生实际区分；低分为仅表面比较，未涉及用法或实际辨析情境。
+  - field: 趣味性与互动性_理由
+    type: str
+    description: 解释趣味性与互动性评分的详细理由，引用具体例子。
+  - field: 趣味性与互动性
+    type: float
+    description: 评估教学内容是否包含多样化趣味元素（如游戏、故事、角色扮演、探究活动等）与真实互动环节，能持续激发学生主动参与。高分要求趣味设计与互动贯穿教学全过程，学生有明确参与机会并能获得即时反馈；低分为趣味元素单一或形式化，缺乏真实互动。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学是否通过开放性、创造性任务（如编故事、造词、发明记忆法、多角度表达等）激发学生创新表达与思维。高分需设计多样化创新任务，鼓励学生主动创造、表达独特见解，并能持续激发创新兴趣；低分为仅要求记忆或机械训练，无创新表达机会。
+  - field: 模拟真实提问贴合度_理由
+    type: str
+    description: 解释模拟真实提问贴合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问贴合度
+    type: float
+    description: 评估教学内容与提问是否贴近小学生实际学习与生活场景，能反映真实困惑、兴趣点和自然情境。高分需结合具体生活经验、兴趣或常见疑问，提问方式自然、易被学生共鸣；低分为机械罗列汉字或问题，缺乏情境和生活关联。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估是否以自然、适龄方式将社会主义核心价值观及中华优秀传统文化融入教学，引导学生形成正向品格。高分为润物细无声地结合实际案例、故事或生活体验，激发学生思考与表达；低分为机械说教或完全忽略价值观引导。
+  - field: 文化底蕴体现性_理由
+    type: str
+    description: 解释文化底蕴体现性评分的详细理由，引用具体例子。
+  - field: 文化底蕴体现性
+    type: float
+    description: 评估教学是否充分体现中华优秀传统文化，引用成语、诗词、典故、历史故事等丰富内容，增强识字文化内涵与美感。高分需多角度、深层次展现文化意蕴，能激发学生对汉字和传统文化的兴趣与理解；低分为仅表层解释汉字，无文化关联或典故引用。
+  format_mode: prompt

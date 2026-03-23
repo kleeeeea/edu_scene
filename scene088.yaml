@@ -1,0 +1,113 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-高中-元素周期律的深度应用与性质预测教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为化学老师，能不能讲讲怎么通过元素周期律来预测元素性质？我发现学生老是死记硬背，能说说你的看法，举些具体的例子帮我理解下吗？
+  - question: Hey, I'm HarrisVictor, a high school junior who loves both skateboarding
+      and science experiments. I often jump between creative ideas and structured
+      scientific thinking. Could you explain in detail how the periodic law can be
+      applied to predict the properties of unknown elements? I'd love to hear about
+      real-life connections, experimental angles, and any advice that fits my way
+      of learning. Please, detailed talk!
+  - question: 我作为化学教研员，最近在组织元素周期律相关的教学研讨时发现学生面对复杂应用题和创新设计题时总是缺乏深入思考。你能不能全面分析一下元素周期律在高中教学中的应用现状、知识迁移与创新能力培养？希望能帮我们优化教学方法，激发学生的兴趣。
+  - question: 我是高二学生，最近学元素周期律，总是搞不清同周期和同族元素之间性质变化，特别是预测未知元素时很容易出错。你能说说你的看法，讲讲怎么用周期律科学地预测元素性质吗？最好举些具体例子帮我理解。
+  - question: 我是高三学生，最近复习化学，想知道元素周期律在预测元素性质上有哪些主要应用？你能说说主要的，帮我抓住重点吗？
+  - question: 我带竞赛班，准备讲元素周期律的深度应用和性质预测。你作为竞赛教练，能不能详细分析下各个方面？希望讲清理论、结构、预测方法、案例和创新探究，帮我设计出系统的教学方案。
+  - question: 我是高三学生丁元，喜欢数字绘画和天文社团活动，团队合作也积极，就是有时候自信心不太稳定。学元素周期律时总是靠看表记住元素位置，遇到性质预测题就有点犹豫。你能简要说明下周期律在预测元素性质方面的基本逻辑吗？顺便给点鼓励和建议。
+  - question: 我是高中老师郝浩天，喜欢无人机航拍和机械键盘改装，平时教学比较注重规矩和系统性，但最近讲元素周期律的时候，总觉得和实际和创新实验结合得不够。你作为化学专家能讲清楚点周期律在性质预测和实际应用上的教学重点吗？也希望结合我这些兴趣和教学风格给点优化建议。
+  - question: 我是化学竞赛班学生，最近在做题时发现元素周期律可以用来预测元素的化学性质，但具体怎么应用还不太清楚。你能详细说说周期律在预测元素性质时有哪些具体方法和注意事项吗？最好举些竞赛题和生活里的例子。
+  - question: 我是高中化学老师蒋夕雾，平时喜欢书法和绘画，也经常组织年轻老师做教学活动，教学上比较注重条理和系统，但有时容易陷入过度投入或倦怠。最近想彻底说清楚元素周期律的深度应用和性质预测，帮团队老师提升知识迁移和创新能力。你能系统地讲解一下吗？希望内容全面、深入，最好能结合教学案例和跨学科联系。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-高中-元素周期律的深度应用与性质预测进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与精准匹配_理由
+    type: str
+    description: 解释个性化画像识别与精准匹配评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与精准匹配
+    type: float
+    description: 评价教学内容与表达是否充分考虑学生的学习基础、兴趣、能力差异，针对不同学生群体进行分层设计和个性化调整，能明确识别学生困惑、兴趣点并做出相应支持，体现差异化和精准化教学。
+  - field: 指令遵循与结构规范_理由
+    type: str
+    description: 解释指令遵循与结构规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范
+    type: float
+    description: 评价教学内容是否严格按照教学要求进行分点、分层、递进式结构组织，体现清晰的逻辑关系、内容完整性及格式统一，便于教师和学生直接应用。高分要求结构分明、层次递进、每一环节均有对应实例和总结。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评价教学方法是否科学有效，具备创新性，能激发学生主动参与、探究、合作。优质教学应结合探究式、问题驱动、虚拟仿真、跨学科整合等方法，促进深度理解及能力提升。
+  - field: 知识应用与迁移能力培养_理由
+    type: str
+    description: 解释知识应用与迁移能力培养评分的详细理由，引用具体例子。
+  - field: 知识应用与迁移能力培养
+    type: float
+    description: 评价是否通过高阶任务或复杂情境，引导学生将周期律知识迁移应用于新学科、实际问题或创新任务，并能通过推理、实验、案例分析等方式验证迁移效果，培养独立解决问题能力。
+  - field: 创新思维与开放性问题设计_理由
+    type: str
+    description: 解释创新思维与开放性问题设计评分的详细理由，引用具体例子。
+  - field: 创新思维与开放性问题设计
+    type: float
+    description: 评价是否通过多角度、跨学科、假设性或前沿性开放问题设计，激发学生创新意识、批判性思维和深度探究，鼓励独立思考和质疑，问题要有多解空间和探索价值。
+  - field: 真实场景模拟与多样化提问_理由
+    type: str
+    description: 解释真实场景模拟与多样化提问评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与多样化提问
+    type: float
+    description: 评价情境和问题设计是否贴近真实课堂、生活、社会热点，覆盖不同层次学生的疑问和兴趣，体现广泛性和情境相关性，促进学生迁移和兴趣提升。
+  - field: 社会主义核心价值观与中华文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华文化自然融入
+    type: float
+    description: 评价教学内容是否将社会主义核心价值观（创新、协作、责任）和中华优秀传统文化（科学家精神、历史故事）自然融入，促进学生价值观养成和文化认同，表达应自然、顺畅，无生硬灌输。
+  format_mode: prompt

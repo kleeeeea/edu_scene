@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-高中-组织一场班级内部联赛教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高一班主任，班里男生多，有几位体能不太好的同学但很喜欢足球。我想组织一次班级足球联赛，怎么分组更合理，又能保证安全和公平，还能让体能弱的同学积极参与？简短回答下
+  - question: 我是一名高二体育老师，班里的女生体育积极性低，家长也总担心安全问题。我想组织一次班级篮球联赛，你能帮我设计个既能提高女生参与度，又能让家长放心的创新活动方案吗？讲讲看
+  - question: 我女儿是高三女生，性格内向，体育成绩一般但挺喜欢班级活动。学校要办排球联赛，我担心她被忽视或者受伤。你作为学生成长导师，有什么办法能让她既安全又有积极体验？详细说说
+  - question: 我是高一体育教研员，需要指导班级联赛方案。学生体能、兴趣都很不一样，家长特别关心安全，还有学生想自己设计规则、用点数字工具。你作为体育教育专家，能详细分析下活动目标、分层参与、创新赛制、安全公平、家长协同、学生主动性和价值观文化融入等各方面吗？详细分析下各个方面
+  - question: 我高二，男生，兴趣挺多但体育成绩一般，班级联赛我很想参加但怕拖后腿。你作为体育活动顾问，有什么办法能让我这种同学也积极参与、获得成就感，同时保证比赛公平？说说你的看法
+  - question: 我是高三体育老师，班里有体育特长生也有体能比较弱的同学，家长希望比赛既安全又公平，还能让学生创新和团队合作能力都提升。你作为班级活动设计专家，具体怎么分层参与、创新赛制、锻炼团队协作、保障安全呢？深入说说看
+  - question: 我高一女生，性格挺开朗但体育基础一般，喜欢新鲜事物。班级要办趣味型联赛，老师还鼓励我们自己定规则、用数字化工具辅助。你作为体育教育专家，能讲讲怎么设计新颖有趣的赛制，让女生和基础一般的同学都能积极参与、体验团队合作，还能保证安全公平吗？我想深入了解
+  - question: 我是高二班主任，班级联赛快开了，既有体育竞赛型学生，也有体能弱、性格腼腆的同学，家长希望孩子全面发展、活动安全，还能融入中华优秀传统文化和核心价值观。你作为教育专家，能从活动目标、分层参与、团队协作、创新赛制、安全保障、家长协同、文化价值融入等方面，给我一份完整的分析吗？给我一份完整的分析
+  - question: 我高一体育老师，班里女生对体育很有兴趣但体能一般，男生身体素质挺好但团队意识差。我要组织羽毛球联赛，怎么分组和安排赛制，能让女生参与积极、男生团队协作更好，还能保证公平安全？讲清楚点
+  - question: 我是高二学生家长，我孩子体育基础不太好，但很喜欢参加集体活动。学校要办班级联赛，我怕他没自信、参与机会少。你作为体育成长导师，有什么办法让他积极参与、获得公平机会和自信成长？概括一下
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-高中-组织一场班级内部联赛进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估活动方案对班级学生体能、兴趣、性别、参与度等多元特点的响应能力，包括数据收集与分析、分层分组、项目多样化、针对特殊群体的个别支持，要求活动流程可根据实际反馈动态调整，确保所有学生均有适合的参与方式。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估方案输出内容是否严格按照场景设定的结构、顺序和要素展开，分段清晰、内容完整、表达规范，便于理解和实施，涵盖所有指定环节。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估活动组织与指导方式是否体现现代体育教育理念，包括分层指导、团队合作、个体发展、过程性反思与反馈，要求方法多样、流程科学、关注学生成长与体验，并能根据反馈持续优化。
+  - field: 安全与公平保障措施_理由
+    type: str
+    description: 解释安全与公平保障措施评分的详细理由，引用具体例子。
+  - field: 安全与公平保障措施
+    type: float
+    description: 评估方案中安全与公平保障措施的具体性和系统性，包括场地检查、器材管理、流程管控、监督执行、申诉反馈等环节，要求措施可操作、覆盖全程，能有效预防风险、保障公平、应对突发事件。
+  - field: 创新性活动设计_理由
+    type: str
+    description: 解释创新性活动设计评分的详细理由，引用具体例子。
+  - field: 创新性活动设计
+    type: float
+    description: 评估活动方案在赛制、环节、角色分工、技术手段等方面的创新性，鼓励突破传统模式，激发学生兴趣和创造力，促进体育素养多元发展，创新元素可体现在规则、项目、流程、工具等方面。
+  - field: 学生主体性激发_理由
+    type: str
+    description: 解释学生主体性激发评分的详细理由，引用具体例子。
+  - field: 学生主体性激发
+    type: float
+    description: 评估活动设计是否为学生提供充分的自主参与、合作探究、规则制定、组织管理等机会，要求学生主动承担多元角色，教师以引导和支持为主，促进学生自我管理与团队协作。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估活动各环节是否自然、深度地融入团结协作、公平竞争、尊重规则、集体荣誉等核心价值观，通过具体设计和实际行动引导学生体验和践行正向价值观，避免流于形式化。
+  - field: 中华优秀传统文化体现_理由
+    type: str
+    description: 解释中华优秀传统文化体现评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化体现
+    type: float
+    description: 评估活动是否将中华传统体育项目、仪式或文化精神有机融入活动流程，包括项目选择、流程设计、文化讲解等多样化体现方式，要求知识与体验结合，提升学生文化自信和民族认同感，允许多层次、多维度创新体现。
+  format_mode: prompt

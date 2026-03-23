@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-小学-科学探究活动设计教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名刚入职的小学科学老师，班上有40名四年级学生，其中有几个喜欢动手的小男孩和几个对科学实验很感兴趣的女生，但整体上学生探究主动性不高。你作为小学物理探究活动设计的专家，能不能全方位地讲解一下如何结合这些学生特点，系统设计一节以“力的初步认识”为主题的科学探究活动？能全面深入地讲讲吗？
+  - question: 我是五年级班主任，班里有几个同学平时喜欢问“为什么天上的星星会一闪一闪”，但他们的学习基础较弱，注意力容易分散。你作为AI教学顾问，能大概讲讲如何针对这些有好奇心但基础薄弱、注意力不集中的学生，设计一次“光的传播”主题的小学物理探究活动吗？
+  - question: 我是六年级学生家长，我女儿喜欢画画、手工，但她做科学实验时常常只顾动手，不太喜欢记录和反思。你作为小学科学探究活动设计专家，说说你的看法：怎样在设计“浮力”实验探究活动时，既发挥她的动手优势，又能引导她主动记录和表达自己的发现？
+  - question: 我是一名有五年教学经验的小学科学老师，最近在三年级开展“声音的产生与传播”主题探究活动时发现，班上有几个性格内向、表达能力弱的孩子很少主动参与。你作为教育专家，能详细展开说说如何针对这些学生设计科学探究活动，让他们也能积极参与并获得成就感吗？
+  - question: 我是四年级科学课教师，班级里有几位学生喜欢阅读科普文章，但动手能力较弱。你作为小学科学教育顾问，可以详细讲讲如何在“简单电路”探究活动中，既激发他们理论兴趣，又提升他们的实际操作能力吗？
+  - question: I'm ThompsonElla, a 50-year-old elementary science teacher who values
+      a democratic and empathetic classroom, though I sometimes rely on authority.
+      My personal interests include dialect study and calligraphy. As an educational
+      consultant, can you explain how to design a hands-on physics inquiry activity
+      about 'magnetism' that balances student autonomy and necessary teacher guidance,
+      especially for a mixed-ability fifth-grade class? Can you explain a bit?
+  - question: 我是闻浮岚，一年级女生，喜欢尤克里里、羽毛球和越剧，平时爱创新、交朋友。我爸妈工作忙但很重视我的素质教育，周末常带我参加演出和运动。我想知道，如果在科学课上做“水的浮沉实验”，老师怎样设计活动才能让像我这样喜欢艺术和创新的小朋友既能玩得开心，又能学到知识？讲清楚点。
+  - question: 我是一名小学科学教研员，负责指导老师们改进物理探究活动。很多老师反映班级学生兴趣和能力差异大，如何设计既能照顾个体差异，又能体现科学探究精神和中华优秀传统文化的物理活动，是实际教学中的难题。你作为全国知名科学教育专家，请从各个角度详细说说小学物理科学探究活动设计的思路和方法。详细分析下各个方面吧。
+  - question: 我是三年级学生家长，我儿子好奇心强但有点内向，平常喜欢看科学动画片。请你说说主要的：针对像他这样的孩子，怎样设计“影子的形成”主题的小学物理探究活动能让他既能参与又敢于表达？
+  - question: 我是一名刚毕业分配到农村小学的科学老师，班上孩子学习基础不均，有的对物理现象充满好奇，有的则兴趣不大。我在设计“杠杆的应用”探究活动时遇到难题。你能帮我理解一下：如何结合学生不同兴趣和基础，让每个孩子都能在活动中获得成长和乐趣？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-小学-科学探究活动设计进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估教学设计是否基于多维学生画像（能力、兴趣、性格、学习风格等），并能在教学过程中持续收集、分析学生表现，动态调整活动环节与分组策略。高质量设计需体现画像的真实有效、分层分群方案的科学性，以及针对学生成长变化的具体反馈与优化措施。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估教学设计是否严格按照题目要求的结构分项（如‘活动目标-活动流程-评价方式’），每部分均有清晰标题、内容展开充分，逻辑严密、层次分明，且各分项之间有内在联系。高质量设计还应在每分项下有具体细化，避免表面分项或内容空泛。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学设计是否完整涵盖科学探究流程（观察、提出问题、假设、实验设计与实施、数据记录、分析、交流），各环节设置合理且有具体指导建议，鼓励学生主动参与、探究多样路径，并能结合学生实际进行方法创新或差异化指导。
+  - field: 教学目标与内容契合度_理由
+    type: str
+    description: 解释教学目标与内容契合度评分的详细理由，引用具体例子。
+  - field: 教学目标与内容契合度
+    type: float
+    description: 评估教学内容是否紧密服务于预设教学目标，所有环节均围绕目标展开，目标具体、明确、可评估，并在活动各阶段体现目标达成度。高质量设计能在每环节对应目标设定细致达成指标，避免无关内容或目标泛化。
+  - field: 学生参与度与互动性_理由
+    type: str
+    description: 解释学生参与度与互动性评分的详细理由，引用具体例子。
+  - field: 学生参与度与互动性
+    type: float
+    description: 评估教学活动是否设计多样化、高频次的学生参与环节，包括自主探究、分组合作、讨论交流、成果展示等，确保每位学生均有实际参与和表达机会。高质量设计还应关注参与深度、互动质量、角色轮换和持续性，不仅表面参与，更注重学生主动投入和思维碰撞。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 评估教学活动是否主动设计开放性问题，鼓励学生提出新见解、尝试多种解决方法，允许并支持方案改进或创新表达。高质量设计应引导学生跨学科联想、提出独特假设，支持失败与尝试，并在活动评价中关注创新过程和改进成果。
+  - field: 真实场景模拟与问题贴近性_理由
+    type: str
+    description: 解释真实场景模拟与问题贴近性评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与问题贴近性
+    type: float
+    description: 评估教学活动是否与学生日常生活、真实情境紧密结合，问题设置贴近学生实际体验，能引发兴趣与共鸣。高质量设计不仅让学生将科学原理应用于生活实际，还能促进知识迁移和生活问题解决能力的提升，活动结果可实际应用或转化。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估教学活动是否在环节中自然融入社会主义核心价值观（诚信、合作、责任、尊重等），与科学探究过程实际结合，促进品德养成。高质量设计能将价值观转化为具体行为规范，贯穿活动全过程，并通过过程评价、反思等方式促进学生内化。
+  - field: 中华优秀传统文化润物细无声传承_理由
+    type: str
+    description: 解释中华优秀传统文化润物细无声传承评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润物细无声传承
+    type: float
+    description: 评估教学活动是否巧妙结合中华优秀传统文化元素（成语、古代科学故事、传统器具等），与科学探究内容自然融合，提升文化认同与科学兴趣。高质量设计能引导学生理解传统智慧与现代科学的联系，鼓励文化创新表达，并在活动成果展示或交流中体现文化传承与创新。
+  format_mode: prompt

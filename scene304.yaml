@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-小学-“红绿灯”趣味跑停游戏教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名刚入职一年的小学体育老师，班里三年级的孩子有不少性格挺腼腆、体能一般，特别是有几个运动能力比较弱、上体育课容易紧张。我最近要上“红绿灯”趣味跑停游戏，想让全班孩子都能积极参与，同时希望通过这个游戏激发他们的创造力和主动性，还能培养团队合作和规则意识。你作为小学体育创新专家，能不能系统地讲解一下这个游戏的详细教学流程，包括游戏目标、每个环节怎么设计、怎样照顾体能弱和胆小的同学、怎么设计创新玩法和让孩子们自己表达、团队协作和友爱的具体做法，还有科学性、安全性和素养培养等方面？系统地讲解一下
+  - question: 我是四年级的小学生，性格有点内向，身体素质一般，体育课有点不自信。最近老师要带我们玩“红绿灯”趣味跑停游戏，我有点搞不清怎么玩，也怕跟不上。你能帮我理解一下这个游戏怎么玩吗？帮我理解一下
+  - question: 我是五年级男生的妈妈，他性格很活泼，偶尔爱出风头，合作意识一般，但很喜欢创新和表达。学校体育老师最近在带“红绿灯”趣味跑停游戏，我想深入了解除了基本玩法外，还有哪些创新玩法或活动能让像我儿子这样既能展示自己，又能学会团队协作？老师怎么科学组织、分层指导、保障安全，还能通过这个游戏悄悄培养孩子尊重规则和互帮互助的习惯？我想深入了解
+  - question: 我是三年级班主任，班里有个女生注意力不太集中，上课容易走神，但她挺喜欢有创意的体育活动。我想用“红绿灯”趣味跑停游戏帮她提升参与度和团队合作能力。你作为体育教学顾问，能不能讲清楚点怎么结合她的特点调整游戏流程和规则，让她更好地参与、锻炼专注力？讲清楚点
+  - question: 我是一名小学体育教研员，最近在带老师们尝试创新课堂活动。我们这儿不少学生体能偏弱，但很喜欢各种有趣的体育游戏。你能详细说说“红绿灯”趣味跑停游戏在教学中怎么通过创新环节激发学生主动参与、增强兴趣，同时还保障不同体能层次学生的安全和成长吗？详细说说
+  - question: I'm ThomasOlivia, a 10th grader who loves creative writing and fashion
+      styling. I tend to procrastinate at times, but I get back on track by mimicking
+      productive habits. Could you give me a concise summary of the key educational
+      value and creative possibilities of the 'Red-Green Light' fun PE game—especially
+      how it supports teamwork, innovation, and rule-respect? Just a quick overview
+      so I can get the main idea. Can you summarize it?
+  - question: 我是六年级体育老师，班里有些孩子运动很强，但也有体能一般、性格内向，还有几个在集体活动中容易被忽视。我特别希望“红绿灯”趣味跑停游戏能真正让每个孩子都参与、得到展示和成长，同时可以通过创新设计和分层指导，既保护弱小又激励强者，还让学生有机会自主设计玩法。你作为小学体育专家，能不能全面深入地讲讲这个游戏的多元教学策略、创新组织形式、团队合作培养、安全细节、学生自主评价展示等方面？能全面深入地讲讲吗
+  - question: 我是四年级女生，性格挺开朗，喜欢和同学一起玩，也喜欢有点挑战的新游戏。体育老师说我们要玩“红绿灯”趣味跑停游戏，我特别想知道除了基本玩法以外，还有什么创新规则或者自创环节能让活动更有趣？讲讲看
+  - question: 我是五年级体育老师，班里有些学生体能挺好，也有身体素质差点、性格内向的。你能简短回答下“红绿灯”趣味跑停游戏的基本玩法和注意事项，特别是怎么让每个学生都积极参与吗？简短回答下
+  - question: 我是四年级学生家长，我女儿性格温和有点慢热，刚转学过来和新同学还不太熟。体育老师要让他们玩“红绿灯”趣味跑停游戏，我很关心她能不能通过这个活动交到朋友、增强自信。你作为小学体育成长助手，能不能深入说说看，这个游戏怎么帮助像我女儿这样慢热、刚转学的孩子更好地融入集体、提升自信和社交能力？深入说说看
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-小学-“红绿灯”趣味跑停游戏进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 系统分析学生的年龄、体能、性格、学习风格及特殊需求，针对不同学生制定分层活动内容、规则和支持措施。实际执行中能灵活调整，确保每位学生都获得适宜的挑战和关怀。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 严格按照任务要求，内容结构完整、逻辑严密，包含所有指定环节和要素。使用清晰小标题、分段，表达标准化，便于教师查阅和落地。优秀方案还应有流程图或关键步骤提示，避免歧义。
+  - field: 教学目标与环节科学性_理由
+    type: str
+    description: 解释教学目标与环节科学性评分的详细理由，引用具体例子。
+  - field: 教学目标与环节科学性
+    type: float
+    description: 教学流程科学完整，环节设置符合小学生身心发展规律。明确热身、主体、放松等环节目标，强度适宜、衔接自然，并突出体能、技能与兴趣的同步发展。优秀方案能说明每一环节的教育意义和实施要点。
+  - field: 游戏设计的专业创新性_理由
+    type: str
+    description: 解释游戏设计的专业创新性评分的详细理由，引用具体例子。
+  - field: 游戏设计的专业创新性
+    type: float
+    description: 游戏规则和玩法结合体育教育理论，体现创新与趣味，能显著激发学生兴趣。设置新颖机制促进运动技能、团队合作和策略思维发展。优秀方案能结合理论依据并有原创性环节。
+  - field: 安全性与差异化指导_理由
+    type: str
+    description: 解释安全性与差异化指导评分的详细理由，引用具体例子。
+  - field: 安全性与差异化指导
+    type: float
+    description: 充分评估并应对各类安全风险，设置详细场地与活动安全措施。对不同学生提供个别化指导或替代方案，包含应急预案、风险提示及家校沟通建议。优秀方案能动态调整安全策略并有实际演练。
+  - field: 创造力激发机制_理由
+    type: str
+    description: 解释创造力激发机制评分的详细理由，引用具体例子。
+  - field: 创造力激发机制
+    type: float
+    description: 安排开放性环节，鼓励学生自主创意、表达与创新。支持学生自创玩法、规则变体，并给予展示、讨论和反馈机会。优秀方案能引导学生反思和持续改进，形成创新氛围。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 预设多样化、真实的学生疑问和互动场景，采用专业、具体的语言回应。设计丰富的互动方式促进师生、生生交流和积极体验。优秀方案还应鼓励学生主动提问和互助解决问题。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 将团结协作、公平竞争、诚信守规等核心价值观自然融入活动设计、行为引导、课堂评价等环节。优秀方案能通过情境创设、行为示范、反思讨论等多维度让学生体验并践行价值观，融入深度和多样性兼具。
+  format_mode: prompt

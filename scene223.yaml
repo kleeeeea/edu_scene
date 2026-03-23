@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-初中-河流地貌的发育与影响教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中地理老师，班里有几个基础薄弱但特别好奇的学生，对河流地貌的发育过程很感兴趣。你作为地理学习助手，能不能用通俗的语言，讲讲看河流地貌发育的主要过程和影响，还能举些生活里的例子帮助他们理解吗？
+  - question: 我是初三学生，喜欢野外活动，对自然地貌很好奇，但基础不是很牢。你作为地理知识导师，能不能深入讲解一下河流地貌的发育过程、主要类型、形成机制，还有它对人类和生态环境的影响？举些典型案例，并分析学习误区和怎么避免，能深入讲解一下吗？
+  - question: 我是刚入职的地理老师，最近备课时发现自己对河流地貌的发育与影响理解还不够系统。你作为教育专家，能不能从各个方面详细分析一下河流地貌的发育阶段、类型、形成条件、演化机制、对生态和社会的影响，还有教学重难点、启发式教学建议和案例分析，帮我全面提升教学能力？请详细分析下各个方面。
+  - question: 我是初中地理教研员，最近组织老师们讨论河流地貌的教学设计。你作为地理教学顾问，能不能详细说说河流地貌发育的主要特点、影响因素，还有教学中容易出现的误区？最好能结合一些教学案例，提出改进建议。
+  - question: 我是初二学生，喜欢用手工模型学习地理，理解能力还行但容易漏掉细节。你作为地理学习助手，能不能详细展开说说河流地貌的发育过程、常见地貌类型、形成机制，还有这些地貌对人类社会和自然环境的具体影响？最好能结合生活场景和动手实践建议，帮助我更好地理解和记住这些知识。
+  - question: 我是学生家长，孩子刚开始学地理，对河流地貌总是理解不透而且容易混淆。你作为地理教育专家，能不能讲清楚点河流地貌的发育过程、常见地貌类型还有对环境的影响？最好结合家庭生活里的实际例子，让他能更好掌握这些知识。
+  - question: 我是喜欢探究式学习的初中生，平时喜欢和同学讨论地理现象，对河流地貌的成因和影响有自己的想法但不确定是不是对。你作为地理知识导师，能不能说说你的看法，从科学角度分析一下河流地貌的发育和影响，并给我一些可以进一步探究的问题吗？
+  - question: 我是新手地理老师，第一次讲河流地貌的发育与影响，担心讲太复杂学生听不懂。你作为教学顾问，能不能用几句话说说河流地貌发育的基本过程和主要影响，抓住核心要点就行，好让我在课堂上引导学生。
+  - question: 我是初中生，对地理兴趣一般，最近在复习河流地貌。你是我的学习助手，能不能用几句话说说河流地貌的主要类型和它们对人类生活的影响？别太复杂，核心内容讲清楚就好。
+  - question: 我是地理教研组组长，准备组织一次关于河流地貌发育与影响的专题教研。你作为地理教育专家，能不能彻底说清楚河流地貌的发育过程、地貌类型、形成条件、演化机制、对自然环境和人类活动的影响，还有教学设计重点难点、分层讲解策略和生态保护的价值观怎么自然融入？请系统讲解并结合实际教学案例。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-初中-河流地貌的发育与影响进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学内容和建议是否根据学生的学习风格、兴趣、基础水平等个体差异进行精准识别，并在教学过程中动态调整策略，支持不同学生持续成长和自主发展。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估教学内容是否严格遵循任务结构要求，包含清晰的分点、分段、标题和逻辑层次，并在复杂任务下体现结构创新和条理性，便于学生理解和复用。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否基于地理学和教育学原理，采用探究、启发、情境模拟等科学流程，鼓励学生主动参与、批判性思考和合作学习，提升知识迁移与实际应用能力。
+  - field: 知识准确性与系统性_理由
+    type: str
+    description: 解释知识准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识准确性与系统性
+    type: float
+    description: 评估内容是否覆盖河流地貌相关知识点，表达准确、逻辑严密，并深入揭示各过程间关联和多重影响，结合典型案例及跨区域比较，避免遗漏、错误或片面性。
+  - field: 激发创新思维能力_理由
+    type: str
+    description: 解释激发创新思维能力评分的详细理由，引用具体例子。
+  - field: 激发创新思维能力
+    type: float
+    description: 评估教学内容是否通过开放性问题、情境任务或跨学科项目驱动，激发学生自主探索、创新设计和批判性思考，区分浅层创新（简单应用）与高阶创新（独特见解、理论突破）。
+  - field: 多角度问题模拟_理由
+    type: str
+    description: 解释多角度问题模拟评分的详细理由，引用具体例子。
+  - field: 多角度问题模拟
+    type: float
+    description: 评估内容是否涵盖基础性、延展性、批判性等多类型问题，模拟真实课堂学生提问，支持分层探究和多角度分析，区分事实、原理、应用、价值判断等层次。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估知识传授过程中是否自然融入社会主义核心价值观和中华优秀传统文化，结合地理实际，体现人与自然和谐、生态文明、社会责任等理念，表达方式贴合教学内容，能引发学生共鸣与思考。
+  - field: 个性化反馈深度_理由
+    type: str
+    description: 解释个性化反馈深度评分的详细理由，引用具体例子。
+  - field: 个性化反馈深度
+    type: float
+    description: 评估针对学生具体困惑或错误，是否进行深入分析，明确原因，并根据个体需求提供差异化的改进建议、资源和方法，支持持续成长与能力提升。
+  format_mode: prompt

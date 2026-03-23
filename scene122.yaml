@@ -1,0 +1,124 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-小学-生物分类与特征识别教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是五年级小学生，平时喜欢观察小动物和植物，但总分不清动物、植物和像蘑菇这样的生物怎么分类。你能帮我概括一下生物怎么分门别类的吗？主要特征简单说说就行
+  - question: 我叫黎萍璇，初三女生，平时喜欢阅读和中国风爵士舞，思考问题喜欢多角度分析。最近复习生物分类和特征识别，想系统地了解下不同生物门类的划分标准、主要特征、常见例子还有分类背后的科学原理。你作为教育专家，能帮我系统地讲解一下吗？
+  - question: 我六年级，对生物挺感兴趣，但有时候分不清公园里看到的动物、植物和像蘑菇这样的东西属于哪一类。你能深入讲解一下生物分类的主要依据和每类生物的典型特征吗？
+  - question: 我是小学科学老师尹建辉，喜欢观鸟、打羽毛球和养珊瑚缸。最近带孩子们学习生物分类和特征识别，自己有时投入太多情感容易累，也容易在教学中跟着同事的步调走。你能结合我的兴趣和现状，给我一份完整的生物分类教学分析吗？希望能有教学设计、活动建议和情感调节方面的内容
+  - question: 我是耿飞，初一男生，喜欢摆弄相机、剪视频，还会弹吉他。生物课学分类和特征识别时，有时拍到的小动物和植物分不清怎么归类。你怎么看，怎么才能更容易分清各种生物？讲讲你的看法
+  - question: 我四年级，老师讲了动物和植物的区别，但看到珊瑚或蘑菇还是搞混，你能讲清楚点，到底怎么分清动物、植物和蘑菇吗？
+  - question: I'm MillerViolet, a 29-year-old teacher who enjoys painting and running.
+      I want to help my students better understand how to classify living things,
+      like animals, plants, and fungi. Can you give me a detailed explanation, with
+      practical teaching tips and examples? Please explain in detail.
+  - question: 我是三年级小学生，老师让写生物分类的作业，但我总记不住动物、植物和蘑菇的区别。你能简短回答下怎么区分它们吗？
+  - question: 我是冯烟微，五年级女生，喜欢编程和围棋，经常和小伙伴一起做项目。最近学生物分类和特征识别，老师让我们做分类表，可我总分不清水母、海星、蘑菇这些生物属于哪类。你能讲讲看怎么用简单的方法快速分清它们吗？
+  - question: I'm WhiteAurora, 7 years old and in 2nd grade. I love reading, street
+      dance, and watching nature. Sometimes我喜欢自己观察东西，但和朋友在一起也会参加活动。我记东西靠看图比较快，但有时候会拖拉。你能全面分析一下怎么简单又有趣地分清动物、植物和蘑菇这样的小生物吗？多举例子和说说观察、动手的方法吧
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-小学-生物分类与特征识别进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容和活动是否根据学生的年龄、兴趣、知识基础进行针对性调整，能体现明显的差异化设计，满足不同学生的实际需求。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教学内容是否严格按照教学任务和指令要求组织，分点、分层、语言规范，结构清晰，方便理解与实施。
+  - field: 教学内容科学性、准确性与适龄性_理由
+    type: str
+    description: 解释教学内容科学性、准确性与适龄性评分的详细理由，引用具体例子。
+  - field: 教学内容科学性、准确性与适龄性
+    type: float
+    description: 评估教学内容是否科学严谨、知识点无误，能用小学认知水平易于理解的方式表达，既不遗漏重要知识，也不包含错误或难懂内容。对于内容深度和广度有明确分级，优异者能结合生活实例、避免生物学误区。
+  - field: 教学方法多样性与适宜性_理由
+    type: str
+    description: 解释教学方法多样性与适宜性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性与适宜性
+    type: float
+    description: 评估教学活动是否采用多样化、适合小学生特点的方法，如观察、游戏、讨论、绘画、分组探究等，能有效提升学生参与度和学习兴趣。
+  - field: 激发创新与探索兴趣_理由
+    type: str
+    description: 解释激发创新与探索兴趣评分的详细理由，引用具体例子。
+  - field: 激发创新与探索兴趣
+    type: float
+    description: 评估教学内容和活动是否鼓励学生主动提出问题、探究未知、表达见解和创造性思考，能引导学生形成科学探究和创新意识。
+  - field: 真实提问模拟度与兴趣表达_理由
+    type: str
+    description: 解释真实提问模拟度与兴趣表达评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度与兴趣表达
+    type: float
+    description: 评估问题或交流内容是否贴近真实小学课堂语言和学生兴趣，能反映实际疑问和表达习惯，语言自然、亲切。
+  - field: 价值观融入自然度_理由
+    type: str
+    description: 解释价值观融入自然度评分的详细理由，引用具体例子。
+  - field: 价值观融入自然度
+    type: float
+    description: 评估教学内容是否自然地融入生命尊重、生态保护等社会主义核心价值观和中华优秀传统文化，通过故事、案例或活动潜移默化地引导学生形成正确的生命观和社会责任。
+  - field: 表达清晰、通俗易懂_理由
+    type: str
+    description: 解释表达清晰、通俗易懂评分的详细理由，引用具体例子。
+  - field: 表达清晰、通俗易懂
+    type: float
+    description: 评估教学语言是否简明、通俗，结构合理，避免复杂术语和长句，保证小学生易于理解和掌握知识点。
+  - field: 互动性与反馈有效性_理由
+    type: str
+    description: 解释互动性与反馈有效性评分的详细理由，引用具体例子。
+  - field: 互动性与反馈有效性
+    type: float
+    description: 评估教学是否设计多层次师生互动环节，并能针对学生回答及时给予鼓励、纠正和延伸，引导学生深入理解和持续改进。
+  format_mode: prompt

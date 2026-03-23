@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-高中-全场篮球/足球攻防战术分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是地质学家魏岩，平时喜欢徒步、摄影和矿物收藏，性格偏功利和渐进式创新。最近我在高校听了节体育公开课，发现篮球全场攻防战术挺复杂。你作为体育教育专家，能结合我的背景，大概讲讲高中篮球全场攻防战术的核心要点吗？尤其想知道怎么用理性分析提升团队协作，能举个中国校园篮球的协作战术例子吗？
+  - question: 我是高中体育老师，你作为战术分析师，最近我们班在足球全场攻防战术教学中遇到难题。学生分层很明显，有些基础好但团队意识不强，有些积极但战术理解有限。我想彻底说清楚全场足球攻防战术结构化教学方法，包括进攻、防守、快速转换等方面，尤其希望你能针对不同学生类型给分层建议，还要自然融入团队协作、规则和拼搏精神。
+  - question: 你作为体育教学专家，我现在负责高中篮球社团的战术分析辅导。学生基础还可以，但全场攻防协作理解不深，尤其防守转攻容易失位。能解释一下全场攻防战术分析的关键流程和常见误区吗？最好能结合中国校园实际案例说说怎么提升学生协作意识和战术执行力。
+  - question: 我是高中体育老师曹玲蕾，今年60岁，性格务实、放任，教学经验丰富但和同事界限分明，插花书法只是为了评职称。你作为体育教学顾问，能给我一份完整的分析吗？主要想知道高中足球全场攻防战术教学的结构、分层实践方法、常见问题，以及适合我这种风格的科学教学策略，还要自然融入团队协作、规则这些体育精神。
+  - question: 你作为体育教学专家，我是55岁的男老师WilliamsBruce，平时喜欢reef keeping、羽毛球、麻将，追求跨学科融合和理想主义教育。能用几句话说说高中篮球全场攻防战术分析的核心点吗？
+  - question: 我是高中体育新手老师，你作为体育教育专家，最近班级足球全场攻防战术教学遇到挑战。学生技术差距大，团队氛围虽然积极但很容易各自为战。能深入说说看高中足球全场攻防战术分析的科学结构、分层分组实践方法，以及怎么通过教学活动自然融入团队协作和拼搏精神吗？
+  - question: 你是我的体育学习助手，我是高中生，班里大家篮球技术水平不一样，老师让我们小组分析全场篮球攻防战术。能具体说说全场攻防战术分析的主要流程和各环节要点吗？最好有一些细节和例子。
+  - question: 你作为高中体育教学专家，我刚接手篮球校队，学生技术水平整体不错，但防守转换和团队协作还需要提升。讲清楚点高中篮球全场攻防战术分析的关键内容，尤其是防守转攻和协作配合方面的教学建议。
+  - question: 我最近在教学中发现班级足球攻防战术分析时，学生对防守转换和协同配合理解不到位。你作为体育教学专家，能全面分析一下高中足球全场攻防战术分析的核心环节、分层指导以及团队协作培养方法吗？
+  - question: 你作为体育教学专家，我是高中体育老师，学生对篮球全场攻防战术理解还不够深入，尤其进攻和防守转换时常常混乱。说说你的看法，高中篮球全场攻防战术分析应该重点关注哪些方面？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-高中-全场篮球/足球攻防战术分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准度_理由
+    type: str
+    description: 解释个性化画像精准度评分的详细理由，引用具体例子。
+  - field: 个性化画像精准度
+    type: float
+    description: 评估教学方案对学生多维差异（技术水平、兴趣、学习风格、心理特征等）是否进行动态、细致的画像，并能根据画像持续调整教学目标、内容与方法，避免仅以表面特征分组或静态分类。
+  - field: 指令遵循规范性_理由
+    type: str
+    description: 解释指令遵循规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循规范性
+    type: float
+    description: 评估答复是否严格依照教学任务或提问设定的结构、内容和环节要求，做到分段清晰、内容完整、逻辑递进，并对每一环节有明确回应，避免遗漏、混乱或无关内容。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否系统依据体育教育学、认知发展与技能习得理论，设计分层递进、观察与反馈并重、可持续优化的教学流程，并能体现理论与实践结合、促进学生深度理解和技能迁移。
+  - field: 战术分析专业深度_理由
+    type: str
+    description: 解释战术分析专业深度评分的详细理由，引用具体例子。
+  - field: 战术分析专业深度
+    type: float
+    description: 评估战术分析是否具备系统理论深度，结合高中生实际，详尽剖析战术原理、应用场景、常见错误、改进方法及与学生能力的契合点，并能针对不同水平提出具体可行的训练与调整建议。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学是否通过高阶提问、开放性任务、小组头脑风暴等方式，持续激发学生主动探索、创新战术和反思自我，鼓励多元表达与自主建构，避免机械执行和单一答案。
+  - field: 模拟真实提问回应性_理由
+    type: str
+    description: 解释模拟真实提问回应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应性
+    type: float
+    description: 评估答复是否能针对教学现场实际遇到的具体问题，结合学生真实需求、能力短板与场地环境，给出可操作、细致且具情境适应力的解决策略，避免泛泛而谈。
+  - field: 中国价值观自然融入度_理由
+    type: str
+    description: 解释中国价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入度
+    type: float
+    description: 评估教学内容是否在体育场景中自然融入社会主义核心价值观和中华优秀传统文化，通过具体行为、氛围和反思环节影响学生团队协作、尊重对手、诚信比赛等素养，避免口号式表达或完全缺失。
+  - field: 创造性任务设计能力_理由
+    type: str
+    description: 解释创造性任务设计能力评分的详细理由，引用具体例子。
+  - field: 创造性任务设计能力
+    type: float
+    description: 评估教学或训练任务设计是否兼具探索性、创新性和实践性，鼓励学生主动表达、设计、实验和优化战术思路，任务能引发深度思考、数据分析与理论实践结合，避免标准化、重复性训练。
+  format_mode: prompt

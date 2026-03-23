@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene092/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 物理-小学-基础物理概念启蒙教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是三年级学生的家长，发现我孩子对‘力’这个物理概念总是理解不清楚。你作为小学物理启蒙的教育专家，能帮我讲清楚‘力’到底是什么吗？最好结合些生活中的例子和亲子互动方法，讲清楚点
+    - question: 你是小学物理学习助手，班上有个四年级的小朋友问我：小球为什么在斜面上会自己滚下来？他很爱问为什么，也喜欢画画。你能说说你的看法吗？
+    - question: 你作为物理教学顾问，我刚开始教小学科学，发现学生经常记不住什么东西会浮、什么会沉。能帮我概括一下‘浮与沉’的原理和教学小建议吗？
+    - question: 你作为小学物理启蒙专家，我家女儿五年级，最近在学‘摩擦力’，她喜欢滑滑梯和手工，但觉得摩擦力很抽象。你能结合生活场景讲讲看，怎么让孩子明白摩擦力吗？
+    - question: I'm GarciaVincent, a 10-year-old 5th grader who loves playing guitar and skateboarding. As my AI physics mentor, could you systemically explain what 'energy' is, the forms it takes, how it shows up in things like skateboarding and guitar, and why it's important to understand? Please connect your explanation to my hobbies and everyday life—I'd like you to systemically explain it.
+    - question: 你作为小学物理教育专家，很多家长都说孩子在物理启蒙课上注意力不集中，尤其遇到抽象内容更容易分神。你能分析一下原因并给出具体改进办法和教学活动建议吗？我想深入了解
+    - question: 我是四年级学生，最近学‘声音是怎么产生的’，还不是很明白。你是我的学习助手，能帮我理解一下声音是怎么来的，并举些身边的例子吗？
+    - question: 你作为小学物理教研员，发现老师们在教‘简单机械’时，学生学得很零散，对杠杆、滑轮这些工具的原理和应用都不太自信。你能全方位地讲解一下‘简单机械’启蒙教学怎么做才有效吗？包括教学目标、重难点、课堂活动、实验设计和评估方法等
+    - question: 我是三年级学生，最近在学‘磁铁’，有点搞不懂为什么有的东西能被磁铁吸引，有的不能。你是我的AI物理小老师，能大概讲讲原因吗？让我容易明白就好
+    - question: 我是钟博，55岁男老师，最近在教小学物理基础概念时发现学生积极性不高，课堂氛围有点沉闷。你作为物理教学顾问，能结合我放任型的教学风格和个人状态，详细讲讲该怎么激发学生兴趣、提升课堂效果吗？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 物理-小学-基础物理概念启蒙进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估内容是否根据学生年龄、兴趣、知识基础等画像信息，精准调整用词、例子和难度。不仅体现以学生为中心，还能针对不同学生的具体特点（如爱好、文化背景）进行动态适配，避免模板化。
+    - field: 指令遵循与格式规范性
+      type: float
+      description: 严格按照任务要求和预定格式输出，结构分明，条理清晰。每条内容包含明确的小标题、简明实例或说明，整体格式便于查阅和理解；如有特殊格式要求（如分条、编号、加粗），均严格遵守。
+    - field: 教学方法科学性
+      type: float
+      description: 所用教学方法符合教育学原理，采用启发式、探究式、合作式等多样化策略，鼓励学生主动思考、实践、表达。高水平表现应能根据学生反馈灵活调整策略，促进知识内化和迁移，避免仅靠讲授或死记硬背。
+    - field: 知识表述准确性与适宜性
+      type: float
+      description: 物理知识表述科学、严谨，无知识性错误；同时考虑小学生认知特点，既不出现错漏，也避免过度简化导致误解。高水平表现能用准确而生动的语言表达复杂知识，兼顾趣味性与科学性。
+    - field: 创造性思维激发度
+      type: float
+      description: 通过开放性问题、趣味实验、跨学科联想等方式，系统性地激发学生探索、创新和发散性思考。高水平表现应鼓励学生提出新问题、设计改进方案或联想到其他学科/生活现象。
+    - field: 情境贴近度与学生视角
+      type: float
+      description: 内容设计紧密结合小学生日常生活经验，选用贴近真实生活的场景和问题，帮助学生产生共鸣和迁移。高水平表现能结合学生实际经历，或引导学生发现生活中的物理现象。
+    - field: 价值观自然融入度
+      type: float
+      description: 在传授物理知识过程中，自然融合社会主义核心价值观或中华优秀传统文化，寓教于乐，避免生硬灌输。高水平表现能结合物理知识与人物故事、科学精神、社会责任等正面价值观。
+    - field: 互动性与引导性
+      type: float
+      description: 教学过程中设置多样化互动环节，如提问、讨论、合作探究、反馈调整等，促进学生积极参与和深度思考。高水平表现应能根据学生反馈灵活调整互动方式，确保每位学生都有表达和思考的机会。
+format_mode: prompt

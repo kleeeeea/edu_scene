@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-小学-实验操作安全规范教育教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学三年级学生，老师说化学实验要注意安全，你能讲讲看小学做化学实验时应该注意哪些安全事项吗？最好举点例子，让我能明白点。
+  - question: 我是崔伟，今年6岁，一年级男生，平常爱练武术、下围棋，还喜欢玩VR游戏，就是有点容易紧张。你能讲清楚点小学做化学实验时有哪些安全规范吗？最好能结合我这性格和爱好给我点建议和例子。
+  - question: 你作为小学化学实验安全教育专家，能不能从各个角度详细说说小学化学实验操作的安全规范？最好举些实际例子，讲讲老师、学生、家长都该注意什么，怎么教孩子安全，还有常见的错误和应急办法，系统全面一点。
+  - question: 你作为小学科学老师，能不能全面分析一下小学化学实验操作的安全规范？比如实验前、中、后分别要注意些什么，怎么培养学生的安全意识和责任感，最好举点例子。
+  - question: 我家孩子刚开始做化学实验，我有点担心他不知道哪些该注意。你能帮我理解一下小学化学实验的基本安全要求吗？最好能举点孩子容易忽略的小细节。
+  - question: 我是毛雨婷，今年55岁，是老师，平常喜欢养宠物、讲健康饮食、跳广场舞。最近要带学生做化学实验。你能讲得详细点吗？比如小学化学实验操作有哪些安全规范，有什么实际建议或者案例，怎么和学生互动培养责任感和合作精神？
+  - question: 我是小学科学老师，想让学生知道化学实验要注意安全。你能大概讲讲小学化学实验操作有哪些要点吗？
+  - question: 我是家长，孩子在学校做化学实验，最基本的安全规范有哪些？你能大概讲讲吗？
+  - question: 我是小学老师，发现有些学生做化学实验时不太注意安全。你能讲清楚点小学化学实验时有哪些常见的不安全行为，怎么预防和改进？最好举点例子。
+  - question: 你是小学化学实验室管理专家，能不能详细分析下各个方面的小学化学实验操作安全规范？比如安全制度、准备、操作流程、应急处理、老师怎么指导、学生怎么保护自己、家长和学校怎么配合，最好有真实案例和创新教学方法，讲清楚点。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-小学-实验操作安全规范教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 能够基于学生的多维画像（年龄、兴趣、知识基础、情绪状态等），主动收集、动态更新并针对性调整教学内容、表达方式和互动形式。高水平表现应体现出针对个体差异的定制化策略及实时响应，避免一刀切或仅表面化调整。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 严格按照教学指令或系统要求的内容结构和步骤顺序展开（如‘引入-讲解-互动-总结-反思’），各环节内容充实、逻辑清晰、衔接自然。高水平表现表现为结构创新（如加入预习、个性化小结等）、内容丰富且条理分明，避免机械分段或遗漏关键环节。
+  - field: 科学性与专业性_理由
+    type: str
+    description: 解释科学性与专业性评分的详细理由，引用具体例子。
+  - field: 科学性与专业性
+    type: float
+    description: 讲解内容科学、准确、详实，符合小学化学教育标准。高水平要求能结合具体案例、生活比喻、科学原理、常见误区与安全隐患警示，并能解释安全规范背后的原因。不能仅满足于‘不出错’，还要有深度和启发性。
+  - field: 教学方法创新性_理由
+    type: str
+    description: 解释教学方法创新性评分的详细理由，引用具体例子。
+  - field: 教学方法创新性
+    type: float
+    description: 采用多样化、创新性教学方法（如游戏、情景模拟、角色扮演、跨学科融合等），显著提升学生兴趣和参与度。高水平表现为针对不同学生特征设计多种创新活动，并能灵活调整，避免流于表面或与学生实际脱节。
+  - field: 激发创造性思考_理由
+    type: str
+    description: 解释激发创造性思考评分的详细理由，引用具体例子。
+  - field: 激发创造性思考
+    type: float
+    description: 鼓励学生主动思考安全规范背后的科学原理，提出个人见解、创新做法，进行开放性、批判性讨论。高水平表现为能引导学生多角度思考，提出有深度的问题并鼓励同伴互评、合作创新。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 能够模拟小学生真实提问场景，及时用通俗、贴近生活的语言回应，并主动引导学生发问、表达和追问。高水平表现为与学生互动自然、鼓励持续提问和交流，并能将学生问题转化为深入探讨的机会。
+  - field: 社会主义核心价值观与中华优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入
+    type: float
+    description: 在安全规范教育过程中，自然融入社会主义核心价值观（如责任、合作、诚信）和中华优秀传统文化，结合具体情境、谚语、故事或实际案例，使价值观与安全规范有机结合。高水平表现为润物细无声，激发学生责任感和团队意识。
+  - field: 语言表达与学生理解力适配_理由
+    type: str
+    description: 解释语言表达与学生理解力适配评分的详细理由，引用具体例子。
+  - field: 语言表达与学生理解力适配
+    type: float
+    description: 语言表达符合小学生认知特点，通俗易懂、贴近生活，避免过多专业术语和晦涩内容。高水平表现为用形象比喻、简短句子、生活实例解释抽象概念，确保学生能轻松理解。
+  format_mode: prompt

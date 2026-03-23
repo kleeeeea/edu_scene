@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-高中-唯物论与唯心论的根本分歧教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是廖若曦，33岁女老师，喜欢健身、看电影、登山。最近备课时发现自己对唯物论和唯心论的根本分歧理解还不够透彻，尤其想结合教学实际和现实生活案例讲清楚。你作为政治学科教学助手，能解释一下吗？
+  - question: 我是廖标，15岁初三男生，喜欢科学实验和跆拳道，性格有疏离感也爱批判性思考。最近在学政治时，对唯物论和唯心论的根本分歧很感兴趣也有些困惑，想从历史、哲学、社会现实等角度系统了解它们的不同和对现代社会的影响。你作为政治学科专家，能从各个角度详细说说吗？
+  - question: 我是高二学生，成绩还可以，但最近备考压力挺大。老师让我们学习唯物论和唯心论的根本分歧，我觉得自己掌握得还不够深入，特别是核心观点、历史演变和现实意义。你作为学业导师，能详细展开说说吗？
+  - question: 我是新入职的高中政治老师，最近备课时发现学生对唯物论和唯心论的根本分歧总是理解不清楚，特别是理论知识和现实生活、社会热点怎么结合。你作为教研专家，能全方位地讲解一下吗？
+  - question: I'm HughesHarry, 18 years old in Grade 12. I love AI research, photography,
+      video editing, and aeromodelling, and I tend to be a perfectionist balancing
+      academics and creative projects. In my political science class, I'm puzzled
+      about the fundamental differences between materialism and idealism, especially
+      how these philosophies impact scientific thinking and creativity. As an AI learning
+      assistant, can you specifically explain this to me?
+  - question: 我是高中班主任，发现学生在学唯物论和唯心论时总是容易混淆。你作为政治老师，能简要说明下两者的根本分歧吗？
+  - question: 我是初三学生，最近在准备市级政治竞赛，复习到唯物论和唯心论的根本分歧，但感觉抓不住重点。你作为学业导师，能简要说明下吗？
+  - question: 我是高一学生，喜欢参加社会实践。最近调研时遇到唯物论和唯心论的根本分歧问题，想请你作为政治老师帮我理解一下，最好能结合生活举例说明。
+  - question: 我是高二学生，理科好但文科基础弱。最近政治课上学到唯物论和唯心论的根本分歧，觉得哲学部分有点抽象难懂。你作为学业导师，能解释一下吗？
+  - question: 我是高一学生，喜欢看历史和哲学书。最近学政治课时对唯物论和唯心论的根本分歧很感兴趣，也想深入理解它们在历史和现实社会里的作用。你作为政治老师，能深入说说看吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-高中-唯物论与唯心论的根本分歧进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 教师能基于学生的知识基础、兴趣、困惑和学习目标，动态识别并调整教学策略，实施差异化教学。高水平表现包括主动收集学生反馈、分层设计任务、针对个体困惑提供具体支持。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 教学内容严格按照任务要求组织，结构清晰、分点表达、层级分明。高质量表现应包括明确的标题、编号、视觉分隔、逻辑递进和重点突出，便于学生快速理解和查找信息。
+  - field: 教学方法科学性与启发性_理由
+    type: str
+    description: 解释教学方法科学性与启发性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与启发性
+    type: float
+    description: 采用启发式、探究式、案例分析等科学方法引导学生主动思考。高水平表现包括引发学生自主提问、跨组讨论、情境模拟等，促进深度理解和多角度分析。
+  - field: 知识准确性与逻辑严密性_理由
+    type: str
+    description: 解释知识准确性与逻辑严密性评分的详细理由，引用具体例子。
+  - field: 知识准确性与逻辑严密性
+    type: float
+    description: 教学内容准确无误，概念界定清晰，推理过程严密。高水平表现包括对易混淆点、争议问题的辨析，逻辑链条完整，能举一反三。
+  - field: 创新思维激发与开放性引导_理由
+    type: str
+    description: 解释创新思维激发与开放性引导评分的详细理由，引用具体例子。
+  - field: 创新思维激发与开放性引导
+    type: float
+    description: 通过开放性问题、探究任务、头脑风暴等方法激发学生创新思维，鼓励多元表达。高水平表现包括引导学生提出独特见解、跨界思考，并营造鼓励创新的课堂氛围。
+  - field: 真实互动与反馈回应_理由
+    type: str
+    description: 解释真实互动与反馈回应评分的详细理由，引用具体例子。
+  - field: 真实互动与反馈回应
+    type: float
+    description: 模拟真实师生互动，能及时、具体回应学生的提问、追问、异议或困惑，并引导多轮深入交流。高水平表现包括个性化解答、追问、鼓励学生间互动，推动问题深入发展。
+  - field: 社会主义核心价值观与中华优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入
+    type: float
+    description: 教学内容自然融入社会主义核心价值观及中华优秀传统文化，通过具体案例、哲学思想与时代精神的结合，提升学生价值认同。高水平表现包括将哲学问题与中国现实、传统文化深度关联，启发学生思考民族精神与时代责任。
+  - field: 深度拓展与跨学科联系_理由
+    type: str
+    description: 解释深度拓展与跨学科联系评分的详细理由，引用具体例子。
+  - field: 深度拓展与跨学科联系
+    type: float
+    description: 在基础知识讲解后，组织深度探究或与其他学科（如科学、文学、历史、艺术等）建立联系，拓展学生视野。高水平表现包括引导学生发现哲学原理在现实和多学科领域中的应用，促进综合性思考。
+  format_mode: prompt

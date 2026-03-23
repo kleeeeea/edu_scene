@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-稳态与免疫系统的调节机制教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是宋茜妍，30岁，电影导演，平时喜欢剧本创作、音乐欣赏和摄影。最近在做一部科普电影，里面涉及高中生物的稳态和免疫系统调节机制。你能讲清楚点，详细解释一下人体是怎么通过这些机制保持健康的吗？有生活或影视的例子就更好了。
+  - question: 高中生物里稳态和免疫系统的调节机制，你能说说主要的内容吗？我就想知道核心原理和关键点，简单点讲。
+  - question: 我最近在准备考试，想深入了解一下高中生物里的稳态和免疫系统调节机制。你能详细深入地讲讲吗？最好能从原理、应用和常见误区全面分析一下。
+  - question: 我是方乐，五年级学生，喜欢编程和虚拟现实游戏。最近生物课讲到人体的稳态和免疫系统调节机制，我没太明白。你能帮我理解一下吗？最好举点生活或科技方面的例子，说清楚点。
+  - question: 你作为生物教育专家，能不能从各个角度详细说说高中生物里稳态和免疫系统的调节机制？我想了解它的基础原理、过程、案例、常见误区、教学建议，还有和现实生活、传统文化的联系。麻烦你系统讲讲，越全面越好。
+  - question: 我是高中生，最近生物课学到稳态和免疫系统调节机制，总是有点困惑。你能讲讲看这两个机制是怎么工作的？能举几个生活中的例子帮我理解吗？
+  - question: 我是曾瑶瑶，一年级女生，喜欢编程、围棋和自然观察，经常模仿老师和妈妈。最近在兴趣班学到人体的稳态和免疫系统调节机制，觉得有点难懂。你能全面分析一下吗？最好结合我的兴趣和年龄，用有趣的例子或故事讲讲是怎么回事。
+  - question: 你作为生物老师，能讲清楚点解释一下高中生物里的稳态和免疫系统调节机制吗？最好有具体的例子和细节，让学生容易理解些。
+  - question: 我最近在准备竞赛，想系统地了解高中生物里的稳态和免疫系统调节机制。你能全面深入地讲讲吗？希望内容全面、有深度，能多角度分析一下。
+  - question: 我是贾黎，四年级学生，喜欢吉他、科学实验和机器人搭建。最近生物课学了稳态和免疫系统调节机制，还不是很懂。你能大概讲讲吗？如果能和科学实验或机器人联系起来说说就更好了。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-稳态与免疫系统的调节机制进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 评价教学内容是否基于学生的知识基础、兴趣、学习风格和能力进行针对性调整。要求在表达方式、内容深度、举例和教学活动等方面主动适配不同学生画像，体现对学生差异的深度关注和响应。高水平需体现动态调整和多维适配，基础水平仅有表面调整。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评价教学内容是否严格按照任务要求组织，分点、分层次、格式清晰，表达有条理且易于查阅。高水平需结构完整、条理分明、要素齐全，且排版规范。基础水平仅部分遵循，存在要素遗漏、结构混乱或难以阅读。
+  - field: 分层递进讲解能力_理由
+    type: str
+    description: 解释分层递进讲解能力评分的详细理由，引用具体例子。
+  - field: 分层递进讲解能力
+    type: float
+    description: 评价讲解是否由浅入深，分阶段引导学生建立知识框架，先用易懂现象或体验引入，再逐步过渡到理论和细节，兼顾不同认知水平。高水平需体现明显层次递进、自然过渡、认知负荷分配，基础水平仅有表面层次或跳跃式讲解。
+  - field: 教学方法多样性与科学性_理由
+    type: str
+    description: 解释教学方法多样性与科学性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性与科学性
+    type: float
+    description: 评价是否结合多种科学、有效的教学方法（如类比、实验、情境模拟、探究、小组讨论等），并根据内容与目标灵活选用，提升学生参与度和理解力。高水平需方法多样且与内容高度契合，体现实际操作性与科学性。基础水平仅机械罗列或方法与内容脱节。
+  - field: 促进创新与批判性思维_理由
+    type: str
+    description: 解释促进创新与批判性思维评分的详细理由，引用具体例子。
+  - field: 促进创新与批判性思维
+    type: float
+    description: 评价是否通过设置开放性问题、探究任务、鼓励学生质疑和提出假设等方式，激发创新和批判性思维。高水平需有具体创新活动产出或批判性讨论痕迹，学生能提出独立见解并进行深入探究。基础水平仅有开放性提问，未引导深入或无学生产出。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价内容是否贴近真实高中课堂情境和学生实际认知困惑，语言自然、具体、有生活气息。高水平需能捕捉学生真实提问、表达方式自然、情境真实。基础水平仅有书面化、学术化表达，学生难以产生共鸣。
+  - field: 中华优秀传统文化与核心价值观融入_理由
+    type: str
+    description: 解释中华优秀传统文化与核心价值观融入评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化与核心价值观融入
+    type: float
+    description: 评价内容是否自然、恰当地融入中华优秀传统文化及社会主义核心价值观，如中医哲理、‘中庸之道’、团队合作等，且与生物原理结合紧密。高水平需文化元素与教学内容有机结合，启发学生思考健康与和谐。基础水平仅生硬插入口号，或完全未涉及。
+  - field: 知识准确性与科学性_理由
+    type: str
+    description: 解释知识准确性与科学性评分的详细理由，引用具体例子。
+  - field: 知识准确性与科学性
+    type: float
+    description: 评价讲解中生物学知识点的准确性和科学性，要求内容严谨、无明显错误，符合现行高中生物教材及主流科学共识。高水平需知识点准确、细节丰富、能辨析常见误区并有科学拓展。基础水平仅无明显错误，细节模糊或有潜在误导。
+  format_mode: prompt

@@ -1,0 +1,161 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-小学-生命体特征的辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: I am ThomasSummer, a 54-year-old teacher who loves floral arrangement,
+      piano, and dance, and I always try to bring these interests into my lessons.
+      My students are having trouble telling living things apart from non-living things,
+      especially when something looks lifelike, like flowers or artistic decorations.
+      As an education expert, can you detailedly explain how to distinguish living
+      things from non-living ones? Please connect your explanation to my interest
+      in floral arrangement and the arts, so I can make my lessons more engaging.
+  - question: I'm MorrisAva, a 50-year-old teacher who enjoys painting and drama,
+      and I like to keep things relaxed and creative in my classroom. My students
+      are curious but often get confused when we talk about what makes something a
+      living organism, especially during art or drama activities. As a teaching advisor,
+      can you deeply explain the scientific features that distinguish living things
+      from non-living things, and give lots of examples and ideas for weaving painting
+      and drama into these lessons to help inspire my students?
+  - question: I'm BrownJustin, a teacher who loves aeromodelling, yoga, and 3D modeling.
+      My students often get confused about what counts as a living thing, especially
+      when we talk about models or things made with technology. As a science learning
+      assistant, can you simply explain the main features that separate living things
+      from non-living things? It would be great if you could connect your answer to
+      my interest in modeling and hands-on teaching.
+  - question: I'm PetersonRuby, a 13-year-old in 7th grade, and I really enjoy swimming
+      and science experiments. I learn best through hands-on activities and sometimes
+      jump between ideas, which makes me lose confidence in class. As a knowledge
+      mentor who knows a lot about interactive science learning, can you systematically
+      explain how to analyze and distinguish the features of living things? Please
+      give lots of real-life and experimental examples, and suggest interactive activities
+      that use movement or practical investigation to help me understand and remember
+      these concepts.
+  - question: I'm WilliamsAvery, a teacher who loves Yue Opera and recitation, and
+      I try to be practical and efficient with my teaching. My students sometimes
+      find it hard to grasp what makes something a living thing, especially when we
+      bring in cultural or artistic elements. As a practical education advisor, can
+      you briefly explain the key features of living things and mention how I could
+      connect these ideas to Yue Opera or recitation to make lessons more relatable?
+  - question: I'm TaylorIsabella, a teacher who enjoys counseling and tea ceremonies
+      and always brings energy and reflection into my classroom. My students have
+      been asking how to tell living things apart from non-living things, and I want
+      to give them a thorough answer that also encourages deep thinking and respect
+      for life. As an education consultant, can you give a detailed explanation of
+      the scientific features that define living things, with examples and ideas for
+      bringing counseling or tea ceremony-inspired reflection into the lesson?
+  - question: I'm teaching elementary biology and want to help my students better
+      understand how to identify living things. They often get confused by objects
+      that seem alive but aren't. As a science teaching assistant, can you explain
+      the main features that define living organisms, with practical examples and
+      tips for classroom discussion?
+  - question: As a new elementary science teacher, I've noticed my students often
+      struggle to tell living things apart from non-living things, especially when
+      objects seem lifelike. You are an experienced biology educator. Can you explain
+      in detail how to help students accurately identify and analyze the characteristics
+      of living organisms versus non-living things, with classroom strategies and
+      engaging examples?
+  - question: I'm an elementary science curriculum developer, and I'm revising our
+      unit on the features of living organisms. I need a comprehensive, systematic
+      analysis covering all aspects—biological, psychological, and educational—of
+      how to teach students to distinguish living things from non-living things. Can
+      you give a thorough professional-level review, including teaching methods, conceptual
+      frameworks, common misconceptions, and suggestions for classroom activities?
+  - question: I'm an elementary biology teacher preparing a lesson on the characteristics
+      of living things. My students often ask how we can be sure something is alive,
+      especially when it doesn't move or grow quickly. As a science teaching advisor,
+      can you clarify and explain the key features that help us decide if something
+      is a living organism, with clear examples and classroom-friendly explanations?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-小学-生命体特征的辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估答复是否充分结合学生的年龄、认知水平、兴趣、具体困惑及学习风格，针对不同学生采用差异化举例、语言和引导方式。高分需体现对学生个体差异的敏锐识别和主动适配，能主动收集、回应学生反馈并调整教学策略。低分表现为千篇一律、无关学生实际或无视学生困惑。
+  - field: 严格遵循格式与指令_理由
+    type: str
+    description: 解释严格遵循格式与指令评分的详细理由，引用具体例子。
+  - field: 严格遵循格式与指令
+    type: float
+    description: 评估答复是否严格按照教学或系统要求的结构（如分点、图表、互动环节、总结等）组织内容，覆盖所有指令要点，逻辑清晰，便于操作。高分需全覆盖、结构明晰、层次分明。低分为内容遗漏、结构混乱、不符要求。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否采用适合小学生的科学教学方法，如启发式、探究式、情境体验等，并通过具体任务、引导、提问激发学生主动参与。高分要求活动有层次性、深度和针对性，能引导学生自主发现和探究。低分为单一灌输、无引导或活动流于表面。
+  - field: 知识表达准确性与清晰度_理由
+    type: str
+    description: 解释知识表达准确性与清晰度评分的详细理由，引用具体例子。
+  - field: 知识表达准确性与清晰度
+    type: float
+    description: 评估答复是否用准确、分层且适合小学生理解的语言表达生命体特征，避免知识性错误、混淆或生涩难懂。高分要求内容无误、表达清晰、有趣味性和条理，能逐步引导学生理解。低分为知识错误、表达混乱或难懂，忽略细节或层次。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 评估答复是否主动回应学生可能的真实提问，融入多样互动设计（如追问、鼓励表达、同伴讨论、线上互动等），促进学生参与和表达。高分需互动形式多样、问题贴近学生实际且能激发思考。低分为无互动或机械提问，未鼓励表达或思考。
+  - field: 激发创造性思考_理由
+    type: str
+    description: 解释激发创造性思考评分的详细理由，引用具体例子。
+  - field: 激发创造性思考
+    type: float
+    description: 评估答复是否鼓励学生创新性思考、表达个人观点或设计开放性任务（如小实验、观察、创意表达），并对学生新想法给予积极反馈。高分需有层次性创新活动设计与正向激励，并能引导学生深入思考和表达。低分为仅背诵记忆，无创新引导或活动流于形式。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 评估答复是否在教学中自然融入社会主义核心价值观或中华优秀传统文化（如尊重生命、热爱自然、团结协作等），并结合具体情境和行动引导，启发学生主动思考和实践。高分为结合实际行动、情境具体、启发性强，能引发学生思考和参与。低分为完全缺失或生硬口号，无具体情境或行动引导。
+  format_mode: prompt

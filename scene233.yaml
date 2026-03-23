@@ -1,0 +1,132 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-产业活动与地域联系的分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: I'm WhiteAlan, a 54-year-old male teacher with a balanced but sometimes
+      disorganized teaching approach and occasional empathy deficits. My hobbies are
+      Chinese chess and 3D modeling, and I value educational idealism while working
+      to improve connections with my students. I want to deeply understand the analysis
+      of industrial activities and regional connections in high school geography from
+      all perspectives, including theories, practical applications, innovative teaching
+      cases, and how to better engage students who may lack interest. You, as a geography
+      education expert, could you describe this comprehensively and in detail, using
+      real-world examples and cross-disciplinary insights? From each angle, please
+      talk about it thoroughly.
+  - question: 我是韩燕，12岁，六年级男生，性格比较内向、独立，喜欢篮球、绘画和滑板，周末常跟社区的孩子一起玩。最近地理课讲到产业活动和地域联系，我有点不懂这些和我的生活有什么关系。你是地理老师，能不能结合我喜欢的运动和社区活动举例，具体说说产业活动和地域之间的联系到底是什么？能具体说说吗？
+  - question: 我是普通高中生，最近学地理的时候，产业活动和地域联系老觉得很抽象。你能不能大概讲讲，产业活动和地域联系到底是什么，它们之间有什么关系？
+  - question: 我是高二地理竞赛生，喜欢用实际案例和数据来分析地理现象。最近想系统梳理一下产业活动与地域联系的知识，尤其想结合中国各地的产业布局和发展趋势来分析。你作为地理教育专家，可以详细说说这个主题的理论基础、实际案例，比如长三角、珠三角、东北这些地方吗？也能给我一些探究建议吗？详细说说。
+  - question: 我是熊菊燕，初一女生，喜欢篮球和舞蹈，最近地理课讲产业活动与地域联系，感觉挺难懂的，不太明白这些和我喜欢的运动或者学校活动有什么关系。你是地理学习助手，可以用几句话说说产业活动和地域联系的基本意思吗？最好能举个跟学校或社区相关的例子。
+  - question: I'm WilsonCameron, a 16-year-old 10th grade student who excels at STEM
+      but often feels low confidence and learns a bit slowly. I enjoy math modeling,
+      digital painting, and athletics, and sometimes feel both included and alienated.
+      Recently, I find the geography topic of industrial activities and regional connections
+      quite hard, especially connecting it with real-world examples and my own interests.
+      You are a geography learning assistant—could you comprehensively analyze this
+      topic from theory to real-life cases, maybe including tech clusters, urban development,
+      or sports industries? Also, can you give practical advice for someone like me
+      who learns slowly and isn't very confident? Please analyze it thoroughly from
+      all sides.
+  - question: 我是刚参加工作的地理老师，发现学生对产业活动和地域联系不太感兴趣，觉得太理论化。你作为地理教育专家，能不能结合我们身边的实际，比如本地企业或社区活动，具体说说怎么把产业活动和地域联系讲得更生动易懂？能具体说说吗？
+  - question: 我是梁逸腾，44岁，航空航天工程师，喜欢航模、天文和飞行模拟。最近帮孩子辅导地理，发现产业活动与地域联系分析挺复杂的，想彻底搞懂，比如产业空间布局原理、航空航天产业和地域联系的实际案例，还有怎么在家庭教育中自然融入家国情怀和劳动观。你是地理教育专家，能不能从理论、应用、家庭教育、价值观等角度，彻底说清楚产业活动与地域联系，并结合航空航天和生活中的例子详细讲讲？彻底说清楚吧。
+  - question: 我是高三学生，最近在复习地理，产业活动与地域联系好像是重点内容。你是地理知识助手，能不能详细展开说说这个主题的分析方法？最好能结合理论和实际案例，比如农业、制造业、服务业的布局，还有一些高考答题技巧和思路。详细展开说说吧。
+  - question: 我是初二学生家长，我孩子对地理没什么兴趣，产业活动和地域联系这些内容总觉得枯燥。你是地理学习助手，能不能讲讲看怎么用生活里的例子把这部分知识讲得有趣一些？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-产业活动与地域联系的分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 评估教学内容是否针对学生的基础水平、兴趣点、认知风格等个性特征进行分层设计和表达调整。需至少针对两种及以上学生特征（如基础差异、学习方式、兴趣方向）分别设计内容或资源。要求体现因材施教，支持多样化学习路径。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估内容是否严格按照指定流程、层级结构和任务要求组织。必须分点、分层，明确标识各环节（如案例、分析、结论），结构至少达到三级分层（主题-要素-细节），不得遗漏必需环节或出现混乱、超纲、冗余。高分需体现条理性与检索便利性。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估内容是否紧密围绕高中地理‘产业活动与地域联系分析’目标展开，涵盖空间分布、影响因素、实际案例分析三要素，并突出课程重难点。不得偏离主题或仅表面介绍，需体现层次性和深度。
+  - field: 科学性与逻辑性_理由
+    type: str
+    description: 解释科学性与逻辑性评分的详细理由，引用具体例子。
+  - field: 科学性与逻辑性
+    type: float
+    description: 评估内容是否严格符合地理学、教育学原理，表达结构严密，因果关系清晰。要求所有数据、案例真实可靠，推理过程完整无跳跃，引用需有出处或合理解释。高分需体现科学性细节与误区规避。
+  - field: 启发式提问与探究引导_理由
+    type: str
+    description: 解释启发式提问与探究引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与探究引导
+    type: float
+    description: 评估是否设计多层次、开放性、关联性强的探究性问题或情境，引导学生主动思考、分析与创新。要求至少设置2个以上与实际生活、热点或未来发展相关的开放性探究任务，并有具体讨论或调研指引，能持续激发学生参与。
+  - field: 案例创新与多样性_理由
+    type: str
+    description: 解释案例创新与多样性评分的详细理由，引用具体例子。
+  - field: 案例创新与多样性
+    type: float
+    description: 评估是否结合多样化、时新、跨区域实际案例，体现产业发展新趋势和多元联系。至少包含一个新兴产业或区域协作案例，并鼓励国际对比、跨学科融合。案例需覆盖不同时空、类型，拓展视野。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估是否以自然、具体、情境化方式将社会主义核心价值观和中华优秀传统文化融入教学内容。强调合作、创新、绿色发展、共同富裕等核心价值观，并与产业分析或案例结合，体现社会责任和文化自信。不得生硬口号化或完全缺失。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评估问题与情境设计是否贴近高中地理课堂实际，反映学生常见疑惑、兴趣点或真实生活情境。需至少包含1个与学生生活、本地实际相关的问题，且能引发学生自主关注和参与，增强学习现实感。
+  format_mode: prompt

@@ -1,0 +1,144 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene160/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 英语-初中-核心语法时态辨析与应用教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是WhiteZara，五年级女生，喜欢尤克里里、茶道和手机摄影，团队合作对我很重要，也喜欢自己纠正错误。你作为英语专家，能详细说说初中英语常见时态的区别和应用吗？最好能结合我的兴趣和个性给点具体学习建议。
+    - question: 你作为初中英语教研员，能详细分析下初中英语核心语法时态的分类、结构、应用和易混淆点吗？也麻烦把教学误区、学生困惑、学习策略这些方面系统地讲讲，各个角度都要涉及。
+    - question: 我是初中英语老师，学生问我英语里常见时态怎么区分和用，能简要说明下主要区别和用法吗？核心要点就行。
+    - question: 我是刚入职的初中英语老师，发现学生时态老是混淆。你作为英语教学顾问，能详细讲讲初中英语时态，具体说说结构、区别、常见场景和教学建议吗？最好有例子和分析。
+    - question: 你作为初中英语老师，麻烦你概括一下英语里常见时态的特点和典型应用场景，主要信息就可以了。
+    - question: 你作为英语教育专家，能给我一份完整的分析吗？初中英语时态的分类、结构、语义、常见误区、跨文化表达、教学案例和学习策略这些方面都要涉及，内容越系统越好。
+    - question: 我是万维，一年级男生，喜欢足球和围棋，在足球场上和伙伴配合默契，下围棋时又喜欢独自思考。你作为英语老师，能讲讲看一般现在时和现在进行时的区别和用法吗？最好结合我的兴趣和性格给我些学习建议。
+    - question: 我最近复习英语时态，总是分不清一般过去时和现在完成时。你是我的学习助手，能帮我讲讲看这两个时态的区别、结构和常见用法吗？
+    - question: 我是初中英语老师，学生写作时总是混淆过去进行时和一般过去时。你作为英语专家，能详细说说这两个时态的结构、区别和应用吗？还请给些帮助学生区分的方法和教学建议。
+    - question: 你作为初中英语教研员，能深入讲解一下英语时态的结构、语义、应用、易混点和教学解决策略吗？最好有理论分析和实际案例。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 英语-初中-核心语法时态辨析与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像精准匹配
+      type: float
+      description: 评估内容是否针对学生的具体画像（如学习水平、兴趣、常见错误、学习习惯等）做出有针对性的设计和调整，避免千篇一律，体现差异化教学。
+    - field: 格式与指令严格遵循
+      type: float
+      description: 评估内容是否完全按照任务或场景指定的格式、步骤、结构进行呈现，条理分明，环节完整，无遗漏、无错序。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评估所采用教学方法是否符合教育学原理，能有效促进学生对语法时态的深度理解、实际应用和迁移。注重启发、互动、归纳、反馈等科学教学策略。
+    - field: 知识点覆盖的系统性与深度
+      type: float
+      description: 评估内容是否系统、深入地覆盖核心语法时态的辨析与应用，包括主要时态、典型用法、易混点、对比分析、迁移应用及针对性练习，避免表面化或片面讲解。
+    - field: 模拟真实提问与情境还原
+      type: float
+      description: 评估内容是否准确还原初中生在学习核心语法时态时的真实问题、困惑和提问场景，体现实际学习需求和思维过程。
+    - field: 激发创新思维与创造性表达
+      type: float
+      description: 评估内容是否鼓励学生进行自主思考、创新表达、跨情境迁移，激发学习兴趣和创造力，超越机械练习。
+    - field: 价值观自然融入与文化传承
+      type: float
+      description: 评估内容是否在相关语境中自然、恰当地融入社会主义核心价值观或中华优秀传统文化，做到润物细无声，既不过度生硬，也不完全忽略。
+format_mode: prompt

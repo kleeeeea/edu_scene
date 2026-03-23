@@ -1,0 +1,126 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-新高考题型攻克教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三学生，最近在备战新高考语文试题的时候，发现自己在现代文阅读主观题（比如观点论证题、文本解读题）总是答得不够深入，阅卷老师批评我的分析不系统、缺乏创新。我希望能从答题思路、结构、语言表达、创新能力培养等方面，系统全面地学习如何攻克这类题型。你作为语文教育专家，能不能从新高考命题趋势、核心能力要求、答题技巧、易错点、提升方法、成长路径等角度，能全面深入地讲讲吗？
+  - question: 我是一名语文老师，最近发现班里的学生在新高考作文写作时普遍缺乏结构意识，议论文常常头重脚轻，论据不够有力。你作为语文教研专家，能详细说说如何培养高中生的议论文结构思维和论证能力吗？详细说说
+  - question: 我孩子今年高二，平时喜欢读课外书，但在新高考语文文言文阅读题型上总是丢分，尤其是断句、翻译和理解作者思想部分。他自己觉得文言文枯燥难懂，学习积极性不高。你作为语文学习助手，能不能从兴趣培养、核心能力训练、文言文化素养提升、常见题型破解等方面，系统分析如何帮助孩子全面攻克新高考文言文题型？能全面深入地讲讲吗
+  - question: 我是高一学生，最近在学习新高考语文古诗鉴赏题时遇到困难，老师说我的赏析语言太空泛，容易遗漏情感表达。你作为语文老师，能不能简要说明下如何提升古诗赏析的语言表达和情感捕捉能力？简要说明下
+  - question: 我是一名家长，孩子高三，语文成绩还不错，但新高考作文常常被扣分在立意创新和素材运用方面。他自己说写作时容易陷入套路，怕偏题，也缺乏生活素材积累。你作为语文教育专家，能详细展开说说如何帮助孩子突破新高考作文的立意创新和素材运用难题吗？详细展开说说
+  - question: I'm SmithAlexander, a 5th Grade student who enjoys Sudoku and playing
+      the piano. My teachers say I tend to do surface-level analysis and am easily
+      distracted unless the activity has clear rules. I want to improve my Chinese
+      reading comprehension skills, especially for structured exercises like those
+      in the new high school entrance exams. You are my learning coach. Can you explain
+      clearly how I can develop deeper analysis skills and stay focused during Chinese
+      reading tasks? Just try to really explain it clearly.
+  - question: 我是高一语文老师，最近在教学生做新高考语文论述类文本阅读题时发现，很多学生只会简单复述内容，缺乏批判性思维和创新表达能力。你作为语文教育专家，能不能深入说说看如何系统培养高中生在论述类文本题型中的批判性与创新思维？深入说说看
+  - question: 我是一名高二学生，最近在新高考语文试题的文学类文本赏析题中总是抓不到作品的主题思想和作者写作意图，感觉自己的分析不够深入。你作为语文老师，能帮我理解一下如何准确把握文学类文本的主题和作者意图吗？帮我理解一下
+  - question: 我是高三学生，语文成绩中等，最近在备考新高考语文时发现自己在信息类文本题（比如图表分析、材料整合等）总是拿不到高分，老师说我的信息筛选和归纳能力有待提升。你作为语文教练，能详细说说如何科学提升信息类文本题的解题能力吗？详细说说
+  - question: 我是高二男生宋庭，平时喜欢游泳、田径和足球，在学校运动社团里和队友关系挺好，但我做新高考语文试题时容易受同学意见影响，答题思路常常跟着别人走，缺少独立思考。你作为语文老师，能不能简短回答下如何提升我的语文答题独立性和自我判断能力？简短回答下
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-新高考题型攻克进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像贴合度_理由
+    type: str
+    description: 解释个性化画像贴合度评分的详细理由，引用具体例子。
+  - field: 个性化画像贴合度
+    type: float
+    description: 评估教学内容和方法是否基于学生的具体画像（基础、目标、兴趣、学习方式等）精准定制，能针对不同层次学生设定分层目标、差异化策略，且有动态调整与反馈机制，能持续反映学生成长变化。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估内容是否严格按照教学任务或题目要求的结构、步骤、要素完整呈现，且每一部分内容与结构高度匹配，逻辑严密、环节完整，便于实际操作和复盘，不能仅满足形式分条。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否基于现代教育学理论，系统促进认知、能力迁移及自主学习，包含探究、反思、交流等环节，能根据学生反馈实时优化策略，避免单一灌输或机械训练。
+  - field: 答题策略实用性_理由
+    type: str
+    description: 解释答题策略实用性评分的详细理由，引用具体例子。
+  - field: 答题策略实用性
+    type: float
+    description: 评估解题策略是否针对具体题型和真实考试场景，具备清晰详细的操作步骤、应变方法和典型案例，能落地执行并有效提升应试能力，避免泛泛而谈。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学内容与方法是否主动引导学生多角度思考、批判性分析、创造性表达，鼓励个性化见解、创新实践，并安排开放性交流与成果展示环节，避免单一标准答案。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评估教学内容或问题是否贴近高中生实际备考语文的典型困惑和需求，能激发主动提问和深入思考，体现真实场景与具体难点，而非泛泛而谈。
+  - field: 中华优秀文化润泽度_理由
+    type: str
+    description: 解释中华优秀文化润泽度评分的详细理由，引用具体例子。
+  - field: 中华优秀文化润泽度
+    type: float
+    description: 评估教学内容是否自然融合中华优秀传统文化和社会主义核心价值观，能与语文知识点有机结合，引导学生理解文化内涵和价值观，表达自然、深入、非表面化。
+  - field: 激励性与正向引导_理由
+    type: str
+    description: 解释激励性与正向引导评分的详细理由，引用具体例子。
+  - field: 激励性与正向引导
+    type: float
+    description: 评估教学内容与语言是否能基于学生成长过程，给予具体、针对性的鼓励与引导，不仅激发自信和动力，还能针对难点提出实用建议，避免空泛表扬或消极评价。
+  - field: 教学反馈与成长追踪_理由
+    type: str
+    description: 解释教学反馈与成长追踪评分的详细理由，引用具体例子。
+  - field: 教学反馈与成长追踪
+    type: float
+    description: 评估是否设有系统化、分阶段、多元化的学习反馈机制和成长记录，能帮助学生及时发现问题、调整策略，通过过程性评价持续激励进步，反馈具体可操作，并有后续跟踪和目标调整机制。
+  format_mode: prompt

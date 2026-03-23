@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-典型物理实验的步骤与原理讲解教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是邹亦，37岁，教初中物理。平时喜欢太极拳和乒乓球，和同事们合作挺好但偶尔会疏忽细节。最近在设计物理实验教学时总觉得自己讲解得不够系统，学生好像也不是特别理解原理。你能深入讲解一下初中物理典型实验的步骤、原理、可能遇到的问题，还有教学建议吗？我想让学生能真正体会科学探究的乐趣。
+  - question: 我是一名初中物理老师，最近发现学生做实验时好像只是机械操作，没真正理解原理。你能解释一下初中物理典型实验的步骤和原理，还有常见问题吗？
+  - question: 我是一名初中物理教研员，最近发现不少老师讲实验不够细致，学生兴趣也不高。你对这些典型物理实验（比如测密度、浮力、电路连接）教学有什么看法？说说你的建议吧。
+  - question: 我是秦馨怡，7岁二年级学生，除了学校还要参加很多兴趣班，爸妈挺看重我的才艺成绩。最近物理老师带我们做了测密度、浮力和电路实验，可我总觉得原理有点难懂。你能全面深入地讲讲这些物理实验的步骤、原理、注意事项，还有怎么培养对科学探究的兴趣吗？
+  - question: 我是高三学生马冠晖，喜欢电音和3D建模，这会儿想回顾下初中物理实验的核心内容。能简单说说测密度、浮力、电路连接这些实验的主要步骤和原理吗？
+  - question: 我是初二物理老师，班里的学生做实验时经常出错，尤其是测密度、浮力和电路连接这些，理解也不够透彻。帮我理解一下这些实验的原理和步骤，还有怎么讲解更有效？
+  - question: 我是初中物理老师，最近发现学生做实验很被动，像测密度、浮力、电路连接这些老实验总觉得无聊又难懂。你作为物理教学顾问，帮我理解一下这些实验的核心步骤、原理，还有怎么激发学生兴趣吧。
+  - question: 我是教研员，最近老师们反映学生做测密度、浮力、电路连接这些物理实验容易出错，还不太懂原理。你能深入讲解一下这些实验的步骤、原理、常见误区和优化建议吗？
+  - question: 我是初中物理老师，最近想复习下测密度、浮力、电路连接这些实验，方便上课讲解。能概括一下这些实验的核心内容吗？
+  - question: 我是初中物理教学设计者，想系统优化测密度、浮力、电路连接这些物理实验的教学体系，不仅关注实验步骤和原理，还希望学生能合作探究、激发兴趣、体会科学精神。你能从各个角度详细说说这些实验的教学设计和优化建议吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-典型物理实验的步骤与原理讲解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学内容和表达需充分基于学生的学习能力、兴趣、知识基础等个性化信息进行动态调整。教师能主动识别学生差异，灵活调整内容难度、讲解方式、关注点，并对不同学生作出针对性回应。
+  - field: 教学内容结构与格式规范性_理由
+    type: str
+    description: 解释教学内容结构与格式规范性评分的详细理由，引用具体例子。
+  - field: 教学内容结构与格式规范性
+    type: float
+    description: 教学内容需清晰分层、分步、逻辑严密，格式规范，重点突出。实验流程应有明确编号、标题，关键步骤或注意事项需视觉突出，结尾应有实验原理和注意事项小结，整体结构契合初中物理教学规范。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 教师能主动倾听、理解并深入回应学生的实际关注点、疑惑或兴趣点。表现为主动引导学生表达困惑、针对性解答、情感支持、激发兴趣，体现师生互动的深度与温度。
+  - field: 教学方法科学性与有效性_理由
+    type: str
+    description: 解释教学方法科学性与有效性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与有效性
+    type: float
+    description: 教学方法需科学合理，促进学生理解和思考。应采用探究、合作、自主学习等多样化方式，体现学生主体性，且有具体可操作细节，确保学习成效。
+  - field: 实验原理讲解准确性与专业性_理由
+    type: str
+    description: 解释实验原理讲解准确性与专业性评分的详细理由，引用具体例子。
+  - field: 实验原理讲解准确性与专业性
+    type: float
+    description: 实验原理讲解需科学、准确、系统，符合初中物理知识体系，避免模糊或错误表达。应结合现象，适当使用公式、图示等辅助说明，帮助学生建立科学理解。
+  - field: 创新思维与拓展能力激发_理由
+    type: str
+    description: 解释创新思维与拓展能力激发评分的详细理由，引用具体例子。
+  - field: 创新思维与拓展能力激发
+    type: float
+    description: 教学内容应有意识引导学生提出新问题、尝试改进实验、跨学科拓展，鼓励创新和实践。高水平表现需包含2个及以上开放性探究、创新引导，并鼓励学生主导创新设计或实际操作。
+  - field: 真实提问与互动模拟度_理由
+    type: str
+    description: 解释真实提问与互动模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问与互动模拟度
+    type: float
+    description: 教学内容需贴近真实初中物理课堂，能模拟学生常见困惑、典型提问及思维过程。高水平应有至少2处具体学生视角提问与教师互动，问题真实、自然，能体现思维链条和生成性。
+  - field: 价值观与文化融入自然度_理由
+    type: str
+    description: 解释价值观与文化融入自然度评分的详细理由，引用具体例子。
+  - field: 价值观与文化融入自然度
+    type: float
+    description: 教学内容应自然融入社会主义核心价值观、中华优秀传统文化与科学精神等正面元素，并能与实验情境有机结合。高水平表现需体现团队协作、尊重劳动、实事求是等精神，并结合中国科学家事例或科学史，激发民族自豪感。严禁生硬灌输或完全无相关引导。
+  format_mode: prompt

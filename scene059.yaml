@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-高中-反思与复盘指导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生，最近数学月考考得不好，老师让我做反思和复盘，但我感觉只是把错题抄一遍，没什么效果。我性格有点急躁，也容易焦虑，平时就是刷题不怎么总结。你作为我的学习助手，大概讲讲有哪些有效的数学反思和复盘方法，针对我的情况给点具体建议？
+  - question: 我是一名刚入职的高中数学老师，最近带完高一的大单元检测，发现学生虽然练习很多，但复盘时都是机械纠错，很少主动分析原因。我平时喜欢启发式教学，但他们习惯依赖标准答案。你作为教育专家，能不能深入说说看，如何设计科学又创新的数学反思和复盘指导流程，帮助学生真正提升？
+  - question: 我是高三理科生，最近在准备高考，数学总是中等水平。我的习惯是做很多题，但整理错题很随意，尤其函数和立体几何老丢分。我想通过反思和复盘提升这两部分，但不知道怎么开始。你作为我的数学学习顾问，能具体说说吗？
+  - question: 我是一名有经验的高中数学教研员，最近组织老师们教研，发现大家对数学反思与复盘指导的流程都很模糊，基本只是让学生做错题本，没有科学分层和创新工具。我想建立一套系统、专业又有创新性的数学反思和复盘指导方案，能适应不同学生类型。你作为教育专家，能不能从各个角度详细说说，怎么搭建这样的方案？
+  - question: 我是高二学生，数学成绩一般，老师让我们反思和复盘学习过程，但我总是只看结果，过程和细节总是忽略。我性格偏内向，也不太会主动和同学交流。你作为我的学习助手，能不能概括一下，有哪些适合我的数学反思和复盘方法？
+  - question: Hi, I’m ThompsonAlice, 15, in 9th grade. I love cycling, baking, and
+      tea ceremony, and I’m always trying to balance my emotional side with rational
+      analysis. I do self-correction and reflect on my learning, but my math review
+      often feels either too logical or too emotional—not both. As my learning advisor,
+      could you say your thoughts on how to combine emotional awareness and rational
+      reflection for more effective math review? Just say your views in some detail.
+  - question: 我是高一学生，数学成绩一般还不错，最近做数学复盘时老是忽略基础概念，比如定义和公式的本质理解。我性格比较踏实，有条理，喜欢用思维导图整理知识。你作为我的学习助手，讲讲看怎么在反思和复盘时更好地把握基础概念，提高理解力？
+  - question: 我是高三文科男生，最近准备一模，发现复盘数学时遇到几何和概率题错了就很沮丧，容易自我否定。我性格比较敏感，在意成绩和老师评价，经常情绪化。你作为我的学习助手，能具体说说吗，怎么在数学复盘时自我调节，避免情绪影响学习？
+  - question: 我是高二学生，数学成绩在班里算中上。最近老师组织错题复盘，我发现自己复习了但没形成自己的知识网络，知识点容易忘。平时做笔记但很少回看，喜欢用颜色分类错题，但缺乏系统回顾。你作为我的学习助手，详细展开说说，怎么建立个人化的数学复盘体系，让错题和知识点能有机结合？
+  - question: 我是高一新手数学老师，刚带一个基础参差不齐的班级，学生对反思和复盘理解很有限，做题时只关注对错，不考虑知识迁移和思维方法。我想在课堂里系统地渗透反思和复盘理念，提升他们的主动性和综合能力。你作为教育专家，能不能系统地讲解一下，怎么在高中数学课堂有效开展反思与复盘指导？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-高中-反思与复盘指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 能基于学生多维画像（如成绩、兴趣、习惯、心理、成长环境等）提供差异化、动态调整的反思与复盘方案。高阶表现需结合画像，制定多层次、可量化的个性化路径，并持续跟踪反馈，避免模板化输出。
+  - field: 指令格式严格遵循与结构创新_理由
+    type: str
+    description: 解释指令格式严格遵循与结构创新评分的详细理由，引用具体例子。
+  - field: 指令格式严格遵循与结构创新
+    type: float
+    description: 不仅要严格按照教师/平台指定结构（如标题、分层、编号、举例等）组织内容，且在满足基础要求的前提下，主动优化结构、细化分点、补充适宜内容，使内容更具条理性和可读性。高阶表现要求结构有创新或针对不同内容灵活适配，提升表达逻辑与信息传递效率。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 所用反思与复盘方法需契合现代教育理论（如元认知、建构主义、最近发展区等），结合数学学科特点，提供科学理论依据或权威研究支持。高阶表现为针对不同问题类型匹配最优科学方法，并清晰阐释其理论价值与实际应用效果。
+  - field: 反思引导的系统性与层次性_理由
+    type: str
+    description: 解释反思引导的系统性与层次性评分的详细理由，引用具体例子。
+  - field: 反思引导的系统性与层次性
+    type: float
+    description: 能从知识点、解题方法、思维习惯、情绪管理等多个维度，系统化引导学生全方位反思。高阶表现要求引导学生自评、互评、动态调整，能针对不同学生逐步递进，兼顾广度与深度，体现反思链条的完整性。
+  - field: 创新思维激发与追踪_理由
+    type: str
+    description: 解释创新思维激发与追踪评分的详细理由，引用具体例子。
+  - field: 创新思维激发与追踪
+    type: float
+    description: 鼓励学生主动提出新问题、多角度尝试解题、设计变式题，培养探究与创新意识。高阶表现包括方法比较、跨学科迁移、创新表达，并能设立创新实践追踪与阶段性展示机制，区分主动创新与被动接受。
+  - field: 模拟真实提问的契合度与动态反馈_理由
+    type: str
+    description: 解释模拟真实提问的契合度与动态反馈评分的详细理由，引用具体例子。
+  - field: 模拟真实提问的契合度与动态反馈
+    type: float
+    description: 能准确识别并回应学生在实际学习中遇到的常见困惑（如粗心、审题不清、卡壳、焦虑等），提供具体、可操作的反思与改进方案，并有动态跟进及反馈调整机制。高阶表现为结合真实案例、数据反馈，持续优化建议，形成闭环。
+  - field: 价值观自然融入与品格成长_理由
+    type: str
+    description: 解释价值观自然融入与品格成长评分的详细理由，引用具体例子。
+  - field: 价值观自然融入与品格成长
+    type: float
+    description: 在反思与复盘建议中自然融入社会主义核心价值观与中华优秀传统文化（如诚信、勤奋、合作、坚韧等），结合学习情境，方式得体。高阶表现为结合学生实际激发内在动力，促进品格成长，避免生硬或无关内容。
+  - field: 操作性与可执行性（含动态调整）_理由
+    type: str
+    description: 解释操作性与可执行性（含动态调整）评分的详细理由，引用具体例子。
+  - field: 操作性与可执行性（含动态调整）
+    type: float
+    description: 建议具体明确，步骤清晰，易于理解和执行，有量化标准和后续反馈机制。高阶表现为能根据学生实际情况动态调整操作方案，设定阶段性目标、自评与改进流程，确保建议可落地并持续推动进步。
+  format_mode: prompt

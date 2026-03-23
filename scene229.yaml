@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-初中-地理图表数据的解读与分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中地理老师，发现学生解读人口分布图时只看颜色深浅，常忽略图例和比例尺。该怎么引导他们科学全面地分析地理图表数据？简要说明下。
+  - question: I'm GarciaJoseph, a senior high student who's proactive and strong in
+      STEM, but my memory can be a bit fragmented and I rely on external guidance.
+      You, as a geography education expert, can you help me deeply understand how
+      to analyze climate change line graphs in geography exams? I'd love examples
+      that connect to basketball and badminton team dynamics, plus strategies to reinforce
+      my memory and use my STEM strengths. Also, talk about how this connects with
+      responsibility and harmony with nature. Please, detailed talk.
+  - question: 我是地理学科教学组组长，最近在教师研讨会上，大家都说学生分析地理统计图时容易出错，比如数据解读偏差、忽略多维信息、批判性思维不足。你作为专业地理教育专家，能从各个角度详细说说初中生在地理图表数据解读中常见误区、科学教学方法和创新能力培养吗？最好结合中华优秀传统文化和人地协调发展理念，提出具体的教学建议和评价方案。
+  - question: 我是高一学生韩振，喜欢机器人竞赛和摄影，逻辑性不强，记忆也有点碎片化，平时和同学关系不太近。最近分析气温变化折线图时常常分不清各月份的趋势，很容易混淆数据。你作为地理学习顾问，能帮我理解一下怎么提高对地理图表（比如气温变化折线图）的分析能力吗？结合我的兴趣和性格，讲讲看，有例子就更好了。
+  - question: 我是一名初中生，对地理不算太感兴趣，但老师让我们分析中国各地年降水量分布的区域差异，数据太多我有点晕，不知道怎么下手。你能讲讲看，解读这种降水量分布图有哪些关键方法和步骤吗？最好举个生活里的例子说明。
+  - question: 我是老师万炫宇，最近精力有点不济但还是很注重条理性，也喜欢下棋和野外定向。你作为地理教育专家，能讲讲看怎么用科学方法引导学生批判性分析地理图表数据（比如城市经济结构的饼图），同时让他们自主探究，还能引导人地协调发展的价值观？最好有具体的教学建议和案例。
+  - question: 你作为地理教学专家，我是林珊，老师，平时喜欢学习新技能和参加社区乒乓球活动，也常组织教师研讨会。能不能讲清楚点，在教学中怎么帮助学生系统分析地理图表数据，尤其是培养他们细致观察和创新思维，有哪些实用的教学策略？
+  - question: 我是初中地理老师，最近带学生分析区域经济发展柱状图，他们总是只看表面数据，容易忽略区域之间的联系和历史变化。你作为地理教育专家，能给我一份完整的分析吗？系统讲讲初中生在这类图表解读中的问题、科学训练方法、怎么激发创新能力，还要结合共同富裕和人地协调发展的理念，最好有具体教学建议。
+  - question: 我是一名初中生，对地理图表数据特别好奇，尤其想知道洪水、地震、台风这些地理灾害分布图背后有哪些影响因素。你能详细讲讲怎么科学解读这类灾害分布图、常见陷阱是什么，还有怎么从人与自然和谐的角度分析吗？
+  - question: 你是我的地理学习助手，我在初中学习，最近练习解读世界人口密度分布图时有点困惑。能简单说说分析这类人口密度分布图的关键步骤和注意事项吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-初中-地理图表数据的解读与分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容和方法是否根据学生的学习基础、兴趣、认知风格等个体差异进行有针对性的调整。要求教师在教学前、中、后主动收集、分析学生画像，并在教学设计与互动中持续体现因材施教，关注不同层次学生的学习体验。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 教学输出严格按照任务、结构、步骤、表达方式等要求进行，分段清晰、层次分明，便于教师和学生理解及复现。需在每个环节明确标注标题与内容，所有要求环节无遗漏。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学设计与实施过程中，体现地理学与教育学原理，采用多样化、递进式、互动性强的教学方法（如启发式、探究式、情境模拟等），注重学生主动思考、合作交流与反思。仅采用单一讲授或表层提问不达标。
+  - field: 数据解读与分析能力培养_理由
+    type: str
+    description: 解释数据解读与分析能力培养评分的详细理由，引用具体例子。
+  - field: 数据解读与分析能力培养
+    type: float
+    description: 教学内容和活动能有效引导学生掌握地理图表的数据提取、解读、比较、综合、归因和预测等能力，要求学生能独立分析数据之间的关系、变化趋势及地理意义，并鼓励表达个人观点和解释。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 教学过程鼓励学生提出新颖见解、独立分析、创造性解读或自主设计地理图表，支持批判性思考和多元创新表达，且对新观点给予积极反馈和引导。仅允许标准答案或未鼓励创新不达标。
+  - field: 模拟真实提问契合度_理由
+    type: str
+    description: 解释模拟真实提问契合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问契合度
+    type: float
+    description: 问题设置和教学互动贴合初中生真实课堂提问情境，语言表达符合学生认知水平和兴趣，师生互动自然，能主动激发学生探究欲望和参与度。问题过难、过浅或生硬脱离实际不达标。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 教学内容自然融入社会主义核心价值观和中华优秀传统文化，能够结合地理图表分析，引导学生形成正确的社会观念（如公平、环保、区域协调与可持续发展等），表达自然、具体，无口号式生硬植入。
+  - field: 多样化表达与包容性_理由
+    type: str
+    description: 解释多样化表达与包容性评分的详细理由，引用具体例子。
+  - field: 多样化表达与包容性
+    type: float
+    description: 教学设计鼓励学生通过文字、口头、图示、合作探究等多种方式分析和表达地理图表内容，尊重不同表达风格和观点，积极支持多元参与和包容性讨论。
+  format_mode: prompt

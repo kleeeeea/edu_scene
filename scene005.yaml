@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-小学-古诗启蒙与想象教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是个男老师，今年48岁，平时喜欢定向越野和做木工，教学中比较注重结构和灵活结合。你觉得我怎么利用这些兴趣和风格，让孩子们更好地想象和理解古诗的意境？概括一下就行，给点实用的建议。
+  - question: 你是小学语文教学专家，我今年48岁，是一名男老师，喜欢定向越野和木工，平时上课喜欢结构清晰但又灵活互动。我想通过一些互动游戏和动手活动让孩子们更理解古诗，你能详细说说具体可以怎么做吗？
+  - question: 我是BrownJordan，48岁男老师，喜欢定向越野和木工，平时注重结构和实操，也喜欢带孩子们参加社区活动。你作为小学语文教学顾问，能详细讲讲我在古诗启蒙课上，针对不同性格和兴趣的孩子，怎么用角色扮演、故事创编、场景再现这些创新方式，让他们更有想象力和参与感吗？举些实际案例和细节，详细讲讲。
+  - question: 你作为小学语文专家，我今年48岁，男老师，喜欢定向越野和木工。最近想设计个古诗想象力培养的主题活动，用动手和团队合作的方式帮助孩子体会诗意。你能具体说说怎么设计吗？想听听你的想法。
+  - question: 我是BrownJordan，48岁的男老师，喜欢定向越野和木工，教学时注重结构和实践互动。你作为小学语文创新教学专家，能不能彻底说清楚怎么把户外探索、手工制作和古诗想象教学系统地融合在一起？麻烦详细讲讲设计理念、分步做法、怎么照顾不同孩子，还有评价和文化渗透这些方面。
+  - question: 你是语文学习助手，我今年48岁，男老师，喜欢定向越野和木工，讲课比较注重结构和灵活结合。古诗启蒙时，有哪些主要的创新方法能帮助孩子发挥想象力？说说主要的，给点实用建议。
+  - question: 我是BrownJordan，48岁男老师，喜欢定向越野和木工，上课比较注重结构和实践体验。你作为小学语文启蒙专家，能不能帮我讲讲怎么通过科技、艺术、体育这些跨学科方法，激发孩子们对古诗的兴趣和想象力？我想深入了解实际做法和效果。
+  - question: 你是小学语文教育专家，我今年48岁，男老师，喜欢定向越野和木工，讲课重视结构和动手实践。怎么通过‘古诗+户外活动’这种方式，让孩子们更好地想象和体会诗里的自然和情感？详细说说，最好举点例子。
+  - question: 我是BrownJordan，48岁男老师，平时喜欢定向越野和木工，讲课讲究结构和实践体验。你是小学语文创新教学顾问，能详细说说怎么通过小组合作和动手制作，激发孩子们在古诗学习中的想象力和表达欲望吗？举些具体做法和案例。
+  - question: 你是小学语文创新教学专家，我今年48岁，男老师，喜欢定向越野和木工，教学时很重视结构和动手实践。能不能彻底说清楚，针对不同背景和兴趣的孩子，怎么构建一个多元融合又有想象力的古诗启蒙课程？想听听详细的课程设计、活动安排、家校互动、评价和中华传统文化渗透这些内容，越全面越好。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-小学-古诗启蒙与想象进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容与表达方式是否基于学生的年龄、兴趣、认知水平和学习风格，针对不同学生群体进行差异化设计，包括内容选择、活动安排和表达方式，体现对个体差异的充分关注和响应。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估教学内容是否严格按照教学任务或指令的结构化要求输出，分步、分点清晰标注，且每一步内容具体明确，便于操作和理解，避免结构混乱或遗漏关键环节。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估教学内容是否紧密围绕古诗启蒙与想象的双重目标，既帮助学生理解诗意，又通过活动或问题拓展学生想象力，防止偏离主题或仅关注知识传授。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否采用启发式、情境化、互动式等小学语文教育规律，鼓励学生主动参与、表达和思考，避免单向灌输和机械教学，关注师生互动和生动情境创设。
+  - field: 内容表达准确性_理由
+    type: str
+    description: 解释内容表达准确性评分的详细理由，引用具体例子。
+  - field: 内容表达准确性
+    type: float
+    description: 评估教学中对古诗内容、文化背景及相关知识点的讲解是否准确、规范，能恰当补充诗歌背景，避免误导或错误信息，提升学生理解深度。准确性包括诗句解释、历史文化信息和情感表达。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学是否通过开放性问题、创作活动等方式，鼓励学生创造性理解和表达古诗内容，关注学生参与度、表达多样性和成果质量，激发创新思维而非仅限于模仿或复述。
+  - field: 想象力拓展性_理由
+    type: str
+    description: 解释想象力拓展性评分的详细理由，引用具体例子。
+  - field: 想象力拓展性
+    type: float
+    description: 评估教学是否通过引导、描述、活动等方式，有效拓展学生对古诗意境的想象空间，帮助他们形成生动画面感和丰富联想，鼓励多样表达和个体化体验。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估教学过程中是否自然、恰当地融入中华优秀传统文化、社会主义核心价值观等正面内容，通过诗歌情境引导学生树立正确观念，表达对美好生活、自然、社会的热爱，避免生硬灌输或无关拔高。
+  format_mode: prompt

@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-小学-基础语法概念启蒙教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级英语老师，班里有几个喜欢画画的学生，主谓一致总是学不好。能具体说说有什么有趣的方法教他们吗？最好结合他们的兴趣，讲讲看。
+  - question: 你作为小学英语教育专家，班里有调皮学生总打断老师讲语法课，影响别人学习。深入说说看怎么设计互动性强又能教好语法的课堂活动，最好举些具体例子。
+  - question: 你是我的学习助手，我五年级了，总是分不清is和are怎么用。帮我理解一下主谓一致的用法，举些例子讲讲看。
+  - question: 我是英语新手老师，班里有个很腼腆的学生，句型转换总不敢说。帮我理解一下怎么鼓励他开口，语法教学有什么办法？详细说说。
+  - question: 你作为教育专家，帮我分析下MillerRobert（14岁，初二男生，喜欢足球、电竞、篮球，不太爱团队协作）如何通过个性化的英语语法启蒙活动提升语法理解和表达能力。详细分析下各个方面，结合他的兴趣和性格，最好多举些例子。
+  - question: 我是小学英语教研员，学校要推分层教学，一年级刚学名词、动词和形容词。简要说明下分层教学怎么做，核心要点有哪些？
+  - question: 你是英语教学顾问，DavisZoe是初三女生，喜欢唱歌、尤克里里和花艺，学习很独立也会自己纠错。用几句话说说她语法启蒙能用哪些有创意的方式，最好结合她的兴趣。
+  - question: 我最近教学时发现有些学生总把名词和动词弄混，造句容易出错。说说你的看法，怎么帮他们？
+  - question: 我是张晶，46岁女老师，最近有职业倦怠但喜欢学新东西，也喜欢看电影放松。你作为教育专家，帮我深入讲讲小学英语语法启蒙课怎么设计创新活动，激发学生兴趣，同时自然融入社会主义核心价值观和中华文化。最好结合我的教学风格和个性，举些具体案例。
+  - question: 你作为小学英语教学导师，给我一份完整的分析：怎么为一年级学生设计系统的英语基础语法启蒙课程？包括教学目标、内容安排、活动设计、分层教学和价值观融入，最好结合实际生活和中国文化举例，全面讲讲看。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-小学-基础语法概念启蒙进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与指令遵循_理由
+    type: str
+    description: 解释个性化画像识别与指令遵循评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与指令遵循
+    type: float
+    description: 教学设计需基于学生年龄、英语基础、兴趣爱好等多维度信息，精准定制内容与流程。必须严格遵循教学指令格式，体现差异化响应与针对性调整，能在教学各环节动态反映个体差异。
+  - field: 个性化互动深度_理由
+    type: str
+    description: 解释个性化互动深度评分的详细理由，引用具体例子。
+  - field: 个性化互动深度
+    type: float
+    description: 教学过程中采用多样化互动方式，主动引导学生表达、提问、反馈。能针对学生回应进行实时调整，包括难度、节奏、鼓励方式等。高质量互动需体现针对性点评、具体激励及个别辅导。
+  - field: 科学分层教学设计_理由
+    type: str
+    description: 解释科学分层教学设计评分的详细理由，引用具体例子。
+  - field: 科学分层教学设计
+    type: float
+    description: 教学内容需结合小学生认知发展特点，分层递进设计，从简单到复杂逐步提升。针对不同水平学生设定分级任务与活动，确保所有学生都能逐步理解和掌握语法概念，并有对应的支持策略。
+  - field: 教学活动多样性与趣味性_理由
+    type: str
+    description: 解释教学活动多样性与趣味性评分的详细理由，引用具体例子。
+  - field: 教学活动多样性与趣味性
+    type: float
+    description: 教学设计应包含多种类型的趣味活动（如角色扮演、游戏、竞赛、创作等），活动需紧密结合语法学习目标，能激发学生兴趣、提升参与度。活动类型和形式需有明显差异，避免单一或重复。
+  - field: 启发式问题设计与创新思维激发_理由
+    type: str
+    description: 解释启发式问题设计与创新思维激发评分的详细理由，引用具体例子。
+  - field: 启发式问题设计与创新思维激发
+    type: float
+    description: 教学中融入开放性、启发式问题或任务，鼓励学生创新表达和多样化思考。支持不同答案和个性化创作，教师能针对创新表现给予具体反馈。高分需体现任务深度、表达多样性和创新产出质量。
+  - field: 模拟真实提问与场景还原_理由
+    type: str
+    description: 解释模拟真实提问与场景还原评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与场景还原
+    type: float
+    description: 教学问题与互动需贴近真实小学课堂情境，关注学生实际疑惑、兴趣和生活经验。能将语法内容与学生生活紧密关联，设计接地气的提问与场景，增强学习实用性和情感共鸣。
+  - field: 社会主义核心价值观与中华文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华文化自然融入
+    type: float
+    description: 教学内容需自然融入社会主义核心价值观和中华优秀传统文化，且融合方式需与语法教学目标紧密相关、适龄、自然。高分要求活动内容能让学生主动感受到文化内涵，非生硬插入。
+  - field: 指令格式与规范性遵循_理由
+    type: str
+    description: 解释指令格式与规范性遵循评分的详细理由，引用具体例子。
+  - field: 指令格式与规范性遵循
+    type: float
+    description: 教学设计及评估回答需严格按照教学指令规定的格式和结构，内容完整、逻辑清晰、表达规范。高分需涵盖所有指令环节（如‘教学目标’‘活动流程’‘互动环节’‘总结提升’等），层级分明，表达无遗漏或随意发挥。
+  - field: 学生学习效果与课堂反馈_理由
+    type: str
+    description: 解释学生学习效果与课堂反馈评分的详细理由，引用具体例子。
+  - field: 学生学习效果与课堂反馈
+    type: float
+    description: 教学活动需系统性地收集、分析学生学习效果，包括理解度、参与度、反馈等，能根据结果及时优化教学策略。高分需体现多元反馈方式（如测验、问答、自评、观察）、具体分析与针对性改进措施，关注每个学生持续成长。
+  format_mode: prompt

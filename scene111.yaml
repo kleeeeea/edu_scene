@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene111/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 物理-高中-复杂动态过程的受力与运动分析教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是高中物理老师，最近发现学生在学习复杂动态过程的受力和运动分析时容易混淆受力和运动状态，你能给我一份完整的分析吗？希望能系统梳理一下相关原理、案例和教学建议。
+    - question: 你作为物理教育专家，能全方位地讲解一下高中复杂动态过程的受力与运动分析吗？希望能包括原理、方法、实验和教学上的建议。
+    - question: 我是高中的学生，学物理时复杂动态过程的受力和运动分析总是理不清，能帮我全面分析一下吗？希望能讲讲分析策略、易错点和学习建议。
+    - question: 我是新手物理老师，备课时总觉得复杂动态过程的受力分析容易搞混，能用几句话说说受力分析和运动状态之间的主要联系和区别吗？
+    - question: 你是我的物理学习助手，能解释一下复杂动态过程的受力和运动分析的核心思路吗？最好能举些例子。
+    - question: 我最近遇到物理难题，涉及复杂动态过程的受力和运动分析，你能具体说说分析步骤和注意事项吗？最好结合些案例。
+    - question: 我是BrownEdward，11岁，五年级男生，喜欢轮滑、科学实验和滑板，做事很自律但遇到难题信心会波动。你作为物理知识导师，能深入讲解一下复杂动态过程的受力和运动分析吗？最好结合滑板或轮滑的案例，帮我理解原理，也给些学习建议。
+    - question: 我是东郭喜，32岁男老师，喜欢机械键盘改装和野外生存，教学时和学生互动不多。你能解释一下复杂动态过程的受力和运动分析怎么教得更清楚吗？希望能结合我的情况，给些实用建议。
+    - question: 我是高中生，复习物理时想掌握复杂动态过程受力和运动分析的重点，你能简短回答下核心知识点和主要易错点吗？
+    - question: 你是物理教学顾问，能不能讲讲复杂动态过程受力和运动分析有哪些常见教学误区？希望能说说改善建议和细节。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 物理-高中-复杂动态过程的受力与运动分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化回应深度
+      type: float
+      description: 回答应根据学生的具体画像（如学习水平、兴趣方向、认知风格、困惑点）进行差异化设计，内容和表达方式有针对性，能体现分层教学与个性关怀。
+    - field: 指令遵循与格式规范
+      type: float
+      description: 回答应严格依照题目或场景设定的格式要求（如分点、表格、流程图等），完整回应所有指令要素，不遗漏关键信息，结构清晰易读。
+    - field: 教学方法科学性
+      type: float
+      description: 采用符合物理教学规律和教育学原理的方法，如启发式、探究式、情境式、合作学习等，能激发学生主动思考和参与，避免机械灌输或单向讲解。
+    - field: 过程分析的专业准确性
+      type: float
+      description: 受力与运动分析过程应科学严谨，逻辑链条完整，物理概念和原理准确无误，能识别和解释关键细节及特殊情况，避免常见误区。
+    - field: 激发创造性思考
+      type: float
+      description: 回答应鼓励学生提出新问题、进行假设、设计实验或创新应用，促进创新思维和科学探索精神，能引导学生超越课本知识主动思考。
+    - field: 真实情境模拟
+      type: float
+      description: 问题设定和回答应贴近高中生真实学习场景和生活体验，能反映学生实际困惑与需求，促进知识与实际应用的结合。
+    - field: 价值观自然融入
+      type: float
+      description: 在自然语境中适度融入社会主义核心价值观或中华优秀传统文化，强调科学精神、合作、责任等价值理念，与物理内容有机结合，避免生硬灌输。
+    - field: 启发式提问质量
+      type: float
+      description: 问题设置应具启发性，能引导学生深入分析复杂动态过程中的受力与运动关系，鼓励多角度思考、方案设计或批判性反思。
+format_mode: prompt

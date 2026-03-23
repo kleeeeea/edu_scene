@@ -1,0 +1,128 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-历史人物的功过评价教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二学生，最近我们班在历史课上讨论怎么全面评价历史人物的功过，像秦始皇这种争议很大的人物。老师让我们既要说贡献，也要讲过错。我本身挺喜欢辩论，也爱查资料，但总觉得评价历史人物特别复杂，不知道怎么系统梳理。你能帮我全面分析一下吗？最好结合秦始皇的具体故事讲讲怎么用多角度看待他的功与过。
+  - question: I'm BellQuinn, I'm 14 and in 8th grade. I do competitive dance and love
+      baking, so I like things to be lively and creative. When we talk about historical
+      figures in class, like Empress Wu Zetian, I get excited about debates but find
+      it hard to quickly decide what's good or bad about them. Can you simply say
+      how I can look at both the achievements and mistakes of someone like Wu Zetian?
+      Simple say it so I can get the main idea fast.
+  - question: 我刚上初中，历史基础一般，对历史人物也挺感兴趣，但老师让我们评价岳飞是不是英雄，还有他有没有不足，我有点分不清。你能帮我理解一下怎么评价历史人物的功过吗？讲讲看怎么找到证据、怎么思考他们的贡献和问题。帮我理解一下。
+  - question: 我是初三历史老师，班里学生差异挺大，有喜欢听故事的，也有觉得评价历史人物很主观的。最近准备带他们做一个关于清朝乾隆皇帝功过的专题讨论。你作为教育专家，能给我一份完整的分析吗？想要内容全面，能让基础弱的同学也参与进来，能力强的同学能深入思考，还能启发大家从不同角度评价乾隆，最好包括事迹、争议、教学建议和互动活动设计。
+  - question: I'm ThomasLucas, an 8-year-old in third grade. I love skateboarding
+      and street dance, and I'm just beginning to think more practically but usually
+      just look at things simply. My teacher asked us to discuss if someone like Genghis
+      Khan was a good leader or did bad things. I can't really tell. Can you say your
+      thoughts in a way that's easy for me to understand, maybe with a simple example?
+      Just say your opinion.
+  - question: 我是初中生，最近对评价历史人物挺感兴趣，尤其是像林则徐这种既有贡献又有争议的人。老师让我们写一篇分析林则徐功过的论文，我有点不知道怎么系统展开。你能帮我深入了解一下吗？希望你能详细分析他的重要事迹、贡献和争议，还能教我怎么培养批判性历史思维。
+  - question: I'm GarciaHannah, 15 years old and in 9th grade. I like yoga and programming,
+      but I'm usually quiet and not that confident when talking in class. My teacher
+      wants us to look at both the good and bad sides of Sun Yat-sen, but I don't
+      want to make it complicated. Can you use a few sentences to explain how I can
+      evaluate his achievements and faults? Just keep it brief so I get the main point.
+  - question: 我是崔雅，初三女生，喜欢吉他、硬笔书法和编程。性格有点情绪化但也理性，会主动合作但有时容易盲从别人。老师让我们小组讨论王安石或慈禧太后的功过评价，我觉得自己容易跟着别人走，不太会独立思考。你能讲清楚点怎么用自己的视角评价历史人物的功过吗？最好举例说明怎么避免盲从、学会独立分析。
+  - question: 我是家长，孩子刚上初中，经常问历史人物到底好还是坏。比如她最近问朱元璋是明君还是暴君。我希望能给她一个详细解释，让她学会从不同角度看问题。你能详细说说朱元璋的功过吗？最好结合具体事件和历史背景，让孩子能理解历史评价其实很复杂。
+  - question: 我是初中历史教研组的新成员，最近刚接手“历史人物功过评价”主题的校本课程设计。我们学校学生基础不太一样，有喜欢辩论的，也有喜欢听故事、查资料的，还有比较被动的。你是历史教学专家，能系统地讲解一下怎么设计分层、互动性强、兼顾多元价值观的课程吗？最好结合具体教学案例和历史思维培养的方法，全面分析一下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-历史人物的功过评价进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估回答是否针对学生的具体学习能力、兴趣、性格、背景等，提出有针对性的内容调整和反馈。需体现对个体差异的理解和具体回应，避免模板化和泛泛而谈，关注个体成长需要。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估回答是否完全按照教学设计或指令要求的结构、步骤和格式作答，逻辑顺序清晰，内容完整，无环节遗漏、顺序混乱或随意更改，能反映教学流程的严谨性。
+  - field: 差异化教学策略应用_理由
+    type: str
+    description: 解释差异化教学策略应用评分的详细理由，引用具体例子。
+  - field: 差异化教学策略应用
+    type: float
+    description: 评估是否根据学生不同的学习基础、兴趣和风格，设计有针对性、多样化、分层次的教学活动或任务，既有支持也有挑战，体现个别化和差异化支持，避免‘一刀切’。
+  - field: 历史思维方法引导_理由
+    type: str
+    description: 解释历史思维方法引导评分的详细理由，引用具体例子。
+  - field: 历史思维方法引导
+    type: float
+    description: 评估是否具体引导学生运用历史学方法（如多角度评价、证据分析、时空观念、因果推理等），并通过明确步骤和任务帮助学生建立专业历史思维，不停留在理论口号层面。
+  - field: 问题驱动与探究性设计_理由
+    type: str
+    description: 解释问题驱动与探究性设计评分的详细理由，引用具体例子。
+  - field: 问题驱动与探究性设计
+    type: float
+    description: 评估是否通过真实情境、开放性或多元答案的问题设计，激发学生主动探究、批判性思考和表达个人观点。问题需贴近学生实际，鼓励多角度、深入思考，避免单一标准答案。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估是否有意识地激发学生提出新观点、历史假设、跨学科联想，或采用多样化表达方式（如漫画、短剧、演讲等）。要求创新不仅体现在形式，更关注内容的独特性、深度和原创性。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 评估是否在教学过程中自然、恰当地渗透社会主义核心价值观和中华优秀传统文化，结合历史人物评价，引导学生思考其现实意义，避免生硬灌输或口号式表达。
+  - field: 学生认知与表达适切性_理由
+    type: str
+    description: 解释学生认知与表达适切性评分的详细理由，引用具体例子。
+  - field: 学生认知与表达适切性
+    type: float
+    description: 评估教学任务、问题和表达方式是否既符合初中生认知发展阶段和表达习惯，又具有适当挑战性，能促进学生思考和成长。任务应具体明确、可操作，既不幼稚，也不超纲或过度抽象。
+  format_mode: prompt

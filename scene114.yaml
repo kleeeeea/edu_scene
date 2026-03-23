@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-高中-电磁感应现象的深度解析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高二学生，最近在物理课上学到电磁感应现象，感觉内容又多又难，你作为物理专家，能全面深入地讲讲吗？我还想知道有没有什么有趣的实验或者生活里的观察可以帮我理解得更透彻。
+  - question: 我是一名高一学生，物理基础一般，最近听老师讲电磁感应的时候有点迷糊。你是我的学习助手，能不能讲清楚点，比如电磁感应的原理、法拉第定律和楞次定律的区别，还有实验怎么做？最好举个例子或者给个实践建议。
+  - question: 我是初三学生，对物理挺感兴趣的，最近想多了解电磁感应。你作为物理教育顾问，能解释一下吗？可以举举身边的例子，顺便推荐个好玩的实验或者动手活动吗？
+  - question: 我是物理老师卢爽，平时喜欢做瑜伽和茶艺，在备课时需要梳理下电磁感应现象的知识点。你作为物理教研专家，能帮我概括一下电磁感应的核心原理、公式和常见误区吗？说得清晰简洁点，方便我快速查阅。
+  - question: I'm GarciaHarper, a 9th-grade student who loves gardening and taekwondo,
+      and I enjoy working with my classmates. We've just started learning about electromagnetic
+      induction in physics, but I'm finding it tough to understand all the principles
+      and applications. Could you, as a physics education consultant, give me a complete
+      analysis and maybe suggest a creative group experiment or project to help me
+      and my friends understand better?
+  - question: 我是一名高三学生，复习电磁感应的时候总觉得内容太杂太难记。你是我的学习顾问，可以简短回答下，帮我理清重点和常见易错点吗？
+  - question: My name is MillerLeon. I'm in 2nd grade and like badminton and football,
+      but mostly I listen and play alone. I heard about electromagnetic induction
+      in a science story, but I don't really get it. As a physics expert, can you
+      explain it in detail with some stories and simple experiments? Also, could you
+      suggest a fun activity I can do by myself to try it out?
+  - question: 我是四年级学生彭南，喜欢滑板和国际象棋，最近科学课上讲了电磁感应。我对这个还不是很明白，你作为物理老师，能详细说说电磁感应现象的原理和生活例子吗？最好能结合我的兴趣推荐一个能自己试试的小实验。
+  - question: 我是一名高中生，准备参加物理竞赛，电磁感应这一块内容特别多。你作为竞赛教练，能不能帮我系统分析一下原理、推导、实验和应用？我还想要一个有挑战性的探究任务，能不能结合竞赛要求详细说说？
+  - question: 我是高一学生，最近在学电磁感应现象，感觉还不是很懂。你是物理老师，能帮我理解一下电磁感应的原理和常见应用吗？最好举个生活里的例子。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-高中-电磁感应现象的深度解析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容、活动及任务是否根据学生的知识基础、兴趣、目标和认知风格进行差异化设计，并能根据学生反馈动态调整。要求针对不同层次和类型学生有具体适配方案，体现因材施教。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教学内容是否严格按照教学指令及结构要求回应，分段清晰、条理分明，涵盖明确目标、系统内容、任务与思考等环节，排版规范易读。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评估是否结合至少两种科学教学方法（如探究式、情境式、启发式、合作学习等），并融合多种教学手段（实验、图示、互动、案例分析等），促进学生主动思考和理解。
+  - field: 知识点深度与系统性_理由
+    type: str
+    description: 解释知识点深度与系统性评分的详细理由，引用具体例子。
+  - field: 知识点深度与系统性
+    type: float
+    description: 评估知识讲解是否系统、递进且具备专业深度，涵盖电磁感应的原理、定律、应用、常见误区、历史发展及前沿进展，并能综合分析、形成知识结构。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放性问题、跨学科联系、实际挑战等方式，激发学生提出新观点、自主探索，鼓励多元解答和创新思考。高分需有至少一个开放性问题和学生自主探索空间。
+  - field: 创造性任务设计_理由
+    type: str
+    description: 解释创造性任务设计评分的详细理由，引用具体例子。
+  - field: 创造性任务设计
+    type: float
+    description: 评估是否设计富有创造性和挑战性的实践任务、实验或项目，促进学生动手能力、创新实践与反思总结。高分需鼓励任务变体设计、同伴评议或跨学科融合，并关注学生实际产出质量。
+  - field: 核心价值观自然融入度_理由
+    type: str
+    description: 解释核心价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 核心价值观自然融入度
+    type: float
+    description: 评估教学内容是否自然融入社会主义核心价值观和中华优秀传统文化，强调科学精神、家国情怀、合作与创新等，有具体案例或故事支撑，融入方式自然不生硬，能激发学生认同感。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估教学环节中提出的问题是否贴近高中生在学习电磁感应现象过程中的真实困惑，具有代表性、具体性和针对性，能反映学生常见误区或实际学习情境。
+  format_mode: prompt

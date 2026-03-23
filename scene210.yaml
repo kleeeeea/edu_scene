@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-方向与地图认知教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名小学三年级学生，老师最近讲了方向和地图，可我总是分不清东南西北，特别在生活里更容易搞混。你能具体说说怎么在日常生活中正确辨别方向吗？最好能举些例子和小技巧，谢谢！
+  - question: 我是小学地理老师，最近发现有些学生总是分不清地图上的方向，比如上北下南容易弄混。你说说你的看法，帮我分析下原因，并给点实际的教学建议或者活动好吗？
+  - question: 我是四年级学生家长，我孩子平时喜欢户外，但方向感很差，经常在公园迷路。你能详细说说，有哪些有趣又实用的方法可以帮助他提高方向感和地图认知能力吗？
+  - question: 我是叶芬，今年43岁，是小学地理老师，平时喜欢攀岩和看电影。最近在教方向与地图认知时，发现学生兴趣还行但缺少系统的学习路径。你作为地理教育专家，能系统地讲解一下小学方向与地图认知的教学策略吗？希望内容全面一点，能结合课程设计、创新活动、传统文化融入和评价方式等具体说说，最好有实际操作建议。
+  - question: 我是刚接触小学地理教学的新老师，担心讲方向和地图太枯燥。你能简短回答下，有哪些适合小学生、能激发兴趣的地图认知和方向教学方法吗？
+  - question: 我是高三学生韩荣峰，喜欢攀树和山地骑行，自主学习还可以但有点拖延，专注时间也不太长。你作为我的地理学习助手，能详细展开说说，怎么把户外活动（比如骑行、攀树）和方向与地图知识结合起来，让学习更有趣、更有效果？还希望能帮我克服拖延和专注力短的问题，最好有些具体案例和方法，谢谢！
+  - question: 我是一名小学五年级学生，对地图有点兴趣但还不太会用。你能大概讲讲，认识和使用地图时要注意哪些主要方面吗？
+  - question: 我是小学地理老师贺永，喜欢攀树、野外定向和露营生存技能。你作为地理教育专家，说说你的看法，怎么把野外定向和生存训练结合进小学方向感和地图认知的教学？希望能有创新点和具体活动案例，能激发学生兴趣就更好了。
+  - question: 我是一名小学地理教学研究员，最近在负责校本课程开发。你能给我一份完整的分析吗？想请你系统梳理一下小学方向与地图认知课程的体系构建原则、内容框架、创新活动、核心素养培养、传统文化融入、评价机制和课外延展等，最好结合实际案例，内容越全面越好。
+  - question: 我是一名小学三年级学生，老师教我们用指南针和地图确定方向，可我觉得挺难的。你能讲得详细点吗？比如指南针怎么用、怎么和地图一起用，还有生活里有哪些实用的小窍门？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-方向与地图认知进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价教学内容是否充分结合学生年龄、能力、兴趣、认知风格等多维画像，进行分层、分组、差异化设计。高分要求能针对多样学生群体提供定制化任务与互动方式，中分为部分分层或兴趣结合但不足够深入，低分为一刀切、无差异化。
+  - field: 指令格式遵循性_理由
+    type: str
+    description: 解释指令格式遵循性评分的详细理由，引用具体例子。
+  - field: 指令格式遵循性
+    type: float
+    description: 评价教学内容是否严格、完整地按照教学任务要求的指定格式（如分步骤、表格、流程图等）组织。高分需全部格式准确且内容完整，中分为部分格式实现或内容有遗漏，低分为仅用文字或格式混乱。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评价教学内容与‘方向与地图认知’核心知识点的契合深度。高分为覆盖方向辨认、地图应用、生活迁移等知识点并能促进目标达成，中分为部分覆盖但有遗漏或泛化，低分为内容偏离主题或仅涉及边缘知识。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学方法是否依据小学生认知规律，采用启发、探究、情境、互动等多元科学手段。高分为多层次、多样化设计，能激发主动参与和深度理解，中分为有部分互动或实践但手段单一，低分为仅讲授或书面练习，学生被动接受。
+  - field: 知识表达准确性与清晰度_理由
+    type: str
+    description: 解释知识表达准确性与清晰度评分的详细理由，引用具体例子。
+  - field: 知识表达准确性与清晰度
+    type: float
+    description: 评价地理知识表达是否准确、无歧义，逻辑严谨，语言通俗易懂。高分为无误且表达方式有助于理解和复述，中分为基本准确但表达略复杂或有轻微歧义，低分为概念混淆或表达不清易误导。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 评价教学内容是否通过开放性任务、创新活动、跨学科融合等方式，有效激发学生多角度思考和创造性解决问题。高分为有明确创新产出、表达方式多样，中分为有创新任务但表达形式单一或引导不足，低分为仅记忆知识，无创新或探索机会。
+  - field: 模拟真实提问回应度_理由
+    type: str
+    description: 解释模拟真实提问回应度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应度
+    type: float
+    description: 评价教学内容能否针对学生实际疑问做出具体、易懂、有针对性的回应。高分为结合生活经验和地理原理分步骤解释并鼓励提问互答，中分为部分回应但解释不够深入或脱离生活，低分为机械重复课本内容或无回应。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价是否在传授地理知识过程中，自然融入社会主义核心价值观和中华优秀传统文化。高分为内容与价值观深度融合，能引发共鸣和思考，中分为有价值观内容但联系较弱或表达生硬，低分为机械罗列或无实际联系。
+  - field: 反馈与互动有效性_理由
+    type: str
+    description: 解释反馈与互动有效性评分的详细理由，引用具体例子。
+  - field: 反馈与互动有效性
+    type: float
+    description: 评价教学过程中是否能及时、针对性地给予学生反馈，鼓励表达观点、发现并纠正错误。高分为互动环节丰富、师生交流充分、能引导学生主动发现和修正认知问题，中分为有互动但反馈不及时或不具体，低分为无针对性反馈或互动流于形式。
+  format_mode: prompt

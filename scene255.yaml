@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-多种所有制经济共同发展教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是余玲蕾，高一学生，最近在学政治时碰到“多种所有制经济共同发展”这部分有点迷糊。你能结合实际生活中的例子，帮我理解一下这个内容吗？帮我理解一下。
+  - question: 你是政治教育专家，能不能系统地讲解一下初中政治里“多种所有制经济共同发展”这部分？我想全面了解它的内容、政策背景、理论基础还有实际生活中的表现，系统地讲解一下。
+  - question: 我是初中班主任，班里有些学生觉得“多种所有制经济共同发展”很抽象，你能结合生活案例讲清楚点它的意义吗？讲清楚点。
+  - question: 我是农村初中老师，班里有留守儿童，对经济知识不太熟，你能帮我概括一下“多种所有制经济共同发展”主要内容和意义吗？简短回答下。
+  - question: 你是初中生学习助手，能不能详细展开说说“多种所有制经济共同发展”包括哪些内容？我想知道它的发展过程、现实意义、优势互补、挑战和未来发展趋势，还想听听具体的生活案例，详细展开说说。
+  - question: 我是家长，女儿最近学政治时对“多种所有制经济共同发展”很困惑。你能结合身边例子详细说说它到底讲什么，为什么对社会重要吗？详细说说。
+  - question: 我是一名初中政治教研员，发现学生们对“多种所有制经济共同发展”实际应用理解不够深刻。你能深入说说看它在中国社会的现实表现、协同作用、政策支持、问题和改进建议吗？深入说说看。
+  - question: 最近班里讨论“多种所有制经济共同发展”，大家分不清不同所有制的特点和优势。你能具体说说国有、集体、私有等所有制各自的特点和优势，还有它们为什么要共同发展吗？能具体说说吗？
+  - question: 我是新入职初中政治老师，刚开始讲“多种所有制经济共同发展”。能不能帮我概括一下它的核心知识点和教学重点？概括一下。
+  - question: 你是政治教育专家，能不能彻底说清楚“多种所有制经济共同发展”的理论基础、政策演变、现实意义、结构协同、问题挑战和未来方向？还有怎么在教学中融入核心价值观和传统文化？彻底说清楚。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-多种所有制经济共同发展进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评价教学内容是否根据学生不同的学习水平、兴趣、认知特点主动调整表达方式、内容深度和举例，体现分层教学和个别化指导，避免一刀切。
+  - field: 格式与结构规范度_理由
+    type: str
+    description: 解释格式与结构规范度评分的详细理由，引用具体例子。
+  - field: 格式与结构规范度
+    type: float
+    description: 评价答案是否严格遵循题目或教学要求，结构分明（如分点、标题、段落），逻辑顺序合理，内容层次清晰，有助于归纳重点和查阅。高分要求结构创新或逻辑严密。
+  - field: 教学方法科学性与适切性_理由
+    type: str
+    description: 解释教学方法科学性与适切性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与适切性
+    type: float
+    description: 评价所用教学方法是否结合学生认知、内容特点灵活选择（如启发式、案例教学、合作学习、分层递进等），促进学生参与、理解和应用，避免单一灌输。
+  - field: 知识结构完整性与深度_理由
+    type: str
+    description: 解释知识结构完整性与深度评分的详细理由，引用具体例子。
+  - field: 知识结构完整性与深度
+    type: float
+    description: 评价答案是否系统、深入覆盖多种所有制经济的核心知识，包括类型、特点、作用、相互关系、现实案例、政策分析等；高分要求结合最新数据、趋势或挑战进行多角度分析。
+  - field: 互动与启发性_理由
+    type: str
+    description: 解释互动与启发性评分的详细理由，引用具体例子。
+  - field: 互动与启发性
+    type: float
+    description: 评价是否设计有效的提问、讨论、任务或反馈环节，激发学生主动思考、表达观点和参与互动，促进知识内化。高分要求互动多样且能引发深度思考。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价是否通过设问、任务或情境鼓励学生提出新观点、创新方案、分析未来趋势或跨界联系，支持创造性表达和多元思考。高分要求学生能设计或论证新模式/方案。
+  - field: 社会主义核心价值观与中华优秀传统文化融入度_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入度
+    type: float
+    description: 评价是否自然、具体地融合社会主义核心价值观和中华优秀传统文化，通过案例、故事或实际应用展现其内涵，避免生硬口号化。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价问题设计是否贴近真实初中生的思维、经验和兴趣，反映他们可能的疑惑或生活实际，促进真实交流和理解。高分要求问题能引发学生主动探究和表达。
+  format_mode: prompt

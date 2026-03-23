@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-小学-儿歌童谣跟读与学唱教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级学生的家长，孩子喜欢唱歌但学英语儿歌时发音不自信，也不敢大声唱。你能简单说说怎么在家帮助他跟读和学唱《Twinkle, Twinkle,
+      Little Star》吗？
+  - question: 我是小学英语老师，班上有些孩子上英语儿歌课总是注意力不集中、小动作多，影响跟读和学唱效果。你能具体说说有哪些有趣的方法或活动能帮他们集中注意力、学得更好吗？
+  - question: 我是一名新手小学英语老师，第一次带一年级儿歌课，孩子们性格各异，有的活泼，有的胆小。能帮我理解一下怎么设计一节适合他们的英语儿歌教学活动，让大家都能参与进来吗？
+  - question: 你是小学英语教研员，我们想完善儿歌童谣跟读与学唱课的评价标准，不仅考查发音、记忆和参与，还希望能体现合作和热爱生活等核心价值观。能讲得详细点吗？
+  - question: 我是四年级学生，喜欢英语歌但歌词总记不住，跟读也跟不上。你能讲清楚点，说说怎么才能记住歌词、跟读更好吗？
+  - question: 我是小学英语老师，班里有孩子喜欢表演唱歌，也有内向不爱说话或对英语儿歌没兴趣的。你作为教学专家，能不能从各个角度详细说说怎么让不同性格、兴趣的学生都能在儿歌课上学得开心又有效？
+  - question: 我是二年级家长，孩子学《Old MacDonald Had a Farm》时老是把动物单词搞混，跟读也容易错。你能概括一下，有什么好方法帮他记住动物单词、学唱更准确吗？
+  - question: 我是方峰，职校班主任，喜欢篮球和滑板，平时带学生搞班级活动。你作为小学英语老师，能全面深入地讲讲怎么把英语儿歌跟读与学唱活动融入班级生活，提升班级凝聚力，还让学生感受到团结协作、尊重他人等价值观吗？
+  - question: 我是小学英语教务，家长说孩子在儿歌课上表现积极，但回家却不爱复习跟读。你能深入讲解一下，这种情况的原因和具体改进建议吗？
+  - question: 我是一年级英语老师，班上有个胆子小的孩子，学唱儿歌时总不敢开口，怕发错音被笑。你能讲清楚点，具体怎么帮他树立自信、愿意参与吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-小学-儿歌童谣跟读与学唱进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准识别_理由
+    type: str
+    description: 解释个性化画像精准识别评分的详细理由，引用具体例子。
+  - field: 个性化画像精准识别
+    type: float
+    description: 评估教学方案能否基于学生年龄、英语基础、兴趣、认知特点进行精准识别，并据此个性化调整内容、难度和教学策略。高分要求能动态收集与应用学生画像，持续优化教学。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估教学设计是否严格按照提问要求的流程、格式和步骤响应，结构层次分明，内容完整，每步清晰标注，便于教师和学生直接操作。高分要求格式统一、逻辑严密、无遗漏。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否遵循教育学原理，包括分层指导、循序渐进、互动反馈、多感官参与、动态调整等。高分要求能针对不同学生差异及时优化方法，持续跟踪效果。
+  - field: 教学活动丰富性_理由
+    type: str
+    description: 解释教学活动丰富性评分的详细理由，引用具体例子。
+  - field: 教学活动丰富性
+    type: float
+    description: 评估活动设计是否多样化且与教学目标紧密结合，包括角色扮演、律动、分组合作等。高分要求活动能促进深度参与、兴趣激发，并有效支持英语学习目标。
+  - field: 创造力激发有效性_理由
+    type: str
+    description: 解释创造力激发有效性评分的详细理由，引用具体例子。
+  - field: 创造力激发有效性
+    type: float
+    description: 评估教学是否系统引导学生进行歌词改编、动作创编、情境想象等创造性表达。高分要求有创新展示机会、师生互动评价，能持续提升学生创新思维。
+  - field: 真实提问场景模拟度_理由
+    type: str
+    description: 解释真实提问场景模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问场景模拟度
+    type: float
+    description: 评估教学方案是否高度贴合小学英语课堂实际需求，能回应教师常见困惑和真实场景。高分要求方案具备针对性、实用性和可操作性，并能解决实际问题。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估教学内容是否在儿歌学习过程中自然融入友爱、合作、诚信等核心价值观，并结合中华传统文化。高分要求润物细无声地引导价值观，形成良好班级氛围。
+  - field: 语言表达与易懂性_理由
+    type: str
+    description: 解释语言表达与易懂性评分的详细理由，引用具体例子。
+  - field: 语言表达与易懂性
+    type: float
+    description: 评估教学语言是否简明、亲切，适合小学师生理解，避免生僻词和复杂句式，表达清晰便于模仿与操作。高分要求语言生动、贴近儿童认知特点。
+  - field: 反思与改进引导_理由
+    type: str
+    description: 解释反思与改进引导评分的详细理由，引用具体例子。
+  - field: 反思与改进引导
+    type: float
+    description: 评估教学方案是否鼓励师生进行自我反思，及时发现问题并提出可行改进建议。高分要求设置具体反思环节，形成持续优化的教学循环，有记录和反馈机制。
+  format_mode: prompt

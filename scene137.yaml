@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-经典生物实验的设计与变量控制教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是刚入职的初中生物老师，学生基础一般但都喜欢动手做实验。我想设计“探究光对植物生长的影响”的实验，怎么让他们理解变量控制的重要性？大概讲讲核心要点和一些建议吧。
+  - question: 我是初中生物老师，班里有些逻辑强但动手能力弱的学生，在做“酵母菌发酵条件”实验时，经常忽略变量控制的细节。你能全面分析一下变量控制的理论、常见问题、操作流程和创新教学方法吗？结合我的教学情况给出分层建议。
+  - question: 你是生物教育专家，我是初中生物新手老师，学生在做“观察种子萌发条件”实验时总是分不清自变量和因变量。帮我理解一下怎么才能清楚地讲变量控制，还能举点例子和给些建议吗？
+  - question: 我是初中生物老师，班里有些学生基础一般但对生命很感兴趣。我们要做“水分对植物生长影响”实验，变量控制方面该注意什么？简要说明下，还希望给点适合他们的建议。
+  - question: 我是初中生物老师，学生大部分都喜欢生物，不过做实验时经常忽略细节。准备做“动物呼吸作用探究”实验，变量控制这块你能讲清楚点吗？主要意义、常见问题和操作建议都说说，最好结合我的学生特点。
+  - question: 你是生物教育专家，我是初中生物老师，班里有几个特别爱动手的学生，但在做“温度对酶活性影响”的实验时变量控制总是做不好。讲讲看怎么从理论和实践上指导他们？最好能分层给建议，还能激励他们。
+  - question: 我是初中生物老师，班里有基础好的学生也有刚接触生物实验的新手。我们要做“肥料对植物生长影响”的实验，能全面分析一下变量控制的理论、操作流程和生活应用吗？最好结合不同学生特点给些分层建议和具体案例。
+  - question: 你是生物教学专家，我是初中生物老师，班里学生水平不一，有的很爱科学探究，有的觉得实验没意思。要做“光照时间对植物生长的影响”实验，你能从各个角度详细说说吗？包括实验目的、变量控制、活动设计、兴趣激发和价值观渗透，最好针对不同学生给出建议和案例。
+  - question: 我是初中生物老师，班里学生能力参差不齐，有些对实验设计很感兴趣，有些很被动。我们要做“温度对细胞呼吸的影响”实验，能彻底说清楚怎么科学设计、变量控制、分层教学和激发学生积极性吗？最好能自然融合科学探究精神和核心价值观，举些案例和策略。
+  - question: 你是生物教育专家，我是初中生物老师，学生做“光对植物生长影响”实验时总是搞不清变量控制，还容易误判结果。讲清楚点变量控制的理论、常见误区和纠正办法吧，最好结合我的学生情况给点建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-经典生物实验的设计与变量控制进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学内容与流程是否基于学生的多维画像（学习基础、兴趣、认知风格、能力水平等）进行差异化设计，并在各环节持续体现个性化调整。高分要求能动态响应学生变化，低分表现为内容完全模板化或忽视个体差异。
+  - field: 个性化指令遵循准确性_理由
+    type: str
+    description: 解释个性化指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 个性化指令遵循准确性
+    type: float
+    description: 评估教学输出是否严格按照指定内容、格式分段，并在每一环节结合学生画像调整。高分需每段内容均响应学生实际，结构清晰，表达无遗漏。低分表现为分段混乱、内容未结合画像、部分环节缺失。
+  - field: 教学方法科学性与专业度_理由
+    type: str
+    description: 解释教学方法科学性与专业度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业度
+    type: float
+    description: 评估实验设计与教学流程的科学性和专业度，包括变量定义、流程严谨性、数据处理、误差分析与科学讨论。高分要求变量类型明晰、步骤完整、数据分析规范，并能引导学生批判性讨论结果及误差来源。低分表现为变量混淆、流程随意、数据处理粗糙、未引导科学讨论。
+  - field: 实验变量控制细致度_理由
+    type: str
+    description: 解释实验变量控制细致度评分的详细理由，引用具体例子。
+  - field: 实验变量控制细致度
+    type: float
+    description: 评估对自变量、因变量、控制变量的区分与系统控制是否细致，能否指导学生理解变量关系、控制措施及变量失控后果。高分需详细列举每类变量，说明具体控制方法、失控影响，并结合案例分析变量干扰。低分表现为仅提及变量，无具体控制措施或失控分析。
+  - field: 教学方法创新性与启发性_理由
+    type: str
+    description: 解释教学方法创新性与启发性评分的详细理由，引用具体例子。
+  - field: 教学方法创新性与启发性
+    type: float
+    description: 评估教学方法是否新颖、富有启发性，包括情境任务、数字化工具、跨学科融合等创新设计，能否激发学生主动探索、协作与思考。高分要求有多环节创新设计并能引导学生提出问题或改进方案。低分表现为机械照搬教材，无创新环节或启发性活动。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 评估是否设置开放性任务、假设生成、探究环节，激发学生创新思维和自主探索。高分需有多层次开放性问题、鼓励学生自拟实验设计或提出新探究方向。低分表现为流程和结论固定，无开放性问题或创新思考引导。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估教学过程中是否自然融入诚信、协作、责任、尊重等社会主义核心价值观或中华优秀传统文化，并与实验任务紧密相关。高分要求在关键环节（如小组合作、数据处理等）有具体体现，低分表现为完全未涉及或生硬插入口号。
+  - field: 模拟真实提问适应性_理由
+    type: str
+    description: 解释模拟真实提问适应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问适应性
+    type: float
+    description: 评估能否针对学生在实际教学中可能提出的个性化、细节化问题做出具体、实用回应，体现对真实课堂场景的理解及灵活应对能力。高分要求能灵活处理多样化问题并延伸指导，低分表现为机械重复标准答案或未作针对性回应。
+  format_mode: prompt

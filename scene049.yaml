@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: /inspire/hdd/project/ai4education/p-liuwentao/elmes/elmes/mapping/merged_metric_mapping.json
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-数学史知识讲解教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是老师，最近在数学课上讲数学史觉得有点枯燥，自己逻辑性也不是很强，偶尔会自信心不太足。你能简单说说，有什么方法能让数学史讲解变得有趣一点，还能体现人文关怀吗？我比较喜欢故事和跟学生交流情感。简短回答下。
+  - question: 我是初二女生姚彤，平时喜欢游泳和折纸，就是数学这一块自己学起来总觉得没劲，老要老师和补习班督促。你能全面深入地讲讲数学史吗？最好说说有哪些有趣的历史故事和重要人物，还能结合我这些兴趣帮我提点学数学的办法吗？
+  - question: 你是数学教育专家，能详细讲讲东西方数学在历史上是怎么交流和融合的吗？最好结合具体的历史事件和人物，说说这些互动对现代数学有什么影响，还有数学精神和文化传承方面的内容。
+  - question: 我是初三女生孙依，喜欢书法和戏剧表演，最近写数学史作业，特别想知道历史上有哪些厉害的女性数学家。你能讲讲看她们都有哪些代表性成就吗？顺便说说她们的经历和哪些品质值得我学习，最好能结合独立成长和自我提升方面聊聊。
+  - question: 你作为数学教育专家，能帮我理解一下归纳法在数学史上是怎么发展的吗？还有它在中国数学里有没有什么典型的应用？最好说说归纳法对于培养学生逻辑思维和创新能力有什么重要作用。
+  - question: 你作为数学老师，能给我简单说说祖冲之在中国古代数学上的贡献吗？最好能讲讲他的故事，顺便说说他身上的敬业和创新精神对我们学生有什么积极影响。简单说说就行。
+  - question: 你是数学教学助手，能深入说说看“零”这个数字在数学史上是怎么被发现和发展的？可以详细讲讲东西方对“零”的理解和应用，还有哪些人物和故事值得一提。最好分析一下“零”为什么在现代数学里这么重要，也顺便说说中华文化里的创新和包容精神。
+  - question: 我是四年级学生江滨邦，喜欢踢足球和下国际象棋，老师让我们了解中国古代数学家的故事。你能详细说说一个有趣的数学家吗？最好讲讲他的成长经历和怎么解决难题的，还有这些故事对我学习和比赛有什么启发。
+  - question: 你是数学史专家，能解释一下勾股定理在不同国家是怎么发展的？能举几个中国和外国的例子，说明它为什么这么重要，还有它背后的数学精神和社会影响吗？
+  - question: I'm DavisNora, a senior high student into vocal music and economics
+      research. I usually prefer solo projects and creative makeup over group work
+      because I feel a bit socially alienated at school. Can you give me a complete
+      analysis of how mathematical thinking has evolved from ancient times to today?
+      I'm particularly interested in how math influences economics and the arts. Please
+      include stories of innovative mathematicians, talk about the value of mathematical
+      logic for introverted students, and give me advice on balancing my artistic
+      interests with academic performance.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-数学史知识讲解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 教学内容和方式需基于学生的学习水平、兴趣、困惑点进行动态调整。高分要求明确识别学生特征，针对性设定教学目标、内容、举例及互动方式，体现差异化和成长性支持。低分表现为忽略学生特点，统一处理。
+  - field: 指令格式与结构遵循度_理由
+    type: str
+    description: 解释指令格式与结构遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式与结构遵循度
+    type: float
+    description: 教学内容严格遵循任务要求的格式与结构，分段清晰，逻辑递进。高分要求结构创新（如思维导图、流程图）、衔接自然、内容覆盖全面，能有效辅助学生理解。低分表现为结构混乱或仅形式分段，内容覆盖不全。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 采用科学且创新的教学方法（如启发式、探究式、案例分析、互动技术），并结合实际场景、跨学科或技术创新，促进学生主动理解和探索。高分需体现过程引导、方法多样、创新融合。低分表现为单一灌输或罗列，无启发或创新。
+  - field: 知识内容准确性、深度与专业性_理由
+    type: str
+    description: 解释知识内容准确性、深度与专业性评分的详细理由，引用具体例子。
+  - field: 知识内容准确性、深度与专业性
+    type: float
+    description: 数学史知识表述需准确权威，内容详实，涵盖背景、人物、事件、方法及影响。高分要求引用权威文献或数据，进行深入解读、批判性分析和学科联系。低分表现为内容泛泛、事实错误或遗漏关键知识。
+  - field: 创新思维与现实联想激发程度_理由
+    type: str
+    description: 解释创新思维与现实联想激发程度评分的详细理由，引用具体例子。
+  - field: 创新思维与现实联想激发程度
+    type: float
+    description: 教学活动鼓励学生提出问题、联想实际生活、进行创造性思考。高分要求引导学生自主设计、探索或创新活动，并能与现实或未来应用相关联。低分表现为仅要求机械记忆，无任何创新或现实联想。
+  - field: 真实学生提问回应深度_理由
+    type: str
+    description: 解释真实学生提问回应深度评分的详细理由，引用具体例子。
+  - field: 真实学生提问回应深度
+    type: float
+    description: 针对真实学生提问，需系统、细致解释，结合数学史背景、原理及实际意义。高分要求举例、分析原因、延展思考，关联现代应用或相关领域。低分表现为应付式回答，无背景分析或延展。
+  - field: 中国价值观与传统文化融合自然度_理由
+    type: str
+    description: 解释中国价值观与传统文化融合自然度评分的详细理由，引用具体例子。
+  - field: 中国价值观与传统文化融合自然度
+    type: float
+    description: 讲解过程中需自然融入社会主义核心价值观和中华优秀传统文化，结合历史人物精神、科学探索、文化传承。高分要求结合具体事例，体现价值观与文化的内在联系，启发学生当代思考。低分表现为机械罗列或生硬灌输，未与内容融合。
+  - field: 表达力与兴趣激发效果_理由
+    type: str
+    description: 解释表达力与兴趣激发效果评分的详细理由，引用具体例子。
+  - field: 表达力与兴趣激发效果
+    type: float
+    description: 教学语言生动、富有表现力，善用趣味故事、悬念、互动等激发兴趣，促进主动学习和积极参与。高分要求持续吸引学生注意力，引发讨论和探索欲望。低分表现为枯燥、机械讲解，无趣味性或吸引力。
+  format_mode: prompt

@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-高中-接触新兴运动（如飞盘、腰旗橄榄球）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二女生姚紫珍，兴趣爱好是舞蹈和尤克里里，性格活泼但也喜欢独处，逻辑思维比较敏锐。你作为我的体育学习助手，能简要说明一下像飞盘这样的新兴运动在高中体育课里有哪些核心安全措施和参与要点吗？简要说明下
+  - question: 我是高中体育教师，班级学生性格和背景都很丰富，准备开展腰旗橄榄球和飞盘课程。你作为教育领域的专家，能给我一份完整的分析吗？包括课程设计流程、安全防控、创新活动和如何融入中华传统文化等各个方面
+  - question: 我是25岁的美发师吕媛，喜欢摄影造型、时尚搭配和美甲艺术，性格既有原则又很灵活，社交圈主要是美业和时尚同行。最近对飞盘运动挺好奇，想知道它在高中体育课里的基本玩法、团队合作和安全注意事项。你作为体育顾问，讲讲看
+  - question: 我是高中体育教研员，负责指导新兴运动课程的安全管理。你作为体育教育专家，能否概括一下高中飞盘和腰旗橄榄球课堂常见的安全隐患及防控措施？概括一下
+  - question: 我是28岁的女老师阙秀，平时喜欢方言研究和骑行，教学上比较理想主义，注重创新和民主化管理。现在想在高中飞盘和腰旗橄榄球课程里探索创新教学方法，既保障安全，又能激发学生主动参与和团队合作，还能自然融入中华传统文化。你作为体育教育专家，能深入说说看吗？
+  - question: 我是高一男生马汉达，爱好摄影、视频剪辑、吉他和街舞，专注力一般，喜欢和同学一起拍短视频。家里父亲常年外地工作，母亲在超市上班负责照顾我。最近班里开始学飞盘运动，我有点担心自己坚持不了，也怕安全问题。你作为体育学习助手，能解释一下吗？
+  - question: 我是高中体育老师，班里很多女生刚接触腰旗橄榄球，有的外向有的内向。你作为体育教育专家，能不能讲清楚点腰旗橄榄球课上怎么分组练习、保障安全、培养团队合作？
+  - question: I am AndersonEliza, a 33-year-old female teacher passionate about poetry
+      and dance. My teaching approach is empathetic and flexible, often using cross-disciplinary
+      and ritualistic elements. In high school PE, I hope to design innovative frisbee
+      and flag football activities that encourage creative expression, safety, and
+      cultural values. As an AI education consultant, could you please深入说说看?
+  - question: 我是高中学生，最近班里开了腰旗橄榄球选修课。你作为体育学习助手，能详细说说高中腰旗橄榄球的基本规则、安全措施和团队协作细节吗？详细说说
+  - question: 我是高中体育课程负责人，准备新学期全面推广飞盘和腰旗橄榄球。你作为教育专家，能详细分析下这两项新兴运动在课程目标、安全管理、分层教学、创新活动、传统文化融入和科学评价等各个方面吗？详细分析下各个方面
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-高中-接触新兴运动（如飞盘、腰旗橄榄球）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与应用_理由
+    type: str
+    description: 解释个性化画像识别与应用评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与应用
+    type: float
+    description: 评估教学是否基于学生运动能力、兴趣、性格等多维数据，制定并动态调整分层、分组与任务方案，确保每位学生获得针对性成长体验。要求有明确画像采集工具、分组逻辑和跟踪调整机制。
+  - field: 指令遵循与格式完整性_理由
+    type: str
+    description: 解释指令遵循与格式完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式完整性
+    type: float
+    description: 评估教学方案是否严格按照“目标-方法-评价”三步组织，内容结构完整，每一环节均有详细操作说明、预期成果、评价标准及案例举例，便于复现和检查。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学流程是否基于教育学、运动学等专业原理，设有分层目标、动态指导、过程监控与数据化评价。要求根据学情和反馈持续优化，体现专业理论与实践结合。
+  - field: 安全与风险防控措施_理由
+    type: str
+    description: 解释安全与风险防控措施评分的详细理由，引用具体例子。
+  - field: 安全与风险防控措施
+    type: float
+    description: 评估教学设计是否涵盖全流程安全风险识别、预警、干预与应急预案，落实安全教育、器材检查、活动监控和应急演练，并能培养学生安全意识和自主管理能力。
+  - field: 创新性活动设计_理由
+    type: str
+    description: 解释创新性活动设计评分的详细理由，引用具体例子。
+  - field: 创新性活动设计
+    type: float
+    description: 评估教学内容是否包含激发学生创新思维、自主探索和跨学科融合活动，鼓励学生创编规则、玩法、表达主题，并有展示、交流与多元评价环节。
+  - field: 学生主动参与与表达机会_理由
+    type: str
+    description: 解释学生主动参与与表达机会评分的详细理由，引用具体例子。
+  - field: 学生主动参与与表达机会
+    type: float
+    description: 评估教学方案是否给予学生充分主动决策、表达观点、团队协作、自我展示和反思机会，促进创造性思维与社会性发展。要求学生在关键环节有自主选择权和表达空间。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估教学各环节是否深度融入团结、友爱、公平、诚信等核心价值观，通过具体行为规范、活动设计和评价机制落地，促使学生在实际行动中践行价值观。
+  - field: 中华优秀传统文化传承_理由
+    type: str
+    description: 解释中华优秀传统文化传承评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承
+    type: float
+    description: 评估教学内容是否结合中华优秀传统文化（礼仪、服饰、传统体育精神、故事等），鼓励学生主动挖掘、创新融合并表达，形成班级特色文化活动。
+  format_mode: prompt

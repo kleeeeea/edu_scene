@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-高中-物理模型的构建与应用分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是廖毅，航空航天工程师，平时喜欢航模制作、飞行模拟和天文观测，也常和航模俱乐部的朋友一起参赛。你作为物理教育专家，能详细讲讲高中物理模型在复杂工程和航模设计中是怎么构建和应用的吗？希望能结合我的职业和兴趣，系统分析一下流程和方法。
+  - question: 我是杜岚，56岁的老师，书法俱乐部和太极拳班的成员。最近在教高中物理模型时，想提升学生的分析和应用能力。你作为物理专家，能详细说说物理模型构建的教学策略和典型案例吗？希望能结合实际给些建议。
+  - question: 我最近在学高中物理，感觉物理模型的构建有点难懂，特别是怎么把实际问题变成模型再分析应用。能帮我理解一下物理模型的作用和常见构建方法吗？
+  - question: 我是瞿菲，初二女生，喜欢篮球和吉他，平时比赛和练习时都喜欢自己表现。你作为物理老师，能深入讲解一下物理模型在高中物理学习里怎么构建、如何应用吗？也希望你能说说怎么通过个人探索提升分析能力。
+  - question: 我学高中物理模型时常常不知道什么时候用哪个模型，也不太清楚分析模型优缺点的思路。你能用几句话说说物理模型的主要作用和应用要点吗？
+  - question: 我是韦珊珠，策展人，平时喜欢摄影、旅行和艺术鉴赏，工作中常和朋友一起采风、策展。你作为物理教育专家，能结合我的艺术背景，给我一份完整的分析，系统讲解一下高中物理模型的构建逻辑、跨学科应用和创新案例吗？希望内容全面一些。
+  - question: 我最近在学高中物理模型构建，不过对模型的实际应用还挺迷糊。你能简短回答下物理模型在高中物理里的实际应用有哪些吗？
+  - question: 我是罗正，三年级学生，喜欢滑板和科学实验，妈妈常带我去才艺班。你作为物理老师，能用我能听懂的方式讲讲，物理模型在高中物理学习中怎么用、有啥好处吗？
+  - question: 我在高中物理课上总听老师说要用物理模型分析问题，可我还是不太明白模型的实际作用和分析步骤。你能帮我理解一下物理模型在物理问题分析里的具体流程和注意事项吗？
+  - question: 我在准备高中物理教学设计，发现物理模型的构建和应用涉及理论、实验、创新和反思等很多方面。你作为物理教研员，能详细分析下物理模型在高中物理教学里的各个方面吗？希望能系统地了解一下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-高中-物理模型的构建与应用分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容、方法和练习是否根据学生的学习基础、兴趣、认知障碍等画像特征进行持续性、动态化调整，体现针对性差异化设计，避免一刀切或模板化教学。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估教学设计是否严格按照教学要求的步骤、结构和内容层次展开，分步标题、逻辑顺序和内容完整性清晰，无随意删减或增添环节，且每一环节内容充分。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教师是否采用启发式、互动式、循序渐进等现代教育学方法，结合理论与实际，引导学生主动思考、讨论、实践和反思，促进知识建构，避免单向灌输和机械重复。
+  - field: 模型应用分析深度_理由
+    type: str
+    description: 解释模型应用分析深度评分的详细理由，引用具体例子。
+  - field: 模型应用分析深度
+    type: float
+    description: 评估对物理模型应用的分析是否深入，涵盖实际案例探讨、模型适用性与局限性剖析、模型改进与拓展、批判性思考等，鼓励多角度、科学性和层次化分析。
+  - field: 创新思维引导性_理由
+    type: str
+    description: 解释创新思维引导性评分的详细理由，引用具体例子。
+  - field: 创新思维引导性
+    type: float
+    description: 评估是否通过开放性问题、模型变式、跨学科联想等方式分层激发学生创新思考和主动探索兴趣，鼓励提出新问题、尝试新方法，支持多元创新，不局限于教材内容。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估问题设置是否贴近学生真实学习过程中的困惑和认知障碍，关注实际思维发展，问题表达清晰易懂，能引发学生深入思考和讨论，避免机械背诵或脱离实际的设问。
+  - field: 中华优秀传统文化融入度_理由
+    type: str
+    description: 解释中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入度
+    type: float
+    description: 评估教学内容是否将中华优秀传统文化元素自然、有效地融入物理教学，结合古代科技成就、传统思维方式、历史案例等，与物理知识有机结合，引发学生思考与共鸣，避免生硬拼接或形式主义。
+  - field: 社会主义核心价值观体现度_理由
+    type: str
+    description: 解释社会主义核心价值观体现度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观体现度
+    type: float
+    description: 评估教学过程中是否自然渗透科学精神、合作意识、社会责任感等核心价值观，通过团队协作、科学探究、社会应用等活动，引导学生形成正确价值观，体现实际行为和过程性引导，避免流于形式。
+  format_mode: prompt

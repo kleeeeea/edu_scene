@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene181/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 历史-小学-古代生活情景体验教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是小学历史老师，最近想给学生设计一次沉浸式的古代生活情景体验活动。你作为历史教育专家，能不能全方位地讲解一下在小学阶段该怎么系统规划、设计环节、组织活动和做评价反馈？请你系统地讲解一下。
+    - question: 我是三年级学生的家长，我女儿最近特别好奇古代小朋友一天都怎么过的。你作为小学历史知识助手，能不能讲清楚点？
+    - question: 我是三年级的小学生，老师让我们了解古代人怎么做饭、吃饭。你作为历史导师，能不能简短回答下？
+    - question: 你是历史教学顾问，我在教学时发现学生对古代社会分工和职业类型很感兴趣，但理解得还不太透。能不能深入说说看，在小学阶段怎么用情境体验帮助孩子们理解古代社会的职业分工？
+    - question: 你是小学历史学习导师，我是SmithVanessa，15岁，9年级女生，喜欢弹尤克里里和学英语，学习时挺独立但偶尔有点社交疏离，也需要外部监督。能帮我理解一下古代中国青少年在家庭和社会中是怎么学习和成长的吗？帮我理解一下。
+    - question: 我是新入职的小学历史老师，最近想上关于古代节日习俗的体验课。你作为教育顾问，能帮我理解一下怎么设计既有趣又有教育意义的古代节日生活情景体验活动吗？
+    - question: 你作为小学历史教育专家，我是家长，发现孩子对古代人的衣食住行特别感兴趣。能不能详细展开说说，小学阶段怎么通过情境模拟、角色扮演等方式，让孩子真正体验和理解古代人的衣食住行？
+    - question: 我是小学历史教研员，学校最近要推进古代生活体验式教学改革。你作为历史教育专家，能从各个角度详细说说古代生活情景体验教学在小学怎么实施、有哪些模式、注意事项、创新做法和评价方法吗？从各个角度详细说说。
+    - question: 你是小学历史教育专家，我是老师JonesEric，54岁，喜欢登山和早晨练气功，作息很规律，也很注重灵活。有个问题想请教：小学生在古代生活情景体验中容易遇到哪些困惑或者误区？简单说说就行。
+    - question: 我是四年级学生的家长，最近孩子在历史课上体验了‘古代集市’，回来特别兴奋。你作为小学历史教学助手，能具体说说古代集市生活体验有哪些有趣的教学设计，可以让孩子在体验中学到什么吗？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 历史-小学-古代生活情景体验进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估活动是否根据学生的年级、兴趣、能力、学习风格等画像进行针对性调整，提供多样化选择或分层任务，关注个体差异，体现因材施教。
+    - field: 格式指令遵循度
+      type: float
+      description: 评估活动设计或回答是否严格按照任务或用户要求的结构、格式组织内容，分点、分环节清晰，便于理解和执行。
+    - field: 教学目标契合度
+      type: float
+      description: 评估活动是否紧密围绕小学历史课程标准的知识、能力与情感目标，既包含古代生活具体知识点，也能引导学生理解古代社会结构、文化与价值观，避免仅表层涉及历史元素。
+    - field: 教学方法科学性
+      type: float
+      description: 评估教学方法是否符合小学历史学科特点和儿童认知规律，采用情境模拟、合作探究、体验式学习等多样化方法，促进知识、技能与思维能力同步发展。
+    - field: 学生参与度激发
+      type: float
+      description: 评估活动是否能激发并保障所有学生主动参与，提供多种角色、任务或表达方式，避免部分学生长期处于被动或旁观状态。
+    - field: 创新与创造力激发
+      type: float
+      description: 评估活动是否鼓励学生自主提出新想法、表达个人理解（如自创表演、绘画、设计古代生活新场景等），并设置展示交流环节，促进创新思维和表达能力发展。
+    - field: 真实提问模拟度
+      type: float
+      description: 评估活动或提问是否贴近真实课堂情境和学生日常表达习惯，问题设置自然、具体、开放，能激发学生思考和讨论，避免学术化或成人化表述。
+    - field: 价值观自然融入度
+      type: float
+      description: 评估活动是否在具体情境或体验中自然融入社会主义核心价值观和中华优秀传统文化，通过实际体验、互动讨论等方式促进学生内化美德和文化精神，避免生硬灌输。
+format_mode: prompt

@@ -1,0 +1,134 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-自然灾害的成因与防灾减灾策略教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生，最近地理课学到自然灾害的成因与防灾减灾策略，但有很多细节不太清楚。你作为地理老师，能彻底说清楚这个主题吗？全面深入地讲讲看
+  - question: 你作为高中地理学习助手，我最近在复习自然灾害的成因与防灾减灾策略，想系统地掌握相关知识。能帮我系统地讲解一下吗？
+  - question: Hi, I'm MartinezBrooke, a 9-year-old 4th grader who enjoys poetry writing
+      and playing Go. I tend to procrastinate sometimes and value my personal boundaries,
+      but I love learning independently and competing. Could you, as a geography teacher,
+      explain the causes of natural disasters and effective strategies for disaster
+      prevention and mitigation in a way that's engaging for someone like me? Can
+      you go into detail?
+  - question: I'm BrownLuke, a 29-year-old landscape architect. I have a principled
+      yet adaptable approach to design and love experimenting with plant combinations
+      and outdoor spaces, though I sometimes struggle with procrastination. Can you,
+      as a geography expert, share your thoughts on the causes of natural disasters
+      and how landscape architects like myself can integrate disaster prevention and
+      mitigation strategies into our work? What do you think?
+  - question: 我是高一学生，地理老师让我们简要说明自然灾害的成因和防灾减灾的主要策略。简要说明下
+  - question: Hi, I am GarciaKatherine, a 16-year-old 10th grader who loves reading,
+      rock climbing, and journaling. I try to stay focused and avoid distractions
+      in my studies and personal life. Could you summarize the main causes of natural
+      disasters and key prevention strategies for someone like me? Just give me a
+      brief overview.
+  - question: 我家住在广西，最近听说附近发生了洪水。你作为地理老师，能说说你的看法吗？讲讲看
+  - question: 我是高三学生，最近在研究台风对沿海城市的影响。你是我的地理学习助理，能讲得详细点吗？
+  - question: 我是何政传，一名32岁的男老师，平时喜欢电音制作、潜水和攀岩，性格仪式感强且防卫心重，在音乐圈和潜水俱乐部有固定交友圈。你作为地理专家，对自然灾害的成因和防灾减灾有什么看法？说说你的看法
+  - question: 你作为地理老师，能讲讲看自然灾害的成因和防灾减灾的主要策略吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-自然灾害的成因与防灾减灾策略进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否根据学生的地区、兴趣、基础等特征进行针对性调整，案例、表达和资源推荐体现对学生个体差异的具体响应，包括本地化、兴趣化、能力分层等，且能动态调整以适应学生变化。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 内容输出严格按照教师或系统设定的分段、小标题、流程和视觉层次要求，结构清晰、条理分明，易于学生阅读和理解。能根据不同任务调整结构，突出重点，便于查找和复习。
+  - field: 差异化学习建议_理由
+    type: str
+    description: 解释差异化学习建议评分的详细理由，引用具体例子。
+  - field: 差异化学习建议
+    type: float
+    description: 根据学生能力、兴趣和需求，分层提供具体、可操作的学习建议和资源，既有基础提升，也有兴趣拓展和研究引导，建议附有获取方式或实施步骤，允许部分建议为通用但需有针对性补充。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 内容设计采用循证、启发式、探究式、合作学习等现代教学方法，包含互动、实践、开放性问题等环节，引导学生主动思考和参与。能根据学生反馈调整方法，体现教学灵活性。
+  - field: 知识体系逻辑性_理由
+    type: str
+    description: 解释知识体系逻辑性评分的详细理由，引用具体例子。
+  - field: 知识体系逻辑性
+    type: float
+    description: 内容结构层次分明，逻辑严密，先系统梳理灾害类型和成因，再递进分析影响和应对措施，结合案例，最后有总结和归纳，帮助学生形成完整知识框架。能根据知识点复杂度调整展开深度。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 问题设置贴近高中生地理课堂和生活实际，反映学生常见疑惑，具有代表性和实际意义，能激发主动探究兴趣。问题既涵盖基础认知，也有高阶应用情境。
+  - field: 创造力激发设计_理由
+    type: str
+    description: 解释创造力激发设计评分的详细理由，引用具体例子。
+  - field: 创造力激发设计
+    type: float
+    description: 设计包含激发学生创新思维的开放性任务、问题或活动，鼓励提出新观点、方案或实际创新，支持学生展示和交流创意。可分层设置基础创新与高阶创新任务。
+  - field: 多元思维引导性_理由
+    type: str
+    description: 解释多元思维引导性评分的详细理由，引用具体例子。
+  - field: 多元思维引导性
+    type: float
+    description: 内容引导学生从科技、社会、历史、经济等多角度综合分析自然灾害，培养跨学科、批判性和系统性思维，鼓励多角度表达和讨论。
+  - field: 价值观润物细无声融入度_理由
+    type: str
+    description: 解释价值观润物细无声融入度评分的详细理由，引用具体例子。
+  - field: 价值观润物细无声融入度
+    type: float
+    description: 内容自然融入社会主义核心价值观和中华优秀传统文化，通过真实情境、故事、案例等潜移默化引导学生树立正确价值观，避免生硬说教。能结合本地或时代背景提升认同感。
+  format_mode: prompt

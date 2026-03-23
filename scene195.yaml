@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-核心历史概念辨析（如“革命”“改良”）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是28岁的年轻女老师，最近因为工作压力大和教学倦怠感有点迷茫，平时喜欢弹钢琴和练瑜伽来放松。你作为历史学科的专业学习助手，能不能帮我把“革命”和“改良”这两个历史核心概念的区别和联系讲清楚点？最好结合一些贴近生活的小故事或教学建议，帮我在课堂上更生动地带出这两个概念。
+  - question: 我是一名初中历史新手教师，班里学生基础比较薄弱。最近讲到“革命”和“改良”的时候，学生总是混淆。你能用几句话说说这两个概念的主要区别吗？
+  - question: 你作为历史教育专家，我是一名对历史概念非常感兴趣的初中生，最近在自主阅读中发现“革命”和“改良”常常被放在一起讨论。我想让你全面分析一下这两个概念的异同、历史背景、实际案例及其对社会变革的长远影响，最好结合中国和世界历史的案例，帮助我建立系统的思辨能力。
+  - question: 我是初三学生，你作为我的历史学习助手，最近我在复习时对“革命”和“改良”这两个词的具体含义和背后的历史意义有点模糊。能不能详细讲讲这两个概念的本质区别、各自的历史作用和现实启示？最好能鼓励我思考一下现实生活中的类似现象。
+  - question: Hi, I am MartinEric, a 12-year-old 6th grade student who is independent,
+      well-rounded, and can maintain sustained focus while balancing hobbies like
+      roller skating, Go (Weiqi), and street dance. I want to understand the difference
+      and connection between 'revolution' and 'reform' in history class. Can you explain
+      it in detail for me, preferably with a clear comparison table and some real-life
+      analogies, so I can relate it to my own experiences? Please detailedly explain.
+  - question: 你作为历史教学顾问，最近我在初中历史教学中发现学生对“革命”和“改良”这两个概念容易混淆，自己也有些困惑。你能帮我理解一下它们的区别和联系吗？最好给我一些激发学生思考的小建议。
+  - question: 我叫潘胧月，37岁，是一名经常主办社区科学实验活动的女老师，平时热心社区活动和攀岩，但和学校同事关系一般，经常因沟通方式强势产生分歧。你作为历史教育专家，能不能系统地讲解一下“革命”和“改良”这两个历史核心概念的深层含义、历史演变、各自的优势与风险，以及在中国和世界历史中的实际案例？希望内容全面深入，适合我在社区工作坊或课堂做深度讨论。
+  - question: 我是初一学生，最近老师讲到“革命”和“改良”让我有点分不清。你能帮我概括一下这两者的主要区别和联系吗？
+  - question: 你是我的历史学习助手，我是一名对社会变革很感兴趣的学生。最近在学习“革命”和“改良”这两个词的时候遇到了困惑。你能详细说说这两个历史核心概念的不同点和各自代表的历史意义吗？最好能鼓励我联系当下社会现象思考。
+  - question: 我是一名初中历史教研员，最近准备专题讲座，发现很多老师和学生都对“革命”与“改良”的界限、历史作用及现实意义存在误区。你作为历史教育专家，能不能系统地讲解一下这两个核心概念的基本内涵、理论渊源、历史经验、优缺点、现实启示等？内容要全面系统，适合在教师培训和课堂教学中推广使用。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-核心历史概念辨析（如“革命”“改良”）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准识别_理由
+    type: str
+    description: 解释个性化画像精准识别评分的详细理由，引用具体例子。
+  - field: 个性化画像精准识别
+    type: float
+    description: 评估教学内容与活动是否基于学生多维画像（知识水平、兴趣、认知风格等），并能在教学过程中动态调整策略、提供针对性反馈，体现对学生差异的深度理解与响应。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 评估教学内容是否严格遵循任务要求的格式规范（分点、表格、举例、思考题等），结构清晰、层次分明，并能根据教学目标灵活优化，便于学生理解和操作。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评估是否综合运用多种科学教学方法（启发式、情境模拟、对比分析、体验式等），兼顾知识传授与能力培养，激发学生主动探索和深度理解，方法选择有针对性且能灵活调整。
+  - field: 核心概念辨析深度与系统性_理由
+    type: str
+    description: 解释核心概念辨析深度与系统性评分的详细理由，引用具体例子。
+  - field: 核心概念辨析深度与系统性
+    type: float
+    description: 评估对核心历史概念（如‘革命’‘改良’）的辨析是否系统深入，包括本质、理论基础、历史语境、实施过程、影响、争议、不同观点等多维度，并结合真实案例及学生参与的多层次分析。
+  - field: 创新思维引导与表达激励_理由
+    type: str
+    description: 解释创新思维引导与表达激励评分的详细理由，引用具体例子。
+  - field: 创新思维引导与表达激励
+    type: float
+    description: 评估是否设计开放性问题、探究任务或多样表达活动，鼓励学生创新思考、自主表达和批判性分析，超越记忆与复述，支持多角度探索和成果呈现。
+  - field: 真实提问契合度与学生视角_理由
+    type: str
+    description: 解释真实提问契合度与学生视角评分的详细理由，引用具体例子。
+  - field: 真实提问契合度与学生视角
+    type: float
+    description: 评估教学内容与提问是否贴近初中生认知水平、兴趣和常见困惑，语言通俗易懂，案例贴近学生生活经验，能引发学生共鸣和主动思考。
+  - field: 社会主义核心价值观与传统文化融合_理由
+    type: str
+    description: 解释社会主义核心价值观与传统文化融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与传统文化融合
+    type: float
+    description: 评估是否在教学过程中自然融入社会主义核心价值观和中华优秀传统文化，促进学生形成正确历史观和价值观，方式润物细无声，与教学内容有机结合，能引发学生主动思考。
+  - field: 个性化回应深度与多角度引导_理由
+    type: str
+    description: 解释个性化回应深度与多角度引导评分的详细理由，引用具体例子。
+  - field: 个性化回应深度与多角度引导
+    type: float
+    description: 评估教师对学生困惑或兴趣点的回应是否具体深入，结合学生背景、兴趣和实际情境展开多角度分析，采用多样回应策略，鼓励学生表达个人见解和反思，促进师生互动和持续学习。
+  format_mode: prompt

@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-高中-高级语法结构解析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高三学生，最近在准备高考英语写作时总是对虚拟语气用法感到困惑，尤其条件句、宾语从句和像wish、as if这样的结构常搞混。你作为英语学习助手，能深入讲解一下高中虚拟语气的完整知识体系吗？请结合我基础还可以但写作细节容易出错的情况，详细说说规则、例句和实用建议。
+  - question: 我是34岁的中学老师，平时很讲究条理，但在英语课堂讲强调句型时总觉得没把握。你作为英语教育专家，能大概讲讲强调句型的核心用法、常见误区还有适合我这种条理性强但容易陷入细节老师的教学建议吗？
+  - question: 你是我的英语学习导师，我最近学定语从句时总是在关系代词、关系副词选择和先行词一致性上出错。能解释一下定语从句的基础用法、结构、易错点，并结合我喜欢先理解规则后做题的方式，给些建议和例句吗？
+  - question: 我是一名高二学生，准备参加全国英语竞赛，对语法细节很感兴趣，但最近学倒装句时遇到复杂结构总觉得理不顺。你作为英语知识导师，能深入讲解一下高中常见倒装句的类型、构成、易错点和写作阅读中怎么用吗？请结合我喜欢钻研细节和追求语法精确的特点，详细说说提升建议。
+  - question: 我是老师贺西，今年48岁，平时喜欢书法绘画和采集植物标本，教学比较灵活。你作为英语教育专家，帮我理解一下非谓语动词中的现在分词、过去分词和不定式的区别和用法吧，并给些适合灵活创新教学的活动建议。
+  - question: 我是初二女生石凌菲，性格内向喜欢骑行和写诗，学习上遇到难题就想请教别人。老师最近讲主谓一致，我总是记不住哪些情况下主语和谓语要一致，像集体名词、并列主语还有some
+      of/none of这类结构特别容易混。你作为英语学习助手，能讲清楚点主谓一致的规则、易错点和记忆技巧吗？最好结合我喜欢举例和需要别人帮忙的情况，给我实用建议和有趣例句。
+  - question: 你作为英语教育专家，我是韩燕，12岁六年级男生，平时喜欢篮球、绘画、滑板，性格内向独立，周末会和社区小伙伴玩，平常喜欢独自画画。我在学名词性从句时，总觉得主语从句、宾语从句、表语从句和同位语从句很容易混，而且分不清它们在句子里的作用。你能全面深入地讲讲高中英语名词性从句的定义、结构、功能、易错点和有趣的学习方法吗？希望能结合我喜欢画画和生活化例子，给我系统的讲解和鼓励建议。
+  - question: You are my advanced English learning assistant. I'm ThompsonCameron,
+      a senior student who enjoys AI research and science experiments, and I don't
+      mind making mistakes. Could you briefly explain what inversion sentences are
+      in advanced grammar, the main types and usage scenarios, and give some concise
+      tips for avoiding common mistakes? Just a simple summary, please.
+  - question: 你作为英语语法导师，我是冯琪，48岁调酒师，喜欢学习调酒技巧和鸡尾酒文化，社交圈都是同行和高端客户。最近自学英语时发现主谓一致在复杂主语、集体名词、量词短语和倒装结构中特别容易出错。能全方位地讲解一下高中英语主谓一致的系统规则、常见误区和实用例句吗？希望结合我的行业背景和喜欢社交的特点，给些生活化有趣又实用的学习建议。
+  - question: 我是一名高三学生，最近写英语作文时总搞不清楚强调句型和一般句型的区别，像It is/was...that...结构和其他句型老是混。你作为英语学习助手，讲清楚点强调句型的定义、结构、常用法、易错点和典型例句吧，也请结合我写作细节容易混淆的情况给些纠错和提升建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-高中-高级语法结构解析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容是否充分依据学生的多维画像（学习风格、能力水平、兴趣、学习障碍等），动态调整教学策略和内容，做到精准响应差异，支持个性成长。高分要求能结合多项画像特征，持续追踪并调整教学方案。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估教学内容是否严格遵循教学任务格式、结构及分段要求，逻辑清晰、查找便利，特殊需求时有明确适配说明。高分需体现结构完整、层次分明、排版规范。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学内容是否采用多样化、循序渐进、互动性强的教学方法，融合教育学与认知理论，促进深度理解、主动建构与迁移应用，同时兼顾个体差异与群体需求。高分需体现分阶段引导、情境创设、合作互动及反思环节。
+  - field: 语法结构解析深度_理由
+    type: str
+    description: 解释语法结构解析深度评分的详细理由，引用具体例子。
+  - field: 语法结构解析深度
+    type: float
+    description: 评估高级语法结构讲解是否系统、深入，包括结构分解、时态搭配、典型语境、语用功能、跨语言对比、常见误区、迁移应用指导等。高分需多维度剖析并设计迁移应用任务。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 评估内容是否设计开放性任务、跨学科情境或创新型问题，引导学生批判性、创造性思考和表达，鼓励多元视角和迁移应用。高分需包含跨界任务或鼓励原创表达。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估教学内容或提问是否贴近高中生学习高级语法结构的真实困惑，关注易混点、深层理解与实际应用，能反映学生常见疑问和思维障碍。高分需针对不同层次学生常见问题分层设问。
+  - field: 中国价值观自然融入度_理由
+    type: str
+    description: 解释中国价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入度
+    type: float
+    description: 评估语法讲解、例句、情境设置等环节是否自然融入社会主义核心价值观或中华优秀传统文化，表达方式贴切，嵌入语境真实，不影响内容连贯性。高分需在例句、语境、任务等多环节自然体现价值观。
+  - field: 个性化反馈具体性_理由
+    type: str
+    description: 解释个性化反馈具体性评分的详细理由，引用具体例子。
+  - field: 个性化反馈具体性
+    type: float
+    description: 评估针对学生提问、作业或表现的反馈是否具体、个性化，能指出问题、分析原因，给出针对性、可操作的改进建议，并有后续跟踪措施。高分需体现持续性反馈与进步记录。
+  format_mode: prompt

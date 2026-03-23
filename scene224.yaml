@@ -1,0 +1,128 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-初中-人口分布与迁移的原因分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是五年级女生叶仪，平时喜欢越剧和书法，家里很重视传统文化，但我觉得自己逻辑性不太强，也不太自信。最近地理课讲到人口分布和迁移的原因，我对这个知识点有点迷糊。你能结合我的兴趣和背景，大概讲讲人口分布和迁移的主要原因吗？希望能举些贴近生活的例子，让我容易理解。
+  - question: 你作为一位资深地理教育专家，最近我在初中地理教学中发现学生对于人口分布与迁移的原因分析总是停留在表面，不能理解深层次的社会、经济、自然等多方面因素。能讲清楚点人口分布和迁移的多重原因吗？最好结合中国和世界的典型案例，帮助学生建立系统的分析思路。
+  - question: As a geography teacher with a logical approach who enjoys vocal music
+      and baking, I want to help my students understand the reasons behind population
+      distribution and migration, especially the interplay of natural, economic, and
+      cultural factors. Can you explain this and give some detailed examples so I
+      can make my teaching clearer for students with different backgrounds?
+  - question: 我是初二女生张丽，喜欢跆拳道和编程，但有时候遇到问题会有点焦虑，也需要老师鼓励。最近地理课要分析人口分布和迁移的原因，我想把握住主要的知识点。你可以说说主要的人口分布与迁移原因吗？最好能结合一些实际例子，方便我记住。
+  - question: 你作为地理学科的专业老师，我是55岁的张彬，目前在学校和社区都积极参与文化活动。最近有一些年轻教师向我请教‘人口分布与迁移的原因分析’的系统讲解方法。他们希望我能全方位地讲解这个主题，包括理论基础、教学案例、互动方法及如何融入中华优秀传统文化与核心价值观。你能全方位地讲解一下吗？希望内容全面、系统，便于我做专题讲座和教研指导。
+  - question: I'm BrownJack, a 10-year-old 5th-grader who loves chess, skateboarding,
+      and VR games. I usually stay focused and plan my activities well. In geography
+      class, we're learning about why people live in some places and move to others,
+      but I don't fully get how all the reasons connect. Can you explain this and
+      give examples, maybe connecting it to things like chess or skateboarding, so
+      it's easier for me to understand?
+  - question: 我是初中地理老师，最近发现班里的学生对‘人口分布与迁移的原因’有很多自己的想法，但他们很难系统梳理各个影响因素之间的联系。你能详细展开说说这个主题吗？希望有详细的论述、例子和一些适合课堂活动的建议，能帮助学生主动参与和思考。
+  - question: I'm MartinezLeon, a 15-year-old 9th grader who enjoys Go and football.
+      I'm good at STEM, emotionally stable, and have a mixed memory type. Sometimes
+      I find it hard to connect geography topics like population distribution and
+      migration to strategies or teamwork, like in my hobbies. Can you help me understand
+      how these reasons relate to strategies or planning in life, maybe with some
+      detailed examples?
+  - question: 我是初中地理教研员，最近准备组织一次关于‘人口分布与迁移的原因分析’的专题教研，希望能深入了解当前学科理论、教学案例、学生常见误区和教学创新方法。这个主题你能帮我详细分析一下吗？希望内容全面深入，便于我为教师团队系统指导。
+  - question: 你作为地理学科专家，我希望系统学习‘人口分布与迁移的原因分析’这一知识点，内容要涵盖理论框架、历史变化、现实案例、教学方法、中华优秀传统文化的自然融入、社会主义核心价值观的引导等方面。你能全方位地讲解一下吗？内容越全面、系统越好，适合深入学习。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-初中-人口分布与迁移的原因分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价教学设计是否充分识别并针对学生的学习水平、兴趣、地域与生活背景等差异，提供定制化内容、案例与活动，促进学生参与和共鸣。高分要求能体现多样化画像匹配及动态调整。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评价教学设计与实施是否严格按照教学任务或题目要求的格式、结构、流程进行，分段明确，步骤完整，便于评价和复用。高分要求结构清晰、无遗漏、逻辑严谨。
+  - field: 教学内容科学性与准确性_理由
+    type: str
+    description: 解释教学内容科学性与准确性评分的详细理由，引用具体例子。
+  - field: 教学内容科学性与准确性
+    type: float
+    description: 评价教学内容是否严格符合初中地理课程标准，知识点表述精准、逻辑严密，结合权威数据与最新实例，避免错误、模糊或过时信息。高分要求内容前沿、数据权威、分析深入。
+  - field: 教学方法多样性与启发性_理由
+    type: str
+    description: 解释教学方法多样性与启发性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性与启发性
+    type: float
+    description: 评价教师是否灵活运用多种教学方法（案例教学、探究、情境模拟、数据分析、角色扮演等），促进学生主动参与、合作探究和深度思考。高分要求方法创新、互动性强、启发性突出。
+  - field: 思维能力培养度_理由
+    type: str
+    description: 解释思维能力培养度评分的详细理由，引用具体例子。
+  - field: 思维能力培养度
+    type: float
+    description: 评价教学是否通过开放性问题、探究任务、问题链等方式，促进学生批判性、创新性与多角度思考，引导深层表达与反思。高分要求问题设计层次丰富，能激发学生自我表达和辩证分析。
+  - field: 真实情境模拟度_理由
+    type: str
+    description: 解释真实情境模拟度评分的详细理由，引用具体例子。
+  - field: 真实情境模拟度
+    type: float
+    description: 评价教学是否结合真实或贴近学生生活的案例、数据、情境，帮助学生理解人口迁移的复杂性与现实联系，并进行基于实际现象的分析与判断。高分要求情境真实、数据可靠、活动贴近学生生活。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评价教学内容是否自然而有机地融入爱国、敬业、诚信、友善等核心价值观，并与地理主题深度结合，激发学生情感共鸣和价值思考。高分要求价值观融入具体情境，促进学生责任与担当。
+  - field: 中华优秀传统文化体现度_理由
+    type: str
+    description: 解释中华优秀传统文化体现度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化体现度
+    type: float
+    description: 评价教学内容是否巧妙融入中华优秀传统文化元素（如家国情怀、安土重迁、和谐共生等），促进学生文化认同与情感升华，联系历史与现实，启发文化传承思考。高分要求文化元素与地理主题深度融合，启发性强。
+  format_mode: prompt

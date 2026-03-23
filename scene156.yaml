@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-小学-简单书面表达指导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为英语教育专家，我是三年级英语老师，班里孩子写英文自我介绍时总是内容单一、句型重复，怎么才能指导他们写得有条理、有趣、有内容？详细讲讲，最好能结合具体教学活动和范文，还要注意培养他们的积极价值观。
+  - question: 我是五年级学生，老师让写介绍我最喜欢动物的英语短文，我不太会开头和结尾，也不知道怎么安排内容。你能帮我理解一下这种小短文要怎么写吗？
+  - question: 我是崔琳琳，52岁，做小学英语老师很多年了，平时喜欢瑜伽和摄影，性格比较温和但不太主动。这学期班里有几个内向的孩子，写英语作文老是害怕表达，写得很少。你作为英语教学专家，能不能讲清楚点，怎么帮助他们敢于表达、内容写得更多？
+  - question: I'm RiveraVictoria, a primary school English teacher who loves community
+      events and nutrition therapy. Some of my students struggle to write simple daily
+      routine sentences in English, and I don't want to overwhelm them. As an education
+      expert, can you simply say what are the best ways to help them improve basic
+      writing?
+  - question: 我是五年级英语教研组长，学校要做书面表达专题教研，得把小学英语写作教学的问题、学生差异、分层评价、家校协同等都系统梳理一遍。你作为小学英语教育专家，能不能彻底说清楚，如何建立科学有效、适合中国小学生的英语书面表达教学体系？请结合案例和具体策略，讲全面点。
+  - question: 我是四年级学生家长，孩子写“My Day”的英语作业总觉得没东西写，每次写得很简单。你作为英语教育专家，简单说说就行，怎么引导他写得丰富点、愿意多写？
+  - question: 我是六年级英语老师，发现学生写作老是套模板、内容机械，缺少个性和文化内涵。你作为小学英语写作专家，能不能给我一份完整的分析，讲讲怎么提升他们的创造性表达和文化素养？最好能有活动设计和分层指导的具体建议。
+  - question: 我是三年级小学生，老师让写英语家庭介绍，我有点紧张，不知道怎么写好。你是我的学习助手，能解释一下有哪些常用句型和表达，还有怎么让内容有条理吗？举几个例子讲讲。
+  - question: 我是小学英语老师，发现学生写英语日记时语法常出错、内容单一，也不太敢表达想法。你作为教育专家，能不能全面分析一下，怎么通过教学活动提升孩子英语写作的准确性和丰富性？最好能结合具体活动和中华传统文化讲讲。
+  - question: 我是四年级学生，每次写英语作业介绍兴趣爱好都觉得没新意，老是用一样的句子。你作为学习助手，能具体说说吗，怎么写得更有新意、内容更丰富？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-小学-简单书面表达指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学画像适配度_理由
+    type: str
+    description: 解释个性化教学画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化教学画像适配度
+    type: float
+    description: 评估教学设计是否充分结合学生的年级、英语基础、兴趣、学习风格等个体特征，进行针对性内容、主题、难度和表达方式的调整。高分需体现多维度个性化、动态调整，低分为模板化、无针对性。
+  - field: 格式指令遵循准确性_理由
+    type: str
+    description: 解释格式指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 格式指令遵循准确性
+    type: float
+    description: 评估指导和产出是否完全遵循教师或任务规定的书面表达格式（如字数、句型、段落、标点、展示方式等）。高分为细致讲解、严格落实，低分为指导模糊或执行混乱。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学过程中是否采用系统、小学适龄的写作指导方法，包括分步引导、范文讲解、思维导图、同伴互评、即时纠错、激励评价等。高分需多策略结合、流程完整，低分为机械布置、无引导或互动。
+  - field: 知识点覆盖与难度适配_理由
+    type: str
+    description: 解释知识点覆盖与难度适配评分的详细理由，引用具体例子。
+  - field: 知识点覆盖与难度适配
+    type: float
+    description: 评估所用词汇、句型、时态等是否覆盖小学阶段应掌握的英语知识点，且难度与学生认知发展和实际水平一致。高分为内容丰富、难度适中，低分为过难、过易或知识点缺失。
+  - field: 互动引导与反馈有效性_理由
+    type: str
+    description: 解释互动引导与反馈有效性评分的详细理由，引用具体例子。
+  - field: 互动引导与反馈有效性
+    type: float
+    description: 评估教学过程中是否有多轮师生互动、开放提问、同伴交流，并针对学生表达给予具体、个性化的反馈与激励。高分为全过程互动、具体表扬与改进建议，低分为无互动或机械批改。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 评估是否通过开放性任务、鼓励多样化表达、支持想象和创新等方式，持续激发学生的创造力。高分为允许并引导学生表达独特见解或自拟内容，低分为只允许机械模仿或死板重复。
+  - field: 中国价值观自然融入度_理由
+    type: str
+    description: 解释中国价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入度
+    type: float
+    description: 评估社会主义核心价值观或中华优秀传统文化是否与写作内容有机融合，表达自然、具体，能引发学生共鸣。高分为价值观与内容紧密结合，低分为完全忽略或生硬插入口号。
+  - field: 真实提问场景模拟度_理由
+    type: str
+    description: 解释真实提问场景模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问场景模拟度
+    type: float
+    description: 评估写作任务或提问情境是否贴近小学英语课堂实际，语言自然、情境真实，能反映学生真实兴趣与困惑。高分为场景真实、语言贴合小学生，低分为成人化、学术化或脱离实际。
+  format_mode: prompt

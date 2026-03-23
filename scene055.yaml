@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-高中-概率与统计问题教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为我的学习助手，我是九年级的PowellMatthew，平时喜欢动漫绘画、玩MOBA类电竞游戏，还有3D建模和打印。我最近学概率有点迷糊，老是搞不清什么是独立事件、互斥事件，还有不知道这些概率知识跟我的兴趣有什么关系。能解释一下吗？最好结合下电竞策略或者3D建模的例子，详细说说常见易错点和怎么学好。
+  - question: 我是初中数学老师，班里的学生学统计图表总是只看最高的柱子，不太懂平均值和中位数这些概念。你能简单说说统计图表教学有哪些容易混淆的地方吗？再给点针对性的建议就行。
+  - question: 我是高中数学教研员，最近要组织一次教研活动，主题是概率与统计教学中的易错点和创新案例。你能详细分析下各个方面，包括常见误区、生活化应用、教学创新、价值观引导等吗？内容越全面越好。
+  - question: 你作为数学教育专家，我是五年级的车慧，喜欢吉他、乐高和武术，性格偏合作但不太主动。最近我们小组算骰子的概率，我总觉得很难懂，也不敢问。能讲得详细点吗？比如掷骰子的概率怎么算、有哪些常见错误，还有适合我们小组合作的学习方法，最好能结合乐高或团队活动举例，内容丰富一点。
+  - question: 我是新手高中数学老师，刚接手一个基础比较弱的班级，学生老是把条件概率、独立性和互斥事件混淆，做题经常出错。你能彻底说清楚这几个概念吗？最好能从教学理论、知识结构、课堂实践、学生心理、生活案例等角度全面分析下，再给点教学建议和活动设计，内容越系统越好。
+  - question: 你作为我的数学辅导老师，我最近学概率分布，搞不太清概率密度函数和分布函数的区别，也不知道它们怎么用在实际问题里。能帮我理解一下吗？讲讲主要区别、联系，还有哪些地方容易搞错，最好举点生活例子。
+  - question: 我现在高三，复习概率统计时总是搞不清样本和总体，特别是抽样题容易出错。你能简短回答下样本和总体的主要区别，还有解题时的注意点吗？
+  - question: 我是21岁的女船舶设计师MartinIvy，喜欢用3D设计软件和模拟游戏，也常研究海洋生态系统。我喜欢创新和挑战规则，尤其关注可持续设计。你作为教育专家，能讲讲看统计假设检验在工程项目（比如新船体设计或海洋环境数据分析）中的应用吗？最好解释下原理、主要步骤、常见误区（比如p值容易误解），还有和船舶设计相关的例子。
+  - question: 你作为我的数学老师，最近我们班在讨论概率统计跟生活的联系，比如体育比赛、天气预报、游戏。说说你的看法吧，麻烦详细解释下概率统计在日常生活里的应用，再举点例子，分析下大家容易误解的地方。
+  - question: 你作为教育专家，我是初二的方泉，喜欢玩无人机和打乒乓球，但理解概率题比较慢，尤其是条件概率和贝叶斯公式总算错，做题时还容易焦虑。能深入讲解一下吗？最好结合无人机比赛或乒乓球分析举例，详细说说原理、易错点，还有适合像我这种自律但理解慢、容易焦虑的学生的学习建议，要分析得充分点。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-高中-概率与统计问题进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 能够综合分析学生的知识基础、兴趣、认知风格及学习轨迹，动态调整教学内容、方法和支持措施，实现持续、差异化的个性化教学。需体现明确的画像采集、策略调整和效果反馈环节。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 严格依照教学任务或题目要求，采用清晰的结构、分步、表格或模板，内容排布合理、层次分明，便于学生理解、操作和复盘。需完整覆盖指定要素，避免遗漏或混乱。
+  - field: 教学方法科学性与专业度_理由
+    type: str
+    description: 解释教学方法科学性与专业度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业度
+    type: float
+    description: 选用系统、科学且适合内容特点的教学方法，融合启发式、互动、任务驱动、知识迁移等，能灵活调整、兼顾学科深度和思维培养，强调学生探究与自主建构过程。需有具体方法说明与实际应用。
+  - field: 知识结构清晰度_理由
+    type: str
+    description: 解释知识结构清晰度评分的详细理由，引用具体例子。
+  - field: 知识结构清晰度
+    type: float
+    description: 内容组织系统、逻辑明晰，能串联核心知识点、难点与实际应用，采用图示、关联、对比等方式强化知识网络，避免碎片化和重复。需体现知识前后衔接与横向联系。
+  - field: 错误易混点预警与纠正_理由
+    type: str
+    description: 解释错误易混点预警与纠正评分的详细理由，引用具体例子。
+  - field: 错误易混点预警与纠正
+    type: float
+    description: 主动、系统识别高中概率与统计中的典型易混点，通过辨析、对比、案例分析及针对性纠正策略，引导学生自我发现、反思和巩固，避免仅机械指出错误。需覆盖常见误区并有具体操作建议。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 有效设计开放性任务、引导多元解法与实际应用探索，鼓励学生自主提出问题、创新表达和批判性思考，体现学科素养与创新能力的提升。需有具体创新活动或策略。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 教学互动语料能真实再现高中生常见疑惑、兴趣及表达方式，语言自然、有具体场景和思维过程，能反映学生真实学习状态和认知特点。强调场景化和学生视角。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 在概率与统计教学中，围绕诚信、合作、责任等核心价值观及中华优秀传统文化，采用自然、具体且有机的方式融入教学实践，结合实际活动、案例和反思，避免生硬灌输或形式主义。
+  format_mode: prompt

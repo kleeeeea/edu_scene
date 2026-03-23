@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-高中-历史分期问题的探讨教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我叫彭银鹤，退休后经常参与社区志愿服务，还喜欢去森林呼吸新鲜空气。最近我在给社区做历史讲座，发现大家对中国历史怎么分期、为什么要分期有很多疑问。你作为历史教育专家，能不能深入说说看中国历史分期有哪些主要方法、各自有什么依据，还有分期背后蕴含哪些文化价值和现实意义？
+  - question: 我是高二学生，最近复习历史，老师说中国历史分期有好几种标准。我总是分不清这些方法到底有什么区别，你能概括一下中国历史分期的主流方式和它们的不同点吗？简单说说就行。
+  - question: 我是高一历史老师，最近发现学生总问，为什么要把历史分成不同阶段？你作为学科顾问，能不能简短回答下历史分期的意义和作用？
+  - question: 我高三了，最近在备战历史竞赛，自学中国历史分期时发现各种分法很复杂。你作为我的学习助手，能不能系统地梳理一下中国历史分期的主流方法、各自的理论基础、优缺点，以及分期对我们历史思维有什么影响？我想深入了解，详细讲讲吧。
+  - question: 我叫许锋，初二学生，平时喜欢搞机器人和弹吉他，但历史课总是容易走神。现在学到中国历史分期，觉得朝代划分特别难记。你作为学习助手，能帮我理解一下历史分期到底有什么用，还有怎么通过分期来更好地记住和理解历史内容？帮我解释一下吧。
+  - question: 我是高三历史教师，最近在编写高考复习资料时发现，中国历史分期有很多不同说法。你作为历史学科顾问，能不能彻底说清楚中国历史分期有哪些主流标准、各自的理论依据和演变过程，还有分期的现实意义？最好还能结合中华优秀传统文化和价值观系统地讲讲。
+  - question: 我是历史教研员，最近学校里讨论中国历史分期，大家对分期标准意见不一。你作为知识导师，能不能说说你的看法，为什么历史分期会有不同标准，各种分法各有什么优缺点？
+  - question: 我是高二学生，对历史很感兴趣，最近老师说历史分期不仅是教材需要，还和我们理解历史有关。你作为历史老师，能全面深入地讲讲吗？具体分析一下中国历史分期的多样性、各种标准和理论依据，还有分期对我们学历史和个人成长有什么意义。
+  - question: 我是初三学生，最近在复习历史的时候发现老师讲分期的方法有点不一样，有时候按朝代，有时候按制度。你作为我的学习助手，能不能讲讲看为什么历史分期会有这么多方法，还有每种方法适合用在哪些情况？
+  - question: 我叫汪岚，初二女生，喜欢骑行和养植物，周末去戏剧社，但历史课上的内容总是记不牢，觉得知识很零碎。你作为学习助手，能具体说说吗，历史分期到底怎么帮我们整理和记住历史知识？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-高中-历史分期问题的探讨进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容与活动是否充分针对不同学生的学习基础、兴趣、认知水平进行差异化设计，并能根据学生反馈动态调整教学策略，体现个体关怀与持续优化。
+  - field: 指令遵循准确度_理由
+    type: str
+    description: 解释指令遵循准确度评分的详细理由，引用具体例子。
+  - field: 指令遵循准确度
+    type: float
+    description: 评估教师是否严格、完整地按照教学指令回应，在规范基础上灵活调整以提升教学效果，杜绝遗漏、机械照搬或过度形式化。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否采用启发式、探究式、案例分析等科学教学方法，引导学生主动参与、思考和互动，促进深度理解，避免单向灌输。
+  - field: 知识结构清晰度_理由
+    type: str
+    description: 解释知识结构清晰度评分的详细理由，引用具体例子。
+  - field: 知识结构清晰度
+    type: float
+    description: 评估教学内容是否具备清晰、递进的层次结构，系统梳理分期相关知识，突出重点、难点与拓展，并通过图示或总结帮助学生构建知识体系。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学过程是否主动激发学生提出新观点、批判性思考或自主探究，设置开放性任务鼓励创造性表达与多元视角，并支持持续深入探索。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估教学问题设计是否贴近高中生真实学习场景，语言自然、亲切，能反映学生实际困惑、兴趣点，促进互动，避免学术化或生硬表达。
+  - field: 中华优秀传统文化融入度_理由
+    type: str
+    description: 解释中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入度
+    type: float
+    description: 评估教学内容是否自然融入中华优秀传统文化及社会主义核心价值观，结合分期内容进行价值引领，体现文化自信与包容，避免生硬植入或口号化。
+  - field: 表达易懂性_理由
+    type: str
+    description: 解释表达易懂性评分的详细理由，引用具体例子。
+  - field: 表达易懂性
+    type: float
+    description: 评估教学表达是否简明、易懂，适合高中生理解，避免过度专业化或晦涩，必要时辅以类比、图示、故事等方式辅助说明。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-国家是什么：政府的职能与责任教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名47岁的女教师，平时喜欢诗歌、方言研究和电影鉴赏，教学和生活都比较有条理但又喜欢创新。你作为政治老师，能不能详细讲讲在初中政治课里，怎样结合政府的职能和责任，把国家的本质和政府作用讲清楚？能举例说说怎么把中华传统文化和核心价值观自然融入课堂，让学生更有国家认同和责任感吗？详细讲讲吧。
+  - question: 我最近在学政治的时候总觉得政府的职能和责任挺复杂的，你能详细说说政府在国家里到底都负责什么吗？最好能举些历史和生活里的例子，还有能不能顺便讲讲怎么结合我们的传统文化和价值观来理解这些？详细说说呗。
+  - question: 我是初中政治教研员，最近要组织一次关于国家本质和政府职能的教学案例分享会。你作为教育专家，能不能详细分析下各个方面，包括国家的定义、政府职能和责任、社会治理中的作用，还要结合传统文化和核心价值观，帮我整理一下科学的教学策略和真实案例？详细分析下各个方面吧。
+  - question: 我是刚入职的初中政治老师，发现很多学生总是搞不清国家和政府的区别。你能帮我讲清楚点，政府在国家里到底是干什么的？具体有哪些职能和责任？最好能举些生活里的例子，还能结合点传统文化的智慧。讲清楚点吧。
+  - question: 我是初中政治老师，准备写一份关于国家和政府的教案。能不能给我一份完整的分析，包括国家是什么、政府的职能和责任、政府跟公民的关系，还要结合我们的中华传统文化和核心价值观，最好能举些历史和现实的例子，并给出适合不同学生的教学方法。给我一份完整的分析吧。
+  - question: 我是初二学生，最近政治课讲到政府的职能和责任，你能大概讲讲政府在国家里主要都负责什么吗？最好举点身边的例子，让我好理解。
+  - question: 我是羊舌道，今年14岁，读初二，喜欢玩无人机、做科学实验，还经常打篮球。家里爸爸经常辅导我做实验，妈妈照顾我生活，我在学校喜欢参加科技比赛和团队活动。你作为政治老师，能不能深入说说看，政府在国家里到底有哪些职能和责任？能结合科技创新和团队协作的例子帮我理解吗？顺便讲讲怎么和传统文化还有核心价值观联系起来。深入说说看吧。
+  - question: 我是初中生家长，最近孩子在学政治，问我政府在国家里到底都干什么。你能不能详细说说，平时家庭里怎么帮孩子理解政府的作用？最好能结合生活经验和传统文化，顺便说说怎么培养孩子的责任感和家国情怀。详细说说吧。
+  - question: 我是初中政治老师，学生在课堂上问政府具体都要负责些什么，比如社会稳定、经济发展、保护公民权益这些。你能不能详细说说政府在这些方面都有哪些责任和具体做法？最好能结合传统文化和价值观，顺便引导学生有社会责任感。详细说说吧。
+  - question: 我是初中生，最近学政治有点迷糊，政府到底要干哪些事情啊？能不能简要说明下，还举个贴近生活的例子让我好理解？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-国家是什么：政府的职能与责任进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 教师能深入了解学生的兴趣、能力、学习风格和背景，动态调整教学目标与内容，针对不同学生设计分层任务与个性化反馈，促进每一位学生最大化发展。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 教师能严格按照教学任务或指令要求组织内容，清晰分点、结构合理，内容完整且无遗漏，能灵活运用格式提升表达效果，且在回应中不随意增减内容或偏离主题。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 教师根据教学目标和学生特点，合理融合多种科学教学方法（如启发式、探究式、情境模拟、合作学习等），确保学生主动参与、深度理解，并能灵活调整方法以应对课堂实际情况。
+  - field: 知识结构完整性与准确性_理由
+    type: str
+    description: 解释知识结构完整性与准确性评分的详细理由，引用具体例子。
+  - field: 知识结构完整性与准确性
+    type: float
+    description: 教师讲解内容系统严谨，涵盖政府主要职能与责任，逻辑清晰、有层次，能深度分析并结合实际案例，避免知识性错误和重要内容遗漏，对复杂或易混淆知识点有针对性讲解。
+  - field: 激发创新思维能力_理由
+    type: str
+    description: 解释激发创新思维能力评分的详细理由，引用具体例子。
+  - field: 激发创新思维能力
+    type: float
+    description: 教师通过设计开放性问题、案例分析、现实情境探究等方式，鼓励学生提出独立见解和创新方案，培养批判性、创造性思维与解决实际问题能力，并能引导学生进行多角度比较与反思。
+  - field: 模拟真实学生提问还原度_理由
+    type: str
+    description: 解释模拟真实学生提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实学生提问还原度
+    type: float
+    description: 教师设计的问题贴合初中生真实表达习惯和认知水平，内容与学生实际生活紧密相关，语言自然亲切，能引发学生兴趣与共鸣，避免成人化或生硬机械提问。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 教师能将社会主义核心价值观（如公平、法治、爱国、诚信等）自然融入教学内容和案例分析，结合实际生活场景，注重价值观引导与行为示范，避免机械口号化或形式化表达。
+  - field: 中华优秀传统文化渗透性_理由
+    type: str
+    description: 解释中华优秀传统文化渗透性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化渗透性
+    type: float
+    description: 教师能恰当融入中华优秀传统文化元素（如古代治理智慧、成语典故、历史故事等），与教学主题有机结合，促进学生文化认同与思辨能力，并能引发对传统与现代治理的联系与反思。
+  format_mode: prompt

@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-高中-有机物结构、命名与性质推导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名热衷社区公益的高中老师，最近因为情感耗竭精力有点不够，你作为我的化学教学顾问，能系统地讲解一下高中有机物结构、命名和性质推导的知识体系吗？希望内容全面些，也能结合我的教师身份给点教学和自我关怀建议。
+  - question: 你是我的化学学习助手，能帮我讲清楚点高中有机物怎么命名吗？还有常见的结构类型，最好举点例子让我理清思路。
+  - question: 我刚开始教高中化学，发现学生对有机物结构、命名和性质推导总是搞不清楚。你能具体说说有什么好的教学策略和创新方法能帮助他们提升理解力吗？
+  - question: 我是话剧演员向婉清，化学基础一般，你作为教学专家，能系统地讲解一下高中有机物结构分类、命名规则和性质推导的方法吗？如果能结合舞台艺术或创作实际举些例子，给点适合我的学习建议就更好了。
+  - question: 我是老师陆为，喜欢AI绘画和山地骑行，平时在教师圈和骑友圈都很活跃。你作为化学专家，能深入讲解一下高中有机物结构和命名的逻辑体系吗？还有怎么从创新视角推导它们的性质？最好能结合艺术或运动举些例子，给我几条课堂或小组活动的创新建议。
+  - question: 我最近在备课时对有机物命名和结构识别有点困惑，你能具体说说高中常见的有机物命名原则，以及怎么通过结构式快速判断性质吗？最好能举点生活例子。
+  - question: 你是高中化学教研员，能全面分析一下有机物结构、命名和性质推导这三块内容在教学中的重难点吗？还有学生容易出现哪些误区，希望你能详细说说并给点改进建议。
+  - question: 我是老师袁瑾瑜，最近精力有限，备课时有机物结构和命名总觉得难集中。你能简要说明下高中有机物结构分类和命名的核心要点吗？顺便给点高效学习和备课建议。
+  - question: 我是高中生，学有机物结构和命名总觉得有点抽象。你能简单说说就行，有哪些常见结构类型和命名方式？举几个例子帮我记住。
+  - question: 你是我的化学学习助手，能详细说说高中有机物结构、命名规则和性质之间有什么联系吗？最好举点实际应用的例子帮我理解。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-高中-有机物结构、命名与性质推导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评价讲解是否充分结合学生的知识基础、兴趣、困惑点，针对性调整教学内容、方法和任务。高分要求能动态诊断并个性化响应，低分为一刀切、无差异化。中分为虽有分层但未充分挖掘个体差异。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评价回答是否严格依照指定步骤、结构和内容要求，分段合理，表达清晰。高分为结构严谨、无遗漏，格式统一；中分为部分遗漏或结构不够清晰；低分为随意组织、杂乱无章。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价是否采用循序渐进、启发式、探究式等科学教学方法，促进学生理解和主动参与。高分为方法多样且能结合反馈灵活调整；中分为仅有单一方法或互动有限；低分为机械灌输，无任何启发。
+  - field: 科学性与专业严谨度_理由
+    type: str
+    description: 解释科学性与专业严谨度评分的详细理由，引用具体例子。
+  - field: 科学性与专业严谨度
+    type: float
+    description: 评价内容是否符合高中有机化学权威体系，表达准确、逻辑严密，能辨析常见误区并解释特殊情况。高分为无错误且主动澄清易混淆点；中分为偶有模糊表述但无重大错误；低分为错误或误导性内容。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评价是否通过情境、提问或任务激发学生自主探索、假设、创新设计有机结构及命名。高分为引导学生主动解决开放性、实际问题并鼓励创新；中分为有简单探索但缺乏深度；低分仅限机械记忆和重复。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价问题是否贴近真实高中课堂，反映学生实际学习过程中的疑惑、兴趣或知识盲区。高分为具体、具象且有针对性的真实场景问题；中分为较为抽象但有一定联系；低分为脱离实际或过于理论化。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 评价讲解过程中是否自然融入社会主义核心价值观和中华优秀传统文化，且与知识内容紧密结合。高分为润物细无声、贴合学科实际，激发责任感与科学精神；中分为偶尔提及但与内容结合度弱；低分为生硬插入口号或完全缺失。
+  - field: 表达清晰与易理解性_理由
+    type: str
+    description: 解释表达清晰与易理解性评分的详细理由，引用具体例子。
+  - field: 表达清晰与易理解性
+    type: float
+    description: 评价语言是否简明通俗、逻辑清晰，适合高中学生理解；能用比喻、图示等辅助说明复杂概念。高分为表达流畅、结构分明、辅助工具丰富；中分为表达基本清楚但辅助不够；低分为语言晦涩、逻辑混乱。
+  - field: 多样化举例与应用联系_理由
+    type: str
+    description: 解释多样化举例与应用联系评分的详细理由，引用具体例子。
+  - field: 多样化举例与应用联系
+    type: float
+    description: 评价是否结合生活、科技、社会等多样实际例子，增强有机化学知识的现实意义与趣味性。高分能结合多领域应用并启发学生思考；中分为仅有单一领域举例；低分只停留在抽象结构和理论。
+  format_mode: prompt

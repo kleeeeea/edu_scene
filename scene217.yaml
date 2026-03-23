@@ -1,0 +1,122 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-地球的运动与四季变化教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是唐伊，45岁，做销售代表，平时特别喜欢旅游摄影和健身运动，但有点信息筛选困难，喜欢实用又有情怀的东西，偶尔惰性明显，还容易在朋友圈里干涉别人的旅游安排，和健身教练、摄友关系密切但有时边界感不强。最近我在旅游时发现不同季节的景色变化很大，想真正搞清楚地球的运动和四季变化之间的关系。你作为地理老师，能结合我的旅游摄影兴趣和社交圈特点，举点贴近生活的例子，帮我理解一下地球的运动是怎么导致四季变化的吗？帮我理解一下。
+  - question: 我是冯道川，43岁老师，喜欢观星与天文摄影、电子竞技和跑马拉松，个性务实但逻辑性不强，同理心相对匮乏，有教育理想主义倾向，工作中与同事保持距离，天文圈中常组织线上电竞活动。最近班里学生问我为什么一年有四季，地球的运动到底是怎么影响到春夏秋冬的变化？你能结合我的观星和跑步兴趣，讲讲看？
+  - question: My name is WhiteDennis, 15 years old, a 9th Grade student. I love camping
+      and anime drawing, and tend to conform to group norms while balancing various
+      interests. I often feel anxious and lack confidence, so I rely on creative hobbies
+      and outdoor activities to manage my feelings. Recently, I had a class about
+      Earth's movement and how it causes seasonal changes, but I'm still confused.
+      Can you elaborate in detail about how Earth's motion leads to the four seasons,
+      including examples that relate to camping and anime drawing? Please also offer
+      advice and interactive ideas that could help me understand and enjoy this topic,
+      considering my personality and routines. Detailedly say it.
+  - question: 我是范迪泰，30岁男老师，平时喜欢用FL Studio和Ableton做电音，也常做电竞直播，性格自信有波动，在音乐圈和电竞圈有一些名气，和同事互动良好但情绪偶尔有起伏。最近给学生讲地球的运动和四季变化时，发现孩子们对这个主题特别感兴趣但有点难懂。你能结合我的音乐和电竞兴趣，能具体说说地球是如何运动导致四季变化的吗？
+  - question: 我是小学地理老师，最近学生对地球的运动和四季变化特别感兴趣，但他们总是把自转和公转混淆，而且对昼夜和四季的关系理解不深刻。你作为地理专家，能全方位地讲解一下地球自转、公转、倾斜轴与四季变化之间的系统关系吗？内容需要全面细致，结合小学课堂实际，举些生活中的例子和互动建议。
+  - question: 我是四年级的小学生，最近老师讲了地球的运动和四季变化，但我还不太清楚具体的原理。你能说说主要的内容吗？举点简单的小例子，帮助我理解。
+  - question: 我家孩子对地球的运动和四季变化特别感兴趣，但他总是把自转和公转混在一起。你作为地理老师，能用几句话说说地球运动和四季变化的核心知识吗？要容易理解一点。
+  - question: 我是小学地理老师，最近班里的孩子们对地球的运动与四季变化产生了很多疑问，有的问为什么南北半球季节不一样，有的好奇昼夜长短变化。你作为地理专家，能全面深入地讲讲地球的运动和四季变化吗？最好结合孩子们常见的疑问和生活现象，内容要全面细致。
+  - question: 我是三年级的小学生，最近在课堂上学到地球的运动和四季变化，老师说公转和自转很重要，但我还是有点糊涂。你能具体说说地球的运动是怎么影响到四季变化的吗？举些生活中的例子，帮助我理解。
+  - question: 我最近在教学中发现学生对地球运动和四季变化的理解还有不少误区，尤其对地球自转、公转、倾斜轴与昼夜和季节的关系不太清楚。你作为地理学习助手，能深入说说看这些知识点的联系和区别吗？详细讲讲。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-地球的运动与四季变化进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价教学内容与方法是否根据学生年龄、认知水平、兴趣、地域文化等多维特征进行差异化设计，能否有效照顾不同学生的学习需求，体现对学生多样性和个性发展的尊重和激励。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评价教学设计是否严格按照任务要求的格式、步骤、内容执行，所有指令均有明确回应，结构清晰、无遗漏、无混淆，能够保证教学目标的实现。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所采用的教学方法是否符合小学地理学科特点和学生认知发展规律，采用多种适龄、科学的方式（如探究、实验、观察、模型、游戏等），促进学生主动参与、实际理解和能力提升。
+  - field: 知识点准确完整性_理由
+    type: str
+    description: 解释知识点准确完整性评分的详细理由，引用具体例子。
+  - field: 知识点准确完整性
+    type: float
+    description: 评价教学内容是否系统、准确、无科学性错误地覆盖地球运动与四季变化的核心知识点，包括自转、公转、轴倾角、季节更替等，同时体现知识深度和广度，能结合实际生活现象，避免遗漏和错误。
+  - field: 互动引导与启发性_理由
+    type: str
+    description: 解释互动引导与启发性评分的详细理由，引用具体例子。
+  - field: 互动引导与启发性
+    type: float
+    description: 评价教学设计是否包含多层次、开放性的互动环节，通过提问、讨论、实验、合作等方式引导学生主动思考、表达观点、提出假设，促进深度探究和自主学习，避免表层互动或机械问答。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评价教学活动是否设计多样化创新环节（如设计实验、编故事、绘画、假设推演等），鼓励学生主动创造和个性表达，支持创新思维和探索力，避免单一、标准化或机械记忆。
+  - field: 社会主义核心价值观融入_理由
+    type: str
+    description: 解释社会主义核心价值观融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入
+    type: float
+    description: 评价教学内容是否自然融合爱国、团结、科学精神、尊重自然等社会主义核心价值观，通过地理知识结合中国传统文化、自然美景等进行细腻引导，避免生硬灌输或无关内容，关注价值观与学科内容的有机结合。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价课堂提问和互动设计是否贴近真实小学学生的兴趣、认知困惑和生活经验，能反映学生真实问题，鼓励师生真实互动，避免机械化、模板化或脱离学生实际的问题设计。
+  format_mode: prompt

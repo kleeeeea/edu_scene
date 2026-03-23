@@ -1,0 +1,126 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-班级规则我来定教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级班主任，班里孩子们都很活泼好动，但纪律还不是很理想。我想让孩子们自己参与制定班级规则，这样能不能让他们更有责任感？具体该怎么操作、有哪些方法和环节？讲讲看，最好举举例子。
+  - question: 你作为小学政治教育专家，最近有家长反映他们的孩子不太愿意遵守班级规则，觉得这些规定都是老师定的，自己没有参与感。能深入说说看，怎么让学生参与规则制定，提升他们的自律性和归属感？最好有具体案例和心理分析。
+  - question: 我是WhiteJacob，15岁，九年级男生，喜欢轮滑、围棋和露营，但比较内向、时间管理有点问题。班上规则有时候让喜欢安静、独处的同学不太舒适，比如集体活动太多、作业时间不灵活。你觉得班级规则怎么能更照顾像我这样的人，让我们也能有归属感和积极性？详细说说。
+  - question: 我是五年级新教师，我们班同学性格差异特别大，有的很爱表现，有的很安静。最近有学生觉得班级规则不公平，说总是偏向那些表现欲强的孩子。你觉得班级规则怎么能做到公平且包容，让每个孩子都被尊重？能具体说说吗，最好结合教学实际。
+  - question: 我是小学班主任，班里有普通学生也有几位特殊需要的孩子。我特别想通过让大家一起制定班级规则，促进团结和互助，同时体现社会主义核心价值观和中华传统文化。你作为教育专家，能彻底说清楚融合班级规则怎么设计、流程和创新点吗？希望讲得全面、深入，最好有落地建议。
+  - question: 我叫松怡，高二男生，经常和同学组队打电子竞技，也在学校足球队训练，喜欢攀树。我逻辑性挺强。班级规则在团队活动（比如打比赛和足球训练）里能起到什么积极作用？概括一下就行。
+  - question: 我是六年级学生的家长，我孩子很在意公平，最近因为班级规则跟同学闹了点矛盾。班级规则能在维护公平、促进同学关系方面发挥什么作用？简短回答下，突出重点和建议。
+  - question: 我是MartinMaria，50岁外交官，喜欢编程、写日记、交谊舞，性格理性务实但在领导力和职业方向上有些困惑。班级规则的民主制定过程有什么科学创新？怎么让集体参与和协作让规则更有凝聚力和可执行性？请结合实际案例讲讲看。
+  - question: 我是一年级班主任，班里是新组建的，孩子们对集体生活还不太适应。你作为小学政治教育专家，能不能深入讲解一下，在低年级制定班级规则时，怎么激发孩子们参与兴趣，让他们体验到规则的意义和乐趣？最好结合心理发展、活动设计和家校协同等方面系统说说。
+  - question: 我是小学政治教研员，负责指导不同班级制定和管理规则。新学期想通过科学系统的规则设计，促进班级民主和合作氛围。你能全方位地讲解一下班级规则制定的理论、流程、创新实践和落地执行吗？最好结合核心价值观和中华传统文化，给出前瞻性和实操建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-班级规则我来定进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评价内容是否严格、系统地按照教学任务或教师设定的要求完成，包括结构完整、环节齐全、表达规范，且无关键遗漏或随意删改。高分需体现条理性和对全部细节的关注。
+  - field: 个性化学生画像适配度_理由
+    type: str
+    description: 解释个性化学生画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化学生画像适配度
+    type: float
+    description: 评价内容是否基于学生年龄、性格、兴趣、学习习惯等差异，设计针对性的活动和表达方式，关注不同学生的实际需求与特征。高分需体现多样性和具体细化的适配措施。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评价教师或教学内容是否针对学生表达的具体需求、疑惑或困难，进行深入分析并提供切实可行的解决方案。高分需体现多角度分析和实际操作建议的丰富性。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学设计是否结合教育学原理，采用两种及以上科学且多样的教学方法，促进学生主动参与、合作、探究与体验。高分需体现方法多样性和有效融合。
+  - field: 互动性与启发性_理由
+    type: str
+    description: 解释互动性与启发性评分的详细理由，引用具体例子。
+  - field: 互动性与启发性
+    type: float
+    description: 评价内容是否通过开放性问题、互动活动、头脑风暴等方式，激发学生主动思考、表达和参与，并引导自主探索和理解。高分需有多层次互动与启发性问题。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评价教学活动是否鼓励学生提出新颖、有创意的规则或想法，允许多样表达和尝试创新。高分需支持学生多种创新表达方式并积极引导创新思维。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价内容是否以贴近学生生活的方式，潜移默化地融入社会主义核心价值观和中华优秀传统文化，结合实际案例或活动引导学生体验与理解。高分需体现具体生活场景与价值观深度融合，而非表面关联。
+  - field: 真实情境贴近度_理由
+    type: str
+    description: 解释真实情境贴近度评分的详细理由，引用具体例子。
+  - field: 真实情境贴近度
+    type: float
+    description: 评价内容、问题设置和活动环节是否贴近真实小学课堂情境，反映学生实际困惑、兴趣或班级问题，避免空泛讨论。高分需具体结合班级真实事件或学生实际需求。
+  - field: 表达清晰易懂性_理由
+    type: str
+    description: 解释表达清晰易懂性评分的详细理由，引用具体例子。
+  - field: 表达清晰易懂性
+    type: float
+    description: 评价内容是否使用适合小学生认知水平和生活经验的语言，表达具体、简明、直观，配合举例说明，便于实际操作。高分需语言生动、例子贴切，学生易于理解和应用。
+  - field: 反馈与改进能力_理由
+    type: str
+    description: 解释反馈与改进能力评分的详细理由，引用具体例子。
+  - field: 反馈与改进能力
+    type: float
+    description: 评价教师是否能根据学生建议、疑问或实践反馈，及时调整和完善规则或教学策略，鼓励持续改进，并清楚说明调整原因。高分需主动收集反馈、灵活调整并持续优化。
+  format_mode: prompt

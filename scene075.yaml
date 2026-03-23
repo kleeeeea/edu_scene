@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene075/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 化学-初中-金属活动性规律的探究与应用教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为化学教育专家，能帮我深入了解金属活动性规律吗？我想知道它的探究过程、核心原理、典型实验，还有在生活和工业中的应用，麻烦详细讲讲
+    - question: 我是初中化学教研员，你作为教育专家，能从理论、教学、实验、应用等各个方面详细分析下金属活动性规律吗？尤其希望你提一下学生容易出错的地方和教学建议，详细分析下各个方面
+    - question: 作为初中化学老师，你能详细展开说说金属活动性规律吗？包括它是怎么形成的、主要内容、教学重点难点和典型实验，还有帮助学生理解的方法
+    - question: 我是初二学生，最近学金属活动性规律感觉有点迷糊，你能讲讲看这个规律的基本原理、实验例子和学习要注意什么吗？
+    - question: 你是化学学习助手，我女儿刚上初三，老师讲金属活动性规律她听不太懂，你能讲清楚点这个规律的核心概念、常见实验和容易出错的地方吗？
+    - question: 你是我的化学知识导师，能用几句话说说金属活动性规律的主要内容和现实意义吗？
+    - question: 我是陆雨，16岁高一女生，边界敏感型，喜欢穿搭和跑步，经常和父母因为边界问题有摩擦，也喜欢和朋友分享穿搭心得。你作为化学教育专家，说说你的看法：金属活动性规律对像我这样性格的学生有什么影响？有没有结合我兴趣和性格的学习建议和价值引导？
+    - question: 我是初中化学教学设计师，你作为化学教育专家，能从各个角度详细说说金属活动性规律的教学设计吗？希望你能系统地讲讲理论、教学目标、实验、应用和学生心理等方面
+    - question: 你能帮我理解一下金属活动性规律在初中化学学习中的作用和常见应用吗？主要是它怎么帮我们解决实际问题，讲讲看
+    - question: 我是初中生，最近学金属活动性规律，不太明白它有什么用，你能大概讲讲它的主要用途和意义吗？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 化学-初中-金属活动性规律的探究与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估教学内容是否针对学生的具体画像（如学习基础、兴趣、认知风格、特殊需求等）进行定制化设计，体现针对性与差异化，而非一刀切。
+    - field: 格式与指令遵循性
+      type: float
+      description: 评估内容是否严格按照题目或用户指令要求的格式、结构进行呈现，条理清晰、层次分明，信息无遗漏、无混乱。
+    - field: 教学方法科学性
+      type: float
+      description: 评估所采用的教学方法是否符合教育学和学科教学的专业规范，能有效促进学生理解与掌握知识，包含探究、互动、反馈等环节。
+    - field: 知识点拆解与递进性
+      type: float
+      description: 评估是否将复杂知识点合理拆解，设计循序渐进的学习环节，使学生由易到难逐步掌握金属活动性规律。
+    - field: 创新思维引导性
+      type: float
+      description: 评估教学内容是否通过开放性问题、生活联系、跨学科任务等方式，激发学生创新思维与问题解决能力。
+    - field: 学生自主探究空间
+      type: float
+      description: 评估是否为学生留出充分的自主探究与表达空间，鼓励其提出假设、设计实验、验证猜想或表达观点，并允许多样化答案。
+    - field: 社会主义核心价值观融入度
+      type: float
+      description: 评估教学内容是否自然渗透社会主义核心价值观，如科学精神、合作互助、环保意识等，且表达得体，与学科内容紧密结合而非生硬插入。
+    - field: 中华优秀传统文化润泽
+      type: float
+      description: 评估是否巧妙融合中华优秀传统文化元素（如古代炼丹、青铜器制造、历史科技人物故事等），与化学知识紧密结合，增强文化自信和学科兴趣。
+format_mode: prompt

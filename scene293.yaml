@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-高中-人生规划与社会责任（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我叫金洪，今年13岁，是初一男生。我喜欢动漫绘画和街舞，性格有点疏离和融入并存，也开始有点功利心。经常独自练习街舞，偶尔和同好交流绘画技巧，在学校朋友不多，但保持表面友好关系。你能帮我理解一下，在我这种性格和兴趣背景下，人生规划和社会责任到底意味着什么？帮我理解一下。
+  - question: I'm HarrisRuby, a 15-year-old female in 9th grade (Junior High 3). I
+      enjoy plant care, nature observation, and video editing. My personality is pragmatic,
+      help-seeking, boundary-sensitive, and I like self-correction. I try to balance
+      schoolwork with my hobbies, and I approach social relationships cautiously and
+      practically. I often look for advice and reflect on my own behavior, with nature
+      observation helping me feel grounded. Can you talk in detail about how I can
+      use my interests and personality traits to plan my life and take on social responsibility?
+      Detailed say.
+  - question: 你作为德育导师，我现在刚升入高中，性格偏安静，喜欢看历史和哲学，家里很重视传统文化。最近我开始思考未来的人生目标，但很迷茫，不知道怎么把个人兴趣、社会责任和家国情怀结合起来做人生规划。详细讲讲你的看法，帮我理清思路吧。
+  - question: 我是高三班主任，你作为教育专家，能不能全方位地讲解一下高中阶段德育美育在引导学生人生规划和社会责任方面的完整策略？班里学生不仅人生目标模糊，社会责任意识也不强，和家长沟通有障碍。能不能从各方面系统讲讲，包括具体案例、活动设计和家校协同？全方位地讲解一下。
+  - question: 我是一名高一学生，性格外向但有点急躁，喜欢参加辩论社和做志愿服务。最近在一次志愿活动里遇到团队合作和责任分配的问题，让我开始思考社会责任在高中到底怎么体现。你能结合我的情况具体说说，高中生在学习和社会活动中怎么践行社会责任吗？能具体说说吗？
+  - question: 我是家长，我女儿今年高二，性格挺敏感，喜欢独立思考，还喜欢写作和摄影。最近因为同学不理解她，有点封闭自己。我很在意她的人生规划和社会责任感，作为教育专家，你能大概讲讲在她这种性格和兴趣下，怎么帮她更好规划人生、提升社会责任吗？大概讲讲就行。
+  - question: 我是高三学生，性格外向，喜欢打篮球和社团活动，但最近对未来专业和社会角色很迷茫。你作为生涯规划导师，能不能简短回答下，高三怎么理清人生方向、增强社会责任意识？简短回答下吧。
+  - question: 我是高中德育教研员，负责德育美育课程设计。发现学生在人生规划和社会责任方面容易流于形式，缺乏深度思考和个体体验。你作为课程设计专家，能详细分析下各个方面，怎么系统构建高中德育美育课程，让学生真正理解并践行人生规划和社会责任？详细分析下各个方面吧。
+  - question: 我刚入职当高中老师，发现班里有不少学生对人生规划很迷茫，也不太关心社会责任，在社团和志愿活动里都不积极。你作为德育专家，能全面分析一下怎么有效引导学生思考人生目标和社会责任吗？包括具体操作建议，全面分析一下。
+  - question: 我是高二学生，性格比较内向，喜欢看小说和安静的环境。最近开始想自己的未来职业和社会价值，但不确定自己能不能承担起社会责任。你作为德育导师，能具体说说，在我的性格和兴趣基础上，怎么一步步建立人生规划意识、提升社会责任感吗？能具体说说吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-高中-人生规划与社会责任（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估答案是否深度分析学生的独特背景、兴趣、成长阶段和具体困惑，提供针对性、差异化建议，体现对个体特征的细致理解。需结合学生实际细节，避免泛泛而谈。
+  - field: 指令遵循与结构规范_理由
+    type: str
+    description: 解释指令遵循与结构规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范
+    type: float
+    description: 评估答案是否严格按照任务要求，结构清晰分点，层次分明，无遗漏或混杂，完整覆盖所有指定环节。每部分内容需独立展开，逻辑递进明确。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估答案是否采用启发式、探究式、反思性等科学教学方法，引导学生主动思考、探索，促进德育美育发展。要求体现教育学原理，鼓励互动、反思和自主表达，避免单一灌输。
+  - field: 真实场景模拟与问题针对性_理由
+    type: str
+    description: 解释真实场景模拟与问题针对性评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与问题针对性
+    type: float
+    description: 评估答案是否紧扣高中生德育美育实际困惑和需求，结合具体学业压力、成长阶段等真实情境，提出可行性、细致化建议，并分析可能遇到的难点及应对策略。优秀答案需有细腻的场景描述和问题解决路径。
+  - field: 案例与情境丰富性_理由
+    type: str
+    description: 解释案例与情境丰富性评分的详细理由，引用具体例子。
+  - field: 案例与情境丰富性
+    type: float
+    description: 评估答案是否结合真实、多样化且细节丰富的案例或情境，帮助学生理解人生规划和社会责任的复杂性。优秀答案需提供至少两个不同背景或兴趣的具体案例，并分析成长过程中的挑战及责任感培养。
+  - field: 激发学生创新与创造性思维_理由
+    type: str
+    description: 解释激发学生创新与创造性思维评分的详细理由，引用具体例子。
+  - field: 激发学生创新与创造性思维
+    type: float
+    description: 评估答案是否鼓励学生提出独特见解或创新方案，支持个性表达和创造力发展。需结合学生兴趣，设计新颖社会实践或成长路径，鼓励跳出传统模式。
+  - field: 问题引导与反思能力培养_理由
+    type: str
+    description: 解释问题引导与反思能力培养评分的详细理由，引用具体例子。
+  - field: 问题引导与反思能力培养
+    type: float
+    description: 评估答案是否通过递进式设问和反思环节，引导学生深入思考自身价值观、人生目标和社会责任，促进自我认识和成长。优秀答案需有连续设问、反思记录和成长计划制定。
+  - field: 社会主义核心价值观与中华传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华传统文化自然融入
+    type: float
+    description: 评估答案是否将社会主义核心价值观和中华优秀传统文化内涵自然融合到内容中，通过故事、案例、讨论等方式传递价值观，避免机械罗列或完全缺失。优秀答案需结合具体事例或情境，阐释价值观在个人成长中的具体作用。
+  format_mode: prompt

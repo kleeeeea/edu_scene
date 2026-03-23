@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-初中-全球性环境问题的成因与对策教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中地理老师，班里有几位学生对全球性环境问题很感兴趣，但有些同学上课容易分心，参与不太积极。你作为教育内容设计专家，能简要说明下全球性环境问题的主要成因，并给我点针对不同学生参与度的教学建议吗？简单说说下
+  - question: 我是刚入职的初中地理老师，班里既有基础薄弱的学生，也有很爱探究的同学。你作为地理教学专家，能全面分析一下全球性环境问题的成因与对策，还帮我设计下分层参与的活动，让不同学生都能激发创新思维和责任感吗？全面分析一下
+  - question: 我女儿刚上初中，对环境问题很感兴趣，但她容易分心，也喜欢小组合作学习。你作为AI学习助手，能全方位地讲解一下全球性环境问题的成因与对策，还结合她的兴趣和习惯设计下具体的创新互动活动，帮她更好理解并参与吗？全方位地讲解一下
+  - question: 我是初中生家长，孩子刚开始学地理，对全球性环境问题的概念还挺模糊。你作为地理教育专家，能简要说明下什么是全球性环境问题，并给我点亲子互动的学习建议吗？简要说明下
+  - question: 我是初中地理老师，班里有几位兴趣驱动型的学生，也有一些基础比较薄弱的。你作为教育内容专家，能解释一下全球性环境问题对人类社会的影响，并帮我设计分层活动让不同类型的学生都能理解和参与吗？能解释一下吗
+  - question: 我是初中地理教研员，近期要组织一次主题教学研讨。你作为资深教育专家，能从各个角度详细说说全球性环境问题的成因、对策、教学创新实践，以及如何自然融入中华优秀传统文化和核心价值观吗？同时给出具体可操作的教学方案。从各个角度详细说说
+  - question: 我是初中生，最近地理老师让我们探究全球性环境问题的主要类型和应对措施。我对探究活动感兴趣，但不太知道怎么开始。你作为学习助手，能讲清楚点相关知识，并给我一些创新探究的具体建议吗？讲清楚点
+  - question: 我是初中地理老师，班里学生普遍对全球性环境问题挺感兴趣，但批判性思维不太够。你作为教育专家，能讲讲看全球性环境问题的复杂性，并帮我提出激发批判性思考和合作探究的教学建议吗？讲讲看
+  - question: 我是初中生家长，孩子对环保话题很有热情，但有时候比较急躁，不太喜欢枯燥的理论。你作为AI地理助教，能说说你的看法，比如全球性环境问题对青少年成长和责任感培养的意义，以及适合孩子参与的生活化活动建议吗？说说你的看法
+  - question: 我是初中地理老师，发现学生对环境问题的跨学科探究很感兴趣，但合作能力和创新表达还需提升。你作为教育专家，我想深入了解全球性环境问题的系统知识结构，以及如何设计多样的跨学科、创新参与活动，让不同层次学生都能有收获。我想深入了解
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-初中-全球性环境问题的成因与对策进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价教学设计是否基于学生兴趣、能力、学习风格等个体差异，采用分层分型、动态调整策略，确保每类学生都能得到适切支持。高分要求能结合真实学情进行持续调整，有针对性地优化内容、任务与反馈，促进每位学生的最大成长。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评价教学内容对教师或系统指令（如结构、字数、重点）的执行情况。高分要求严格分段、层次分明、要点突出，所有要求无遗漏或冗余，重点突出且排版规范。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所采用教学方法是否基于教育学原理，能有效促进学生主动学习、深度理解和能力提升。高分要求：教学方法与目标高度契合，能根据学情动态调整，活动设计具有挑战性和层次性，能促进知识迁移与自主探究。
+  - field: 知识结构完整性_理由
+    type: str
+    description: 解释知识结构完整性评分的详细理由，引用具体例子。
+  - field: 知识结构完整性
+    type: float
+    description: 评价知识体系覆盖度、结构严密性和逻辑递进性。高分要求涵盖环境问题的定义、类型、成因、影响、对策等核心要素，内容有层次递进，并能结合区域差异和真实案例分析，体现知识的系统性和实际联系。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价教学是否设计多层次、开放性创新任务，鼓励学生批判性思考、迁移应用和跨学科整合。高分标准为：有具体创新活动和引导环节，能激发学生提出新观点、质疑现有方案、设计独特解决办法，成果有展示和交流空间。
+  - field: 学生参与度设计_理由
+    type: str
+    description: 解释学生参与度设计评分的详细理由，引用具体例子。
+  - field: 学生参与度设计
+    type: float
+    description: 评价教学环节是否充分设计学生主动参与机会，涵盖互动、合作、实践、展示等。高分要求活动类型多样且有挑战性，任务具有真实性和合作性，学生需主动投入、合作解决问题，并有成果展示与互评。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评价教学内容是否自然、深入地融入社会主义核心价值观（如责任、绿色发展、合作），与地理知识有机结合。高分要求价值观贯穿教学过程，通过情境、讨论、实践等多种方式引导学生思考并践行价值观，且能与现实生活紧密联系。
+  - field: 中华优秀传统文化关联性_理由
+    type: str
+    description: 解释中华优秀传统文化关联性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化关联性
+    type: float
+    description: 评价教学内容是否恰当融合中华优秀传统文化理念（如天人合一、节约、和谐共生等），并与地理知识深度结合。高分要求：能结合具体地理情境或案例，分析传统智慧对现代环境治理的启示，设计相关探究或实践活动，启发学生思考传统与现代的联系。
+  format_mode: prompt

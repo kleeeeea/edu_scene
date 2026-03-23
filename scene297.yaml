@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-高中-“科学之美”：从公式到宇宙的审美（美育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高中物理老师，带学生感受科学之美时，发现不少同学觉得公式很枯燥，体会不到美感。你能讲清楚点，为什么物理或数学公式本身也有美感吗？举点例子说明下。
+  - question: 我是高一女生，叫诸葛菊，平时喜欢编程、羽毛球和冥想，性格比较倾向独立，与同学表面友好但很少深入合作。在“科学之美：从公式到宇宙的审美”这个主题下，我对科学和美育结合挺好奇，但还是有点困惑，尤其不知道怎么在学科学习、个人兴趣和审美体验之间取得平衡。你能结合我的情况，深入说说看怎么激发我对科学美感的热情，并给我一些具体建议吗？
+  - question: 你作为科学美育课程开发专家，学校让你为‘科学之美：从公式到宇宙的审美’设计一套系统的课程方案，包括理念、内容、活动、评价等。能全方位地讲解一下吗？
+  - question: 我是高中生，一直有点想不明白，科学之美到底体现在哪里？你能概括一下吗？
+  - question: 我是高二女生，最近挺好奇科学公式的美感，但还是不太理解。你能讲清楚点，为什么大家说科学公式是‘美丽的语言’？能举点例子吗？
+  - question: 你是科学美育与德育融合的专家，学校要你为‘科学之美：从公式到宇宙的审美’这个主题写一份系统解读，包括理念、跨学科融合、核心价值观引导、教学活动和成效。能全方位地讲解一下吗？
+  - question: 我是四年级的吕昕，喜欢围棋和观星，但有时候容易分心，也有点不太自信。你作为科学美育学习助手，能具体说说怎么通过观星或科学活动提升我的自信心和专注力，让我在里面体验到科学的美吗？
+  - question: 我是高三女生余依，喜欢骑行和经济学，对科学公式和现实世界的联系感到很好奇。你作为科学美育顾问，能帮我理解一下科学公式和现实世界之间的美感联系，以及这种联系对我的学业和人生目标有啥积极影响吗？
+  - question: 我是高中科学美育老师，经常被学生问科学研究为什么总能激发我们对宇宙和自然的无限好奇。你能深入讲解一下吗？最好多举点例子和分析。
+  - question: 我是高中生，学科学公式时老觉得抽象，科学的美感受不到。你能大概讲讲，有什么办法能让我更好地体会科学之美吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-高中-“科学之美”：从公式到宇宙的审美（美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评价是否基于学生多维画像（兴趣、基础、性格等），并能持续、动态地调整教学策略和反馈。高分要求主动挖掘学生差异，个别化设计活动与支持，并有跟踪与改进记录，低分为一刀切或仅表面识别，无实际行动。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评价内容结构是否严格按照指定格式分段，标题清晰、层次分明，每部分内容完整且逻辑自然衔接。高分为结构规范、无遗漏，低分为分段混乱、缺失或内容堆砌。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学方法是否符合教育学原理，能根据学生认知发展采用多样化、层次递进和启发式策略。高分要求方法创新、互动充分、促进深度理解及迁移，低分为单一灌输、缺乏互动和引导，学生被动接受。
+  - field: 美育内容与科学融合度_理由
+    type: str
+    description: 解释美育内容与科学融合度评分的详细理由，引用具体例子。
+  - field: 美育内容与科学融合度
+    type: float
+    description: 评价美育元素与科学知识的融合是否深入、自然，能让学生在学习科学过程中真实体验审美。高分为二者有机统一，能引发学生主动探索和表达，低分为拼接生硬或割裂，学生难以感受统一性。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价是否通过开放性问题、探索性任务等方式，激发学生独立思考和创造力。高分要求设计多层次、跨领域创新活动，给予自主表达空间并鼓励多样化成果，低分为只给标准答案或无创新任务，学生缺乏探索体验。
+  - field: 模拟真实提问匹配度_理由
+    type: str
+    description: 解释模拟真实提问匹配度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问匹配度
+    type: float
+    description: 评价课堂提问及互动是否贴合高中生实际兴趣和认知水平，能否激发真实好奇心和深入探究。高分为问题真实、视角贴切，能引发讨论和延伸思考，低分为内容空泛、理论化或不符学生实际，学生难以理解或产生兴趣。
+  - field: 社会主义核心价值观润物细无声融入度_理由
+    type: str
+    description: 解释社会主义核心价值观润物细无声融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观润物细无声融入度
+    type: float
+    description: 评价课程是否能在科学与美育教学中自然、深入地融合科学精神、审美追求、责任担当等核心价值观。高分要求结合真实情境与体验，引发学生内在认同与主动行动，能激发科学报国、服务社会等价值观的情感与行为转化，低分为机械灌输或仅表面提及，无情感体验或行为引导。
+  - field: 学科交融与拓展性_理由
+    type: str
+    description: 解释学科交融与拓展性评分的详细理由，引用具体例子。
+  - field: 学科交融与拓展性
+    type: float
+    description: 评价是否鼓励学生跨学科思考，将科学、美育与人文、艺术等领域有机结合，拓展思维视野。高分为主动引入多学科资源，设计跨界任务，学生能多角度表达和探究，低分为内容仅限单一学科，缺乏融合与拓展。
+  format_mode: prompt

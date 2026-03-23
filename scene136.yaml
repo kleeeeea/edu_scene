@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-生命活动的调节机制分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是苏琳，49岁女老师，平时喜欢羽毛球和种花，和家长关系挺亲密。最近讲生命活动的调节机制，发现学生和家长都挺困惑，尤其神经调节和体液调节到底怎么联系、怎么区别。你能讲清楚点，帮我梳理一下，同时也给点建议让我怎么陪家长一起引导孩子探究这部分吗？
+  - question: 我是初中生物老师，想系统掌握生命活动调节机制的分析方法，包括神经、体液、激素调节的原理，还希望能有教学案例、创新任务设计，以及怎么在教学中融入科学精神和生命尊重等价值观。你能给我一份完整的分析吗？越全面越好，方便我实际教学参考。
+  - question: 我是生物教研员，准备给老师们做培训。你能彻底说清楚初中生命活动调节机制分析吗？最好内容包括机制原理、案例、实验建议，还有怎么自然融入科学精神和生命尊重这些价值观。讲得越全面越好，便于培训老师用。
+  - question: 我是初三女生崔茜，喜欢外语和手工，爸妈很支持我独立思考。最近复习生命活动的调节机制，感觉知识点有点乱。你能概括一下这部分的核心内容吗？讲重点就行，帮我梳理一下知识结构。
+  - question: 我是JonesEliza，今年6岁，喜欢篮球、串珠和烘焙，理解东西慢点但喜欢和大家一起学。作为生物老师，你说说你的看法，生命活动的调节机制到底是什么？能用适合我年纪的例子和故事讲讲吗？也给点建议让我和小伙伴一起动手学。
+  - question: 我是初中生物老师，学生基础比较薄弱，生命活动调节机制这块总是搞不清楚神经、体液、激素调节的联系和区别。你作为教育专家，能讲得详细点吗？最好能给我理论解释、生活例子、分层教学建议，还有怎么激发学生创新思维，帮我提升教学效果。
+  - question: 我是BrownBenjamin，今年50岁男老师，喜欢登山和品茶，生活挺有条理但逻辑分析弱点。最近教生命活动调节机制，神经调节和体液调节总是理不清思路。你能帮我理解一下吗？最好结构清楚点，还能给点教学建议。
+  - question: 我是初三女生崔茜，外语和手工都挺擅长，爸妈很鼓励我独立。复习生命活动调节机制时，想让你大概讲讲这部分，帮我抓住主要知识点，越简明越好。
+  - question: 我是TorresJade，13岁女生，时尚造型、跆拳道和吉他都挺喜欢，学习和兴趣总是要兼顾，偶尔还会焦虑动力问题。你能帮我理解一下生命活动调节机制吗？特别是神经调节和激素调节，这块总觉得复杂。最好结合点生活案例和兴趣，还能给点心理调适建议。
+  - question: 我是DavisBrooke，36岁女老师，喜欢方言、羽毛球和画画，团队教学很注重细节。最近要上生命活动调节机制的专题课，想深入了解调节机制原理、教学方法和创新活动，还希望能自然融入科学精神和传统文化。你能讲得详细点吗？最好理论、教学建议和价值观都讲清楚，帮我提升课程深度和温度。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-生命活动的调节机制分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估答案是否充分分析并针对学生的学习基础、兴趣、认知水平等个体差异，制定差异化辅导方案，体现多维度个性化调整（内容、资源、互动、评价等），并能追踪个体进步。
+  - field: 指令遵循精准度_理由
+    type: str
+    description: 解释指令遵循精准度评分的详细理由，引用具体例子。
+  - field: 指令遵循精准度
+    type: float
+    description: 评估回答是否严格、完整、精准地按照教师设定的格式、方法、结构和内容要求作答，每项指令均有明确、无遗漏的回应，且不随意增减内容。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估所采用的教学方式是否符合教育学原理，能有效促进主动思考、探究与互动，采用启发式、情境式、分组探究等方法，并能根据教学目标灵活调整。
+  - field: 知识结构完整性与逻辑性_理由
+    type: str
+    description: 解释知识结构完整性与逻辑性评分的详细理由，引用具体例子。
+  - field: 知识结构完整性与逻辑性
+    type: float
+    description: 评估答案是否系统、全面、递进地覆盖生命活动调节机制的核心知识点（定义、过程、特点、联系与区别、实际应用），结构清晰，逻辑递进，能用实例说明知识点间联系。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估答案是否通过开放性问题、探究活动或创新任务，鼓励学生提出假设、设计实验或表达新见解，积极培养科学探究和创新能力。
+  - field: 真实情境与兴趣关联度_理由
+    type: str
+    description: 解释真实情境与兴趣关联度评分的详细理由，引用具体例子。
+  - field: 真实情境与兴趣关联度
+    type: float
+    description: 评估问题和内容设计是否贴近学生实际生活、兴趣和常见困惑，能激发对科学现象的好奇心和探究欲，结合真实案例或热点话题增强学习相关性。
+  - field: 价值观与文化自然融入度_理由
+    type: str
+    description: 解释价值观与文化自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观与文化自然融入度
+    type: float
+    description: 评估内容是否自然融入社会主义核心价值观和中华优秀传统文化（如尊重生命、科学探索、团结协作），结合学科实际，表达方式得体、非生硬，能引发学生思考。
+  - field: 表达清晰规范性_理由
+    type: str
+    description: 解释表达清晰规范性评分的详细理由，引用具体例子。
+  - field: 表达清晰规范性
+    type: float
+    description: 评估答案是否用语规范、结构分明、逻辑清晰，表达简洁易懂，避免生僻术语和晦涩表述，结合分步说明和生活化比喻，确保初中生易于理解和记忆。
+  format_mode: prompt

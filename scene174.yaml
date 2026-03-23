@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-高中-学术性口头报告与演讲技巧教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是四年级女生都珍，喜欢中国风爵士舞和田径，性格偏内向、专注力不太持久，但老师说我思维能力强。最近英语老师要求我们做学术性口头报告，我很紧张，怕表达不清楚还容易分心。你作为英语演讲专家，能帮我理解一下像我这样的小学生怎么在学术报告时更好表达观点、保持专注吗？帮我理解一下，举些例子说明就更好了。
+  - question: 我是高二男生，英语一般但很喜欢生物和化学。最近老师让我们做基因编辑的学术报告，我表达能力不太强，想让报告内容更系统、更专业，同学也能听懂。你作为英语学术报告专家，能给我一份完整的分析，从内容结构、表达方法、科学技巧到互动策略都详细讲讲吗？
+  - question: 我是高一女生，性格活泼，英语口语还可以，但面对陌生观众做学术报告就会紧张，说话也不流畅。你是英语演讲专家，能解释一下像我这样外向但容易紧张的学生怎么提升学术报告时的自信和表达流畅度吗？最好能举点例子。
+  - question: 我是高三学生，理性独立，英语基础好，准备参加省级英语学术演讲比赛。我的演讲内容比较丰富但和观众互动不够，显得有点枯燥。你作为英语演讲专家，能深入讲解一下像我这种理性型学生怎么科学设计学术报告，既有深度又能吸引听众吗？能深入讲解一下吗？
+  - question: 我是高二女生，英语一般但很喜欢美术和设计，老师让我做一次关于色彩心理学的英语学术报告。因为我平时表达不太自信，怕报告时声音小、讲不清楚。你作为英语演讲指导专家，能讲清楚点像我这种学生怎么提升学术报告中的自信和声音表现力吗？
+  - question: 我是高三男生，数学物理好，英语写作还行但口语表达弱，现在要做关于人工智能的英语学术报告。我希望内容创新且逻辑清晰。你作为英语口头报告专家，能彻底说清楚怎么让像我这样理科思维强但口语弱的学生系统提升学术报告的创新性和表达逻辑吗？
+  - question: 我是高一女生，性格内向，英语基础一般，喜欢阅读但不太敢在众人面前发言。老师让我们做学术性英语报告，我担心紧张和表达不完整。你作为英语演讲专家，能解释一下像我这样内向但表达能力还可以的学生怎么克服紧张、提升学术报告表达完整性吗？
+  - question: I'm JacksonAudrey, a 4th grade girl who loves origami, photography,
+      and puzzle games. I have strong analytical skills and like teamwork, but sometimes
+      feel a bit left out. My teacher recently asked us to do an academic oral report
+      in English. As an expert, could you briefly explain how someone like me can
+      make the presentation both logical and creative for my classmates? Just a quick
+      summary of main strategies would be great.
+  - question: 我是高二男生，英语成绩好，喜欢历史和社会学。最近要做关于“社会变迁对青少年成长影响”的学术英语报告，我想既有深度又能让同学思考，但不知道怎么组织结构和选用案例。你作为英语报告专家，我想深入了解像我这样学生怎么系统组织一场深度且能启发同学思考的学术报告？能详细讲讲吗？
+  - question: 我是高一女生，性格外向，英语不错，喜欢团队合作。老师让我们做关于“可持续发展”的英语学术报告，我想小组表现好，但分工和合作还不太懂。你作为团队演讲专家，能简短回答下像我这样喜欢团队的学生怎么高效分工、合作并做好小组报告吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-高中-学术性口头报告与演讲技巧进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 评估内容是否充分结合学生的具体画像（英语能力、兴趣、目标、性格等），并在方案、资源、反馈等环节体现动态定制与适时调整。高分要求对多维画像精准识别并持续优化建议，低分为完全忽略或仅表面提及个体特征。
+  - field: 格式要求遵循度_理由
+    type: str
+    description: 解释格式要求遵循度评分的详细理由，引用具体例子。
+  - field: 格式要求遵循度
+    type: float
+    description: 评估输出是否严格依照教师或任务指定的结构、分段、要点及时间要求，内容分布合理、过渡自然。高分需完整分段、明晰时间分配、过渡句自然，低分为结构混乱或完全未体现要求。
+  - field: 学术性表达与规范性_理由
+    type: str
+    description: 解释学术性表达与规范性评分的详细理由，引用具体例子。
+  - field: 学术性表达与规范性
+    type: float
+    description: 评估是否系统引导学生使用学术英语表达，包括正式词汇、逻辑结构、规范引用、数据支撑等，并避免口语化和随意表达。高分为学术表达全面、引用合规，低分为表达随意、无学术规范。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放性任务、情景模拟、深度提问等方式激发学生独特观点、跨界思考或创新表达。高分为多样创新任务及引导突破常规，低分为机械复述或模板化表达。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学流程是否科学设计，体现循序渐进、学生主体性、目标导向及反馈机制。高分需有明确流程、分阶段目标、反馈环节及操作细节，低分为知识罗列无流程或参与环节。
+  - field: 创造性表达引导_理由
+    type: str
+    description: 解释创造性表达引导评分的详细理由，引用具体例子。
+  - field: 创造性表达引导
+    type: float
+    description: 评估是否为学生提供多样化表达建议，如故事、案例、比喻、情景剧等，提升演讲个性化和吸引力，并鼓励跨文化表达。高分为多样表达形式结合学生兴趣，低分为仅模板化表达。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估社会主义核心价值观及中华优秀传统文化是否以自然、贴合主题的方式融入内容，引发学生思考而非生硬灌输。高分为巧妙融合并启发思考，低分为强制插入或完全忽略。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估问题设置是否贴近高中生在学术演讲场景下的实际困惑、兴趣或能力挑战，能引发共鸣与真实思考。高分为具体、真实、贴近实际，低分为泛泛或与场景脱节。
+  - field: 反馈针对性与操作性_理由
+    type: str
+    description: 解释反馈针对性与操作性评分的详细理由，引用具体例子。
+  - field: 反馈针对性与操作性
+    type: float
+    description: 评估反馈建议是否具体、可操作、可追踪，针对学生实际问题提供改进方案、资源与进步监测。高分为针对问题详细方案、资源推荐、进度跟踪，低分为泛泛建议无具体措施。
+  format_mode: prompt

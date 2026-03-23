@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene172/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 英语-高中-长难文本的阅读与概要写作教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是沈日，高一男生，喜欢吉他和田径，性格有点复杂，和父母关系疏远，平时主要跟音乐社和田径队的同学交流。最近学英语长难文本时总觉得理解和写概要很难，尤其是篇幅长、内容复杂的文章让我抓不住重点。你作为英语教学专家，能给我一份完整的分析吗？希望你结合我的兴趣和性格，系统地帮我找找原因、出出主意，也顺便聊聊怎么激励我积极面对学习挑战。
+    - question: 我是一名高中英语老师，发现班上学生普遍觉得长难文本阅读和概要写作很难，尤其是结构复杂和主旨梳理方面总出问题。你作为英语教学顾问，能深入讲解一下造成这些困难的原因，以及有哪些创新的教学方法和激励策略吗？最好再帮我设计几个具体的课堂活动。
+    - question: 我现在高二，英语还算不错，但最近读一篇长难文章时总觉得信息太多，写概要也容易跑题。你是我的学习助手，说说你的看法吧，怎么才能抓住重点、理清结构？最好给点具体建议和技巧。
+    - question: 我是一名高三学生，老师让我们读一篇很长很难的英语文章并写概要，可我总觉得内容太复杂，理不清思路，也不知道概要怎么写。你作为英语教学专家，帮我概括一下概要写作的关键步骤和要点吧，让我能快速找到方向。
+    - question: 我教高中英语两年了，发现学生在读长难文本和写概要时常常漏掉细节或者只看表面，概要写得不太准。你作为英语教研员，能具体说说常见的错误和怎么改进吗？最好举点实际例子。
+    - question: I'm MartinBrooke, 15 years old, 9th grader. I love painting and recitation, and usually study and create alone but am confident in classes and art activities. Lately, I find it hard to summarize long and complex English texts, especially when the main ideas aren't obvious or the structure is tricky. As my English mentor, could you simply say how someone like me—who prefers independent and creative learning—can handle summary writing and get better at understanding these texts?
+    - question: 我刚升高一，老师让我们读一篇很长很难的英语文章并写概要。我在理清逻辑和抓重点时有点困难。你是我的学习助手，讲清楚点——遇到这样的文章该怎么逐步解读、整理结构，才能高效写出概要？最好给我具体步骤和技巧。
+    - question: 我是一名高三英语老师，学生们压力大，面对英语长难文本和概要写作总是很焦虑、没信心。你作为教学专家，从心理调适、方法指导、分层教学、同伴互助、兴趣培养和成果展示等各方面详细说说，怎么系统地帮助高三学生提升这方面能力，并顺便自然引导他们树立积极的价值观。
+    - question: 我是高一学生，英语阅读能力一般，老师让我们读一篇长难文章并写概要。我觉得信息太多，筛选重点和结构总是弄不清。你作为知识导师，详细展开说说学生在读长难文本和写概要时，怎么筛选主旨、理清结构，有哪些好用的训练方法？希望能结合我的情况给点针对性建议。
+    - question: 我教高中英语，发现学生写长难文本概要时总是抄原文或者机械摘录，归纳能力很弱。你作为教学顾问，讲讲看怎么才能帮他们提升归纳和整合能力？最好举点有效的训练方法和激励措施的例子。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 英语-高中-长难文本的阅读与概要写作进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估方案是否能针对不同学生的英语基础、兴趣和目标进行差异化调整，包括文本难度、话题选择、词汇支持和任务分层。高分需体现动态调整与持续追踪，低分为一刀切无差异。
+    - field: 格式指令遵循度
+      type: float
+      description: 答案是否严格按照教学任务的格式要求组织，包括分段、要点罗列、字数控制、结构安排等。高分需完全符合且细致落实，低分为明显偏离或忽略。
+    - field: 教学方法科学性
+      type: float
+      description: 是否采用多样化、系统化且有理论支撑的教学方法（如分层阅读、结构化梳理、引导式提问、协作学习等），并能灵活应对不同学习需求。高分需方法多样、步骤合理、理论依据明确且有实际成效，低分为方法单一或无理论支持。
+    - field: 学习过程引导性
+      type: float
+      description: 是否为学生设定清晰分阶段目标，提供具体任务分解、自查清单、反馈机制，支持学生有序推进与自我调整。高分要求步骤详尽、目标明确、自查与反馈机制完善，低分为过程单一或无引导。
+    - field: 创新思维激发度
+      type: float
+      description: 任务设计是否鼓励学生多角度思考、开放性表达和原创创新，支持差异化表达和深度思辨。高分需有多样创新活动、开放性探究题及原创表达激励，低分为机械模仿或无创新空间。
+    - field: 真实提问模拟度
+      type: float
+      description: 任务或问题设计是否贴合真实课堂情境，语言自然、具体，能反映高中生在实际学习中的真实困惑和需求。高分需情境自然、表达具体、问题真实，低分为生硬、与实际脱节。
+    - field: 价值观润物细无声度
+      type: float
+      description: 是否能将社会主义核心价值观或中华优秀传统文化自然融入教学活动，与文本内容或写作任务有机结合，方式细腻且不生硬。高分为润物细无声、结合文本实际，低分为生硬灌输或完全缺失。
+    - field: 多样化激励机制
+      type: float
+      description: 是否设计多元激励措施促进学生积极参与，激发内驱力，包括榜样展示、成果发表、同伴互助、阶段奖励等。高分需激励机制多样、持续有效，低分为无激励或激励流于表面。
+format_mode: prompt

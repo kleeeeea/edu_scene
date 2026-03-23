@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene050/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 数学-高中-抽象概念辨析教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是一名高中数学老师，最近发现学生在理解抽象概念（比如函数、极限、向量）时经常混淆本质，很难真正掌握。你能帮我深入说说看，分析学生常见的困惑和混淆点，以及背后的原因吗？同时，能结合实际教学给出一些有效的策略和案例吗？
+    - question: 你作为高中数学教研员，能不能帮我全面深入地讲讲高中常见抽象概念（像集合、映射、数列、函数、极限、导数、向量等）之间的本质区别和联系？另外学生在这些概念辨析中常出什么问题，如何从教学设计、课堂活动、评价反馈等角度改进？能全面深入地讲讲吗？
+    - question: Hi, I’m LopezPenelope, a 16-year-old 10th grader who loves table tennis, poetry, and creative writing. I often do surface-level analysis and tend to follow what my friends think, plus I get distracted easily when studying math. Could you please explain in detail how I can better tell the difference between abstract concepts like 'function' and 'relation', and how I might build up deeper thinking skills? Please give me practical strategies and examples that fit my interests and learning habits. Detailed answers, please!
+    - question: 作为高中数学老师，怎么用几句话让学生明白像极限、导数、向量这些抽象概念和实际生活有什么联系？用几句话说说就行。
+    - question: 我是邓棋，今年56岁，是一名老师，平时喜欢插花和园艺，也经常为年轻老师分享跨学科教学的建议。你作为教育专家，能不能结合我的兴趣和经验，深入说说看如何把抽象的高中数学概念（比如函数、向量、极限）和园艺、插花等生活情境结合起来教学？希望能有详细的案例和策略，帮助学生理解这些抽象概念。
+    - question: 高中生在学抽象概念（比如函数、极限、向量）时常见的误区和原因有哪些？能概括一下吗？
+    - question: 我是何星，28岁男老师，喜欢机械键盘改装、滑板和攀岩，工作中讲究条理和专业。你作为教育专家，能不能从各个角度详细说说，怎么帮助高中生科学辨析和掌握像函数、极限、数列、向量这些抽象概念？希望你能结合学生的认知发展、学习心理、课堂实践和学科融合等方面，最好还能举一些和机械键盘、滑板、攀岩相关的案例，体现实用性和个性化。
+    - question: 作为我的高中数学学习助手，你觉得像向量空间、线性变换这种抽象概念在高中阶段有多重要？说说你的看法，最好能举些例子说明对以后学习和实际应用的意义。
+    - question: 你是高中数学老师，能讲讲看学生在学像数列极限、函数映射、向量空间这些抽象概念时为什么容易混淆吗？希望你能结合实际例子，给出一些有效的辨析和教学建议。
+    - question: 你是一名高中数学老师，能不能讲讲看，像函数、极限、向量这些抽象概念对培养学生思维能力和解决实际问题有什么作用？最好能举些例子说明。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 数学-高中-抽象概念辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与响应
+      type: float
+      description: 评估教学设计是否精准识别并针对不同学生类型（如基础薄弱、兴趣导向、拔尖创新等）进行差异化引导与资源分配，体现因材施教原则。
+    - field: 格式与指令遵循度
+      type: float
+      description: 教学内容结构是否清晰，严格依照题目或教学要求的格式、步骤呈现，且环节完整、层次分明。
+    - field: 教学方法科学性与创新性
+      type: float
+      description: 教学方法是否符合教育学原理，采用系统科学的教学流程（如启发式、探究式、分层递进等），并结合创新性策略激发学生主动探索。
+    - field: 抽象概念可视化与易懂性
+      type: float
+      description: 是否通过图示、生活实例、类比等方式将抽象概念具体化，降低理解难度，便于学生掌握和应用。
+    - field: 模拟真实学生提问与互动性
+      type: float
+      description: 是否主动预设或回应课堂上学生可能出现的疑问、追问、误区，提供针对性澄清和引导，营造双向互动氛围。
+    - field: 创新思维与创造力激发
+      type: float
+      description: 教学内容是否通过开放性问题、跨学科联系、任务驱动等方式，鼓励学生提出新见解，探索未知领域，提升创新和创造力。
+    - field: 价值观自然融入
+      type: float
+      description: 教学过程中是否将社会主义核心价值观与中华优秀传统文化有机融合，润物细无声地引导学生形成正确的世界观、人生观、价值观，且方式自然不生硬。
+    - field: 学科核心素养导向
+      type: float
+      description: 教学设计是否系统培养学生的数学学科核心素养（如抽象思维、逻辑推理、数学建模、问题解决等），并在实际教学环节中有具体体现，而非仅停留在理论层面。
+format_mode: prompt

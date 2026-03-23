@@ -1,0 +1,124 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-高中-跨章节知识网络的构建与梳理教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二物理老师，最近发现学生复习时只看单个章节，做综合题的时候经常理不清思路。你作为物理专家，能全面分析一下怎么帮他们构建和梳理高中物理的知识网络吗？最好分步骤讲讲关键点之间的联系、典型迁移和提升综合能力的方法。详细讲讲
+  - question: 我叫邓芳芳，初一女生，平时喜欢编程、吉他和羽毛球，爸妈工作很忙，我经常和社团小伙伴一起学。学物理的时候总是搞不太清楚各章节之间的联系，特别是力学和热学老是混淆。你作为物理学习助手，能帮我理解一下高中物理跨章节知识网络怎么构建吗？详细说说
+  - question: 我是高一学生，老师让我们梳理各章节知识点之间的关系，但我不太知道该怎么开始。你作为物理专家，能简单说说高中物理跨章节知识网络怎么构建吗？主要思路讲讲就行
+  - question: 我是新晋物理教研员，最近在高三复习研讨时，发现老师们很少系统整合跨章节知识点，学生的综合能力提升得不够好。你作为教学顾问，我想深入了解高中物理跨章节知识网络怎么构建，能详细讲讲筛选知识节点、培养迁移能力、团队合作和价值观引导等方面吗？我想深入了解
+  - question: 我是潘丹妮，27岁女老师，爱好脱口秀和插花，性格偏被动但逻辑性强，教学风格比较灵活、开放，平时很少主动社交。最近备课时发现学生对物理各章节的联系理解得不太好，影响了解题能力。你作为物理专家，能简短说说高中物理跨章节知识网络的构建要点吗？简短回答下
+  - question: 我是高三学生，物理成绩不太稳定，尤其觉得力学、电学、热学这些章节之间的联系很难理清，做综合题时经常思路混乱。你作为物理专家，能全面深入地讲讲高中物理跨章节知识网络怎么构建吗？希望你能系统地分层讲讲关键节点、知识迁移、解题策略，还有一些科学家或案例故事启发我。能全面深入地讲讲吗
+  - question: 我是高一学生，最近学物理时总觉得力学和电学之间有联系，但我说不太清楚，做题也常卡住。你作为物理专家，帮我理解一下高中物理跨章节知识网络里力学和电学是怎么关联的，还有怎么通过综合题提升迁移能力？帮我理解一下
+  - question: 我是新入职的高中物理老师，发现学生学的时候总是只记住单个知识点，做综合题就很头疼。你作为物理专家，能详细说说高中物理跨章节知识网络怎么构建吗？包括怎么整合知识点、培养迁移能力和激发学生兴趣这些方面。详细说说
+  - question: I'm MartinezTheodore, a 34-year-old male physics teacher who enjoys
+      rock climbing, basketball, and astrophotography. My teaching style is informal
+      and adaptive, and I value authority and feedback, though I tend to have a fixed
+      mindset. I balance solo pursuits with team activities. Lately, I've noticed
+      my students find it hard to connect concepts across physics chapters, which
+      impacts their integrated questions and teamwork projects. As a physics education
+      expert, could you give me a comprehensive and systematic explanation of how
+      to construct a cross-chapter knowledge network in high school physics? Please
+      cover strategies for mapping key nodes, fostering knowledge transfer, collaborative
+      learning, and bringing in positive values and scientific stories. Please give
+      a full-scale explanation
+  - question: 我是高二学生，最近复习物理时发现很多章节其实有关联，但我不太会系统梳理这些联系，尤其力学、电磁和光学的综合题老是做不顺。你作为物理老师，能讲清楚点高中物理跨章节知识网络怎么构建吗？讲清楚点
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-高中-跨章节知识网络的构建与梳理进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 教学内容与活动需基于学生的知识基础、兴趣、认知障碍等个体特征，动态调整策略，精准响应不同层次和类型学生的需求，并持续跟踪其成长轨迹。高水平表现为能针对学生个别差异提供差异化资源、任务与反馈，并体现成长性评价。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 内容呈现需严格按照教学流程和步骤，逻辑清晰、层次分明。高水平表现为结构完整、步骤明确、信息归类合理，便于理解和执行，并能根据实际情况灵活补充必要说明。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 教学方法应结合教育学理论与物理学科特点，促进知识理解、迁移与应用。高水平要求采用多样化方法（如探究、实验、项目学习、情境分析），并能创新设计教学活动，提升学生主动学习与实际应用能力。
+  - field: 跨章节知识联系深度_理由
+    type: str
+    description: 解释跨章节知识联系深度评分的详细理由，引用具体例子。
+  - field: 跨章节知识联系深度
+    type: float
+    description: 需深入挖掘物理各章节间的核心原理与共性规律，建立层次化、系统化知识网络，并能引导学生将知识迁移到新情境和实际问题中。高水平表现为能梳理多层次、多方向联系，设计综合性问题促进迁移应用。
+  - field: 创新思维激发能力_理由
+    type: str
+    description: 解释创新思维激发能力评分的详细理由，引用具体例子。
+  - field: 创新思维激发能力
+    type: float
+    description: 通过开放性问题、任务驱动、跨学科应用等方式，激发学生主动探究和创新能力，鼓励多角度思考与创造性解决问题。高水平要求能引导学生提出新问题、创新设计方案或跨学科联想。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 提问内容需贴近高中生实际思考，反映真实学习困惑、兴趣点或需求，有代表性和针对性，能引发深入讨论。高水平表现为能针对不同学生层次和兴趣提出分层、递进式问题。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 教学过程中需将科学精神、创新意识、责任担当、团队合作等社会主义核心价值观与物理内容自然融合。高水平表现为价值观融入教学情境，学生在活动中自觉体验与践行，无生硬表达或割裂。
+  - field: 中华优秀传统文化润物细无声传承_理由
+    type: str
+    description: 解释中华优秀传统文化润物细无声传承评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润物细无声传承
+    type: float
+    description: 物理教学中应巧妙融入中华优秀传统文化，如古代科学家贡献、传统物理思想、历史科技案例等，与物理主题紧密结合，提升学生文化认同与学科兴趣。高水平表现为文化元素与物理知识深度融合，能启发学生思考科学与文化的内在联系。
+  format_mode: prompt

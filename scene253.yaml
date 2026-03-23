@@ -1,0 +1,122 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-我的消费我做主：消费者权益保护教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为政治学科教育专家，能不能从各个角度详细说说初中阶段消费者权益保护，包括法律法规、真实案例、青少年常见误区、家长和学校的作用、诚信和契约这些传统文化怎么看，以及在课堂上怎么用探究式、小组协作等方法提升学生的消费意识和维权能力？希望你能全面系统地聊聊，带点情感共鸣和启发性建议。
+  - question: Hi, I'm WilsonKeith, a 9th grade student who loves Go, 3D modeling &
+      printing, and street dance. Since I buy a lot of things related to my hobbies—like
+      Go boards, 3D printers, dance shoes—both online and offline, sometimes I worry
+      about being misled by ads or getting faulty products. Can you talk in detail
+      about how someone like me can protect my consumer rights in these situations?
+      I want to know practical strategies, laws, common mistakes, and how values like
+      honesty and fairness play a role. Also, any advice on staying alert but not
+      paranoid, and how these skills might help me grow in my hobbies and life overall?
+      Can you explain all this thoroughly?
+  - question: 你作为初中政治老师，能不能讲讲看消费者权益保护到底包括哪些内容？比如生活中遇到买到过期食品或者网购维权的情况，你会怎么解释？希望能结合一些真实例子和具体建议，让学生明白怎么维护自己的权益。
+  - question: 我是一名初二学生，最近网购买到的东西和描述不一样，想维权但不知道怎么做，你能简短回答下我该怎么处理吗？说说主要的流程和要注意的地方。
+  - question: 我是四年级的孙琦，平时喜欢编程、书法、电子竞技，但买东西常常靠父母帮忙，也容易被广告吸引。你作为政治老师，说说你的看法，我应该怎么提升自己的消费者权益保护意识？能结合我的兴趣和性格，举些例子给点具体建议吗？
+  - question: 我是家长，最近新闻里说很多未成年人在网络消费上容易被骗，比如游戏充值、买虚拟商品这些，你作为消费者权益讲师，能具体说说吗？希望你能详细解释一下，举些例子，让家长和孩子都能学会预防消费陷阱。
+  - question: 你作为初中政治老师，能不能深入说说看现在青少年消费时常遇到哪些维权难题？希望你能结合真实案例、法律规定、诚信这些传统文化和核心价值观详细分析一下，还能不能设计点互动环节，让我们同学们自己思考探究解决办法？
+  - question: 我是三年级女生姬妍，特别喜欢科学实验和阅读。最近在校园集市买了科学小玩具，发现有些其实不安全。你作为政治老师，能不能从各个角度详细说说小学生像我在消费时怎么保护自己的权益？比如安全、诚信、法律、家庭和学校的作用，还能不能结合科学逻辑和传统文化给我们点理性消费的建议？希望你系统全面地聊聊，也带点启发性的建议。
+  - question: 我是初中生，老师让我们小组讨论消费者权益保护的主要内容，你能说说主要的要点吗？简短回答下，方便我整理。
+  - question: 我是初中生，最近家里买新电器，爸妈总提醒要看售后、防止买到假货。你作为政治老师，能具体说说吗？希望你能结合生活例子，详细解释一下实际消费中有哪些权益保护要注意的地方。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-我的消费我做主：消费者权益保护进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 教学内容与活动需深入分析并针对学生群体与个体特征（学习水平、兴趣、生活习惯等）进行差异化设计，动态收集学生反馈并持续调整教学方案，确保与学生实际紧密结合。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 教学内容结构应严格遵循任务要求，分段合理、逻辑递进、过渡自然，并在规范基础上体现结构创新（如图表、流程图、思维导图等），便于学生理解和梳理知识框架。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 系统、无遗漏地覆盖消费者权益保护核心知识点（权利种类、法律依据、侵权类型、维权途径等），结合最新社会案例与跨学科视角，内容层次递进，无知识性错误或事实遗漏。
+  - field: 教学方法创新性与专业性_理由
+    type: str
+    description: 解释教学方法创新性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法创新性与专业性
+    type: float
+    description: 教学设计应采用多样化、科学的教育方法（如情境模拟、项目制、小组协作、跨学科融合等），并针对主题进行创新实践，显著提升学生主动参与和深度学习体验，高分需有学生实际产出或行为改变。
+  - field: 启发式提问与引导_理由
+    type: str
+    description: 解释启发式提问与引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与引导
+    type: float
+    description: 通过开放性、情境性、逆向性等提问方式，激发学生主动思考、观点碰撞和多角度分析，鼓励学生质疑、辩论并形成独立见解，高分需有实际讨论过程和学生观点展示。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 鼓励并引导学生提出新观点、创新做法或开展实际创新活动，要求有跨学科方案设计、未来展望或创新工具产出，高分需有学生创新成果或方案展示。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 将诚信、公正、法治等核心价值观有机融合于教学全过程，通过真实案例、情境体验或角色扮演等方式，激发学生情感共鸣与行为践行，高分需有学生实际反思或行动转化。
+  - field: 中华优秀传统文化关联性_理由
+    type: str
+    description: 解释中华优秀传统文化关联性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化关联性
+    type: float
+    description: 巧妙融合中华优秀传统文化（如诚信、契约精神、家国情怀等）与现代消费主题，通过故事、案例、活动等方式促进文化自信和认同，高分需有深度融合和学生实际分析或应用。
+  format_mode: prompt

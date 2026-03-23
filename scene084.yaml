@@ -1,0 +1,128 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-高中-化学反应速率的影响因素与定量分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高中化学老师贺冰琳，最近教“化学反应速率的影响因素与定量分析”时，发现学生对速率方程和定量分析没什么兴趣，容易只记公式不懂实际应用。你觉得在这样的学生状态下，怎么结合理论、定量分析和生活实际，能有效激发他们对速率问题的探究兴趣？说说你的看法，最好多举点例子。
+  - question: Hi! I'm WilsonJasmine, a proactive 5th grader who's into taekwondo,
+      table tennis, and Yue Opera—plus I really like connecting science to my activities.
+      Can you, as a science education expert, systematically explain how things like
+      concentration, temperature, catalysts, and particle size influence chemical
+      reaction rates, and how to analyze these changes quantitatively? I’d love lots
+      of details, including examples, experiments, and practical tips linked to stuff
+      I do. Systematically explain, please!
+  - question: 我是宋舒菁老师，平时喜欢书法和水彩，也常组织美术社团。最近教化学反应速率和定量分析时，发现学生背公式容易，但实际分析和探究兴趣不高。我想把艺术里的细致观察和创新精神融入化学课，比如结合美术观察或实验创新，帮助学生提升定量分析能力。你怎么看这种做法？说说你的看法，最好举些例子。
+  - question: 假如你是一名高中化学老师，班里有学生对反应速率实验很感兴趣，但常常被变量多、数据难处理等问题卡住，不知道怎么归纳和分析。你会怎么引导他们用探究式方法来逐步建立定量分析思维，还能鼓励他们自己设计实验和提出假设？讲讲看，最好结合具体做法和例子。
+  - question: 我是高二学生，准备参加化学竞赛，这两天学化学反应速率的影响因素和定量分析，发现这部分既要懂理论又得会实验分析，变量还特别多。你能深入说说怎么系统掌握速率相关知识，包括速率方程推导、误差分析和实际应用，帮我竞赛时也能灵活运用吗？深入说说看，最好举些详细例子和策略。
+  - question: 我是家长，最近发现孩子学化学反应速率时对影响因素和定量分析挺迷糊，特别是速率方程和数据处理容易混。能帮我概括一下，这部分最关键的知识点有哪些吗？概括一下就好，越清晰越好。
+  - question: 你作为高中化学竞赛辅导老师，能帮我说说化学反应速率影响因素和定量分析的主要知识点吗？说说主要的，简单清楚就行。
+  - question: Hey, I'm ThompsonAaron, a 9th grader who loves camping, guitar, and
+      street dance. I try to plan things well and connect what I learn in chemistry
+      to my hobbies, but有时候化学反应速率的数学分析和实际应用让我有点困惑，尤其是温度、浓度这些变量怎么和现实活动结合。你能说说怎么看，怎么把速率分析和生活（比如户外、音乐）结合起来，还有怎么理解变量控制和数据分析吗？说说你的看法，举点例子最好。
+  - question: 我是高一学生，最近在学化学反应速率的影响因素和定量分析，感觉理论挺多，实际用起来也很复杂，比如推导速率方程、变量控制、实验误差分析这些。你能帮我深入讲讲这些知识点在实验和生活里的具体应用，还有怎么通过科学方法提升定量分析能力吗？我想深入了解，最好详细讲讲例子和做法。
+  - question: 你作为化学教育专家，能全方位地讲解一下高中化学反应速率的影响因素与定量分析吗？希望能系统梳理理论、方程推导、变量控制、实验设计、数据分析、误差处理、实际应用和教学创新方法等方面。全方位地讲解一下，越详细越好。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-高中-化学反应速率的影响因素与定量分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化学生画像适配度_理由
+    type: str
+    description: 解释个性化学生画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化学生画像适配度
+    type: float
+    description: 评估教学内容和活动是否基于学生的学习基础、兴趣、能力等多维差异，能针对不同层次、类型学生进行精准个性化设计与支持，体现对学生成长轨迹和个体需求的深度理解。
+  - field: 指令遵循与结构化表达_理由
+    type: str
+    description: 解释指令遵循与结构化表达评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构化表达
+    type: float
+    description: 评价内容是否严格按照任务要求组织，结构层次清晰，逻辑递进，关键点突出，且能针对复杂内容采用图示、表格、分级小结等多种表达方式提升可读性和条理性。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法需紧扣化学教育学原理，结合探究、实验、合作、数据分析、跨学科等多元手段，促进学生主动思考与实践，且能体现化学学科专业前沿或教育创新。
+  - field: 定量分析准确性与深度_理由
+    type: str
+    description: 解释定量分析准确性与深度评分的详细理由，引用具体例子。
+  - field: 定量分析准确性与深度
+    type: float
+    description: 定量分析需严谨、准确，涵盖公式推导、变量控制、数据处理、误差分析等，并能结合真实或复杂实验案例，体现多层次分析与高水平化学思维，避免仅停留在表层。
+  - field: 模拟真实学生提问的贴合度_理由
+    type: str
+    description: 解释模拟真实学生提问的贴合度评分的详细理由，引用具体例子。
+  - field: 模拟真实学生提问的贴合度
+    type: float
+    description: 内容应主动回应高中生学习本主题时的真实困惑，结合常见误区、疑难点进行解释，能模拟或引用真实学生问题，体现对学生思维过程和学习障碍的敏锐把握。
+  - field: 激发创新思维与创造力_理由
+    type: str
+    description: 解释激发创新思维与创造力评分的详细理由，引用具体例子。
+  - field: 激发创新思维与创造力
+    type: float
+    description: 鼓励并引导学生提出新问题、设计新实验、跨学科应用、探究未知变量，能分层次评价学生创新行为的深度、独立性与科学性，体现创新素养的培养。
+  - field: 社会主义核心价值观与中华文化自然融合_理由
+    type: str
+    description: 解释社会主义核心价值观与中华文化自然融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华文化自然融合
+    type: float
+    description: 能在教学内容、实验过程等环节自然融合诚信、合作、科学精神等核心价值观与中华优秀传统文化理念，方式自然、内涵丰富，能启发学生思考与实践，避免生硬灌输。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 能针对学生学习瓶颈、兴趣点进行深入分析，结合个体差异制定具体、可操作的解决策略，体现教师对学生成长的理解、关怀与专业指导，回应具有层次和深度。
+  - field: 知识点覆盖与重点突出_理由
+    type: str
+    description: 解释知识点覆盖与重点突出评分的详细理由，引用具体例子。
+  - field: 知识点覆盖与重点突出
+    type: float
+    description: 内容需全面覆盖‘化学反应速率影响因素与定量分析’的核心知识点，逻辑结构清晰，重点突出，能对核心与易混淆知识进行区分讲解，无遗漏或泛泛而谈。
+  format_mode: prompt

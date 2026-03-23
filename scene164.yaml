@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-初中-词汇扩展与语境应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是刚上初一的新生，发现英语词汇量有点跟不上，特别是在和同学聊兴趣或者参加社团活动时总觉得表达不流畅。你能解释一下，有哪些适合我们初中生在校园里扩展英语词汇的方法吗？具体说说，比如可以做什么活动，怎么更好地和同学交流，也希望你能结合诚信、友善这些价值观给我些建议。
+  - question: 我是一名初二学生，平时很喜欢画画，也参加学校美术社团，但用英语表达自己兴趣或者介绍社团活动时总觉得词汇和表达很有限。你能从各方面深入说说，怎么在兴趣社团和日常交流中系统扩展英语词汇和表达能力吗？最好结合我的兴趣和实际情况，举些具体的活动例子，也希望能讲讲团结、勤奋这些正能量内容。
+  - question: 我是初三学生，英语成绩一般，平时喜欢看小说和打羽毛球，但总觉得在生活和家里用英语不太顺手。大概讲讲，有哪些简单又实用的词汇扩展方法，能让我在生活中更自然地用英语？
+  - question: 我是初中英语老师，班里有些学生家庭背景不一样，在家里用英语交流的能力也不太一样。你能讲清楚点，在家庭交流这个场景下，怎么根据不同家庭环境设计一些有针对性的词汇扩展活动吗？最好能结合家风、诚信这些传统文化内容，给点具体建议。
+  - question: 我是刚入职的初中英语老师，发现学生在平时的社交、兴趣社团和家里用英语表达词汇都不太丰富。你作为教育专家，能不能从各个角度详细说说，怎么系统提升初中生在这些真实情境下的英语词汇应用能力？希望你能结合理论、实际案例和活动建议，全面分析一下，还能融入一些传统文化和价值观。
+  - question: 我是初二女生的家长，她英语成绩一般但很努力，很喜欢看中国古典名著，就是英语词汇积累有点慢，跟同学交流和参加兴趣活动时总觉得词不达意。你能不能从各个角度详细说说，怎么帮助她高效扩展英语词汇，还能提升日常交流能力？希望你能结合兴趣、学习方法、家庭支持和文化价值观，全面讲讲。
+  - question: 我是白洁，今年36岁，做外卖骑手，平时喜欢听音乐、刷短视频、打篮球，和同事主要是工作上合作，休息时和朋友打球或者分享视频。我儿子刚上初中，英语单词总是背不下去。你能简短回答下，结合我们父子的生活节奏和兴趣，有哪些简单好坚持的词汇扩展办法？最好还能顺带教孩子诚信、合作这些好品质。
+  - question: 我是一名初三学生，英语词汇还算一般，最近备考中考压力很大，感觉词汇不够用，写作和口语都不太自信。你能全面分析一下，怎么在备考阶段高效扩展词汇，还能在写作、口语、阅读等不同场景里灵活用出来吗？希望有科学的方法和具体例子，还能帮我减轻压力。
+  - question: 我是WilsonAriana，55岁，从教多年，性格比较保守但一直坚持教育理想，也爱好舞蹈和声乐，通常在有意义的艺术活动中和大家交流。我发现学生在像舞蹈、合唱团这样的艺术兴趣社团里，英语词汇应用水平差挺大。你能讲清楚点，在这种社团活动里，如何设计既能照顾不同学生、又能促进团队合作和价值观引导的英语词汇扩展活动？最好有具体细节和案例。
+  - question: 我是一名初中生，喜欢打乒乓球，常和同学一起参加各种体育活动，但发现用英语描述这些活动时词汇不太够。你能帮我理解一下，在体育场景里怎么扩展和用好英语词汇吗？希望有科学的方法、趣味活动和团队合作建议，也希望能讲讲团结、拼搏这些正能量内容。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-初中-词汇扩展与语境应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估内容是否综合学生多维特征（如英语基础、兴趣、学习风格、学习进度等）进行差异化设计，且能在任务类型、词汇难度、情境选择等方面动态调整，确保不同学生均可获得适宜挑战和支持。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估内容是否严格遵循既定格式、结构和步骤要求，包括但不限于标题、编号、题型顺序、答案解析、版式清晰度等，确保内容完整、逻辑有序、便于查阅与使用。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估任务设计是否紧扣‘词汇扩展与语境应用’目标，覆盖词义理解、记忆、语境表达等环节，任务难度呈现递进，能有效促进学生从认知到运用的转化。
+  - field: 活动设计多样性与科学性_理由
+    type: str
+    description: 解释活动设计多样性与科学性评分的详细理由，引用具体例子。
+  - field: 活动设计多样性与科学性
+    type: float
+    description: 评估活动类型是否丰富（至少涵盖三类，如游戏、对话、写作、讨论等），难度是否分层，任务是否符合初中生认知发展和参与特点，能兼顾不同层次学生的需求。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估任务中是否系统设计开放性、创新性表达环节，鼓励学生用新词汇进行个性化创作、提出新想法或多角度思考，且开放性任务占比不低于总任务的1/3。
+  - field: 真实语境模拟度_理由
+    type: str
+    description: 解释真实语境模拟度评分的详细理由，引用具体例子。
+  - field: 真实语境模拟度
+    type: float
+    description: 评估任务情境是否贴近初中生日常生活、学习、社交等真实场景，所选词汇与语境能激发学生兴趣，具备实际交流和应用价值，杜绝脱离学生实际的内容。
+  - field: 社会主义核心价值观与中华优秀传统文化融入度_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入度
+    type: float
+    description: 评估是否将社会主义核心价值观和中华优秀传统美德自然、恰当地融入词汇及语境任务，通过故事、讨论等方式引导学生理解并认同相关价值观念，而非生硬灌输或完全缺失。
+  - field: 模拟真实提问准确性_理由
+    type: str
+    description: 解释模拟真实提问准确性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问准确性
+    type: float
+    description: 评估问题设置是否紧扣初中生实际认知水平、兴趣及生活场景，难度适中且分层，能激发表达欲望与思考，杜绝过于简单或超纲的内容。
+  format_mode: prompt

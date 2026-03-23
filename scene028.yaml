@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-研究性学习指导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三语文老师，最近指导学生做语文研究性学习，发现他们总是停留在资料收集表面，缺乏深入探究的意识。你作为教研专家，能不能深入说说怎么培养高中生的研究性学习能力，尤其在课题选择、研究路径、文本解读和成果表达上有什么创新做法和案例？
+  - question: 我女儿夏莲十岁，五年级，喜欢科学实验和戏剧表演，合作积极但情绪起伏大，功利心也挺强。作为家长，怎么引导她参与语文研究性学习，激发兴趣并发挥她的特长？你简单说说看。
+  - question: 我是农村高中的新语文老师，发现班里学生都不太有探究习惯，学语文很依赖老师，也不敢主动提问。你作为研究性学习指导专家，能不能系统地讲解一下怎么在农村高中推进语文研究性学习，让学生敢主动探究？最好结合实际案例，从学生心理、课程资源、课题设计、课堂活动和评价机制等角度详细说说。
+  - question: 我是高二学生，老师让我们做“语文核心素养和研究性学习结合”的课题，但我还不太明白核心素养具体是什么，也不知道怎么融合到实际研究里。能解释一下，语文核心素养包括哪些？在研究性学习中怎么用这些素养提升语文能力？
+  - question: 我是药剂师梁兵，平时喜欢做手工香皂和读医学期刊。最近看到一篇讲语文研究性学习的文章，感觉和我们药学里的自主学习有点像。你能概括一下，语文研究性学习的流程和特色是什么？适合哪些学生参与？
+  - question: 我是高三学生，在语文研究性学习小组里负责资料整合和成果展示，但大家对文献综述不太懂，也不会写。你能解释一下什么是文献综述吗？怎么写出高质量的文献综述？最好举个语文课题的例子说明下。
+  - question: 我是高一语文老师，刚试着在课堂推进研究性学习，但学生小组合作时总分工不均，沟通也有障碍，影响研究深度。你帮我理解一下怎么在语文研究性学习中构建有效的小组协作机制，让学生能平等交流、一起进步？最好结合操作建议和实际案例说说。
+  - question: 你作为语文研究性学习指导专家，针对像YoungAmber这样以舞蹈为主业、注重身心平衡，又有传统价值观和民主领导力的英语使用者，你怎么看语文研究性学习在跨学科素养培养中的作用？尤其在艺术与人文融合、批判性思维锻炼、主流兴趣延展方面，有哪些具体教学实践和建议？说说你的看法吧。
+  - question: 我是重点高中语文教研组长，学校想把研究性学习纳入语文课程核心模块。你作为研究性学习顾问，能不能全方位地讲解一下高中语文研究性学习的课程设计策略？希望你能从理念、课题开发、师生互动、资源整合、评价体系、文化传承等方面系统梳理，并结合优秀案例详细说说。
+  - question: 我是刚入职的高中语文老师，第一次带学生做研究性学习课题，发现他们在选题、资料收集、团队协作和成果展示各环节都挺迷茫、很被动。你作为资深老师，能不能全面分析一下怎么帮助新手老师有效指导学生开展语文研究性学习？最好结合实际经验，从教学理念、过程规划、学生激励、家校协同、文化价值引领等方面详细说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-研究性学习指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 评估指导内容是否基于学生的兴趣、能力、年级、学习风格和已有经验等多维度，进行深度定制，能针对具体学生差异制定切实可行的个性化学习方案，体现精准的因材施教。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估回答是否严格按照教学任务或场景指定的格式、结构和步骤进行，内容条理清晰、逻辑严密，并能针对任务复杂度适当细化流程，体现对教学流程和指令的深刻理解与精准执行。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估所用教学方法是否有坚实理论基础，流程完整、环环相扣，涵盖目标设定、方案制定、过程反思、评价调整等环节，能系统性促进学生研究性学习能力发展，避免碎片化和表面化指导。
+  - field: 研究性学习指导专业性_理由
+    type: str
+    description: 解释研究性学习指导专业性评分的详细理由，引用具体例子。
+  - field: 研究性学习指导专业性
+    type: float
+    description: 评估对研究性学习全过程（选题、方案设计、资料收集、过程管理、成果表达、反思总结）的理解和指导是否深入、细致，能否提供具体、实用、可操作的方法与工具，帮助学生掌握核心研究能力。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否有效激发学生创新意识和跨界思考，鼓励独特选题、尝试新颖研究方法或跨学科融合，推动学生提出独到见解，避免仅满足于常规课题或模仿操作。
+  - field: 开放性与探究性引导_理由
+    type: str
+    description: 解释开放性与探究性引导评分的详细理由，引用具体例子。
+  - field: 开放性与探究性引导
+    type: float
+    description: 评估是否通过开放性问题、启发式提问和多元视角，激发学生自主探究、批判性与多角度思考，鼓励质疑、讨论、比较，给予学生充分探索空间，避免灌输式或定向性过强的指导。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估内容是否将社会主义核心价值观（如诚信、责任、友善、法治、爱国等）与研究性学习主题有机结合，引导学生关注社会现实与个人品格养成，通过真实案例深化对价值观的理解与践行，杜绝机械灌输。
+  - field: 中华优秀传统文化传承性_理由
+    type: str
+    description: 解释中华优秀传统文化传承性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承性
+    type: float
+    description: 评估是否深度融合中华优秀传统文化元素，能引导学生理解、认同并创新性传承中国文化，强调结合具体研究实践进行创新表达，体现文化自信和时代价值，避免形式主义或表面化。
+  format_mode: prompt

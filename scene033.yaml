@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-关键概念辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学数学老师，最近发现班上同学总是分不清“面积”和“周长”，比如有的孩子把面积当成边长相加。能不能结合生活中的例子讲讲看，怎么让学生真正理解这两个概念的区别和联系？
+  - question: 你作为小学数学教研员，最近发现有学生把“分数单位”和“分子分母”搞混，怎么帮助他们分清这两个概念？能讲得详细点吗，包括教学方法和例子？
+  - question: I'm ThomasJulian, an 11-year-old 5th Grader who loves Guitar and LEGO
+      Building. I have strong STEM skills but tend to jump logic steps. Can you help
+      me truly understand the difference between 'average' and 'median' in math, maybe
+      with examples and tips that fit my hobbies? Can you be specific?
+  - question: 我是小学三年级学生，学“倍数”和“因数”总觉得很乱，老师说3是12的因数，但我总分不清倍数和因数到底有什么区别。你能帮我讲讲看，用生活例子说说吗？
+  - question: 我是四年级学生的家长，我孩子喜欢画画，但学“对称”时总是只看图形好不好看，不理解什么叫轴对称、中心对称。你作为教育专家，能全面分析一下怎么帮她建立对称的数学观念，同时又能保持她对美的感受吗？
+  - question: 我是小学数学老师，班里有几个注意力分散的孩子，学分数加减法时常常混淆步骤。你能全方位地讲解一下分数加减法的关键点和教学建议吗？最好也能结合中国古代数学故事和合作学习的方法。
+  - question: 我是小学五年级数学老师，发现学生经常把“百分数”和“分数”搞混，比如0.5和50%分不清。你能详细分析下各个方面，包括区别、应用、误区和教学方法吗？最好能结合中国传统文化和一些正面价值观一起说说。
+  - question: 我是小学四年级学生，学“平行”和“垂直”总是分不清楚，能不能帮我大概讲讲它们到底什么意思？
+  - question: 我是小学数学老师，班里有些孩子很喜欢提问，比如问“倍数本质是什么？”、“为什么有些数没有因数？”你能结合故事和案例讲讲看，让他们能举一反三吗？
+  - question: 我是五年级学生，老师教我们平均数是把所有数加起来除以个数，可我还是不太懂。你能大概讲讲平均数到底是什么意思吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-关键概念辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像深度适配度_理由
+    type: str
+    description: 解释个性化画像深度适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像深度适配度
+    type: float
+    description: 教学内容与活动需充分结合学生的年龄、学习基础、兴趣、认知风格等多维画像，采取分层分组、个别辅导和多样表达，能灵活调整任务难度与表达方式，支持学生主动选择和个性发展，而非仅做表面调整。
+  - field: 指令遵循严密性_理由
+    type: str
+    description: 解释指令遵循严密性评分的详细理由，引用具体例子。
+  - field: 指令遵循严密性
+    type: float
+    description: 教学设计及执行需完整、准确回应所有设定要求，包括结构、环节、格式，能逐步落实多步复杂指令，无遗漏、无偏离，并能灵活处理步骤间衔接。
+  - field: 关键概念辨析深度与清晰度_理由
+    type: str
+    description: 解释关键概念辨析深度与清晰度评分的详细理由，引用具体例子。
+  - field: 关键概念辨析深度与清晰度
+    type: float
+    description: 对数学关键概念需进行结构化、深度解释，能通过多元表达（图示、比喻、操作、反例、误区纠正等）揭示本质区别，并设计诊断性任务检测学生理解，包括误区引导、自查题、迁移类问题等，避免仅停留在表层。
+  - field: 教学方法创新与科学性_理由
+    type: str
+    description: 解释教学方法创新与科学性评分的详细理由，引用具体例子。
+  - field: 教学方法创新与科学性
+    type: float
+    description: 采用多样且创新的教学方法，结合儿童认知发展规律，如情境化任务、动手实验、启发式提问、合作探究等，能激发学生主动参与、深度思考和持续兴趣，方法与内容高度匹配。
+  - field: 模拟真实提问与互动还原度_理由
+    type: str
+    description: 解释模拟真实提问与互动还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动还原度
+    type: float
+    description: 教学内容贴近小学生真实学习场景，语言自然易懂，能预设或引导学生提出典型疑问，设计师生/生生互动环节，鼓励学生表达困惑、互助解答，过程有真实学习氛围。
+  - field: 创新思维激发与探索引导_理由
+    type: str
+    description: 解释创新思维激发与探索引导评分的详细理由，引用具体例子。
+  - field: 创新思维激发与探索引导
+    type: float
+    description: 教学过程需鼓励学生主动探索、提出新问题、尝试多种解决方案，支持学生创新表达与思考，能设计开放性任务促进学生发现和创造，而非仅限于知识记忆和机械解题。
+  - field: 创造性表达与多元展示引导_理由
+    type: str
+    description: 解释创造性表达与多元展示引导评分的详细理由，引用具体例子。
+  - field: 创造性表达与多元展示引导
+    type: float
+    description: 通过开放性问题、趣味活动和多元表达方式（画画、故事、表演、模型制作等）激发学生创造性表达，鼓励个性化产出与展示，重视学生表达过程和结果的多样性。
+  - field: 中华优秀传统文化融合深度_理由
+    type: str
+    description: 解释中华优秀传统文化融合深度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融合深度
+    type: float
+    description: 自然且深入融合中国传统文化元素（如成语、古代故事、传统数学思想、图案等），结合数学知识正向引导价值观，体现本土特色，鼓励多元路径（如历史故事、传统图案、文化习俗等）与数学有机结合，避免机械拼贴。
+  - field: 社会主义核心价值观渗透与实践_理由
+    type: str
+    description: 解释社会主义核心价值观渗透与实践评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观渗透与实践
+    type: float
+    description: 教学内容与活动自然渗透爱国、诚信、友善、勤奋等社会主义核心价值观，通过实际合作、讨论、诚信记录等环节促进价值观内化，鼓励学生在活动中体验与反思，而非口号式灌输或生硬插入。
+  format_mode: prompt

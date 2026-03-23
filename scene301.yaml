@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-小学-动物模仿操与游戏教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学体育老师，班里有几个孩子比较害羞，但大家都很喜欢动物。要做动物模仿操与游戏，怎样让这堂课既安全又能激发孩子们的参与兴趣？大概讲讲，有分层建议和具体激励措施吗？
+  - question: 你作为小学体育教育专家，能全面分析一下“动物模仿操与游戏”在小学体育课科学设计、分层指导、安全保障、激励机制、创新培养和价值观融入吗？希望结合学生差异、班级氛围和师生互动，给出具体可操作的方案。
+  - question: 我是初三女生夏雪慧，喜欢穿搭和骑行，性格比较独立，有点疏离感，跟父母关系一般。小学体育课里的动物模仿操与游戏，怎么能帮助像我这样内向、喜欢独处的孩子获得自信和团队体验？能解释一下吗？
+  - question: 我是小学体育老师侯军，最近有点情感透支，班里要做动物模仿操与游戏，想简要说明下课堂的核心和安全点，也希望能帮自己提振状态，有什么建议？
+  - question: 你作为小学体育课程专家，能详细分析下动物模仿操与游戏的教学目标、分层设计、创新培养、团队协作、激励机制、安全健康保障、师生互动、家校配合以及价值观自然渗透吗？希望结合实际案例和不同学生特征，讲讲各个方面的具体操作建议。
+  - question: 我是小学体育新手老师，你作为体育教学顾问，能全面深入地讲讲动物模仿操与游戏课怎么系统规划吗？想知道怎么兼顾安全健康、分层指导、创新激励、团队协作和价值观引导，尤其希望有具体活动流程、分层互动方案和师生情感支持方法。
+  - question: 我是小学体育老师陈若琳，教龄三十年，喜欢烘焙和京剧，和同事关系礼貌但疏离。想在动物模仿操与游戏教学里加入传统文化和创新元素，同时关注安全和团队合作。能详细讲讲怎么做吗？希望有分层建议和师生互动设计。
+  - question: 你作为小学体育学习助手，动物模仿操与游戏在小学体育课上怎么保障不同体能水平学生的安全和心理健康？能解释一下吗？希望有实际互动环节和激励方法建议。
+  - question: 我是三年级班主任，班里有些孩子很活跃，有些很腼腆。动物模仿操与游戏教学里，怎么通过分层互动、合作任务和激励措施促进班级氛围和积极参与？能具体说说吗？
+  - question: 我是小学家长，我家孩子胆子小但很喜欢动物。动物模仿操与游戏怎么帮助胆小的孩子增强自信、安全参与、体验团队合作？讲讲看，也希望有家长可以配合的建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-小学-动物模仿操与游戏进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教学方案是否针对学生体能、兴趣、性格和能力差异，至少在分组、任务难度、支持方式等3个方面做出具体调整，并能动态响应课堂实际，确保每类学生都获得适合自身的挑战与成就体验。高分要求教师能收集学生反馈并据此持续优化方案。
+  - field: 指令遵循准确性与内容完整性_理由
+    type: str
+    description: 解释指令遵循准确性与内容完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性与内容完整性
+    type: float
+    description: 评估方案是否严格按照教学要求或场景流程，内容条理清晰，涵盖所有关键环节（如动作讲解、游戏规则、安全措施等），每一环节均有具体细节和操作说明。高分应体现流程闭环和信息完整性，低分为遗漏、描述模糊或流程混乱。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估方案是否采用符合小学生身心发展规律的教学方法，包括分层、递进、合作、正向反馈等，兼顾技能练习、情感体验和社会性发展。高分要求教学结构合理，方法多样且有创新，能根据学生实际动态调整。
+  - field: 安全与健康保障_理由
+    type: str
+    description: 解释安全与健康保障评分的详细理由，引用具体例子。
+  - field: 安全与健康保障
+    type: float
+    description: 评估方案是否系统、细致地考虑学生活动中的安全与健康，包括场地检查、热身放松、动作难度分层、风险防范、应急措施等，每一环节均有明确、可执行的方案。高分要求有预防与应急联动机制，低分为措施缺失或执行不到位。
+  - field: 激发学生创造力_理由
+    type: str
+    description: 解释激发学生创造力评分的详细理由，引用具体例子。
+  - field: 激发学生创造力
+    type: float
+    description: 评估方案是否设计开放性任务，鼓励学生创新表达，支持学生主动思考、创编动作或规则，并为创新行为提供展示和评价机会。高分要求创新环节占比显著，评价机制具体有效，能持续激发学生创造热情。
+  - field: 互动与参与度设计_理由
+    type: str
+    description: 解释互动与参与度设计评分的详细理由，引用具体例子。
+  - field: 互动与参与度设计
+    type: float
+    description: 评估方案是否通过分组、合作、讨论、展示等多样化互动形式，确保每位学生积极参与，提升课堂活跃度和团队凝聚力。高分要求每位学生均有实践和表达机会，有机制防止边缘化和促进弱势学生参与。
+  - field: 社会主义核心价值观及中华优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观及中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观及中华优秀传统文化融入
+    type: float
+    description: 评估方案是否将社会主义核心价值观和中华优秀传统文化自然融入课堂活动，通过具体情境引导学生践行团结协作、尊重生命、友善互助、守规则等价值观，并在活动过程有针对性落实。高分要求活动规则、故事、讨论均有实际价值观渗透，学生能在行动中体现。
+  - field: 反馈与激励机制_理由
+    type: str
+    description: 解释反馈与激励机制评分的详细理由，引用具体例子。
+  - field: 反馈与激励机制
+    type: float
+    description: 评估方案是否设计多元化、具体且及时的反馈与激励措施，帮助学生获得积极体验、反思成长，并激励持续参与和自我提升。高分要求教师、同伴和自评三方反馈均有，激励方式多样且有针对性，能促进学生持续进步。
+  format_mode: prompt

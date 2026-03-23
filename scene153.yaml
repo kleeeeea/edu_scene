@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-小学-基础词汇与句型练习教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级英语老师，发现有些孩子词汇记得住，但造句的时候常常出错，尤其是用“there is/are”描述物品时容易混淆。你能讲清楚点，分析下为什么会这样吗？顺便帮我出点适合小学生的词汇和句型练习活动建议。
+  - question: 你作为英语教学专家，我平时喜欢养海水鱼，也喜欢动手修家里的东西，性格比较注重逻辑和目标。作为小学英语老师，如何结合我的这些兴趣和风格，让词汇教学变得更有效和有趣？简要说明下就行。
+  - question: 我是高一学生任兵，喜欢跆拳道、武术、摄影和视频剪辑，经常参与社团活动。你作为英语学习助手，能帮我理解一下小学英语词汇和句型练习有哪些创新活动吗？怎么结合体育和摄影等兴趣，让孩子们体验团队合作和中华文化？举几个例子详细说说。
+  - question: 我最近在英语教学中发现，有的孩子记单词很快，但用句型交流时容易出错，比如语序、礼貌表达等，尤其在小组活动里。你能全面分析一下原因吗？顺便帮我设计一些分级教学和互动活动方案，最好能融入中华文化和价值观。
+  - question: 我女儿三年级，喜欢画画，但是注意力容易分散，学英语词汇和句型时总是走神，记不牢。你作为小学英语班主任顾问，能详细展开说说她这种情况怎么应对吗？麻烦帮我设计些分级递进的学习活动和家庭互动建议，顺便说说怎么在英语学习中融入友善、诚信等价值观和中国文化。
+  - question: 我是四年级学生乌芬，喜欢小提琴、戏剧表演和烘焙，性格独立，有科创兴趣，和老师关系不错。你作为英语学习专家，能全面深入地讲讲针对我这样的孩子，怎么设计系统性和有创造力的小学英语词汇和句型练习方案？最好覆盖分级练习、创新表达、艺术和科创融合、师生互动、小组协作、中华文化自然融入等方面。
+  - question: 你作为小学英语教学专家，能系统地讲解一下基础词汇和句型练习的科学分级体系吗？希望你能详细覆盖不同年级重点、趣味活动、师生互动、家校协作，以及怎么在教学中自然融入核心价值观和中华传统文化。
+  - question: 我是小学一年级英语老师，发现孩子们对颜色、动物这些词很感兴趣，但造句能力不强。你能大概讲讲怎么通过简单游戏和小组互动让他们句型表达进步吗？
+  - question: 你是小学英语学习助手，我发现孩子做拼写很有兴趣，但造句时总是犹豫不决，不敢说话。说说你的看法，怎么鼓励孩子大胆用简单句型表达自己的想法？能设计几个趣味活动辅助练习吗？
+  - question: 我是小学英语老师，发现有些孩子能背单词，但在实际生活对话里用起来总是不自然或者用错了。你能帮我理解一下为什么会这样吗？顺便给我点改善建议和具体活动设计。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-小学-基础词汇与句型练习进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容与活动是否基于学生的年龄、英语水平、兴趣、学习风格等多维画像进行深度、动态定制。包括任务内容、难度、材料选择、激励方式的个性化，并能根据学生反馈、成长轨迹及时调整，体现持续关注和个体差异的动态响应。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估教学设计与实施是否不仅完整、规范地按照教师或系统指令执行，还能主动发现并补全指令遗漏，遇到不明确或冲突要求能及时沟通与优化，确保结果高质量且可复查。
+  - field: 教学活动设计科学性_理由
+    type: str
+    description: 解释教学活动设计科学性评分的详细理由，引用具体例子。
+  - field: 教学活动设计科学性
+    type: float
+    description: 评估活动是否充分考虑小学生认知发展和英语学习规律，设计有难度递进、认知支架、分层支持，活动间逻辑连贯且目标明确，并能根据学生实际表现动态调整，避免活动过于简单、复杂或重复，兼顾不同水平学生的成长需求。
+  - field: 互动性与参与度促进_理由
+    type: str
+    description: 解释互动性与参与度促进评分的详细理由，引用具体例子。
+  - field: 互动性与参与度促进
+    type: float
+    description: 评估教学是否通过多样、深入且持续的互动环节（如同伴互评、角色扮演、小组竞赛、全班分享等）激发学生主动参与和合作，关注全员参与体验，对参与度低的学生有针对性引导和跟踪，避免形式化或短暂互动。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评估活动是否持续鼓励学生创新表达、想象和多样化输出，不局限于标准答案，包括开放式造句、故事创编、情景表演、绘画等，能激发学生主动思考和表达兴趣，评价标准多元、包容，关注创新过程而非仅结果。
+  - field: 语言表达规范性与易懂性_理由
+    type: str
+    description: 解释语言表达规范性与易懂性评分的详细理由，引用具体例子。
+  - field: 语言表达规范性与易懂性
+    type: float
+    description: 评估教学材料和教师用语是否语言简明、规范，句型和词汇严格契合小学生认知水平，内容通俗易懂、易于模仿和迁移，难词有解释，语音语调清晰，能根据学生反馈调整表达方式。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估核心价值观是否以场景化、细腻自然的方式融入英语教学内容，结合具体任务让学生体验、讨论、模仿相关品格行为，呈现多样、真实的价值观情境，鼓励学生表达个人理解与实践体验，避免生硬灌输或表面化植入。
+  - field: 中华优秀传统文化渗透性_理由
+    type: str
+    description: 解释中华优秀传统文化渗透性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化渗透性
+    type: float
+    description: 评估中华优秀传统文化元素是否以自然、贴切的方式深度融合至英语学习内容，结合节日、礼仪、家庭等主题，鼓励学生用英语讲述、体验和表达中华文化认同，渗透过程有真实情境、活动与反思，避免表面化植入或单一展示。
+  format_mode: prompt

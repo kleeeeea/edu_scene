@@ -1,0 +1,135 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-发散性问题探究教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: I'm ParkerSimon, an 11-year-old 5th grader who loves skateboarding,
+      stargazing, and chess. You're my learning assistant. I really enjoy working
+      with friends and blending play with problem-solving. Can you explain in detail,
+      from all angles, how someone like me—with my hobbies and personality—can explore
+      open-ended math problems and get my friends involved too? Please talk about
+      different strategies, real-life examples, and ways to connect my interests with
+      math. I'd love a full, all-round explanation.
+  - question: 我是一名初中数学老师，最近发现学生在学函数和图像的发散性问题时总是照搬课本套路，缺乏创新和多元思考。你作为教育专家，能帮我讲清楚点，有哪些实用的课堂策略和活动能提升他们的发散性问题探究能力？最好有具体细节和示例。
+  - question: 我是九年级学生，数学成绩一般，但很喜欢观察生活。老师最近让我们探究‘校园每天浪费了多少餐巾纸’，我觉得挺有意思但不知道怎么入手。你作为学习顾问，能不能讲讲看，我该从哪些角度去开展这个发散性问题？最好举些例子帮我理清思路。
+  - question: 我是刚入职两年的初中数学老师，性格有点内向，喜欢反思和创新。你作为数学教研员，学校最近要求我们增加‘发散性问题探究’环节，但我担心自己设计的问题不够开放，学生也不太积极。你能帮我深入分析一下吗？我想了解发散性问题设计的原则、常见误区、怎么激发学生参与，还有怎么结合中华优秀传统文化和核心价值观提升他们的探究兴趣和能力。我想深入了解。
+  - question: 我是初中学生家长，女儿性格活泼但有点粗心，做数学开放题容易漏条件，也不太会发散思考。你作为教育专家，能讲得详细点吗？请帮我分析下造成这种情况的原因，怎么结合她的性格培养发散思维，还有家长在家里能做哪些事情帮助她更好地探究数学发散性问题。
+  - question: 我是许雪萌，三年级女生，和妈妈一起做瑜伽、上茶艺班。老师说我理解得慢，但我很积极学数学。你是学习助手，最近数学老师让我们思考‘一个物体有几种分类方法’，我有点迷糊，不太会发散思考。详细说说我该怎么一步步训练发散性思维，能不能结合我的兴趣举点简单的例子帮我理解？
+  - question: 我是初一男生，数学成绩还可以，但碰到开放问题有时候觉得方向太多，不知道怎么选。你是我的数学学习顾问，老师最近让我们想‘如何用不同的方法测量操场面积’，你能用几句话说说有哪些常见又有创意的思路吗？帮我理理主要方向。
+  - question: I'm MooreHailey, a 40-year-old female math teacher who likes to gradually
+      reform teaching and sometimes struggles with confidence—plus I care a lot about
+      my parents' opinions. I want my students to develop more divergent thinking
+      in math, but I'm not sure how to balance innovation and tradition. As an educational
+      consultant, can you explain from all perspectives, in detail, how teachers like
+      me can design lessons and activities to help students explore open-ended math
+      problems? Please include ideas for my own professional growth, classroom strategies,
+      and how to naturally blend in core values and Chinese traditional culture.
+  - question: 我是初中数学教研组组长，准备组织‘发散性问题探究’的校本教研活动。有些老师还不太明白什么是发散性问题探究和它的意义。你作为数学教育专家，能简要说明下吗？要表达清楚、要点突出，方便我用来活动开场介绍。
+  - question: I'm BaileyPiper, 15 years old in 9th grade, and I like Taekwondo, origami,
+      and floral arrangement. I often need outside supervision, sometimes procrastinate,
+      and usually ask for help, but I also enjoy thinking critically and learning
+      by copying. You're my math mentor—lately, I've found open-ended exploration
+      problems in math class really challenging. I just don't know how to start, often
+      wait for instructions, and lose motivation if there's no clear path. Can you
+      explain in detail how, considering my personality and hobbies, I can get started
+      and stick with divergent math problem exploration, develop independent thinking,
+      and balance my need for help with building more perseverance?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-发散性问题探究进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学设计是否基于对学生多维画像（如基础、兴趣、性格、认知风格等）的深入分析，能够据此制定分层、差异化的教学策略，体现动态、持续的个性化支持。需在教学流程、资源分配、评价反馈等多环节体现个别化响应，而非仅在活动设计阶段简单区分。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估答案是否严格按照题目要求的结构、分点及输出格式组织内容。内容需分层清晰、信息完整、便于查阅，且各环节（如问题设计、活动流程、评价方式等）均有独立小标题和详细说明，不得遗漏或混杂。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学方法是否综合运用现代教育理论与学科特性，融合探究式、合作学习、分层指导、情境创设等策略，并在具体环节体现理论依据与学科深度。需关注认知发展、能力迁移及方法创新，避免方法单一、流于形式或缺乏学理支撑。
+  - field: 问题设计的发散性与开放性_理由
+    type: str
+    description: 解释问题设计的发散性与开放性评分的详细理由，引用具体例子。
+  - field: 问题设计的发散性与开放性
+    type: float
+    description: 评估所设计问题是否真正具备开放性和多解性，能引导学生多角度、创新性思考，允许多种解决路径和结果。高质量问题应鼓励学生提出独特或跨学科方案，并在评价中包容多样解答，避免仅有标准答案或表面开放。
+  - field: 激发学生创造力的有效性_理由
+    type: str
+    description: 解释激发学生创造力的有效性评分的详细理由，引用具体例子。
+  - field: 激发学生创造力的有效性
+    type: float
+    description: 评估教学设计是否通过情境创设、启发性提问、鼓励多元表达和成果展示等具体措施，有效激发学生创新思维和创造性解决问题的能力。需在活动流程、分组合作、评价反馈等环节持续关注学生主动性和个性表达，避免仅形式上鼓励创新。
+  - field: 模拟真实提问场景的贴合度_理由
+    type: str
+    description: 解释模拟真实提问场景的贴合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景的贴合度
+    type: float
+    description: 评估问题设计是否贴近初中生真实生活、兴趣和认知水平，能激发探究欲望。高质量问题应结合学生校园生活、社会热点或个人兴趣，情境自然且易于理解，避免内容脱离学生实际或过于抽象高深。
+  - field: 社会主义核心价值观与中华优秀传统文化的自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化的自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化的自然融入
+    type: float
+    description: 评估教学内容是否在合适环节自然融入社会主义核心价值观和中华优秀传统文化，体现团队合作、诚实守信、创新探索等精神，或结合传统数学故事、文化元素。要求融合过程润物细无声，与教学内容有机结合，避免生硬插入或完全缺失。
+  - field: 多样化解答与评价机制设计_理由
+    type: str
+    description: 解释多样化解答与评价机制设计评分的详细理由，引用具体例子。
+  - field: 多样化解答与评价机制设计
+    type: float
+    description: 评估是否为发散性问题设计了多元、包容的评价标准，鼓励创新、表达和团队协作。高质量评价体系应包括创新性、表达清晰度、团队协作、逻辑合理性等多维度，并对不同思路和表现给予具体、积极反馈，鼓励学生自评与互评。不得仅以标准答案或唯一思路为依据，评价标准需层次分明、激励作用强。
+  format_mode: prompt

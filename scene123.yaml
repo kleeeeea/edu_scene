@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-小学-常见生物的生命周期观察教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是42岁的英语老师，喜欢学习新技能、DIY和骑行，工作交流比较单向，课余也更喜欢安静的个人活动。我带小学阶段的学生观察生物生命周期时，怎么结合学生的个体差异、兴趣激发和过程性评价来设计教学？你作为生物学习助手，能分阶段详细讲讲怎么做吗？帮我理解一下
+  - question: 我叫杨桐，13岁，初一学生，平时喜欢足球和摄影，常常等老师安排任务，也会参考同学的创意。生物课要我们观察小动物的生命周期，我有点不知道怎么开始记录和表达。像我这样习惯被老师指引的学生，要怎么更好地观察和表达生物的生命周期？大概讲讲
+  - question: 我叫邹菲曼，16岁，高一学生，喜欢自己做科学实验和写诗，有点慢热，和同学不太亲近，但遇到难题会努力钻研。学校最近让我们观察生物的生命周期，我不太清楚怎么分阶段有条理地做，也担心跟不上。你作为科学教育专家，能具体说说怎么针对我这种情况，分阶段高效又有创造性地完成观察和表达吗？能具体说说吗
+  - question: 你是一名小学科学教育专家，能详细说说在小学阶段怎么围绕“常见生物的生命周期”设计既能激发兴趣又能照顾不同学生差异的观察和记录活动吗？想听听你的具体做法，详细说说
+  - question: 我是二年级的RobinsonAaron，喜欢和同学一起玩游戏和做机器人，但不喜欢竞争，喜欢合作。老师让我们观察小动物的生命周期，还要画出来讲给大家听。能用几句话说说我怎么和同学一起观察、记录、分享吗？
+  - question: 你作为生物教学顾问，能系统地讲解一下小学“常见生物的生命周期观察”教学应该怎么设计和实施吗？想听一套全面、深入的做法，包括活动设计、学生分层、评价、学科融合、创新表达、师生互动、家校协作这些方面，系统地讲解一下
+  - question: 你是科学教育专家，能全面分析一下小学阶段“常见生物的生命周期观察”教学怎么照顾不同学生兴趣和能力、实现包容性和创新表达吗？想要详细了解你的分析，全面分析一下
+  - question: 我是50岁的老师邓碧城，最近有点职业疲惫，但还是喜欢诗歌和自然观察。现在要带小学生观察常见生物的生命周期，我想把诗歌和自然观察结合进课堂，也想找回点热情。你作为小学科学教育专家，能系统地讲解一下怎么规划这类观察活动，让学生既有生命体验，又能用诗歌、美术等多学科表达吗？还想知道过程性评价、多元反馈和中华文化的融入怎么做，系统地讲解一下
+  - question: 你是小学科学教学专家，能详细讲讲“常见生物的生命周期观察”在小学怎么分阶段设计活动、分层指导学生、科学进行过程性评价，还要怎么融合创新表达方式和中华优秀传统文化吗？详细讲讲
+  - question: 我是一名小学老师，最近带学生观察常见生物的生命周期。你能解释一下怎么根据学生的兴趣和能力，分层指导他们观察，并设计科学的过程性评价和反馈机制吗？能解释一下吗
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-小学-常见生物的生命周期观察进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估教学活动是否针对学生的不同学业水平、兴趣和认知特点，提供具体、可操作的分层或个性化支持措施。高质量表现需明确区分至少两类学生（如学业困难、兴趣突出、特殊需求），并在教学实施中有实际分层安排和包容措施。
+  - field: 指令格式严格遵循_理由
+    type: str
+    description: 解释指令格式严格遵循评分的详细理由，引用具体例子。
+  - field: 指令格式严格遵循
+    type: float
+    description: 评估方案是否严格按照教学任务指定的结构、步骤或模板呈现，各环节内容完整、逻辑清晰，便于实际落地操作。高质量表现需每一环节均配有具体操作流程、范例或表格模板。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学方法是否符合小学阶段认知规律，科学组织观察、记录、讨论、反思等环节。高质量表现需分阶段引导学生自主观察、合作交流、教师指导，任务难度适宜且促进能力发展。仅传授知识或任务过难、过易均为不足。
+  - field: 过程性评价与反馈机制_理由
+    type: str
+    description: 解释过程性评价与反馈机制评分的详细理由，引用具体例子。
+  - field: 过程性评价与反馈机制
+    type: float
+    description: 评估是否设有科学、具体的过程性评价方法，包括阶段目标、同伴互评、教师个别化反馈等。高质量表现需在教学流程中设定至少两个反馈节点，辅以自评/互评工具，促进学生持续调整与自我提升。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估教学活动是否有意识激发学生创新思维，包括提出新问题、设计新方法或创造性表达。高质量表现需有两种以上创新表达或探究途径，并有学生自主产出、成果多样化展示。
+  - field: 真实提问场景模拟_理由
+    type: str
+    description: 解释真实提问场景模拟评分的详细理由，引用具体例子。
+  - field: 真实提问场景模拟
+    type: float
+    description: 评估内容是否贴近小学真实课堂，能针对学生在观察过程中产生的具体疑惑进行分析、追问和引导。高质量表现需回应至少两个学生实际提问，分析原因、鼓励追问，并结合观察数据与生活经验。
+  - field: 中华优秀传统文化自然融入_理由
+    type: str
+    description: 解释中华优秀传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化自然融入
+    type: float
+    description: 评估是否将中华优秀传统文化元素（如农耕、节气、诗词、民俗、寓意等）与生物观察活动深度融合。高质量表现需至少结合一种传统文化素材，融入教学环节并引发学生思考本土文化与自然的关系。
+  - field: 学科融合与跨领域思维_理由
+    type: str
+    description: 解释学科融合与跨领域思维评分的详细理由，引用具体例子。
+  - field: 学科融合与跨领域思维
+    type: float
+    description: 评估是否将生物观察与语文、美术、劳动等学科实质性融合，设计协同活动，促进学生综合与创新思维。高质量表现需体现两种以上学科深度融合，活动方案具体，成果形式多样。
+  format_mode: prompt

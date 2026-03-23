@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-我的零花钱我做主教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学老师汪元凯，平时教学很热情但有时候会疏忽，最近班里孩子在‘我的零花钱我做主’主题活动里讨论怎么花钱，有些孩子很有主见，但有些花钱容易冲动。你作为教育专家，能结合我的风格和学生实际情况，简单说说有什么办法能引导孩子既自主又理性地管理零花钱吗？简单说说就行
+  - question: 我是小学老师汪元凯，平时教学很投入但偶尔会有疏忽，喜欢3D建模、跆拳道和木工。最近我们班在‘我的零花钱我做主’活动后，学生和家长对孩子怎么科学规划零花钱都特别感兴趣。你作为小学政治教育专家，能全面分析一下：怎样通过家庭、学校和社会的协作，帮助孩子在小学阶段培养自主理财、节俭诚信、助人为乐这些价值观？全面分析一下
+  - question: 我是蒋瑾宸，学校老师，团队协作挺强但条理不太清晰，喜欢文玩收藏和AI绘画，经常跟同事讨论新技术。最近学校搞‘我的零花钱我做主’活动，有些孩子分配零花钱时逻辑不太清楚、消费也比较随意。你作为政治教育专家，能详细说说有什么具体做法能帮孩子在管理零花钱时更有条理、养成合理消费的习惯吗？详细说说
+  - question: I'm MooreVictor, a teacher who's energetic and practical, sometimes
+      sticking to my own subject area. My social life is lively in class, but I enjoy
+      quiet hobbies like tea ceremonies and PC building outside school. In our recent
+      'My Pocket Money, My Decision' lesson, students had all kinds of ideas about
+      saving and spending. As an education expert, could you simply share some helpful
+      strategies for guiding students to make thoughtful choices with their pocket
+      money, considering my teaching style and classroom setting? Just keep it brief
+      and to the point
+  - question: 我最近在‘我的零花钱我做主’活动里发现，不少小学生在花零花钱时容易跟同学攀比，甚至盲目消费。你作为政治教育专家，能不能讲清楚点怎么科学引导孩子树立正确的消费观、减少攀比和盲目花钱？讲清楚点
+  - question: 最近有家长跟我说，孩子参与‘我的零花钱我做主’之后，会主动和父母商量怎么用零花钱。你是小学政治学习助手，能不能讲讲看家长在家庭里可以怎么帮助孩子合理规划和用好零花钱，同时还促进亲子交流和感恩意识？讲讲看
+  - question: 你作为小学政治教育专家，学校最近做了‘我的零花钱我做主’主题活动，现在希望全面系统地优化这个课程。能不能全方位地讲解一下：从课程目标、活动设计、家庭协作、评价体系等各方面，怎样建立一套科学创新又适合小学生认知特点的‘零花钱管理’教学体系？全方位地讲解一下
+  - question: 你作为小学政治教育专家，最近活动中发现有些孩子很节俭，有些花钱比较冲动。能不能详细展开说说：通过哪些实际案例和创新活动，能帮不同性格的孩子学会既节约又合理享受零花钱，同时慢慢形成诚信、节俭、助人为乐这些核心价值观？详细展开说说
+  - question: 你作为小学政治教育专家，我们学校‘我的零花钱我做主’活动已经搞了一阵子了。能不能系统地讲解一下：从课程内容、活动实践、家庭协作、社会支持到学生自我管理，怎么整合资源，打造科学完善的‘零花钱管理’教育体系，还能有效促进小学生创新能力和价值观养成？系统地讲解一下
+  - question: 我是胡慧莹，37岁3D建模师，性格偏保守，社交圈比较固定，喜欢数字绘画、游戏设计和模型收藏，有时候在游戏圈因为传统观点会和人争论。最近看到小学搞‘我的零花钱我做主’活动，觉得挺新颖但也有点疑惑。你作为政治教育专家，能不能说说你的看法：这种活动对孩子成长和价值观形成有什么积极影响？说说你的看法
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-我的零花钱我做主进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估内容是否充分识别并回应学生的个体差异，包括年龄、兴趣、经济背景、性格等，能否根据不同学生特点提供有针对性的建议和支持。优异表现需体现对多样性、特殊需求的敏感回应，并能动态调整建议。
+  - field: 结构与条理性_理由
+    type: str
+    description: 解释结构与条理性评分的详细理由，引用具体例子。
+  - field: 结构与条理性
+    type: float
+    description: 评估内容是否层次分明、逻辑清晰，能通过结构化、分级表达帮助学生梳理重点，便于理解和实际操作。优异表现需用图表、流程图、总结等方式强化条理性，并关注内容间的有机联系。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估是否采用科学、合理且富有创新性的教学方法，能够激发学生主动参与和深入思考。优异表现应融合多种策略（如项目制、探究式学习、跨学科整合），并能根据班级实际灵活调整，突出体验与合作。
+  - field: 内容适龄性与可理解性_理由
+    type: str
+    description: 解释内容适龄性与可理解性评分的详细理由，引用具体例子。
+  - field: 内容适龄性与可理解性
+    type: float
+    description: 评估内容是否完全契合小学生认知发展阶段，语言简明、生活化，例子贴近学生日常。优异表现应采用生动、形象的表达和具体案例，避免抽象或超龄内容，并能用多种方式（如对话、漫画、故事）辅助理解。
+  - field: 创造性与自主思维激发度_理由
+    type: str
+    description: 解释创造性与自主思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性与自主思维激发度
+    type: float
+    description: 评估内容和活动是否鼓励学生自主探索、提出创新想法，支持个性表达和自我决策。优异表现应设有开放性任务，引导学生反思并改进自己的零花钱管理方式，鼓励分享和交流多样做法。
+  - field: 真实情境贴合度_理由
+    type: str
+    description: 解释真实情境贴合度评分的详细理由，引用具体例子。
+  - field: 真实情境贴合度
+    type: float
+    description: 评估内容和活动是否贴近小学生在现实生活中遇到的典型零花钱问题，能否提供具体、可操作的解决方案。优异表现应结合多样、具体案例，涵盖不同家庭、性格、兴趣背景下的实际困惑与应对策略。
+  - field: 社会主义核心价值观自然融入度_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入度
+    type: float
+    description: 评估是否将社会主义核心价值观（如勤俭节约、诚信、友善等）自然、具体地融入实际情境和行为指导中。优异表现应通过生活化故事、角色体验等方式潜移默化传递价值观，避免空洞说教。
+  - field: 中华优秀传统文化融合度_理由
+    type: str
+    description: 解释中华优秀传统文化融合度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融合度
+    type: float
+    description: 评估内容是否巧妙融合中华传统文化元素，用具体情境、故事或创新表达传递勤俭、诚信等传统美德，增强学生文化认同。优异表现应创新性地将传统文化与现代生活结合，激发学生兴趣和共鸣。
+  format_mode: prompt

@@ -1,0 +1,126 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-世界大洲大洋的认知教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是五年级学生的家长，我女儿刚开始学地理，对地图很感兴趣但容易分心。作为小学地理教育专家，你能结合孩子的兴趣和注意力特点，详细展开说说如何帮助她系统认识世界上七大洲和五大洋吗？详细说说吧
+  - question: 我是小学地理老师，班上孩子们对世界大洲和大洋的分布、特点和文化多样性总是搞不懂，尤其是不同大陆的风土人情和环境保护。你作为地理课程设计专家，能详细分析下各个方面，帮我设计一套既系统又有趣的教学方案吗？详细分析下各个方面
+  - question: 我是一名四年级的小学生，最近在课堂上学到了世界上有七大洲和五大洋，但还是有点迷糊，尤其是分不清它们的位置和彼此的关系。你能解释一下吗？
+  - question: 我是三年级班主任，最近班里有同学在小组活动中争论世界大洲和大洋的划分标准，还问我为什么有些国家横跨多个大洲。你作为小学地理专家，能系统地讲解一下世界大洲和大洋的划分依据、历史演变及现实意义吗？系统地讲解一下
+  - question: 我是六年级学生，最近在地理课上听到老师讲世界上有七大洲和五大洋，但我不太明白为什么要这样划分。你能帮我理解一下吗？
+  - question: 我是郭兵，初三男生，学习地理时总觉得世界大洲和大洋的知识点有些死板，难以和实际生活联系起来。你作为我的学习助手，能结合我喜欢摄影和篮球的兴趣，帮我理解一下世界大洲和大洋的分布、特点及其在现实生活中的应用吗？帮我理解一下
+  - question: 我是小学地理教研员，最近准备组织一次世界大洲和大洋主题的校园活动，希望能让孩子们既掌握知识又提升全球视野。你作为地理教育专家，能详细讲讲如何用游戏、故事和互动项目帮助小学生深入理解七大洲五大洋，并激发他们关注环境和多元文化吗？详细讲讲
+  - question: 我是姚丽，26岁小学地理老师，最近在给孩子们讲世界大洲和大洋时发现他们对各个大洲的文化和环境保护话题兴趣不高。你作为地理教学助手，能结合我的教学压力和孩子们的实际情况，能解释一下如何让他们更主动参与、理解世界大洲和大洋的多样性吗？能解释一下吗
+  - question: 你作为小学地理知识的学习助手，我最近看到地球上分为七大洲和五大洋，但还不太清楚每个大洲和大洋的名字和主要特点。可以简单说说就行，帮我快速记住这些知识点吗？简单说说就行
+  - question: 我是小学生，老师要求我们了解世界大洲和大洋的分布和名称，但我总是记混。你作为地理学习助手，能不能简短回答下每个大洲和大洋的分布特点，方便我记忆？简短回答下
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-世界大洲大洋的认知进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 评价教学内容与表达方式是否针对学生年龄、认知水平、兴趣进行差异化设计，能否动态调整以满足班级内个体差异，促进每位学生的理解和兴趣。
+  - field: 指令严格遵循度_理由
+    type: str
+    description: 解释指令严格遵循度评分的详细理由，引用具体例子。
+  - field: 指令严格遵循度
+    type: float
+    description: 评价教学过程是否严谨地按照任务要求的格式、结构、内容重点进行组织，既保证无遗漏、无混乱，又能体现细节和创新，避免机械完成。
+  - field: 知识点准确完整性_理由
+    type: str
+    description: 解释知识点准确完整性评分的详细理由，引用具体例子。
+  - field: 知识点准确完整性
+    type: float
+    description: 评价教学内容是否科学、无误、系统覆盖世界七大洲和四大洋的核心知识点，包括名称、分布、代表国家和主要特征，无事实性错误或遗漏。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学方法是否结合小学生认知特点，采用多样化、科学的方式（如图示、游戏、互动、联想），促进理解、记忆和兴趣，避免单一灌输。
+  - field: 启发式提问与引导_理由
+    type: str
+    description: 解释启发式提问与引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与引导
+    type: float
+    description: 评价教学过程中是否设计多层次、递进性启发性问题，鼓励学生主动思考、表达观点，问题设计需涵盖基础认知、分析、开放性探索等层级。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价教学是否鼓励学生进行创造性联想、比较、预测或提出新观点，设置开放性任务激发创新能力，并对学生创新表达给予积极反馈。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价社会主义核心价值观及中华优秀传统文化是否以自然、润物细无声的方式融入教学，增强学生文化自信和社会责任感，而非生硬灌输。
+  - field: 模拟真实提问适应性_理由
+    type: str
+    description: 解释模拟真实提问适应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问适应性
+    type: float
+    description: 评价教学能否灵活应对学生真实、具体或带有误解的问题，耐心解释和引导，体现良好互动和包容性，关注学生个体差异与成长。
+  - field: 多元文化视野_理由
+    type: str
+    description: 解释多元文化视野评分的详细理由，引用具体例子。
+  - field: 多元文化视野
+    type: float
+    description: 评价教学是否系统引导学生关注世界不同地区、多元文化和全球联系，鼓励学生交流、比较不同文化特色，培养开放包容的国际视野，不仅停留在表面介绍。
+  - field: 学生反馈与参与度_理由
+    type: str
+    description: 解释学生反馈与参与度评分的详细理由，引用具体例子。
+  - field: 学生反馈与参与度
+    type: float
+    description: 评价教学过程中是否持续关注、收集和分析学生反馈、参与及情感体验，能否根据学生表现和兴趣动态调整教学策略，主动促进高参与度和学习效果。
+  format_mode: prompt

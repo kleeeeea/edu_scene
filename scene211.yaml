@@ -1,0 +1,128 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-家乡的地理位置与特色教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学四年级学生，最近我们班开展了“家乡的地理位置与特色”主题活动。我平时喜欢画画和做手工，也常和家人一起去附近的公园散步。老师让我介绍一下自己的家乡地理位置和特色，但我不知道怎么把这些内容讲得生动有趣。能不能详细说说要怎么向同学们介绍家乡的地理位置和特色，最好结合生活里的实际例子和画画、做手工这些兴趣，把地理知识讲得具体、有趣，让大家能感受到我对家乡的热爱。
+  - question: 你作为小学地理老师，我是一名活泼好动的三年级学生，我们本周学习了家乡的地理位置和特色。我喜欢和朋友一起在村子附近的小河边玩耍，对家乡的河流和山坡很感兴趣，但很容易分心。能不能大概讲讲，有什么简单有趣的方法让我理解家乡的地理位置和特色，主要内容讲清楚就行。
+  - question: 我是小学五年级家长，我儿子不太喜欢背书，但喜欢听故事和动手做实验。最近他要写一篇关于家乡地理位置和特色的作文，却不知道怎么下笔。我希望能帮助他理解家乡的地理环境和独特之处，同时培养他热爱家乡的情感。你能详细展开说说，结合故事、生活实例和动手活动这些方式，怎么让孩子理解和表达家乡的地理位置与特色，帮他写出有温度、有创意的作文吗？
+  - question: 作为一名新来的小学三年级地理老师，我发现班级里的孩子对家乡的地理位置和特色很陌生，大家对家乡的山和河流的名字都记不住。我想用简洁易懂的方式帮助他们建立基本的地理认知，同时激发他们的探索兴趣。你能概括一下，适合三年级学生了解家乡地理位置与特色的教学方法和要点吗？
+  - question: 我是小学地理教研员，正在准备一次关于“家乡的地理位置与特色”主题的综合性教研讲座，希望能为一线老师们提供系统、全面的教学思路和资源。班级学生兴趣和基础差异大，有的喜欢户外活动，有的偏爱手工和绘画。你能全面深入地讲讲，小学阶段家乡地理位置与特色的教学内容、方法、活动设计、家乡文化融入、价值观培养等各个方面吗？希望能帮老师们提升学生的地理认知和家乡自豪感。
+  - question: 我是小学六年级学生，最近地理课上老师让我们深入了解家乡的地理位置和特色。我喜欢和同学一起讨论问题，也爱做小调查。希望能更系统地明白家乡的地理环境、特色景观、历史文化和生活中的实际影响。能不能详细说说家乡地理位置与特色的相关知识，最好结合实例、分析和互动建议，帮我更好地理解和分享家乡的独特魅力？我想深入了解。
+  - question: 我是小学地理组组长，学校要求我们设计一套适合不同年级、不同兴趣学生的“家乡的地理位置与特色”主题课程。学生中既有喜欢户外探险的，也有喜欢画画、讲故事和做手工的，还有部分家长希望课程能融入家乡文化和生态环保理念。你能从各个角度详细说说，怎么设计家乡地理位置与特色主题课程，包括活动安排、教学策略、家乡文化和生态价值观的融入，以及促进学生自主探索和协作的方法吗？
+  - question: 我是彭紫珍，36岁女老师，平时喜欢书法、舞蹈和乒乓球，在教师圈子和文艺爱好者群体中人际活跃，常参与书法和舞蹈交流活动，与同事保持着专业友好的关系。最近在地理课教学中遇到学生要求讲解家乡的地理位置与特色，希望既能科学地介绍家乡的地理环境，又能体现家乡的人文和艺术气息。你能帮我理解一下，怎么结合书法、舞蹈这些兴趣和实际教学经验，把家乡地理位置与特色讲得有温度、有创意，激发学生热爱家乡的情感吗？
+  - question: 我是五年级学生，平时喜欢在家乡的小树林和河边玩耍，对自然环境很感兴趣，但有时候不太明白老师讲的地理知识和家乡特色有什么关系。你能说说你的看法，家乡地理位置与特色为什么重要？能举点生活里的实际例子，让我更好理解家乡地理和我们生活的联系吗？
+  - question: I am BrownHarper, a 49-year-old female teacher who balances professional
+      teaching with personal interests like Yoga and Writing. I often engage in meaningful
+      conversations and integrate diverse interests, listening actively and fostering
+      relationships in both work and personal spheres. Recently, my students asked
+      me to help them understand their hometown’s geographical location and unique
+      features. Can you help me understand this better? Please provide a moderately
+      detailed explanation with useful details and examples, and suggest ways to make
+      the topic engaging for students, maybe by connecting it to interdisciplinary
+      activities or real-life stories.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-家乡的地理位置与特色进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容和方式是否充分考虑学生的年龄特征、兴趣点、知识基础和学习差异，针对不同群体提供差异化支持。关注是否有针对性地调整教学策略、活动和评价方式，体现以学生为中心。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教师是否严格按照教学任务和结构要求组织内容，条理清晰、层次分明，能够完整覆盖教学目标。关注是否存在遗漏、混乱、超纲等问题，同时鼓励在规范基础上的适度创新。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否采用启发式、探究式、合作式等科学教学方法，鼓励学生主动观察、思考、实践和交流，促进深度理解和迁移。考察教师是否能结合内容灵活选择和整合多元教学方法，避免单一灌输。
+  - field: 知识内容准确性与适龄性_理由
+    type: str
+    description: 解释知识内容准确性与适龄性评分的详细理由，引用具体例子。
+  - field: 知识内容准确性与适龄性
+    type: float
+    description: 评估地理知识的科学性和表达的年级适配度。要求内容准确无误，术语和难度与小学生认知水平相符，避免使用生僻词汇和深奥理论，确保学生能够听懂、用得上。
+  - field: 激发创造性思考能力_理由
+    type: str
+    description: 解释激发创造性思考能力评分的详细理由，引用具体例子。
+  - field: 激发创造性思考能力
+    type: float
+    description: 评估教学是否通过开放性问题、创新任务、多渠道表达等方式，鼓励学生提出新想法、表达独特见解、创造性地解决问题，促进想象力和主体性发展。关注学生参与深度与多样性。
+  - field: 情感共鸣与兴趣激发_理由
+    type: str
+    description: 解释情感共鸣与兴趣激发评分的详细理由，引用具体例子。
+  - field: 情感共鸣与兴趣激发
+    type: float
+    description: 评估教学是否通过生活化、趣味化、故事化、情感化等方式，激发学生对家乡地理的兴趣和情感共鸣，帮助学生建立认同感和归属感。关注情感渗透的自然度和有效性。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估教学过程中是否结合家乡实际，具体、自然地融入爱国、环保、友善等社会主义核心价值观，通过真实情境、榜样故事或实际行动倡导，避免口号式灌输。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 评估教学过程中是否主动设计师生互动、学生提问、同伴交流等环节，鼓励学生表达观点、分享经验、互相提问，增强课堂参与度和真实感。关注互动的深度和广度。
+  - field: 学习成效可观测性_理由
+    type: str
+    description: 解释学习成效可观测性评分的详细理由，引用具体例子。
+  - field: 学习成效可观测性
+    type: float
+    description: 评估是否设计便于观察和评价学生学习效果的活动，如小测验、作品展示、口头表达等，确保学生实际理解与掌握。关注检测方式的多样性和反馈的具体性。
+  format_mode: prompt

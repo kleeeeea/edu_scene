@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-小学-声现象的探究与解释教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是邵玉婷，今年7岁，二年级的小学生，平时特别喜欢科学实验，也爱芭蕾和越剧，做实验时总是专心致志，不太会被外面的声音干扰。你能说说主要的声音现象和基本解释吗？最好能结合我的兴趣帮我更好理解
+  - question: 你作为小学物理教育专家，能不能详细分析下各个方面关于小学阶段声现象的探究与解释？比如声音是怎么产生、传播的，有哪些主要特性以及在生活中的应用，还有教学探究的方法、学生常见问题和解决建议都讲讲，越全面越好
+  - question: 我想知道小学物理里的声现象主要讲哪些内容，比如声音是怎么来的、怎么传播的，能不能说说主要的要点？简单讲一讲就行
+  - question: 你作为小学物理教育专家，能不能讲讲看声现象的探究和解释？想了解声音是怎么产生的、怎么传播的，还有什么因素会影响它，最好能举些生活中的例子
+  - question: 我是孟曼，6岁，一年级小学生，平时喜欢科学实验、诗歌和国术，也很喜欢和小伙伴一起做实验游戏，在团队里总是很有协作能力。你能给我一份完整的分析吗？详细讲讲小学物理里声现象的探究与解释，包括声音怎么产生、传播、特性、影响因素，还有生活和文化中的应用，团队实验活动可以怎么设计，针对像我这样喜欢团队合作和思考的小朋友，有什么教学建议？最好能多说说科学精神和中华文化怎么融入这些学习
+  - question: 我最近在帮孩子学习物理，关于声现象的内容不太懂，你能讲清楚点吗？像声音是怎么来的、传播方式、常见例子这些都说一说，最好能举些实际的例子
+  - question: 我是三年级学生，最近学到声现象，你能帮我理解一下声音是怎么产生和传播的，还有现实生活中有哪些应用？最好举几个科学探究活动的例子
+  - question: Hi, I'm JonesOlivia, 13 years old, in 7th grade. I really love table
+      tennis and puzzle games, and I always enjoy working in teams at school. I want
+      to know more about sound phenomena from elementary physics—like how sound is
+      produced, transmitted, its properties, and real-life uses. Can you explain in
+      detail? Also, I'd love some ideas for team-based science experiments and suggestions
+      for collaborative learning, and it'd be great if you could naturally talk about
+      scientific spirit and cultural values too
+  - question: 我是方倩雪，13岁，初一学生，喜欢钢琴、茶艺和攀岩，学习很主动但有时候容易紧张。我想系统了解声现象的探究与解释，比如声音产生的原理、传播方式、影响因素，还有在音乐、运动、茶艺里的应用，学习时常见的心理困扰和怎么缓解情绪也想知道。你能详细展开说说吗？最好给我一些科学精神和情绪管理方面的建议，针对我这种容易焦虑但自主学习很强的女生
+  - question: 你作为小学物理教学顾问，能不能详细说说声现象的探究与解释？比如声音是怎么产生和传播的，哪些因素会影响声音，还有生活里都有哪些应用，讲具体点
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-小学-声现象的探究与解释进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学画像适配度_理由
+    type: str
+    description: 解释个性化教学画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化教学画像适配度
+    type: float
+    description: 教学内容和方法需基于学生的年龄、知识基础、兴趣、学习风格等多维度特征进行精准分析和分层设计。高分不仅要求分层方案具体，还需动态调整、持续追踪学生成长，低分表现为统一处理或仅表面分组。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 教学设计需严格按照结构化要求（如编号、分步骤、表格、流程图等）组织，逻辑清晰，便于学生操作、记录和复盘。高分需体现流程自查、格式统一且有可视化辅助，低分为内容杂乱、缺乏层次或仅有简单分点。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法需严格遵循物理学与教育学原理，包含完整探究流程（问题、设计实验、数据记录、归纳反思、迁移应用），能主动纠正常见误区并培养科学素养。高分要求流程完整、纠错及时、科学思维引导到位，低分为流程残缺、只讲结论或存在知识错误。
+  - field: 知识表达准确性与易懂性_理由
+    type: str
+    description: 解释知识表达准确性与易懂性评分的详细理由，引用具体例子。
+  - field: 知识表达准确性与易懂性
+    type: float
+    description: 知识讲解需准确、用词恰当，表达贴合小学生认知水平，能用多样化、生活化例子说明抽象原理，并对常见误区进行分层澄清。高分要求语言生动、例子丰富且能促进迁移和纠错，低分为用词生僻、表达含糊或未澄清误区。
+  - field: 激发学生创造力与探究欲望_理由
+    type: str
+    description: 解释激发学生创造力与探究欲望评分的详细理由，引用具体例子。
+  - field: 激发学生创造力与探究欲望
+    type: float
+    description: 教学活动需有效激发学生主动思考、动手实验、提出新问题，鼓励创新和开放性探索，支持学生个性化表达。高分要求任务具有挑战性和延展性，并有机制鼓励学生自发创新，低分为机械记忆、重复操作或抑制创新表达。
+  - field: 模拟真实提问回应度_理由
+    type: str
+    description: 解释模拟真实提问回应度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应度
+    type: float
+    description: 教师需能针对小学生真实可能提出的具体疑问，结合实际体验和生活情景，给予深入、个性化的解释和引导。高分要求回应具体、引导学生体验和思考，低分为泛泛而谈或机械应答，无针对性。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 教学过程中需将社会主义核心价值观和中华优秀传统文化（如团队协作、尊重自然、科学精神等）自然融入课堂，表达需与教学内容有机结合。高分为润物细无声地渗透价值观，能引发学生思考和行动，低分为生硬插入或完全忽略价值导向。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 教师需深入理解并持续关注特定学生（如学习困难、兴趣特殊、表达障碍等）需求，采取具体、动态措施支持其成长。高分要求有持续记录、反馈机制和动态调整，低分为仅表面应付或一视同仁，无实际支持措施。
+  format_mode: prompt

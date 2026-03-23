@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene276/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 德育美育-小学-光影戏剧：用手影讲故事（美育）教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是三年级学生的家长，最近孩子参与了学校的光影戏剧活动，用手影讲故事。你作为美育专家，能全面深入地讲讲小学光影戏剧（用手影讲故事）在美育和德育方面的价值、教学设计思路、以及怎么培养孩子的创造力和美德吗？希望你能讲得系统一点。
+    - question: 你作为小学美育教学顾问，能帮我分析一下怎么在光影戏剧——用手影讲故事活动中激发学生的创造力，同时又能把中华优秀传统文化和核心价值观自然融入故事吗？说说你的看法。
+    - question: 我是朱静，26岁老师，最近在美育课上尝试用手影讲故事，但有些职业倦怠，也不知道怎么发挥自己的使命感。你作为美育专家，能结合我的情况，深入讲讲光影戏剧教学对学生美育、德育的意义，以及我怎么用更有创造力的方式设计和引导这类活动吗？我想深入了解。
+    - question: Hi, I'm WilsonJasmine, a 6th Grade student who loves plant care, Chinese jazz dance, and storytelling. Sometimes I procrastinate and find it hard to balance my ideals and reality, but I really enjoy creative activities. You as an art education mentor—could you explain how participating in hand shadow storytelling in light and shadow drama can help me improve creativity, teamwork, and appreciation of traditional Chinese culture and values? Would you please explain in detail?
+    - question: 我是小学美育老师，最近组织光影戏剧（用手影讲故事）活动时，发现有些学生表达力和参与度都不高。你能具体说说有哪些有效办法可以提高孩子们的表达能力和积极性吗？
+    - question: 我刚当小学美育老师，最近发现孩子们在光影戏剧课上很喜欢创造手影形象，但有些安全和合作方面的问题。你作为美育专家，能讲清楚点，怎么在教学中既激发创造力，又培养安全和合作意识吗？
+    - question: 我是四年级学生的家长，我女儿喜欢表演但胆子比较小，在光影戏剧活动里不太敢主动。你作为美育老师，能简短说说怎么帮助这种性格内向的孩子在活动中建立自信吗？
+    - question: 你作为小学美育教学顾问，能大概讲讲光影戏剧（用手影讲故事）活动对培养学生美感、想象力和团队合作有什么具体作用吗？
+    - question: 我是小学美育老师，最近用手影讲故事做光影戏剧时，学生表达中华传统美德有点生硬。你能帮我理解一下，怎么把中华优秀传统文化和美德自然融入故事和表演吗？
+    - question: 我是一名小学美育老师，最近负责光影戏剧（用手影讲故事）课程。你作为美育教学专家，能系统地讲解一下这门课该怎么设计，包括教学目标、内容、学生参与、怎么培养创造力和美德，以及如何融入中华优秀传统文化吗？希望你讲得全面一点。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 德育美育-小学-光影戏剧：用手影讲故事（美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评价教学方案是否充分结合学生年龄、兴趣、能力等差异，基于学生画像进行分层、分组、个性化设计，关注特殊群体需求，体现差异化与包容性。
+    - field: 指令遵循完整性
+      type: float
+      description: 评价教学方案是否严格、系统地按照任务要求的格式和流程进行输出，环节齐全，内容结构合理，且各部分相互衔接，无遗漏或混乱。
+    - field: 教学方法科学性
+      type: float
+      description: 评价教学方案是否采用循序渐进、以学生为中心的教学策略，明确目标，设计环节完整（如导入、演示、互动、反馈、反思），有科学的分步指导和过程管理，关注学生体验与成长。
+    - field: 教学内容专业度
+      type: float
+      description: 评价教学方案中手影戏剧知识的准确性、系统性和专业深度，包括手影成像原理、操作技巧细节、光影安全、表现手法拓展等，能为学生提供科学指导和拓展视野。
+    - field: 创造力激发程度
+      type: float
+      description: 评价教学方案是否通过开放性任务、创新激励、多样表达等方式，鼓励学生自主创编故事、设计手势、跨界融合，支持个性化艺术表达与高阶创新思维发展。
+    - field: 学生参与度设计
+      type: float
+      description: 评价教学方案是否系统设计多样、深入的学生参与方式，包括分组合作、角色扮演、展示互动、互评反馈等，确保每个学生在各环节均有主动参与和表达机会。
+    - field: 社会主义核心价值观融入
+      type: float
+      description: 评价教学方案在故事主题、活动过程或点评中是否自然、细腻地融入社会主义核心价值观（如诚信、友善、团结、责任等），通过情境体验引导学生理解和践行美德，表达方式贴合美育情境，避免生硬灌输。
+    - field: 中华优秀传统文化传承
+      type: float
+      description: 评价教学方案是否巧妙融合中华传统美育元素（如民间故事、传统艺术、节庆习俗、经典形象等），注重文化背景讲解与美育体验，激发学生文化认同和自豪感。
+format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-小学-物理变化与化学变化的区分教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学科学老师，最近在教物理变化和化学变化时，发现孩子们做实验时很容易混淆这两个概念。你作为经验丰富的科学教育专家，能详细展开说说物理变化和化学变化到底怎么区分吗？希望能有丰富例子和教学建议，帮我更好地引导孩子们思考。
+  - question: 我是杨小玉，53岁女老师，平时喜欢研究厨艺、养宠物和观察自然，但教学时总是缺乏耐心。你作为小学化学课程辅导老师，能具体说说物理变化和化学变化的区别吗？最好能结合烹饪和宠物养护这些日常活动举例，让学生更容易理解。
+  - question: 我是小学科学教材教研员，最近要为老师们编写一份关于物理变化和化学变化区分的教学指导材料。你作为专业研究员，能全面深入地讲讲物理变化和化学变化应该怎么系统区分吗？希望能覆盖理论、实验设计、生活实例、误区分析、分层教学建议，还有怎么融入传统文化和核心价值观。
+  - question: 我在辅导孩子做科学作业时，他问我物理变化和化学变化到底有什么区别。你是小学科学答疑助手，能详细说说吗？最好能举几个生活里的例子，小朋友容易懂的那种。
+  - question: 我是四年级学生家长，我家孩子特别爱做小实验但容易分心，对物理变化和化学变化这两个概念总分不清。你作为小学科学老师，能用几句话说说两者的主要区别吗？最好举两个生活里的例子，孩子能懂的那种。
+  - question: 我是小学生，最近在学科学课，老师讲了物理变化和化学变化，我有点分不清。你能简单说说就行，最好举个生活里的例子让我更容易理解。
+  - question: 我是CookLayla，54岁女老师，平时喜欢弹钢琴、做园艺和研究方言，社交圈比较安静，教学很投入。你能结合我的兴趣和生活场景，讲清楚物理变化和化学变化的区别吗？希望内容有条理，还能举些和我兴趣相关的例子，让我在教学和兴趣活动里多尝试。
+  - question: 你是小学科学课程答疑专家，孩子们总是分不清物理变化和化学变化。能具体说说这两个到底怎么区分吗？最好举一些他们能感受到的例子，还能鼓励他们自己观察生活里的变化。
+  - question: 你是小学科学教学专家，最近需要为老师和家长准备一份系统讲解物理变化和化学变化差异的教学资料。能全面深入地讲讲吗？希望内容能包含定义、原理、生活案例、教学方法、误区分析、探究建议，还能巧妙融合传统文化和核心价值观。
+  - question: 我是ThompsonNathan，48岁男老师，英文授课，喜欢钓鱼、太极和养海水缸，性格比较灵活但容易情感疲劳，平时依赖权威、听课有选择性。你作为科学教育咨询师，能深入讲解一下物理变化和化学变化的原理和区别吗？希望能结合我的兴趣举例，还能给我一些教学建议，帮我在课堂上引导学生探究，也兼顾师生互动和情感支持。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-小学-物理变化与化学变化的区分进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化学习画像响应_理由
+    type: str
+    description: 解释个性化学习画像响应评分的详细理由，引用具体例子。
+  - field: 个性化学习画像响应
+    type: float
+    description: 教学内容和方法充分根据学生的学习水平、兴趣、认知特点和成长轨迹进行动态调整。不仅关注前测差异，还能持续追踪学生变化，实施分层、分组、兴趣拓展等多元策略，对特殊需求学生有针对性支持，教学反馈能实时反映并优化方案。
+  - field: 教学内容组织与格式规范_理由
+    type: str
+    description: 解释教学内容组织与格式规范评分的详细理由，引用具体例子。
+  - field: 教学内容组织与格式规范
+    type: float
+    description: 教学过程结构高度清晰且层次分明，各环节逻辑递进，标题与分点完整，内容衔接自然。教学设计不仅规范，还体现创新性结构（如多维对比、跨学科融合），便于学生自主梳理与迁移，教学指令明确易操作。
+  - field: 科学性与教育专业性_理由
+    type: str
+    description: 解释科学性与教育专业性评分的详细理由，引用具体例子。
+  - field: 科学性与教育专业性
+    type: float
+    description: 教学方法严格遵循科学原理与教育学规律，设计多样化观察、实验、归纳、分析环节，鼓励学生自主探究、反思、提出假设并验证。教学能促进知识迁移、批判性思维和创新能力，体现高阶学习目标。
+  - field: 知识准确性与表达适龄性_理由
+    type: str
+    description: 解释知识准确性与表达适龄性评分的详细理由，引用具体例子。
+  - field: 知识准确性与表达适龄性
+    type: float
+    description: 知识点表达科学准确、无误导，语言简明、生动、贴近小学生认知水平，充分避免生僻词、复杂术语及抽象表达。例子选取生活化，能有效帮助学生理解和区分概念。
+  - field: 互动性与创造性参与_理由
+    type: str
+    description: 解释互动性与创造性参与评分的详细理由，引用具体例子。
+  - field: 互动性与创造性参与
+    type: float
+    description: 教学活动设计多样化互动环节，包含启发性问题、小组实验、同伴讨论、创新任务等，鼓励学生主动思考、表达、合作及创新。能灵活调动全班和个体参与，支持学生自主设计和表达新观点。
+  - field: 价值观与传统文化融入_理由
+    type: str
+    description: 解释价值观与传统文化融入评分的详细理由，引用具体例子。
+  - field: 价值观与传统文化融入
+    type: float
+    description: 教学内容自然融入社会主义核心价值观和中华优秀传统文化，强调科学探索、团队协作、创新精神、尊重科学等品德目标，与教学主题紧密结合，促进科学素养与品德共进，能通过案例或故事激发学生认同感。
+  - field: 贴近学生认知的提问设计_理由
+    type: str
+    description: 解释贴近学生认知的提问设计评分的详细理由，引用具体例子。
+  - field: 贴近学生认知的提问设计
+    type: float
+    description: 提问紧贴小学生认知水平和兴趣，问题具体、易理解，具引导性和开放性，能激发学生真实思考、表达和讨论。提问涵盖生活实际、认知发展阶段，避免抽象或高难度，能层层递进引导思考。
+  - field: 反馈与改进建议_理由
+    type: str
+    description: 解释反馈与改进建议评分的详细理由，引用具体例子。
+  - field: 反馈与改进建议
+    type: float
+    description: 教师能根据学生表现及时、具体、针对性地给予反馈和改进建议，帮助学生理解错误、提升学习方法。反馈不仅纠正错误，还能分析原因、提出改进策略，持续跟进学生成长，支持自主学习。
+  format_mode: prompt

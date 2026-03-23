@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene327/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 体育-高中-力量、有氧与柔韧的交叉训练教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是高中体育老师，最近在设计力量、有氧和柔韧交叉训练课程。你能概括一下交叉训练在高中体育教学中的主要优势和核心作用吗？
+    - question: 你作为高中体育教育专家，能讲清楚点力量、有氧和柔韧交叉训练是怎么提升学生体能和健康的吗？麻烦举些例子说明下。
+    - question: 我是WhiteIsabella的家长，她8岁，上三年级，喜欢摄影和游泳，适应能力强但有点依赖指导。你能用几句话说说在力量、有氧和柔韧交叉训练里，怎么结合她的兴趣和特点让她更有参与感和自信吗？
+    - question: 我是新入职的高中体育老师，想全面了解力量、有氧和柔韧交叉训练的理论和教学实践。你能全面深入地讲讲交叉训练的定义、原理、课程设计、常见误区、评估方法，以及怎么结合学生实际做差异化教学吗？
+    - question: 你作为高中体育教研员，能系统地讲解一下力量、有氧和柔韧交叉训练吗？希望你能从科学依据、教学目标、课程结构、实施流程、学生评价和传统训练区别等方面详细说说。
+    - question: 我在高中体育教学中发现学生对交叉训练兴趣不高，尤其是力量和柔韧部分。你能详细展开说说可能的原因，以及怎么让学生更积极参与吗？最好有些具体建议和例子。
+    - question: 你作为高中体育老师，力量和有氧训练结合对学生心理健康和团队协作有什么影响？说说你的看法，举些例子说明下。
+    - question: 你作为高中体育教学顾问，柔韧性训练在交叉训练里到底有多重要？对学生长期运动能力发展有什么作用？说说你的看法。
+    - question: 我是高中体育老师，想设计交叉训练课程。你能详细讲讲力量、有氧和柔韧训练怎么平衡比例，确保学生全面发展吗？最好结合实际案例分析不同方案适合哪些学生。
+    - question: 我是MartinezLola，34岁，是高中体育老师，性格有点散漫但喜欢创新，也喜欢茶道、游戏和化妆。你能说说你的看法，怎么结合我的兴趣和个性优化力量、有氧和柔韧交叉训练课程，让师生互动更好、氛围更创新吗？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 体育-高中-力量、有氧与柔韧的交叉训练进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与细化
+      type: float
+      description: 评估教学内容是否基于学生的体能基础、兴趣、健康状况等多维度进行精准画像，并针对不同学生类型细化训练建议，体现因材施教。
+    - field: 个性化格式指令遵循度
+      type: float
+      description: 评估教学内容是否严格按照用户要求的格式（如分段、表格、分阶段）呈现，确保个性化信息条理清晰、易于理解和对比。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评估教学方案是否采用科学、系统的交叉训练方法，合理搭配力量、有氧、柔韧训练，并明确引用体育科学或教育学原理作为设计依据。
+    - field: 目标与过程分层设计
+      type: float
+      description: 评估教学方案是否明确设定短期、长期目标，结合学生实际分阶段制定训练目标、内容与评价标准，指导学生逐步达成。
+    - field: 安全性与适应性指导
+      type: float
+      description: 评估教学中是否充分考虑高中生身体发育特点和个体差异，提出科学的安全防护措施、负荷调整建议，并针对特殊情况（如慢性病、运动损伤）给出个性化指导。
+    - field: 创新性训练内容设计
+      type: float
+      description: 评估教学内容是否设计有新颖、多样的训练方式，鼓励学生跨学科融合、团队协作、自主创新，激发主动性与创造力。
+    - field: 开放性问题引导
+      type: float
+      description: 评估教学方案是否提出具有思辨性、探索性的问题或反思任务，引导学生主动思考训练策略、目标设定及自我提升路径，激发批判性和创新性思维。
+    - field: 社会主义核心价值观融入度
+      type: float
+      description: 评估教学内容是否自然融入社会主义核心价值观（如团队协作、坚持、责任感）和中华优秀传统文化元素，促进学生德智体美劳全面发展。
+format_mode: prompt

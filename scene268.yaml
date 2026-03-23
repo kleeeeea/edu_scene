@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene268/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 政治-高中-运用矛盾分析法看待社会问题教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为高中政治老师，能用几句话说说怎么用矛盾分析法来看待社会上的贫富差距吗？
+    - question: 我是LeeScott，五年级男生，喜欢仰望星空和踢足球，学习容易拖延但在兴趣上比较主动，老师让我用矛盾分析法看社会问题。你能讲清楚点怎么结合我的兴趣和性格，用矛盾分析法分析一些社会热点吗？
+    - question: 我是白其，32岁老师，平时喜欢露营、潜水和滑板，对职称发展比较看重。你能说说主要运用矛盾分析法怎么看当前教育评价体系的问题吗？
+    - question: 我是彭敬，初三，平时喜欢动漫绘画和电竞，团队里主要关注自己的目标。最近经常在社团和比赛队里遇到分歧和冲突。你能帮我深入了解下矛盾分析法怎么具体帮我处理这些团队合作和兴趣发展的矛盾吗？举些例子详细讲讲。
+    - question: 你作为政治教育专家，说说你的看法：用矛盾分析法怎么看当代青年就业难的问题？举点例子详细说说。
+    - question: 你作为高中政治教学顾问，能讲得详细点吗？用矛盾分析法分析下城市化过程中住房、交通、环境、社区关系等各个方面的问题，最好系统地说说每个方面的具体情况和解决思路。
+    - question: 你是我的政治学导师，能解释一下吗：社会改革为什么总会遇到阻力和分歧，用矛盾分析法怎么理解？麻烦举点例子说明一下。
+    - question: 你是我的高中政治学习助手，帮我理解一下：用矛盾分析法怎么看社会福利分配时公平和效率的冲突？举些例子讲讲吧。
+    - question: 你作为政治教育专家，能彻底说清楚用矛盾分析法如何分析社会转型期的复杂矛盾，比如经济调整、文化变化、利益分配等？希望你能系统全面地讲讲每个方面的具体问题和解决思路。
+    - question: 我是覃霖，高二男生，足球队替补、数独社有竞争关系，常常因为焦虑和拖延影响训练和学习。你能详细分析下各个方面用矛盾分析法怎么看我在团队合作、竞争、情绪和学习动力上的社会性问题吗？最好也说说具体的应对方法。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 政治-高中-运用矛盾分析法看待社会问题进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 评估答案是否充分结合学生的学习基础、兴趣、困惑点等，针对不同类型学生给予差异化讲解和任务设计，体现个性化教学。
+    - field: 格式与结构规范度
+      type: float
+      description: 评估答案是否严格按照提问要求分段、分点，并在各部分之间形成逻辑递进，内容条理清晰、易于理解。
+    - field: 教学方法科学性与互动性
+      type: float
+      description: 评估答案采用科学的教学方法，如启发式、案例教学、小组讨论等，同时注重互动和学生主体性，鼓励学生参与和思考。
+    - field: 矛盾分析法应用深度与准确性
+      type: float
+      description: 评估答案是否准确、规范地运用矛盾分析法分析社会问题，能够区分主要矛盾与次要矛盾，并结合具体案例深入剖析矛盾的转化和解决路径。
+    - field: 真实提问模拟度
+      type: float
+      description: 评估问题是否贴近高中生在政治课上的实际困惑、兴趣点或社会生活经验，具有代表性和启发性。
+    - field: 创新思维激发度
+      type: float
+      description: 评估答案是否通过开放性问题、引导式任务或跨学科融合，激发学生创新思考和独立见解，鼓励学生提出独到观点或解决方案。
+    - field: 价值观自然融入深度
+      type: float
+      description: 评估答案是否将社会主义核心价值观和中华优秀传统文化理念自然融入案例分析或思考引导，不生硬、不口号化，能够引发学生认同和反思。
+    - field: 个性化回应深度与反馈
+      type: float
+      description: 评估答案是否针对特定学生画像和困惑，提出具体、深入的回应和改进建议，帮助学生进一步提升能力或解决实际问题。
+format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-高中-知识体系构建教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是缪贤，初二的男生，喜欢围棋和做科学实验，老师常说我想法太跳跃。你作为数学学习助手，能不能给我概括一下高中数学的知识体系和大致的学习思路？
+  - question: 我是一名高一女生，刚上高中，觉得数学知识点好多，容易搞混。你能详细说说高中数学知识体系的结构吗？哪些地方最重要，学习上有什么建议？
+  - question: 我是校里的数学教研员，老师们都说高中生对整个数学知识体系把握不准，成绩忽高忽低。你作为数学教育专家，能不能彻底说清楚怎么系统构建高中数学知识体系？最好能结合具体案例和创新方法，全面讲讲各板块联系、重难点突破以及不同层次学生的培养思路。
+  - question: 我是一名高三生，马上高考了，可还是觉得数学知识体系不太清楚，经常分不清各知识点的关系。你能详细讲讲高中数学的整体框架和重点难点吗？还有各板块之间是怎么衔接的？
+  - question: 我是家长，我女儿今年高一，听说高中数学很难，她现在有点怕学。你作为数学教育专家，能不能深入说说看高中数学知识体系的核心内容、板块划分和一些科学的学习建议？
+  - question: 我刚做高中数学老师，发现自己对整个数学知识体系还不是很清楚，怕讲课漏掉重要内容。你作为教育专家，能不能给我一份完整的分析，系统梳理一下高中数学知识体系、各模块联系、教学重点难点和一些创新教学方法？
+  - question: 我是高二学生，觉得数学挺有意思，但知识点总感觉有些乱，特别是函数和立体几何总联系不到一起。你能详细说说高中数学知识体系的主要板块和它们之间的联系吗？还有学习建议也说说。
+  - question: 我是新高一学生，数学基础一般，听说高中数学知识体系很庞大，有点担心。你能简单说说高中数学知识体系的基本板块和整体结构吗？
+  - question: 我刚上高一，数学知识点一下子多了好多。你作为数学老师，能不能解释一下高中数学知识体系是怎么构成的，还有学习时容易遇到的难点？
+  - question: 我高三了，准备高考冲刺，想把高中数学知识体系理一理，别遗漏重要内容。你能具体说说高中数学各板块的知识体系、重点难点和复习建议吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-高中-知识体系构建进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与动态响应_理由
+    type: str
+    description: 解释个性化画像识别与动态响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与动态响应
+    type: float
+    description: 评估回答是否基于学生多维画像（如学习基础、兴趣、目标、认知风格等）进行持续、动态的识别和调整。要求能根据学生反馈实时优化教学内容、难度和方法，体现对学生个体差异和成长轨迹的敏感追踪。
+  - field: 格式与结构规范度_理由
+    type: str
+    description: 解释格式与结构规范度评分的详细理由，引用具体例子。
+  - field: 格式与结构规范度
+    type: float
+    description: 评估回答是否严格遵循任务设定的结构、分段、编号和逻辑顺序，内容完整、层次分明，格式统一。高分要求各部分明确分隔，标题、编号、字体等细节规范。
+  - field: 教学方法的科学性与多样创新_理由
+    type: str
+    description: 解释教学方法的科学性与多样创新评分的详细理由，引用具体例子。
+  - field: 教学方法的科学性与多样创新
+    type: float
+    description: 评估所用教学方法是否科学（如启发式、探究式、分层、合作学习等），并能结合学生实际灵活创新，避免机械灌输。高分要求多种方法有机融合，针对不同学生动态调整。
+  - field: 知识体系构建的系统性与逻辑性_理由
+    type: str
+    description: 解释知识体系构建的系统性与逻辑性评分的详细理由，引用具体例子。
+  - field: 知识体系构建的系统性与逻辑性
+    type: float
+    description: 评估知识体系梳理是否系统、层次清晰，涵盖高中数学各模块（如函数、代数、几何、三角、概率统计等）。要求突出模块间联系与区别，内容递进合理，帮助学生形成整体框架与内在逻辑。
+  - field: 重点难点识别与深度剖析_理由
+    type: str
+    description: 解释重点难点识别与深度剖析评分的详细理由，引用具体例子。
+  - field: 重点难点识别与深度剖析
+    type: float
+    description: 评估是否准确识别高中数学各模块的重点与难点，并对难点进行深入剖析。需结合典型题型、易错点、思维误区，提供具体突破建议和针对性练习。
+  - field: 创新思维激发与跨学科实际应用_理由
+    type: str
+    description: 解释创新思维激发与跨学科实际应用评分的详细理由，引用具体例子。
+  - field: 创新思维激发与跨学科实际应用
+    type: float
+    description: 评估是否通过开放性问题、跨学科联系（如物理、经济、信息技术等）、生活实际案例等方式，激发学生创新思维和自主探索。要求鼓励多角度思考和实际应用。
+  - field: 互动引导与真实提问模拟_理由
+    type: str
+    description: 解释互动引导与真实提问模拟评分的详细理由，引用具体例子。
+  - field: 互动引导与真实提问模拟
+    type: float
+    description: 评估回答是否贴近真实高中生的提问场景，主动引导学生进一步思考，鼓励表达疑问和参与互动。高分需体现师生双向交流、追问和反馈回应。
+  - field: 价值观与文化内涵的自然融合_理由
+    type: str
+    description: 解释价值观与文化内涵的自然融合评分的详细理由，引用具体例子。
+  - field: 价值观与文化内涵的自然融合
+    type: float
+    description: 评估内容是否在知识讲解过程中自然而然地融入社会主义核心价值观（如诚信、合作、责任感）及中华优秀传统文化（如数学史、古代数学家精神等），且与教学内容紧密结合，润物细无声。
+  format_mode: prompt

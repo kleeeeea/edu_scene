@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-自然物的创意拼贴（美育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是四年级学生家长，最近学校要做自然物创意拼贴，但我家孩子动手能力弱，总怕材料准备不好。你作为小学美育导师，能简要说明下家长该怎么准备材料、激发兴趣、帮孩子完成吗？说说核心方法就好。
+  - question: 你是一位小学美育专家，目前要负责三年级自然物创意拼贴活动教研培训。我们班有注意力分散和多动症的学生，家长参与度也低，活动推进有些难。能全面深入地讲讲怎么系统设计课程，各环节如何兼顾特殊学生、家校协作和传统文化融合？想听听你的专业建议。
+  - question: 我是田依的家长，她三年级，性格敏感，喜欢书法和唱歌，学习时很依赖监督，情绪容易起伏。你作为美育学习助手，讲讲看怎么引导她参与自然物创意拼贴，提升创作动力和自信？有哪些具体方法？
+  - question: 我是小学老师侯淑惠，平时很喜欢诗歌和电影，教学上喜欢创新但也注重规则。这学期要做自然物创意拼贴，我想在规范之上加入点诗意和美学。你作为美育专家，讲清楚点怎么设计课程能做到规则和创新平衡，还能融合诗意美感？
+  - question: 你是小学美育教学顾问，我们学校最近做自然物创意拼贴，但有些孩子因为班里差异大，容易自卑或不愿合作。帮我理解一下老师怎么设计分组协作，既让学生克服自卑，又能培养合作分享？具体有哪些做法？
+  - question: 我是小学班主任，班里有些孩子家里条件一般，家长也很少参与学校的事。最近要做自然物创意拼贴，我怕他们材料准备不好，参与积极性受影响。你能简要说明下老师怎么帮这些孩子顺利参与吗？说说主要措施。
+  - question: 你是小学美育专家，现在要指导一个有特殊需求学生（比如自闭症、感统障碍）的班级做自然物创意拼贴。能彻底说清楚怎么设计个性化支持措施，从材料到流程、师生互动、安全、成果展示和家校沟通都要考虑，还有怎么融合中国传统文化和价值观？想听听你的全面建议。
+  - question: 你是小学美育老师，学校要求自然物创意拼贴要体现环保和亲近自然。讲清楚点老师怎么引导学生合理采集材料、避免浪费，还能激发他们尊重自然和环保意识？有哪些具体做法？
+  - question: 你是小学美育教研员，要负责全校自然物创意拼贴活动的方案制定。全面分析一下怎么系统规划课程结构、材料准备、创新融合、成果展示和家校沟通，并结合不同班级和学生差异分析难点和解决办法。想听听你提升美育和德育融合的建议。
+  - question: 我是谢轩，23岁生物学家，经常参与观鸟、野外摄影和园艺。我在学校做自然物创意拼贴科学指导，想兼顾理论和实践，又希望活动科学、有趣，还能融合自然美和传统文化。你作为小学美育专家，深入说说看怎么把科学理念、实践操作、美育创新和中国传统自然美学都融入拼贴活动？有哪些有科学性又有趣的建议？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-自然物的创意拼贴（美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学设计是否基于学生多维个体特征（年龄、兴趣、能力、学习风格等）制定分层、差异化方案，能针对不同群体提供具体支持措施，并在实际环节体现尊重与激发个体潜能。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教学内容是否严格按照指定结构、步骤和格式呈现，条理清晰，分段明确，便于教师直接应用，无需额外整理。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学建议是否基于美育、德育理论及小学教育规律，能结合理论与实践，设计科学的激趣、分层、协作等环节，并针对不同学生群体提出具体、可操作的指导措施。
+  - field: 步骤与细节指导充分性_理由
+    type: str
+    description: 解释步骤与细节指导充分性评分的详细理由，引用具体例子。
+  - field: 步骤与细节指导充分性
+    type: float
+    description: 评估教学流程是否详尽具体，包含完整操作步骤、材料选择、难度分层、注意事项及安全指导，教师可据此高效实施，无需补充细节，能覆盖实际操作中的常见问题。
+  - field: 互动与反馈机制设计_理由
+    type: str
+    description: 解释互动与反馈机制设计评分的详细理由，引用具体例子。
+  - field: 互动与反馈机制设计
+    type: float
+    description: 评估是否设计多层次的师生互动、同伴互评、自我反思等环节，鼓励学生主动表达创意并获得具体反馈，设有成长性评价与持续改进机制，能促进学生社会性与创新能力发展。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学内容是否鼓励学生自由探索、表达多元创意，倡导原创性、跨学科联想，并设有创新激励机制或展示平台，具体措施能有效激发学生深度创新潜能。
+  - field: 问题模拟真实度_理由
+    type: str
+    description: 解释问题模拟真实度评分的详细理由，引用具体例子。
+  - field: 问题模拟真实度
+    type: float
+    description: 评估教学问题或场景设计是否紧贴小学美育课堂实际，能反映教师和学生的真实需求、困惑或改进空间，问题具有现实针对性、复杂性和可操作性，适合教学改进参考。
+  - field: 中国价值观与传统文化融入自然度_理由
+    type: str
+    description: 解释中国价值观与传统文化融入自然度评分的详细理由，引用具体例子。
+  - field: 中国价值观与传统文化融入自然度
+    type: float
+    description: 评估教学内容是否自然融合社会主义核心价值观或中华优秀传统文化，结合具体活动情境体现美育育人功能，融入方式不生硬，能使学生在创作中理解并认同中国价值观。
+  format_mode: prompt

@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-核心物理概念辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二的学生，最近我们正在学力和运动的相关内容。我一直搞不太清楚“速度”和“加速度”到底有什么区别，上课听老师讲了几次还是容易混淆。你作为物理老师，能不能帮我具体解释一下，速度和加速度在物理上到底有什么不同？说说你的看法。
+  - question: 我是初中物理新老师，班里有不少学生总是把“质量”和“重量”弄混，尤其在做实验和解题时分不清楚。我自己理解也不是特别牢靠。你作为一名有经验的物理教学顾问，能不能详细讲讲质量和重量的核心区别、常见误区，以及在教学中该怎么帮助学生建立正确概念？详细说说。
+  - question: 我是一名初二学生，最近在学习能量守恒和能量转化，不过总觉得这些概念很抽象，特别是老师讲“机械能守恒”“能量损失”“能量转化”时，我会混淆它们的具体含义和应用场景。你作为物理学习助手，能不能详细展开说说这些概念的本质区别、联系、生活中的典型例子，以及怎样通过实验和探究更好地理解它们？详细展开说说。
+  - question: 我是初三物理老师，最近在讲“力的合成与分解”时，发现很多同学把合力和分力的概念搞反了，有的学生甚至以为“合力就是所有力相加”“分力是把一个力拆成任意多个方向”。你作为物理学科专家，能全面深入地讲讲合力与分力的本质区别、常见误区、实际应用（如生活和工程）、课堂教学和实验设计建议，以及如何激发学生主动探究这两个概念的兴趣吗？能全面深入地讲讲吗？
+  - question: I'm WilsonEric, a 17-year-old high school student in 11th grade. I enjoy
+      mountain biking and collecting plant specimens, but I often need structured
+      guidance to balance schoolwork and hobbies. Sometimes in physics class, I get
+      confused about the difference between 'mass' and 'weight,' especially when thinking
+      about objects on Earth versus in space. As a learning assistant, could you explain
+      the core difference between mass and weight, maybe using some everyday examples?
+      Use a few sentences to explain.
+  - question: 我是初中生家长，最近孩子总是问我“摩擦力到底是帮助我们还是阻碍我们”，有时候觉得摩擦力让东西停下来，有时候又说没有摩擦力人会滑倒。我自己也说不清楚。你作为物理老师，能不能从原理、生活应用和常见误区等方面，结合学生的认知特点，帮我深入分析一下摩擦力的正反两面，以及如何引导孩子科学理解和举例说明摩擦力？我想深入了解。
+  - question: 我是刚刚接手八年级班级的新物理老师，发现同学们总是把“密度大就是重”“密度小就一定轻”这样简单地等同起来，实际解题时容易出错。你作为教学顾问，能不能帮我分析一下密度和质量、体积之间的本质区别，以及如何通过实验或生活例子帮助学生建立正确理解？说说你的看法。
+  - question: 我是初中物理教研员，近期带领老师们备课时发现“浮力”这个概念特别容易引发学生和新教师的混淆，比如浮力和重力的关系、浮沉条件、浮力产生的本质、阿基米德原理的实际应用等。你作为专业物理课程顾问，能否从各个角度详细说说浮力的本质、常见误区、教学建议、实验探究方法、以及如何激发学生的科学兴趣和探究欲望？从各个角度详细说说。
+  - question: 我是初一学生丁砚书，喜欢乒乓球、围棋和机器人制作，平时学物理容易情绪化，有时会拖延，思维跳跃，和同学沟通偶尔不太顺畅。最近在学习声音的传播，有点搞不清楚声音是怎么传递的，是不是所有材料都能传声，还有为什么宇宙里听不到声音。你作为物理老师，能不能详细说说声音传播的原理、常见误区、生活中的例子，以及我该怎么用实验来更好理解这个知识？详细说说。
+  - question: 我是初二学生，最近学习了热胀冷缩的知识，但有时候分不清楚热胀冷缩和物质状态变化（比如固体变成液体、液体变成气体）之间的区别。你作为物理学习助手，能否用通俗的方式帮我概括一下热胀冷缩和物态变化的本质区别和联系？概括一下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-核心物理概念辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像响应度_理由
+    type: str
+    description: 解释个性化画像响应度评分的详细理由，引用具体例子。
+  - field: 个性化画像响应度
+    type: float
+    description: 评价回答是否充分结合学生的具体学习水平、兴趣、认知习惯和困惑点，针对性调整内容表达、举例和互动方式，体现差异化教学设计。高分需展现细致的个性化分析和动态响应。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评价回答是否严格按照教师或系统指定的组织格式（如分步、表格、举例、总结等）作答，结构完整、层次分明，所有要求均得到体现，内容无遗漏。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学方法是否符合教育学原理，综合运用启发式、分层递进、情境创设、协作探究等科学策略，能持续激发学生主动思考与参与。高分需展现多样方法结合且针对性强。
+  - field: 核心概念辨析深度_理由
+    type: str
+    description: 解释核心概念辨析深度评分的详细理由，引用具体例子。
+  - field: 核心概念辨析深度
+    type: float
+    description: 评价对物理核心概念的多角度、层次化辨析，包括定义、对比、联系、举例、易混点剖析、应用场景等。高分需体现三层以上深度分析，帮助学生建立系统认知。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 评价是否通过开放性问题、创新类比、探究任务等方式主动激发学生创新思维，鼓励学生提出假设、发散思考、动手实践。高分要求有明确创新环节和学生主动探索的机会。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价回答是否贴近真实初中物理课堂场景，能反映学生实际学习过程中的困惑、提问风格和语言习惯，考虑年龄认知特点，避免标准化、书面化表达。高分需体现具体、自然的学生语言和真实场景。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价是否自然、贴切地将社会主义核心价值观和中华优秀传统文化融入物理教学，内容与物理实际关联，方式润物细无声，不生硬灌输。高分需结合物理原理和实际，促进价值观内化。
+  - field: 误区纠正有效性_理由
+    type: str
+    description: 解释误区纠正有效性评分的详细理由，引用具体例子。
+  - field: 误区纠正有效性
+    type: float
+    description: 评价是否针对学生常见物理概念误区进行及时、有效纠正，分析误区原因，提供辨别或改正方法，并有反馈和再检测措施，帮助学生形成正确认知。高分需展现全过程纠正和跟进。
+  format_mode: prompt

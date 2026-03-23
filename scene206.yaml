@@ -1,0 +1,126 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-高中-历史与现实的关联与反思教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初三的毛慧慧，平时爱打篮球、朗诵和看书，也当语文课代表。历史老师最近让我们思考历史和现实的联系，说说主要的，你觉得历史和现实有什么重要关联？我们能从历史里学到什么，对现实有什么启发？简单讲讲就行。
+  - question: I'm ThomasBrooke, a 59-year-old teacher fascinated by writing and dialects,
+      and I like to explore ideas with both structure and flexibility. Could you briefly
+      explain how learning about historical events can help us understand today's
+      social dynamics? Just a general overview with some clear examples would be great.
+  - question: 我是高中的历史教研员，最近在研究课堂怎么更好地结合历史与现实。你作为教育专家，能不能系统地讲解一下“历史与现实的关联与反思”这个主题？麻烦从理论、案例、课堂活动到价值观融入都说说，全面一点。
+  - question: I'm DavisQuinn, a 13-year-old 7th grader who likes singing and baking.
+      I sometimes find it hard to think logically and don't always feel confident,
+      especially in group settings. Can you explain how thinking about history can
+      help people make better decisions in everyday life? Please break it down with
+      examples so it's easy for me to understand.
+  - question: 我是高二的衡奇，平时喜欢机器人竞赛和航模，也在社团和队友一起合作。有时候比赛紧张会让我很焦虑。你能解释一下，学历史的时候怎么通过反思历史事件来提升我在团队合作和应对比赛挑战方面的能力吗？最好结合像竞赛、技术合作这些现实情况来说说。
+  - question: 我是高中历史老师，最近在研究新课标下怎么把历史和现实结合得更好。你作为教师培训专家，能不能彻底说清楚“历史与现实的关联与反思”这个主题的教学设计、课堂实践和学生素养培养？从理论到案例到评价都详细说说。
+  - question: I'm TaylorOliver, 16, in 10th grade. I'm really into digital painting
+      and designing drones, and I usually learn best by doing things myself. Social
+      stuff isn't really my thing, but I work hard to improve. Can you talk about
+      how thinking about history and connecting it to modern tech can help spark creative
+      problem-solving or innovation, especially for hands-on learners like me? Some
+      practical examples would be helpful.
+  - question: 作为一名高中生，我发现大家都在讨论历史和现实之间的联系。能讲得详细点吗？比如，这个主题对我们思想成长和社会责任感有什么影响？能不能多举些例子，深入分析一下，怎么通过学历史让我们更会思考、判断和参与社会？
+  - question: 我最近在想，历史这门课到底怎么帮助我们反思现实社会的问题，还能不能培养创新和社会责任感？能解释一下吗？最好结合中国传统文化和核心价值观来说明下，有例子更好。
+  - question: 我是高中的学生，最近很想知道学历史到底怎么帮助我们理解现在中国社会的变化，还有个人成长跟国家发展的关系。你能讲得详细点吗？希望能多分析、多举例，也说说怎么通过学历史树立正确的价值观和历史观。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-高中-历史与现实的关联与反思进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 教师能主动收集并分析学生的学习基础、兴趣和知识背景，依据学生差异调整教学内容、表达方式和互动策略，持续跟踪学生成长并及时调整教学方案，实现个体化支持和促进。
+  - field: 个性化格式指令遵循度_理由
+    type: str
+    description: 解释个性化格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 个性化格式指令遵循度
+    type: float
+    description: 教师在教学内容组织上严格遵循任务结构要求，如分段、分点、逻辑清晰，并在格式表达方面有创新举措（如思维导图、表格、流程图等），提升内容条理性和学习体验。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教师根据教学目标和学生特点，科学选择并组合启发式、探究式、合作讨论等多样化教学方法，合理安排互动、反馈和评价环节，促进学生主动参与和深度理解历史内容。
+  - field: 历史与现实关联分析深度_理由
+    type: str
+    description: 解释历史与现实关联分析深度评分的详细理由，引用具体例子。
+  - field: 历史与现实关联分析深度
+    type: float
+    description: 教师能够引导学生多角度、系统性地分析历史事件与现实社会的联系，涵盖历史背景、现实表现、影响机制及内在逻辑，鼓励学生结合案例提出独立见解，避免片面或表面化。
+  - field: 历史反思与批判性思维引导_理由
+    type: str
+    description: 解释历史反思与批判性思维引导评分的详细理由，引用具体例子。
+  - field: 历史反思与批判性思维引导
+    type: float
+    description: 教师通过开放性提问、辩论、案例分析等方式系统培养学生对历史事件和结论进行反思、质疑和批判，鼓励多元视角和理性表达，促进独立思考和观点形成。
+  - field: 创新思维与创造力激发_理由
+    type: str
+    description: 解释创新思维与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新思维与创造力激发
+    type: float
+    description: 教师通过角色扮演、情境创设、问题解决、跨学科融合等创新活动，有意识激发学生创新思维和创造性表达，鼓励学生提出新观点、新方案并展示成果，形成多样化创新产出。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 教师能将社会主义核心价值观（如公平、正义、爱国、诚信等）自然融入历史教学，通过具体情境、案例分析和现实联系，引导学生理解和认同核心价值观，避免生硬灌输或空洞说教。
+  - field: 中华优秀传统文化传承体现_理由
+    type: str
+    description: 解释中华优秀传统文化传承体现评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承体现
+    type: float
+    description: 教师能在历史教学中自然融入中华优秀传统文化的思想、价值和智慧，通过具体案例和现实联系，促进学生文化认同和实际应用，鼓励学生用传统智慧分析和解决现实问题。
+  format_mode: prompt

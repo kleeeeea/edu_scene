@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-人地关系思想的演变与反思教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生，最近在学地理的人地关系思想演变，总是把环境决定论、可能论、人地协调观这些搞混了，你能帮我讲清楚点吗？最好能结合生活例子说说
+  - question: 你作为地理教育专家，能不能全面分析一下高中地理里人地关系思想的演变？麻烦详细讲讲环境决定论、可能论、人地协调观和可持续发展观是怎么发展起来的，还有哪些现实意义和未来思考？
+  - question: 我是五年级女生封娜，喜欢茶艺和养植物，也喜欢批判性思考。最近看地理课外书时对人地关系思想挺好奇，你能结合我的兴趣和生活案例讲讲看吗？最好说说这些思想和我们的生活、传统文化有什么联系
+  - question: Hi, I'm KellyIvan, a third grade student who loves martial arts and
+      guitar, and my family helps me balance hobbies and studies. Can you explain
+      in detail how the human-environment relationship ideas in geography have changed
+      over time? I want to know how these theories connect to real life and maybe
+      my hobbies too—can you help me understand it thoroughly?
+  - question: 我是刚入职的地理老师，带学生学人地关系思想时发现他们只记理论不懂实际意义。你能帮我理解一下人地关系思想的演变核心内容吗？最好给点创新教学建议
+  - question: 地理人地关系思想演变我总觉得有点抽象，你能大概讲讲吗？简单概括下主要发展脉络就好
+  - question: 我是高一学生，地理基础一般，人地关系思想总记不牢。你能简短回答下每阶段的核心观点和例子，帮我理清思路吗？
+  - question: 你作为地理知识顾问，能讲得详细点吗？我希望系统了解人地关系思想从环境决定论到可持续发展观的演变，还想知道这些思想怎么影响我们和自然的关系，最好举点例子并给不同基础同学一些建议
+  - question: 我是28岁的物理学家周丹丹，最近在读地理的人地关系思想演变，想全方位地深入了解下。你能结合物理学视角、传统文化和现实应用，详细讲解人地关系思想从历史发展到理论体系、现实反思吗？希望内容能帮我更好地理解人与自然互动和可持续发展的意义，也能有些自我调适建议
+  - question: 你作为我的地理学习助手，能不能讲清楚点人地关系思想的主要发展阶段和特点？最好用生活例子说明这些理论对社会和环境的影响
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-人地关系思想的演变与反思进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 教学设计需基于具体学生画像（知识基础、认知水平、兴趣、学习风格等）进行分层支持和动态调整，持续追踪学生成长，提供个性化资源与任务，确保每类学生都能获得适合自己的成长路径。
+  - field: 格式与指令遵循性_理由
+    type: str
+    description: 解释格式与指令遵循性评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循性
+    type: float
+    description: 教学内容需严格按照教师指令或教学任务要求的结构、环节输出，格式规范、条理清晰、便于复用与查阅，环节完整无遗漏，逻辑顺畅，便于学生理解和教师管理。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学方法应结合教育学理论，采用多样化、层级化的科学方法（如探究式、启发式、情境模拟、小组合作等），促进学生主动参与、理解、迁移与批判性思考，并根据学生反馈灵活调整教学策略。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 地理知识点需准确无误、系统完整，清晰梳理人地关系思想的演变脉络、内在逻辑及关键细节，涵盖历史阶段、代表人物、思想影响与现实应用，能结合多样真实案例，并深入分析知识间联系和实际意义。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 教学内容需通过高阶开放性问题、跨学科融合、真实情境模拟等方式，系统激发学生创新思考和多角度分析，鼓励提出独特见解、创新方案或批判性观点，并为学生创造展示与交流创新成果的机会。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 教学环节中的问题设置需贴近学生实际学习情境，关注学生真实困惑、兴趣点与现实联系，能有效代表真实课堂互动和学生认知需求，鼓励学生主动提问并给予针对性回应。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 教学内容需将社会主义核心价值观与中华优秀传统文化（如‘天人合一’）、生态文明理念等深度融合于知识讲解与案例反思，自然引发学生价值认同和行为导向，贯穿教学全过程，避免生硬灌输。
+  - field: 互动引导与反馈机制_理由
+    type: str
+    description: 解释互动引导与反馈机制评分的详细理由，引用具体例子。
+  - field: 互动引导与反馈机制
+    type: float
+    description: 教学过程中应设计多样有效的互动环节（如提问、讨论、分组合作、角色扮演等），教师能根据学生回应提供针对性反馈、追问、支持和鼓励，促进个性化参与与持续成长，形成良性互动循环。
+  format_mode: prompt

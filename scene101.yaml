@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-物理公式的应用与变形求解教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中物理教研组长，最近组里很多年轻老师和学生在物理公式的应用和变形求解方面都遇到不少难题。有的老师说学生公式记得住但不会灵活变形，有的学生觉得公式太多太杂，应用场景也分不清。你能结合初中物理教材和实际教学经验，从公式理解、变形方法、常见错误、思维训练、教学设计等各个方面，能全面深入地讲讲初中物理公式的应用与变形求解的教学要点和提升建议吗？
+  - question: 你作为一位有多年经验的初中物理老师，可以大概讲讲初中阶段常用物理公式变形时有哪些实用技巧和注意事项吗？尤其是在解题过程中怎么避免常见错误？大概讲讲。
+  - question: 你作为物理教学顾问，我是李兰兰，今年58岁，经验丰富但逻辑性不是很强，最近在讲初中物理公式变形时总觉得思路有点乱。能结合我的情况，讲清楚初中物理公式变形的核心思路、常见问题和教学建议吗？最好能举个例子，讲清楚点。
+  - question: 我是贺乐，49岁，课堂上比较严厉，课后喜欢组织烘焙和太极拳活动。最近发现学生在物理公式变形上课上不敢问，课下却经常做错。你能具体说说面对这种情况，怎么在课堂上既保持严谨，又能让学生主动掌握公式变形的技巧和思维方法吗？能具体说说吗？
+  - question: 我是徐艳，14岁，初二女生，平时喜欢戏剧表演、唱歌、冥想，性格比较内向。最近学物理公式变形有点吃力，做题时经常搞混公式，也不太会灵活使用。你能讲得详细点，具体讲讲初中物理公式怎么才能用得更好，做题时变形不容易错吗？希望有详细步骤和例子。
+  - question: 我是一名初中男生，物理成绩一般，经常记不住公式，遇到变形题就慌。物理公式变形有没有什么小技巧？简单说说就行。
+  - question: 我是初三学生家长，我女儿马上要中考了，物理公式应用和变形都还不太熟练，解题总是卡壳。你作为物理名师，我想深入了解一下怎么系统地帮孩子提升物理公式应用和变形的能力，比如日常训练、思维培养、错题反思这些方面。能详细说说吗？我想深入了解。
+  - question: 你作为初中物理老师，帮我理解一下速度公式v=s/t的应用和变形。我是刚带初中物理的新手老师，想知道这个公式在不同情境下怎么用、怎么变形，课堂上要怎么讲，生活中有什么例子？帮我理解一下。
+  - question: 我是一名初中女生，物理成绩一般，遇到力学公式比如F=ma和W=Fs时，经常搞不清楚怎么变形和用。你能讲清楚点这些公式的变形步骤和实际应用场景吗？
+  - question: 我是区教研员，最近做初中物理学科教学诊断时发现有些学校的学生在物理公式变形和应用上问题比较多，比如机械记忆、理解不到位、不会灵活用。你能从学生认知、教学设计、课堂创新活动、家庭协同等角度，给我一份完整的分析和改进建议吗？给我一份完整的分析。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-物理公式的应用与变形求解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 能基于学生的学习基础、兴趣、困惑等，动态调整教学内容、方法和反馈，分层次、针对性地支持不同学生，体现清晰的差异化教学策略，不仅关注学困生，也能激励学优生。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 严格按照教学任务或提问要求，分步编号，结构清晰、重点突出地组织内容。优异表现应在规范基础上，根据任务类型灵活优化表达结构，突出重点和难点，便于学生理解和复习。
+  - field: 教学方法科学性、创新性与专业性_理由
+    type: str
+    description: 解释教学方法科学性、创新性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性、创新性与专业性
+    type: float
+    description: 采用科学、符合教育学原理的教学方法（如启发式、探究式、错因分析等），内容准确无误，能有效激发学生思考。优异表现应体现方法多样、创新性强，能主动引导学生主动建构知识。
+  - field: 知识点覆盖与难度分层_理由
+    type: str
+    description: 解释知识点覆盖与难度分层评分的详细理由，引用具体例子。
+  - field: 知识点覆盖与难度分层
+    type: float
+    description: 系统覆盖本节课所需知识点，内容安排由浅入深，合理分层。优异表现应在基础、提升、拓展层次均有设计，并能针对不同学生分配适宜的学习任务。
+  - field: 创造性思维激发与自主探究_理由
+    type: str
+    description: 解释创造性思维激发与自主探究评分的详细理由，引用具体例子。
+  - field: 创造性思维激发与自主探究
+    type: float
+    description: 通过开放性问题、生活实际举例、鼓励自主实验等方式，激发学生创新性思维和探究兴趣。优异表现应能引导学生提出新问题、尝试多元化应用，培养自主学习和创新精神。
+  - field: 真实场景模拟与互动还原_理由
+    type: str
+    description: 解释真实场景模拟与互动还原评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与互动还原
+    type: float
+    description: 教学过程能还原真实课堂情境，模拟师生互动、学生提问、课堂反馈等细节。优异表现应体现多层次互动（如学生间互动、师生共建知识、即时纠错反馈等），并能捕捉学生情感与动态反应。
+  - field: 社会主义核心价值观与中华优秀文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀文化融入
+    type: float
+    description: 在教学过程中自然而有机地融入社会主义核心价值观或中华优秀传统文化（如诚信、勤奋、科学精神等），并与物理内容紧密结合，增强学生价值认同。优异表现能深入挖掘相关人物或事例，激励学生科学探索与社会责任。
+  - field: 表达清晰、逻辑严密与多样辅助_理由
+    type: str
+    description: 解释表达清晰、逻辑严密与多样辅助评分的详细理由，引用具体例子。
+  - field: 表达清晰、逻辑严密与多样辅助
+    type: float
+    description: 用简明、适合初中生的语言表达，逻辑结构严密，结合图示、类比、生活实例等多样化手段辅助说明。优异表现能主动识别并解释难点，采用多重举例和辅助工具提升理解效果。
+  format_mode: prompt

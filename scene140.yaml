@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-分子遗传的核心法则及其应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高三学生，最近在为生物竞赛做准备，对分子遗传的核心法则和实际应用（比如疾病防治、生物技术创新）特别感兴趣。你作为生物学科顾问，能不能给我一份完整的分析？最好能从分子遗传中心法则的基本原理、分子过程、调控机制讲起，再结合医学诊断、基因治疗、精准农业等创新应用全面说说。希望你也能结合我的竞赛目标和兴趣，给出一些高阶思考建议、创新案例和跨学科的拓展方向，帮我在学业和未来科研创新上做系统提升。
+  - question: 我是高一学生，对生物很感兴趣，但学分子遗传的核心法则时总觉得知识点有点零散，搞不太清楚它们具体怎么联系起来。你是我的学习助手，能不能详细展开说说分子遗传中心法则的基本内容和各环节之间有什么联系？最好结合实际生活和前沿应用（比如转基因作物、遗传病检测）多举点例子，还想听听适合兴趣驱动型学生的学习建议和创新思考方向。
+  - question: 我是一名高二女生，性格比较外向，喜欢做科学实验，生物基础一般，但对分子遗传中心法则和它在疾病防治方面的应用很感兴趣。你作为我的成长导师，能讲得详细点吗？想请你详细讲讲分子遗传中心法则的原理和过程，重点说说它在疾病早期诊断和治疗上的实际运用。顺便帮我推荐一些适合我这种喜欢动手实践的学习方法、科学实验案例，还希望能得到一些创新思考和未来职业方向的建议。
+  - question: 我是高二学生，最近在课外小组讨论时，大家对分子遗传中心法则和蛋白质合成的关系有点疑问。你作为学科顾问，能解释一下分子遗传中心法则的核心内容，以及它和蛋白质合成到底有什么联系吗？最好举点生活里的实际例子帮我们理解。
+  - question: 我是田义，23岁，男，木匠，平时喜欢打MOBA类电竞、弹吉他和烘焙，跟同龄朋友经常组队打游戏、交流木工和一起烘焙。最近朋友聊天时提到了分子遗传的核心法则，但我生物基础不太好。你能具体说说分子遗传中心法则到底是什么吗？能不能结合我喜欢的电竞、团队协作、烘焙或者木工，用我熟悉的例子讲讲它的基本内容、关键过程，还有在实际生活或像团队竞技、工艺制作里的创新应用或类比？我想用自己熟悉的领域来理解生物知识。
+  - question: I'm RobinsonMarcus, a 40-year-old teacher who loves tea appreciation
+      and mountaineering. I like things to be clear and organized, and I tend to play
+      a supportive role in groups. Could you, as an educational expert, simply explain
+      the core law of molecular genetics for me? Just a straightforward summary is
+      fine—maybe relate it to tea culture or mountaineering if possible, and cover
+      the basic concept, main process, and why it's practically significant.
+  - question: 我是高一学生，生物挺感兴趣的，但分子遗传的核心法则还不是很懂。你是我的学习助手，能不能大概讲讲分子遗传中心法则的主要内容和关键过程？还有它在实际生活和科学研究里有什么用？
+  - question: 我是吕雅雅，42岁，老师，平时喜欢研究方言和画画，和方言研究学会的同行经常交流学术，业余也爱在绘画社团活动。最近上课时发现有些学生对分子遗传核心法则理解得比较浅，理论和实际应用连不起来。你作为生物教育专家，能不能给我一份完整的分析？希望你能系统分析分子遗传中心法则的科学原理、分子机制、调控与变异，还有它在医学、农业、生物工程等领域的创新应用。同时结合老师和学生在理解和教学中的常见困惑，提出实用的教学策略、跨学科融合建议，并适当加入本土化或艺术视角的案例，激发学生的科学精神和社会责任感，也帮老师实现自我成长和课堂创新。
+  - question: 我是高二学生，对生物还挺感兴趣的，就是觉得分子遗传核心法则有点抽象。你作为学习助手，能解释一下分子遗传中心法则的基本原理和过程吗？最好结合一个具体的实际案例，说说它在现实生活里的意义，帮我更好理解。
+  - question: 我是一名高三学生，生物基础还不错，但想在分子遗传核心法则和应用方面更深入些。你是学科顾问，能不能详细说说分子遗传中心法则的核心内容和关键过程？最好结合基因编辑、医学诊断、农业生产等实际应用，说说它的现实意义，并给我一些进一步学习和创新应用的建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-分子遗传的核心法则及其应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 教师根据学生的知识基础、兴趣方向和实际困惑，实施针对性的分层教学和个别辅导。回应需体现对个体差异的深入分析与动态调整，而非仅表面关注。
+  - field: 格式结构与逻辑严密度_理由
+    type: str
+    description: 解释格式结构与逻辑严密度评分的详细理由，引用具体例子。
+  - field: 格式结构与逻辑严密度
+    type: float
+    description: 教学内容结构需严密分层，逻辑递进，标题和分段清晰。结构不仅服务于知识理解，还支持学生建立复杂知识网络和迁移能力。各环节间有明确衔接与过渡。
+  - field: 教学方法科学性与互动性_理由
+    type: str
+    description: 解释教学方法科学性与互动性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与互动性
+    type: float
+    description: 教学方法符合教育学原理，设计多样化互动环节，如启发式提问、探究任务、小组合作等，强调主动参与与高阶思维培养。互动需有层次与目标性。
+  - field: 专业术语准确性与深度_理由
+    type: str
+    description: 解释专业术语准确性与深度评分的详细理由，引用具体例子。
+  - field: 专业术语准确性与深度
+    type: float
+    description: 准确使用并解释分子遗传领域核心术语，能区分相关概念并结合实际或例外情形进行深入讲解。术语解释需结合真实案例，避免表面化或混淆。
+  - field: 知识应用与跨界拓展性_理由
+    type: str
+    description: 解释知识应用与跨界拓展性评分的详细理由，引用具体例子。
+  - field: 知识应用与跨界拓展性
+    type: float
+    description: 教学能引导学生将分子遗传法则应用于多领域实际问题，促进知识迁移与创新。拓展需涵盖医学、农业、环境等，并鼓励跨学科思考和创新设想。
+  - field: 真实提问与常见困惑契合度_理由
+    type: str
+    description: 解释真实提问与常见困惑契合度评分的详细理由，引用具体例子。
+  - field: 真实提问与常见困惑契合度
+    type: float
+    description: 教学内容和答疑高度贴合学生在分子遗传学习中的真实困惑、兴趣和生活问题，主动引导并解决实际问题，鼓励学生表达和探讨个性化疑问。
+  - field: 核心价值观与科学伦理融入度_理由
+    type: str
+    description: 解释核心价值观与科学伦理融入度评分的详细理由，引用具体例子。
+  - field: 核心价值观与科学伦理融入度
+    type: float
+    description: 在教学过程中自然融合社会主义核心价值观与中华优秀传统文化，强调科技创新、生命伦理和社会责任。融入需具体、润物细无声，与教学内容紧密结合。
+  - field: 创新与批判性思维激发度_理由
+    type: str
+    description: 解释创新与批判性思维激发度评分的详细理由，引用具体例子。
+  - field: 创新与批判性思维激发度
+    type: float
+    description: 通过开放性问题、案例分析和跨学科联系，系统激发学生创新思考和批判性分析，鼓励质疑、独立见解和创造性解决方案。需有具体任务或评价环节。
+  format_mode: prompt

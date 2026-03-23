@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-人民代表是怎样产生的教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三学生郭婧琪，平时比较关注服装设计和绘画，和同学关系一般，主要专注学习和比赛。你作为政治教育专家，能不能详细讲讲人民代表是怎样产生的？希望你能结合我的兴趣点，流程说清楚，再举个贴近学生、比如和竞赛或设计有关的例子，最后帮我设计一个开放性的思考题，能讲得详细点吗？
+  - question: 你作为政治老师，能不能给我一份完整的分析，讲讲人民代表是怎样产生的？我是初三学生吕桐，平时喜欢电子竞技、无人机操控和动漫绘画，父母很支持我的兴趣，经常和同学组队比赛或动漫社交流。希望你流程讲清楚，结合我的兴趣举个相关的例子，最后再设计一个开放性的思考题，让大家能深入探讨一下。内容越全面越好。
+  - question: 能帮我概括一下人民代表是怎么产生的吗？流程说说，再举个例子，最后出个思考题就行。
+  - question: 我想知道人民代表是怎么产生的，你能讲清楚点吗？希望你把流程、例子和思考题都说说。
+  - question: 说说你的看法，人民代表到底是怎么产生的？能讲讲流程，再举个例子，最后出个思考题吗？
+  - question: I'm an 8th grader named ThomasSavannah. I focus on video editing and
+      running, and I tend to challenge practical conventions. Can you use a few sentences
+      to explain how People's Deputies are chosen in China? Please include the process,
+      a simple example, and an open question.
+  - question: 我是三年级学生田婷，喜欢书法、芭蕾和画画。你能详细说说人民代表是怎么产生的吗？流程要讲清楚，再举个贴近我们小学生的例子，最后出个思考题，越有趣越好哦！
+  - question: 我是林雅芙，32岁老师，喜欢书法、骑行和瑜伽，性格外向但经常跟着别人做决定。你作为政治老师，能不能讲清楚人民代表是怎么产生的？希望你流程说细致点，最好能结合我们老师平时的教学或生活举个例子，最后再出个思考题。
+  - question: 我是邹茜，31岁的老师，平时喜欢游泳和戏剧表演，也常常组织学校和社区的活动。你作为政治教育专家，能不能深入讲解一下人民代表是怎样产生的？流程要详细说清楚，再结合我们老师参与活动的经历举个例子，最后帮我设计一个启发性的思考题吧。
+  - question: 我是初中政治老师，你能全方位地讲解一下人民代表是怎么产生的吗？流程、例子和思考题都要说到，最好内容系统全面一点。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-人民代表是怎样产生的进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容与方法对学生个体差异（学习起点、兴趣、能力、认知风格等）是否有系统、动态的识别与响应。高分需体现全程分层设计、持续追踪、个性化反馈及教学调整，低分则表现为机械统一，无差异化支持。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学设计、作答等是否严格遵循指定格式与结构要求（如分步流程、举例、思考题），各部分分明、顺序合理、内容完整且无遗漏。高分需体现格式规范性、内容完整度和逻辑严密，低分则表现为结构混乱、内容缺失或随意增减。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否多样、科学，结合学生实际促进深度理解。高分需体现探究、合作、情境、反思等方法有机结合，环节递进，能激发学生主动思考和探究。低分则方法单一、互动流于形式或与学生实际脱节。
+  - field: 知识结构清晰度_理由
+    type: str
+    description: 解释知识结构清晰度评分的详细理由，引用具体例子。
+  - field: 知识结构清晰度
+    type: float
+    description: 评估知识点呈现是否系统、条理、结构化，逻辑递进清晰，重点突出。高分需有分层次结构、流程图/表格/思维导图等可视化工具辅助，帮助学生形成完整知识框架。低分则内容零散、结构混乱、缺乏系统化工具。
+  - field: 互动性与启发性_理由
+    type: str
+    description: 解释互动性与启发性评分的详细理由，引用具体例子。
+  - field: 互动性与启发性
+    type: float
+    description: 评估课堂是否设计多样化、富有启发性的互动环节，能促进学生主动表达、合作探究和深度思考。高分需体现分组讨论、情境任务、辩论等多层次互动，引发学生内在思考和观点碰撞。低分则仅机械问答或互动流于表面，学生参与度低。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否鼓励学生多角度分析、提出新见解，超越教材常规，支持学生表达独特观点并进行创新设计。高分需有开放性任务（如自拟流程、批判性讨论等），成果可展示和交流。低分则仅要求机械记忆，无创新探究。
+  - field: 价值观融入自然度_理由
+    type: str
+    description: 解释价值观融入自然度评分的详细理由，引用具体例子。
+  - field: 价值观融入自然度
+    type: float
+    description: 评估教学过程中社会主义核心价值观和中华优秀传统文化是否自然融入，结合实际或历史案例，引发学生认同。高分需表达方式贴近生活、案例丰富，能启发学生内心共鸣。低分则为生硬灌输或完全缺失。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估设置的问题是否贴近真实课堂，反映学生实际兴趣、困惑或常见误区，并能引导深入探究。高分需问题开放、具体，能激发学生探讨和追问。低分则为机械、书面化问题，无法引发学生思考。
+  - field: 学生学习成效反馈度_理由
+    type: str
+    description: 解释学生学习成效反馈度评分的详细理由，引用具体例子。
+  - field: 学生学习成效反馈度
+    type: float
+    description: 评估是否设计有科学、及时、多样的学习反馈机制（如自测、小组互评、课堂即时反馈等），并能据反馈调整教学策略。高分需反馈方式多样、反馈及时、能针对性改进教学，低分则无反馈或反馈流于形式。
+  format_mode: prompt

@@ -1,0 +1,117 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-高中-综合性化学实验方案的设计与评价教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高一学生，老师让我们自己设计一个综合性化学实验方案，可我有点不知道该怎么开始。你能讲讲看，设计这类实验方案时要注意哪些关键点吗？
+  - question: 你作为高中化学教师，我是叶碧绡，今年60岁，平时喜欢心理辅导和视频剪辑，性格上比较灵活，和年轻老师配合也不错。想请你从各个角度详细说说，怎么结合我的这些特长和经验，去设计和评价一份适合现在高中生的综合性化学实验方案？
+  - question: 我在农村中学教化学，实验器材不多，但挺想让学生们做点创新的综合性实验。你能讲讲看，在资源有限的情况下，怎么设计一个既创新又能实施的化学综合实验方案？
+  - question: 我是高三女生，比较喜欢生物，但化学实验总觉得没信心。最近老师让我们小组自己设计一个探究型的综合化学实验。你作为我的化学学习助手，能不能详细展开说说，怎么结合我的兴趣和情况，帮我们小组设计一个有生物特色的化学综合实验方案，并且怎么评价这个方案？
+  - question: 我是裴有，初一，平时爱做科学实验，也喜欢跟同学一起分析问题。你能不能概括一下，综合性化学实验方案的设计和评价都包括哪些主要环节？
+  - question: 你能帮我简单说说，高中化学综合性实验设计经常会犯哪些错误？
+  - question: 我是新入职的高中化学老师，以前主要讲理论，现在想带学生做点综合性实验。你觉得，这类实验方案的设计对学生能力培养有啥独特作用？说说你的看法。
+  - question: 你是高中化学教研组长，最近带着大家讨论综合性化学实验方案的设计和评价标准。能不能全面分析一下，怎么制定一个科学、可操作、又能激励创新的实验方案评价体系？
+  - question: 我是新入职的老师，你作为教研专家，能不能给我一份完整的分析，系统梳理下现在高中化学实验方案设计和评价有哪些新趋势、常见问题和创新实践？给我详细说说。
+  - question: I'm JacksonJason, 13 years old, in 7th grade. I love building robots
+      and doing science experiments, usually in a team, though sometimes I feel left
+      out. Can you explain how someone like me can design and evaluate a comprehensive
+      chemistry experiment plan? Just explain it clearly, thanks!
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-高中-综合性化学实验方案的设计与评价进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估实验方案是否基于学生的知识基础、兴趣、能力与学习风格等个性化特征，进行差异化设计，并能动态调整以满足不同学生的成长需求。需体现分层任务、个性化指导和自我选择机制。
+  - field: 指令遵循与结构规范性_理由
+    type: str
+    description: 解释指令遵循与结构规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范性
+    type: float
+    description: 评估实验方案是否严格按照任务要求分条作答，逻辑清晰、层次分明，涵盖实验目的、原理、步骤、注意事项、创新点等必要环节，突出重点，便于理解和执行。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评估教学方法是否符合教育学原理，综合运用探究、小组协作、同伴互评、反思等多元方式，每种方法有明确目标与实施细节，促进学生主动学习、深度理解和能力提升。仅表面涉及或单一方法均不能得高分。
+  - field: 实验方案专业性与可行性_理由
+    type: str
+    description: 解释实验方案专业性与可行性评分的详细理由，引用具体例子。
+  - field: 实验方案专业性与可行性
+    type: float
+    description: 评估实验方案科学严谨、参数明确、器材与试剂选择合理、安全措施具体，充分考虑学校资源和学生操作能力，能预设常见问题及处理方法。
+  - field: 思维拓展与创新引导_理由
+    type: str
+    description: 解释思维拓展与创新引导评分的详细理由，引用具体例子。
+  - field: 思维拓展与创新引导
+    type: float
+    description: 评估方案是否主动引导学生质疑、探索多种实验路径，鼓励提出新假设、改进实验设计，促进跨学科和实际生活联系。仅表面鼓励创新或无具体引导不能得高分。
+  - field: 真实教学场景还原度_理由
+    type: str
+    description: 解释真实教学场景还原度评分的详细理由，引用具体例子。
+  - field: 真实教学场景还原度
+    type: float
+    description: 评估实验方案及教学建议是否充分考虑学校实际环境、资源限制、学生常见困惑等现实问题，并提出具体可行的应对措施，如设备替代、分组优化、现象解释等。
+  - field: 价值观与文化素养融入度_理由
+    type: str
+    description: 解释价值观与文化素养融入度评分的详细理由，引用具体例子。
+  - field: 价值观与文化素养融入度
+    type: float
+    description: 评估实验教学是否以自然、具体的方式融入社会主义核心价值观和中华优秀传统文化，强调团队合作、科学诚信、实事求是等品质，并有情境化引导和评价。仅表面引用或生硬灌输不能得高分。
+  - field: 反馈针对性与可操作性_理由
+    type: str
+    description: 解释反馈针对性与可操作性评分的详细理由，引用具体例子。
+  - field: 反馈针对性与可操作性
+    type: float
+    description: 评估针对学生实验过程与结果的问题，反馈是否具体、针对性强，能提出明确且可操作的改进建议，帮助学生实际提升实验技能与科学素养。仅泛泛而谈或无实际建议不予高分。
+  format_mode: prompt

@@ -1,0 +1,133 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-生物分类体系与进化思想教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名刚刚接手初中生物课的新老师，班上学生基础和兴趣差异很大，有的同学喜欢观察自然，有的对理论知识感兴趣，还有部分学生对生物分类体系和进化思想很困惑。你作为生物教育专家，能从各个角度详细说说在教学“生物分类体系与进化思想”这一单元时，应该如何进行分层教学设计、激发不同学生兴趣、解决常见误区，并融入探究和反思，让学生主动思考和持续改进学习效果吗？从各个角度详细说说
+  - question: 我是七年级学生的家长，我家孩子喜欢观察小动物但生物基础比较薄弱。你是我的学习助手，能说说你的看法吗：我应该怎么帮助孩子理解生物分类体系和进化思想，让他既能保持对自然的兴趣，又能逐步掌握基本知识？说说你的看法
+  - question: 你作为生物教学顾问，我叫贺宏远，31岁，是一名材料工程师，平时喜欢户外徒步和手工DIY，性格上职业规划明确、善于打破常规、喜欢辩论，并在科技论坛和徒步群体中有一定影响力。我对科学、进化和分类体系背后的逻辑很感兴趣，但对初中生物教材的分类标准和典型进化案例常常产生质疑。能不能全面分析一下：如何用创新和跨学科视角，把生物分类体系与进化思想讲得更具启发性和批判性？全面分析一下
+  - question: 我是一名初中生物老师，最近发现有学生在学习生物分类体系与进化思想时总是把‘物种’和‘分类单元’混淆。你作为生物学科专家，能简短回答下：在课堂上怎样用简明清晰的方法帮助学生区分物种和分类单元？简短回答下
+  - question: Hi, I am TaylorGrace, a 22-year-old yoga instructor who maintains a
+      balanced lifestyle through yoga, nutrition studies, and reading spiritual/self-help
+      books. I’m interested in how the scientific ideas behind biological classification
+      and evolution can inspire a greater respect for life and nature in wellness
+      communities. As an emotionally stable person who enjoys fostering connections
+      through movement arts, could you please provide a detailed analysis of how understanding
+      biological classification systems and evolutionary thought can deepen our appreciation
+      for life’s diversity, and suggest ways to incorporate these insights into wellness
+      or yoga education? Please detailedly analyze all relevant aspects.
+  - question: 我最近在生物课上发现，部分学生对生物进化的概念存在误解，比如以为‘人是猴子变的’。你作为初中生物教学助手，能深入说说看：针对不同基础和兴趣的学生，如何通过案例和互动活动帮助他们正确理解进化思想，并引导他们反思自己的想法？深入说说看
+  - question: You are a biology education assistant. My name is JonesAriana. I'm a
+      9-year-old 4th grade student who loves Yue Opera, baking, and recitation. I
+      am an effective planner but rely on external supervision, and I enjoy collaborating
+      with others. Sometimes my boundaries are a bit blurry, but I like analyzing
+      things. Can you say your thoughts on how I can understand the basic idea of
+      biological classification and evolution in a fun and easy way? Say your thoughts
+  - question: 我是初中生物老师，最近班上有学生问我为什么同一种动物会有不同的品种，比如狗有很多品种。你是我的教学顾问，能讲清楚点：如何用生物分类和进化的知识，帮助学生理解这一现象？讲清楚点
+  - question: 我是一名刚入职的初中生物老师，教学“生物分类体系与进化思想”时发现部分学生把环境变化与物种进化关系理解得很机械。你作为教育专家，能不能讲清楚点：如何用生活化案例和探究活动，让学生真正理解环境变化与物种进化的深层联系？讲清楚点
+  - question: 我是魏俊驰，34岁，任教于初中，平时喜欢无人机航拍、3D建模和工业设计，是学校航模社团和3D打印小组的指导老师。你是我的生物教学伙伴，能说说主要的：在生物分类体系与进化思想教学中，有哪些关键知识点最值得突出介绍？如何结合科技创新和工程实践激发学生兴趣？说说主要的
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-生物分类体系与进化思想进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 教师能根据学生的具体学习水平、兴趣、常见困惑等画像，提供针对性解答与持续性支持。回应不仅限于举例，更包括启发式追问、动态调整讲解内容，确保每位学生的实际需求得到关注和跟进。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 教师严格按照教学任务及指令要求组织内容，规范使用分点、案例、图表等形式，流程清晰，细节完备，且能主动检查指令执行的完整性和规范性。
+  - field: 多样化教学方法体现_理由
+    type: str
+    description: 解释多样化教学方法体现评分的详细理由，引用具体例子。
+  - field: 多样化教学方法体现
+    type: float
+    description: 教师能灵活综合运用探究、案例分析、讨论、游戏、实践等多种科学教学方法，鼓励学生主动参与、协作和实践，教学活动丰富多样，避免单一灌输。
+  - field: 科学性与专业性_理由
+    type: str
+    description: 解释科学性与专业性评分的详细理由，引用具体例子。
+  - field: 科学性与专业性
+    type: float
+    description: 教学内容准确无误，逻辑严密，积极引用最新版教材、权威资料和生活实际例证。能主动更新知识，解释前沿观点，且表达清晰、条理分明，不仅无错误，还能拓展知识深度。
+  - field: 激发创新思维能力_理由
+    type: str
+    description: 解释激发创新思维能力评分的详细理由，引用具体例子。
+  - field: 激发创新思维能力
+    type: float
+    description: 教师通过开放性问题、假设探究、多角度分析等方式，持续引导学生独立思考、提出新见解，鼓励创新性探索，并对学生创新成果进行评价和引导。
+  - field: 模拟真实提问场景_理由
+    type: str
+    description: 解释模拟真实提问场景评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景
+    type: float
+    description: 教师能贴近初中生真实学习困惑和兴趣，使用生活化语言，主动回应常见误区、兴趣点和学生真实提问，体现互动氛围和教学亲和力。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 教师在讲解知识过程中，自然融入社会主义核心价值观和中华优秀传统文化，潜移默化引导学生形成正确人生观、价值观和自然观，方法得当不生硬，结合课程内容与生活实际。
+  - field: 分层教学设计_理由
+    type: str
+    description: 解释分层教学设计评分的详细理由，引用具体例子。
+  - field: 分层教学设计
+    type: float
+    description: 教师根据学生不同学习水平、兴趣和能力，设计分层任务与活动，提供分级支持与挑战，动态调整目标，促进每个学生成长和自信心提升。
+  - field: 反思与反馈机制_理由
+    type: str
+    description: 解释反思与反馈机制评分的详细理由，引用具体例子。
+  - field: 反思与反馈机制
+    type: float
+    description: 教师设置有效反思与反馈环节，定期收集学生学习效果和困惑，基于反馈动态调整教学方案，及时补充讲解或改进方法，形成持续改进的教学闭环。
+  format_mode: prompt

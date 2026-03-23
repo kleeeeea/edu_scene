@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-口算与心算练习题生成教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是WilsonSamuel，14岁，8年级，英文授课，喜欢独自钻研天文、科学实验和编程，平时不太参与小组活动，更喜欢自己挑战难题。你作为数学教育专家，能给我一份完整的分析吗？我希望数学口算和心算练习题能结合我的兴趣和独立竞争性，最大化提升我的数学思维能力。
+  - question: 我是一名小学数学老师，班里有孩子注意力容易分散，做口算总是出错。你能帮我讲清楚点，怎么设计适合他们的口算和心算练习题吗？最好能举几个例子。
+  - question: 我是小学教研员，你作为专家，能从各个角度详细说说如何科学设计口算和心算练习题吗？我想兼顾不同年级、兴趣激发、科学分层、还有价值观引导。
+  - question: 我是新手小学数学老师，班里有孩子做口算总是因为紧张而出错。你作为教育专家，能讲清楚点吗？怎么帮他们提高口算能力，有没有具体练习方法？
+  - question: 你是我的教学助手，班里有些学生做口算总是很慢，有什么办法能提高他们的速度？简要说明下就行。
+  - question: 我是三年级学生的妈妈，孩子数学一般，注意力不太集中，更喜欢户外玩耍，不喜欢枯燥的练习。你作为数学教育专家，能深入说说看怎么用创新方法提高他对口算和心算的兴趣和能力吗？最好还能培养专注力和好习惯。
+  - question: 你是我的数学教学助手，班里有个很喜欢画画但对数学没兴趣的孩子，性格温和但容易分心。能不能深入说说看，怎么通过美术活动提升她对口算和心算的兴趣和能力？最好有具体的教学策略和活动设计。
+  - question: 我是宋涵，高二男生，喜欢羽毛球和国际象棋，性格有点焦虑但行动力强，平时和同学打球、周末下棋。你作为数学教育专家，简单说说就行，怎么结合我的兴趣和性格设计口算和心算练习题，最好还能帮我缓解焦虑、提高数学能力。
+  - question: 我是江雪雪，二年级女生，喜欢羽毛球和绘画，学习时比较理性，父母工作忙主要由家教辅导，周末会去培训班和兴趣班。你作为数学学习助手，讲讲看怎么结合我的兴趣和家庭情况，设计既有趣又适合我的口算和心算练习题？最好有具体举例。
+  - question: 你是我的数学教学助手，班里有学生对心算总是畏难、缺乏信心。帮我理解一下怎么通过科学的心理引导和教学方法，帮助他们提升心算能力吧，最好举些实际例子。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-口算与心算练习题生成进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像响应精度_理由
+    type: str
+    description: 解释个性化画像响应精度评分的详细理由，引用具体例子。
+  - field: 个性化画像响应精度
+    type: float
+    description: 题目生成需深度结合学生的年龄、能力、兴趣、学习风格等多维画像，体现在题目内容、难度设置、表达方式和情境设计等各方面，确保每位学生获得高度契合自身特点的练习体验。不得仅表面化替换元素，需体现个性化在题目核心结构中的影响。
+  - field: 指令遵循与格式标准化_理由
+    type: str
+    description: 解释指令遵循与格式标准化评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式标准化
+    type: float
+    description: 严格按照教师或系统的具体指令完成题目生成，包括题型、数量、难度、呈现形式等，输出结构规范一致，题干、答案、互动环节等无缺漏或格式混乱，便于直接使用。
+  - field: 教学方法科学性与分层递进_理由
+    type: str
+    description: 解释教学方法科学性与分层递进评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与分层递进
+    type: float
+    description: 题目设计需遵循教育学原理，体现由易到难、分层递进，先巩固基础再逐步挑战难点。针对常见错因设计引导或纠错环节，避免难度无序或内容重复，保证练习有助于能力提升。
+  - field: 多样化教学策略体现_理由
+    type: str
+    description: 解释多样化教学策略体现评分的详细理由，引用具体例子。
+  - field: 多样化教学策略体现
+    type: float
+    description: 题目设计需融合多种教学策略，如游戏化、情境化、合作学习、自主探究等，题型和参与方式丰富，创新元素不流于表面。至少包含两种以上不同策略，且每种策略均有具体实现环节，能激发不同类型学生持续兴趣和参与度。
+  - field: 激发创新思维能力_理由
+    type: str
+    description: 解释激发创新思维能力评分的详细理由，引用具体例子。
+  - field: 激发创新思维能力
+    type: float
+    description: 题目中应设置开放性、反思性或创新任务，鼓励学生用多种方法思考、提出新问题、进行自我反思或类比，培养创造性思维和问题解决能力，避免仅限标准答案。
+  - field: 模拟真实提问与互动环境_理由
+    type: str
+    description: 解释模拟真实提问与互动环境评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动环境
+    type: float
+    description: 题目设置需还原真实课堂、家庭或同伴互动场景，促进师生、亲子或同伴交流与合作，增强真实感和参与感。至少有一项内容要求学生与他人合作、比赛或讨论，贴近实际生活。
+  - field: 社会主义核心价值观与中华优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入
+    type: float
+    description: 题目情境需自然、深度地体现社会主义核心价值观或中华优秀传统文化，强调诚信、友善、合作、节俭等正向行为导向，寓教于题，避免生硬拼贴或形式化，情境真实且有教育意义。
+  - field: 语言表达规范性与亲和力_理由
+    type: str
+    description: 解释语言表达规范性与亲和力评分的详细理由，引用具体例子。
+  - field: 语言表达规范性与亲和力
+    type: float
+    description: 题目语言需规范、简明、亲切，表达风格适合小学生认知与心理，语法和用词准确，富有激励性与亲和力，避免晦涩、生硬或令人困惑的表述。
+  format_mode: prompt

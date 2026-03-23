@@ -1,0 +1,108 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: /inspire/hdd/project/ai4education/p-liuwentao/elmes/elmes/mapping/merged_metric_mapping.json
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-初中-酸碱盐核心性质的归纳与应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是乡村初中化学老师，班里学生基础参差不齐，部分同学对酸碱盐的核心性质和实际应用很迷茫。你作为化学教育专家，能深入说说看吗？麻烦系统地归纳一下酸、碱、盐的核心性质，分析它们之间的区别与联系，并结合乡村学校实际，详细讲讲怎么帮助不同基础的学生理解和应用这些知识，比如生活中的例子、课堂活动和创新探究建议，还有怎么在教学中自然融入科学精神和责任意识。
+  - question: 我是初中生，最近学酸碱盐的时候总是分不清它们的区别和联系，也不知道这些性质能在生活里怎么用。你作为我的学习助手，能说说你的看法吗？帮我理清一下核心性质和实际应用，最好举点生活里的例子，顺便激发我多思考探索。
+  - question: 我是初三学生，成绩一般，对化学挺有兴趣但总是分不清酸、碱、盐的典型性质，尤其做题时容易搞混。你作为化学知识导师，能讲清楚点吗？希望你结合我的情况讲讲这些物质的性质和辨别方法，还有点学习上的建议，让我考试时更有信心。
+  - question: 我是初中生家长，我女儿刚学酸碱盐，总觉得内容抽象难懂，分不清性质和实际用处。你作为化学教育专家，能讲清楚点吗？请说说酸、碱、盐的核心性质，举举家庭生活里的例子，顺便给点激励孩子主动探索的建议。
+  - question: 我刚入职做初中化学老师，经验还不多，班里有些学生对酸碱盐挺感兴趣但总是混淆概念。你作为教学顾问，能详细说说吗？帮我梳理一下酸、碱、盐的核心性质、区别和联系，再讲讲课堂上怎么分层指导和设计有趣的探究活动，能激发学生创新思维，顺便说说怎么融入科学探究和合作精神。
+  - question: 我是初中生，很喜欢做化学实验，但对酸碱盐的核心性质和实际应用理解还不够深入，特别想知道怎么在实验和生活中辨别它们。你作为化学知识导师，能帮我详细讲讲吗？请归纳一下酸、碱、盐的性质和区别，结合实验和生活例子说明辨别和应用方法，顺便给点创新实验设计建议，鼓励我多思考和团队合作，也说说科学精神和责任意识在探究活动里的体现。
+  - question: 我是一名新手初中化学教研员，现在负责培训乡镇学校的年轻老师，发现他们教酸碱盐时容易只罗列知识点，缺乏系统性和创新活动。你作为资深教学专家，能从各个角度详细说说吗？请系统归纳初中酸碱盐的核心性质与应用，结合乡镇教师实际，提出分层指导、合作探究和价值观融入等具体方案，让培训内容更全面深入实用。
+  - question: 我是初中生，最近考试时总分不清酸碱盐的主要性质和实际应用。你作为学习助手，大概讲讲吧，帮我快速掌握重点。
+  - question: 我是初一学生，刚学化学，对酸碱盐的性质挺有兴趣，但还不清楚它们主要特点和生活应用。你作为知识导师，能说说主要的内容吗？让我记住最重要的东西。
+  - question: 我是城市初中化学老师，班里学生基础不错，但对酸碱盐的综合应用和创新探究不太感兴趣。你作为化学教育专家，能全面深入地讲讲吗？请系统梳理酸、碱、盐的核心性质和联系，结合城市学校实际，详细说说怎么提升学生综合应用能力、创新思维和生活实践，分层设计课堂活动和探究项目，也自然融入科学精神、合作意识和中华文化，让学生在知识、能力、价值观上都能全面发展。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-初中-酸碱盐核心性质的归纳与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 基于学生的学习基础、兴趣和反馈，动态识别不同类型学生（如基础薄弱、学有余力、兴趣导向等），并针对性调整讲解、举例和互动方式，体现分层教学和个性化关怀。需在教学过程中主动收集并回应学生反馈。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 严格按照教学任务要求组织内容，分步归纳、结构分层、系统讲解，覆盖所有教学要素。内容逻辑清晰，格式统一规范，必要时用表格、流程图、思维导图等工具辅助表达，确保信息完整无遗漏。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 采用多元化、科学且适合初中生认知规律的教学设计，包括递进式、启发式、情境教学等。教学过程中需至少包含两种互动环节（如提问、讨论、小实验等），针对学生认知障碍有具体支持措施，内容准确无误，能有效促进理解。
+  - field: 知识结构归纳深度_理由
+    type: str
+    description: 解释知识结构归纳深度评分的详细理由，引用具体例子。
+  - field: 知识结构归纳深度
+    type: float
+    description: 系统、深入梳理酸碱盐的物理性质、化学性质、典型反应及应用等核心内容，展示知识内在联系。需用表格、思维导图等工具呈现整体知识框架，体现层次性和系统性，避免碎片化。
+  - field: 应用场景丰富性与贴近性_理由
+    type: str
+    description: 解释应用场景丰富性与贴近性评分的详细理由，引用具体例子。
+  - field: 应用场景丰富性与贴近性
+    type: float
+    description: 结合初中生真实生活，设计多样且具体的应用案例，覆盖厨房、卫生、健康等多个场景。案例需具备具体操作性和实践性，能够激发学生兴趣和参与欲望，并说明操作步骤和注意事项。
+  - field: 创新思维激发能力_理由
+    type: str
+    description: 解释创新思维激发能力评分的详细理由，引用具体例子。
+  - field: 创新思维激发能力
+    type: float
+    description: 通过设计探究任务、开放性问题、鼓励学生提出独立见解等方式，主动激发创新和自主思考能力。教学过程中至少包含一种创新性互动或开放探究环节，并鼓励学生展示、讨论新方法或观点。
+  - field: 社会主义核心价值观与中华文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华文化融入
+    type: float
+    description: 在教学过程中自然融合科学精神、劳动精神、合作互助等社会主义核心价值观，结合中国优秀传统文化（如古代酿醋、制盐工艺等），与化学主题有机结合，并通过实践活动、讨论等方式促进价值观内化。
+  format_mode: prompt

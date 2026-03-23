@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-小学-人体基本功能与健康常识教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学五年级的学生，最近运动后总是出汗，还觉得口渴和累，能不能系统讲讲为什么人会流汗？流汗和健康有什么关系？能结合运动和天气变化说说你的看法
+  - question: 我是三年级小学生，爷爷因为心脏生病住院了，我有点担心。你能具体说说心脏在人体里的作用吗？它怎么帮我们保持健康？能不能用简单例子或者小游戏帮助我理解
+  - question: 我是四年级学生，老师讲过消化系统，我有时候吃完饭很精神，有时候很困。你能大概讲讲消化系统是怎么工作的？为什么吃了东西感觉会不一样
+  - question: 你作为小学科学老师，我最近给二年级小朋友讲人体基本功能，有些孩子注意力总分散，我自己有时也容易疏忽，怕影响课堂。能帮我理解一下小学生注意力分散的原因和怎么用有趣活动吸引他们吗？帮我理解一下
+  - question: 你是一名小学科学教师，需要设计‘人体基本功能与健康常识’的综合课程。能不能从各个角度详细说说怎么系统讲解人体主要器官、功能、健康习惯？还想知道怎么用互动实验、角色扮演这些方法激发学生兴趣，以及家庭、学校、社会怎么一起做好健康教育。请从各个角度详细说说
+  - question: 我是五年级学生，体育课上讲了呼吸和运动。我特别好奇呼吸系统怎么工作，运动时为什么需要更多氧气？你能不能全面分析一下，还举几个生活例子帮我理解
+  - question: 我是刚入职的小学科学老师，负责讲人体基本功能与健康常识，发现三年级孩子对器官和健康习惯好多问题。你作为内容设计专家，能不能系统地讲解一下小学生要掌握的这部分知识体系？包括主要器官、健康生活、常见误区和互动教学方法。系统地讲解一下
+  - question: 我是四年级学生，最近总挑食，妈妈很担心，说营养很重要。我只喜欢吃零食和肉，不爱吃蔬菜水果。你能深入讲解一下为什么均衡饮食对健康很重要吗？结合我的情况说说，还能不能教我和同学怎么用有趣的方法养成好习惯
+  - question: 我是小学一年级的小朋友，老师说大脑很重要，我想知道大脑在人体里有什么主要作用？它怎么帮我们学习和生活？说说主要的
+  - question: 我是三年级小学生，有时跑步很快，有时容易累，妈妈说跟身体能量有关。我不太懂能量怎么来的，怎么让我们动起来。你能详细说说吗？帮我举些运动、饮食和生活里的例子
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-小学-人体基本功能与健康常识进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评价教学内容及表达是否针对学生的年龄、兴趣、知识基础等个体差异，能主动识别并回应多种个体特征，提供定制化举例、比喻或引导。高分要求体现教师对学生画像的精准理解，并在内容和活动设计中灵活嵌入个性化元素。
+  - field: 指令遵循规范性_理由
+    type: str
+    description: 解释指令遵循规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循规范性
+    type: float
+    description: 评价教学内容是否严格、细致地按照教学任务或提问要求的结构、内容、格式和长度执行。高分需展现对所有指定细节的准确响应，并体现条理清晰、任务完成度高。
+  - field: 多样化教学方法应用_理由
+    type: str
+    description: 解释多样化教学方法应用评分的详细理由，引用具体例子。
+  - field: 多样化教学方法应用
+    type: float
+    description: 评价是否根据教学内容和学段特点，融合两种及以上教学手段（如实验、游戏、图示、故事、互动问答等），促进多维理解和积极参与。高分需体现方法选择的针对性和创新性，能有效提升学习兴趣与效果。
+  - field: 科学性与专业性_理由
+    type: str
+    description: 解释科学性与专业性评分的详细理由，引用具体例子。
+  - field: 科学性与专业性
+    type: float
+    description: 评价内容的准确性、逻辑性、学段适宜性和表达严谨性。高分不仅要求无科学性错误，还需结合小学生认知特点，精准把控知识深度，采用恰当比喻辅助理解，避免超纲或内容空洞。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评价是否通过设问、任务或活动，激发学生提出新问题、展开想象或多角度思考。高分需设计鼓励学生主动表达独特见解或创造性产出的环节，并能引导学生多元表达（如画画、写故事、表演等）。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价问题或情境是否贴近真实小学课堂或学生日常生活，体现常见困惑、兴趣或表达方式。高分需结合生活化场景或学生常用表达，允许教师适度引导，增强学习的相关性和趣味性。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 评价教学过程中是否将中华优秀传统文化、社会主义核心价值观等正向引导自然、无痕地融入实际情境。高分要求与教学内容和生活实际紧密结合，润物细无声地传递正面价值，避免生硬灌输。
+  - field: 表达清晰易懂_理由
+    type: str
+    description: 解释表达清晰易懂评分的详细理由，引用具体例子。
+  - field: 表达清晰易懂
+    type: float
+    description: 评价语言是否简明、生动、结构清楚、逻辑流畅，表达方式贴合小学生理解习惯。高分需用恰当比喻、分段、层次鲜明地讲解知识，并兼顾趣味性与亲和力。
+  - field: 互动性与参与感_理由
+    type: str
+    description: 解释互动性与参与感评分的详细理由，引用具体例子。
+  - field: 互动性与参与感
+    type: float
+    description: 评价是否设计具体、可操作的互动环节（如提问、小游戏、实验、小组讨论等），并有效促进学生主动参与。高分需多样互动方式并有明确反馈机制，能让绝大多数学生积极投入并获得个性化回应。
+  format_mode: prompt

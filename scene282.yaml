@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-初中-“一首歌，一个时代”音乐鉴赏（美育+德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中音乐老师，班里有几个安静、对历史有兴趣的学生，我打算用《黄河大合唱》做“一首歌，一个时代”的音乐鉴赏课。你觉得针对他们，怎么设计导入和互动环节，让他们能主动参与？简短回答下。
+  - question: 我是一名初中音乐和德育融合课程的教研员，班里学生兴趣差异很大，有喜欢流行的、也有喜欢古典的，还有喜欢安静思考的。现在要做“一首歌，一个时代”音乐鉴赏的系统课程设计，能详细分析下各个方面吗？包括作品选择、教学目标、分环节设计、互动讨论、德育美育怎么融入、分层教学怎么做，麻烦系统讲讲。
+  - question: 我是初二学生，比较外向，喜欢唱歌但不懂音乐的历史。老师让我们用《我的祖国》写一篇“一首歌，一个时代”的鉴赏作业，说说这首歌怎么体现时代特征和情感。你能解释一下吗？举点例子帮我理解。
+  - question: 我是初中班主任，班里有些学生家长很鼓励表达，有些比较严格。我们最近在做“一首歌，一个时代”的音乐鉴赏活动，让学生选歌分享感受。你觉得怎么引导不同家庭背景的孩子积极参与、表达自己的想法？说说你的看法。
+  - question: 我是初中音乐老师，班里有学生喜欢网络热歌，也有喜欢经典红色歌曲的。我要做“一首歌，一个时代”的音乐鉴赏主题活动，你能深入说说看怎么设计课程吗？包括分层、结构化教学方案、导入、选作品、互动讨论、拓展活动和德育美育怎么融入，针对不同兴趣和性格的学生给点具体建议。
+  - question: 你是初中音乐教研组负责人，班里有开朗善于表达的学生，也有内向喜欢思考的，还有一些家庭音乐氛围很好的孩子。现在要做“一首歌，一个时代”的音乐鉴赏课，你能全面深入地讲讲怎么系统设计课程吗？比如怎么分层、个性化、创新，教学目标、环节、互动方式、价值观融入、家校协同等方面，举点实际例子说清楚。
+  - question: 我是初中学生，喜欢流行歌但家里人常听红色歌曲。老师要我们用《歌唱祖国》写“一首歌，一个时代”的感受文，我不太懂这首歌为什么这么受欢迎。你能说说你的看法吗？帮我解释下它的时代意义和情感表达。
+  - question: 我是初中音乐老师，班里有学生喜欢画画，也有擅长写诗的。我们要做“一首歌，一个时代”的音乐鉴赏活动，想让大家结合音乐作品做些跨学科创作。你能讲清楚点怎么设计这样的教学环节，既能激发学生创造力，又能体现时代情感和德育美育目标？
+  - question: 我是初中音乐老师，最近班里气氛很活跃，学生喜欢讨论各年代的代表歌曲。我想组织“一首歌，一个时代”的项目式音乐鉴赏活动，让大家分组研究不同年代的歌和背后的时代背景、价值观。你能全面分析一下怎么设计这个活动吗？包括分步方案、分层指导、小组合作、德育美育怎么融入。
+  - question: 我是初中学生，喜欢独立思考，也喜欢用音乐表达自己。老师让我们写“一首歌，一个时代”的鉴赏作业，说说你最喜欢的歌和它的时代意义。我该怎么把自己的生活体验和歌曲背景结合表达？简短回答下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-初中-“一首歌，一个时代”音乐鉴赏（美育+德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容与活动是否充分考虑初中生在音乐兴趣、审美水平、学习方式等方面的多样性，是否通过分层、分组、个别化任务和动态调整，持续关注并促进每位学生的成长与参与度，体现差异化引导和支持。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教学方案是否严格按照教学任务与流程组织，结构清晰（如导入、鉴赏、讨论、总结等环节），每环节有明确目标、内容、时间安排和互动设计，整体排版规范，便于教师实施和后期复盘。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否基于美育和德育理论，采用启发式、探究式、合作体验等多元化方法，能有效促进学生自主学习、批判思考、价值观内化和审美能力提升，方法选择有理论依据并能灵活调整以适应学生实际。
+  - field: 音乐鉴赏专业性_理由
+    type: str
+    description: 解释音乐鉴赏专业性评分的详细理由，引用具体例子。
+  - field: 音乐鉴赏专业性
+    type: float
+    description: 评估音乐分析是否系统涵盖旋律、节奏、歌词、结构、风格、演唱、时代背景等要素，分析深度与准确性兼顾，专业术语与通俗表达结合，能根据初中生认知水平进行分层引导，帮助建立音乐审美体系。
+  - field: 互动与反馈机制完整性_理由
+    type: str
+    description: 解释互动与反馈机制完整性评分的详细理由，引用具体例子。
+  - field: 互动与反馈机制完整性
+    type: float
+    description: 评估课堂是否设计多层次互动与反馈机制，包括开放性提问、小组或个人交流、教师针对性回应等，能根据学生反馈灵活调整教学策略，促进学生深度思考和表达，反馈及时且有针对性。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学活动是否鼓励学生用多元方式表达对音乐及时代意义的理解，如创作、表演、跨学科表达等，支持不同观点与创新思考的交流，表达方式多样化，鼓励观点碰撞与自主探索。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估课程是否将爱国、敬业、诚信、友善等核心价值观与音乐及时代背景有机融合，既体现中华优秀传统文化，又与学生现实生活和情感体验深度相关联，融入过程自然、情感真实，能激发学生主动认同和行为转化，避免口号化或形式化。
+  - field: 真实场景提问模拟度_理由
+    type: str
+    description: 解释真实场景提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实场景提问模拟度
+    type: float
+    description: 评估课堂提问是否贴合初中生实际思考习惯，问题具有开放性、探究性和讨论性，能激发学生兴趣和真实表达，符合初中课堂实际情境，问题针对性和启发性强。
+  format_mode: prompt

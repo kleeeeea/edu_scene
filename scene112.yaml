@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-高中-能量与动量守恒的综合应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高二学生，最近在物理学习中总是搞不清楚能量守恒和动量守恒在解题时到底有什么区别，也不知道什么时候该用哪个守恒定律。能具体说说吗？最好能结合实例和容易出错的地方帮我分析一下。
+  - question: 你作为物理教育专家，我是冯丽，今年36岁，一直在物理教学一线工作，平时喜欢手工DIY、方言研究和烘焙。最近发现班里学生在做能量与动量守恒综合应用题时总是分不清定律用法，理解和迁移能力欠缺，特别是在多步骤题目中容易混淆。能帮我全面分析一下高中物理中能量与动量守恒的教学策略、典型案例、学生常见误区以及怎么培养学生的迁移能力吗？也希望你能结合我的兴趣和社交特点，给我一些适合我的教学建议。
+  - question: 我是高三理科生，最近准备参加物理竞赛。你作为物理竞赛指导老师，能不能全方位地讲解一下能量守恒和动量守恒在复杂碰撞、火箭推进、多体系相互作用等综合应用中的本质联系、解题策略、常见陷阱和创新探索的方法？希望能结合历史经典案例和现代科技实际，比如航天和交通安全，系统说说。
+  - question: 我是侯邦，41岁物理老师，平时喜欢晨跑、无人机航拍和木工制作。想请你简要说明下高中物理里能量守恒和动量守恒综合应用的核心要点和主要应用场景，也希望你能给我这样逻辑性不强、思维容易固化的老师一些教学建议。
+  - question: 我是胡媛媛，今年51岁，是一名船员，喜欢摄影和健身。最近自学高中物理，遇到能量守恒和动量守恒综合应用题有点搞不懂。你能简要说明下这两种守恒定律在实际生活中的典型应用吗？同时也希望你能给我这种理论偏好、学习时间不太集中的人一些建议。
+  - question: 你作为物理学科专家，我是高三学生，物理成绩一般，但对生活中的科技应用特别感兴趣。能深入讲解一下能量守恒和动量守恒在现实生活、科技创新、工程技术中的综合应用吗？希望能有汽车安全、体育竞技、电动车设计等实际案例，也麻烦给我这种兴趣导向型学生一些学习建议。
+  - question: 我是高二理科生，最近复习能量守恒和动量守恒的综合应用时，发现有些题目会涉及能量损失或者动量不守恒的情况。你能讲清楚点在做这类题时怎么处理这些非理想情况吗？最好能结合例子分析下对解题思路和结果的影响。
+  - question: 我是一名物理老师，在教学中经常被学生问到：为什么有些题目要同时用能量守恒和动量守恒才能解？你能详细说说背后的物理原理、常见题型和解题流程吗？也希望能给我一些教学建议。
+  - question: 我是石湘皓，55岁，学校物理老师，平时喜欢带学生做航模设计，也爱下象棋、参加民俗活动。我想详细请教下，通过哪些实践活动（比如航模制作、团队实验）能有效培养学生对能量与动量守恒综合应用的理解和兴趣？另外也希望你能给我一些提升课堂条理性的建议。
+  - question: You are a physics education expert. My name is RobinsonBella, a 41-year-old
+      teacher who loves DIY and rock climbing, and I always try to stay flexible in
+      both my teaching and life. Could you please systematically explain the integrated
+      application of energy and momentum conservation in high school physics? I’d
+      like a really detailed answer covering core principles, real-world cases, creative
+      classroom activities, and suggestions on how to encourage scientific inquiry
+      and cooperation among students. If you could also weave in Chinese traditional
+      cultural values and ideas about social responsibility, that would be great.
+      Please make your guidance practical for someone with a flexible teaching approach
+      like mine.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-高中-能量与动量守恒的综合应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估答案是否能精准识别并回应学生的具体学习特征，包括学习水平、兴趣、困惑点、认知风格等。高分需体现针对性、分层次、动态跟踪与持续调整，回应方式需超越模板化，真正反映对学生个体的深度理解与关怀。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估答案是否严格按照题目要求的格式、步骤和内容完成，结构分明、逻辑递进、信息层级清晰。高分需体现结构创新性（如合理嵌套、图示辅助）、表达规范性和内容完整性，低分则表现为结构混乱、遗漏关键内容、表达不规范或逻辑不连贯。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估答案所用教学方法是否符合现代教育学原理，如启发式、探究式、差异化教学，结合物理学科特点展开，体现层次递进、跨学科融合和高阶思维培养。高分需包含创新教学设计与学生主动参与环节，低分仅体现机械灌输或单一教学模式。
+  - field: 知识点准确性与深入性_理由
+    type: str
+    description: 解释知识点准确性与深入性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与深入性
+    type: float
+    description: 评估答案是否系统、准确阐释能量与动量守恒相关知识点，细致区分不同应用情境，深入剖析原理、条件、推导过程及常见误区，并能扩展到实际问题或前沿应用。高分需体现原理推导、误区辨析和实际/前沿应用拓展，低分则表现为知识点罗列、解释片面或错误。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估答案是否通过开放性问题、探究任务、跨界应用等方式激发学生创新思维与探索欲望。高分需鼓励学生提出新问题、改进方案或自主设计实验，体现问题开放性、跨学科联系及创新产出。低分仅布置标准题目或重复性练习，无创新引导。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 评估答案是否能模拟真实学生的提问情境，主动回应学生疑惑，开展互动式交流（如反问、补充说明、情感共鸣等），并根据学生反馈及时调整教学策略。高分需体现多轮互动、针对性解答与情感共鸣，低分则表现为机械化回答，无互动或教学调整。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入
+    type: float
+    description: 评估内容是否在教学过程中自然融入社会主义核心价值观（如诚信、合作、责任感）和中华优秀传统文化，结合实际教学情境进行引导。高分需体现价值观与传统文化的自然、具体、情境化融入，低分则表现为生硬插入口号或完全未体现相关内容。
+  - field: 多样化问题设计与个性化引导_理由
+    type: str
+    description: 解释多样化问题设计与个性化引导评分的详细理由，引用具体例子。
+  - field: 多样化问题设计与个性化引导
+    type: float
+    description: 评估答案是否能根据学生兴趣、能力、学习风格等差异，设计多样化的问题类型和个性化学习路径建议。高分需兼顾兴趣、能力、风格等多个维度，给出具体建议并能根据反馈动态调整，低分则表现为习题类型单一、无个性化引导和持续调整。
+  format_mode: prompt

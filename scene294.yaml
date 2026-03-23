@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-高中-“何为美？”——中西美学思想初探（美育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二男生，喜欢哲学和写随笔，常常观察生活中的美，可还是不太明白‘美’的本质。你作为中西美学思想的专家，能不能彻底说清楚‘美’到底是什么？希望你能从中西方观点、历史发展到现实意义都系统地分析下，最好结合案例和生活体验帮我理清楚。
+  - question: 我是寇雨薇，今年52岁，是一名老师，平时爱瑜伽和阅读，对教育很有热情。你作为美育教研专家，能讲清楚点中西美学思想的异同吗？最好结合一些典型观点和教学实际，方便我在课堂上更好地引导学生理解‘美’的多样性。
+  - question: 我是高三文科女生，性格内向，喜欢看书、逛美术馆，家里很重视传统文化。一直对‘美’有感受，但现在总觉得分不清美的不同层面。你作为美育导师，能不能详细分析下中西方美学思想在哲学、美术、生活等各方面的异同？希望你能从理论、流派、代表人物到实际案例都讲清楚，帮我系统理解‘美’。
+  - question: 我是高中美术老师，平时喜欢和学生互动，也常组织美育实践活动。你作为美学研究专家，能深入讲解一下中西美学思想的核心理念、发展历程以及对高中美育教学有哪些启发吗？希望你能结合教学案例和实际体验，帮我提升课堂深度和学生思辨力。
+  - question: 我是高一男生，对美术兴趣不大，但喜欢踢球和看电影，偶尔会被一些场景惊艳到。你能用几句话说说‘美’到底是什么吗？最好举个生活中的例子。
+  - question: 我是高二女生，喜欢文学和摄影，家里常聊诗词和艺术。最近我很想深入了解中西美学思想的内在逻辑和现实意义。你作为美学导师，能不能系统梳理下这两种美学的理论体系、代表人物，还有它们对当代社会的影响？希望你结合文学、绘画和生活案例，帮我深入思考。
+  - question: 我叫罗道，初一男生，喜欢跆拳道、观星和打电竞，平时主要听老师安排，对班集体很有归属感。老师在美育课上讲‘美’，这到底是什么意思？能简短回答下，最好结合我喜欢的运动或平常生活举个例子。
+  - question: 我是高二女生，喜欢听音乐、画画，也爱参加学校的艺术活动，但有时候对‘美’的标准很迷惑。你作为美育老师，能帮我理解一下中西美学对于‘美’各自的标准和重点吗？最好结合音乐、画画或者生活举例说明。
+  - question: 我是高一男生，喜欢科学和历史，对艺术兴趣一般。最近美育课上大家讨论‘美’，我发现每个人理解都不一样。你作为美学导师，能解释一下为什么中西方对‘美’的看法会有差异吗？希望你能结合历史、文化背景和具体例子说说。
+  - question: 我是高二女生，喜欢写诗和摄影，家里的氛围也很自由包容，总鼓励我表达自己。最近我特别好奇‘美’为什么会因人而异。你作为美育导师，能帮我理解一下中西美学思想是怎么看‘美’的主观性和多样性的？希望你能结合诗歌、摄影和生活举例简单说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-高中-“何为美？”——中西美学思想初探（美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与动态响应_理由
+    type: str
+    description: 解释个性化画像识别与动态响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与动态响应
+    type: float
+    description: 教师能够基于学生兴趣、学习风格、能力层级及文化背景进行前期画像，并在教学过程中根据学生的反馈和表现动态调整内容、方法及互动策略，确保每类学生都能获得有针对性的支持与挑战。
+  - field: 指令与任务遵循的完整性与严密性_理由
+    type: str
+    description: 解释指令与任务遵循的完整性与严密性评分的详细理由，引用具体例子。
+  - field: 指令与任务遵循的完整性与严密性
+    type: float
+    description: 严格依照教学目标、任务与教师指令组织课堂，确保各环节（理论讲解、对比分析、学生探究等）完整展开，环节间逻辑清晰、内容充实，且每一部分均有具体活动、讨论或产出。
+  - field: 教学方法的科学性与创新性_理由
+    type: str
+    description: 解释教学方法的科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法的科学性与创新性
+    type: float
+    description: 综合运用启发式、探究式、小组合作、跨学科融合等多样化教学方法，激发学生主动参与和深度思考，鼓励创新表达和多角度探究，避免单一灌输。
+  - field: 美育内容的理论专业性与深度融合_理由
+    type: str
+    description: 解释美育内容的理论专业性与深度融合评分的详细理由，引用具体例子。
+  - field: 美育内容的理论专业性与深度融合
+    type: float
+    description: 系统呈现并深入阐释中西美学核心理论，结合高中生认知特点，运用典型案例、现实生活与跨领域资源，将理论与实际、历史与当下、高阶与基础有机结合，促进学生深度理解与迁移。
+  - field: 创造力激发与多元表达支持_理由
+    type: str
+    description: 解释创造力激发与多元表达支持评分的详细理由，引用具体例子。
+  - field: 创造力激发与多元表达支持
+    type: float
+    description: 通过设计开放性问题、项目任务和多样化表达渠道（如绘画、摄影、诗歌、设计等），为学生创造展示个性和创新思维的平台，强调过程性评价和成果交流，鼓励原创和独特视角。
+  - field: 多元文化视角与包容性讨论_理由
+    type: str
+    description: 解释多元文化视角与包容性讨论评分的详细理由，引用具体例子。
+  - field: 多元文化视角与包容性讨论
+    type: float
+    description: 系统呈现并分析中西及其他文化的美学观点，引导学生理解、尊重并批判性比较异同，鼓励表达个人和集体多元观点，营造开放、包容的讨论氛围。
+  - field: 社会主义核心价值观与中华传统美德融入的自然性与关联性_理由
+    type: str
+    description: 解释社会主义核心价值观与中华传统美德融入的自然性与关联性评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华传统美德融入的自然性与关联性
+    type: float
+    description: 在美学教学中自然而非生硬地融入社会主义核心价值观与中华优秀传统美德，通过具体案例、课堂讨论或项目活动，阐释价值观与美育的内在联系，促进学生自觉认同与实践。
+  - field: 真实师生互动与个性化回应_理由
+    type: str
+    description: 解释真实师生互动与个性化回应评分的详细理由，引用具体例子。
+  - field: 真实师生互动与个性化回应
+    type: float
+    description: 能模拟并回应真实高中生在美学学习中的疑问、兴趣和困惑，体现高质量的师生互动，对不同学生的问题给予深度、个性化回应，促进学生自主表达、探究和思辨。
+  format_mode: prompt

@@ -1,0 +1,129 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-高考命题趋势分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是二年级男生付淮舟，平时喜欢玩电子竞技和跳街舞，但在学习上理解力一般，经常需要老师指导。因为爸爸工作很忙，只有周末能见到，我和妈妈关系很亲密。老师说语文很重要，将来高考语文也特别难。我有点担心，能不能请你结合近几年高考语文命题的趋势，详细讲讲未来语文高考可能会考些什么，像我这样理解力适中、比较依赖老师指导的学生，应该怎么在生活和兴趣中自然培养语文素养？
+  - question: I'm JacksonAnthony, a fifth grader who loves swimming and playing Go.
+      My teachers say I have strong analytical and critical thinking skills, but sometimes
+      I'm a bit overconfident and mainly focus on what interests me. As I look ahead
+      to bigger exams like high school entrance and maybe even the Gaokao one day,
+      could you thoroughly explain the latest trends in Gaokao Chinese—like what types
+      of questions are being asked, what's being focused on, and how they're assessed?
+      Also, how can someone like me, with strong analytical skills but a bit of overconfidence,
+      best get ready for those challenges? Please explain everything clearly and in
+      depth.
+  - question: 我是高三学生王浩，最近在准备高考语文，但面对命题方式和考查重点的变化有点迷茫。你作为语文教育专家，能不能结合近五年高考语文的命题趋势，详细讲讲题型变化、核心考点和未来可能的新趋势？最好能结合真题案例和给高三学生一些复习建议。
+  - question: 我是五年级学生向辰洋，平时喜欢踢足球、编程和打篮球。老师最近讲到高考语文，说以后会越来越重视综合能力和思维能力。我有点好奇，你能详细说说高考语文现在都在考哪些能力吗？最好举些例子，讲得清楚点，让我也能理解。
+  - question: I'm SmithSummer, a ninth grader who loves baking and yoga. I usually
+      like working with others, but sometimes I procrastinate or let my emotions affect
+      my learning. My teachers say I can be a bit overconfident and should practice
+      more self-reflection. As I'm about to enter high school, I'm curious—how are
+      the trends in Gaokao Chinese changing? Can you explain the main trends, give
+      some examples, and offer advice for students like me who like collaborating
+      but sometimes struggle with procrastination or learning driven by emotion? Please
+      explain in some detail.
+  - question: 我是高一学生李晨，老师说高考语文命题越来越重视文化内涵和价值观引导。你能简要说明下，最近高考语文是怎么在命题中融入中华优秀传统文化和核心价值观的吗？
+  - question: 我是新手高三语文班主任，班上学生基础参差不齐。最近高考语文命题趋势变化挺大的，你能说说主要的趋势，以及针对不同基础学生该怎么复习吗？
+  - question: 我是高二学生孙琪，听说高考语文命题越来越灵活，题型也有创新。你能解释一下最近几年有哪些新题型和创新命题方式吗？最好举些例子详细说说。
+  - question: 我是市重点中学的语文教研员，长期关注高考语文命题改革。你作为高考研究专家，能不能给我一份完整的分析，系统梳理2018-2023年高考语文命题趋势？最好从文本类型、能力考查、社会导向、政策影响、创新题型等多个方面，结合权威数据、真题和专家观点，提出对今后教学和备考的具体建议。
+  - question: 我是高三学生赵涵，最近在备考高考语文时对命题方向有些不确定。你能帮我理解一下2023年高考语文在考查重点和能力要求上有哪些变化吗？详细说说，谢谢！
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-高考命题趋势分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 答案需基于学生多维画像（如年级、成绩层次、兴趣、备考状态、困惑点等）进行动态识别和差异化回应。须展现对学生成长轨迹的追踪与阶段性调整，避免模板化建议。高分要求体现个体特征、成长变化和针对性策略。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 内容必须严格按照教师或任务要求的格式、结构和步骤输出，体现逻辑递进与结构创新。高分要求不仅分段分点，还嵌套案例、反思或创新结构，内容之间有明确逻辑联系。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学设计需符合教育学原理，采用系统性、启发式、探究式流程，强调目标设定、过程引导、师生互动与反思提升。高分要求体现师生互动、学生主动参与和自主建构过程。
+  - field: 命题趋势分析的专业深度_理由
+    type: str
+    description: 解释命题趋势分析的专业深度评分的详细理由，引用具体例子。
+  - field: 命题趋势分析的专业深度
+    type: float
+    description: 分析需结合最新高考政策、权威数据、历年真题、学术观点等，从文本类型、命题思路、能力考查、社会导向等多维度深入解读，具备理论支撑和前瞻性预测。高分要求引用权威来源、数据，并进行深层次关联分析与趋势预测。
+  - field: 创新思维激发能力_理由
+    type: str
+    description: 解释创新思维激发能力评分的详细理由，引用具体例子。
+  - field: 创新思维激发能力
+    type: float
+    description: 内容需鼓励学生多角度、创新性思考，提出独特见解，支持自主表达、批判性反思与同伴互评。高分要求设置开放性任务或问题，促进学生个性化观点与多元讨论。
+  - field: 真实场景模拟度_理由
+    type: str
+    description: 解释真实场景模拟度评分的详细理由，引用具体例子。
+  - field: 真实场景模拟度
+    type: float
+    description: 内容需高度贴合高中语文课堂或高考备考实际，模拟真实师生互动、答疑、困惑解决等场景。高分要求提供具体操作方案、互动细节或练习环节，体现现实针对性和可执行性。区分不同场景复杂度与互动深度。
+  - field: 中华优秀传统文化润物细无声融入_理由
+    type: str
+    description: 解释中华优秀传统文化润物细无声融入评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润物细无声融入
+    type: float
+    description: 内容应自然、深度地融合中华优秀传统文化，结合语文教学内容、命题趋势与社会主义核心价值观，体现情境渗透、价值引导和审美提升。高分要求通过具体案例引发学生兴趣，促进主动探索与创新表达。
+  - field: 案例与数据支撑_理由
+    type: str
+    description: 解释案例与数据支撑评分的详细理由，引用具体例子。
+  - field: 案例与数据支撑
+    type: float
+    description: 答案需引用真实案例、权威数据、历年真题等多样化证据，观点有数据链条和分析深度。高分要求区分数据来源（官方、学术、实证）、案例类型（真题、学生实际、教师经验）及其关联性，观点有充分证据支撑。
+  format_mode: prompt

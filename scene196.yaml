@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene196/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 历史-初中-史料的初步解读与信息提取教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是初中历史老师，最近用《南京条约》原文做史料教学，但学生们解读和提取信息能力不太够。你作为历史教学顾问，能帮我详细讲讲怎么设计教学方案，让学生在课堂上学会史料解读和信息提取，还能培养历史思维和创新分析能力吗？我想深入了解
+    - question: 你作为教育专家，能简要说明下 JenkinsAlexander（14岁，8年级，喜欢游泳、吉他和动漫绘画，性格有点自学薄弱但很主动，喜欢完美和思考），初中历史学习里怎么用史料解读方法帮他提升兴趣和分析能力吗？
+    - question: 我是初中生，学中国古代统一，老师让我们用《秦始皇统一六国》的史料解读和信息提取。你作为学习助手，能用几句话说说史料解读能帮我学到什么历史信息，还有怎么做比较好吗？
+    - question: 我是初中家长，女儿刚上七年级，对历史有点抵触。你作为知识导师，能帮我理解一下怎么用史料解读的方法激发她兴趣，还能教她掌握信息提取的基本技巧吗？
+    - question: 我是初中历史教研员，学校要做‘史料解读与信息提取’主题教研活动。你作为教育专家，能给我一份完整的分析吗？希望你从方法、步骤、教师成长、案例、还有怎么融入创新思维和价值观等方面全面讲讲
+    - question: 我是初中历史老师，发现学生做史料解读时只看表面，不怎么思考史料的背景和来源。你作为历史教学顾问，能具体讲讲看怎么引导学生科学分析史料的背景、来源和意义，提升他们的信息甄别和思维能力吗？
+    - question: 我是初中历史老师，刚试着用历史图片做教学。你作为教育专家，能讲讲看图像史料怎么科学解读，怎么帮学生提取信息和培养探索兴趣吗？
+    - question: 你作为历史学习专家，能不能帮我详细讲讲 WilsonValentina（13岁，7年级女生，分析能力强，爱竞争，在理科很厉害但社交有点疏离，动力也不太明确，喜欢吉他和阅读），怎么设计适合她的初中历史史料解读训练？希望你能结合她的能力和特点举例说明怎么培养她的创新思维和归属感，我想深入了解
+    - question: 我是初中历史老师，发现学生解读史料信息时只看文本，很少联系实际生活或别的学科。你作为教育专家，能具体说说吗，怎么在课堂上引导他们多角度分析史料，做到和生活、其他学科结合，提高信息提取和创新思维能力？
+    - question: 你作为历史教育专家，能从各个角度详细说说 JacksonAdam（18岁，12年级男生，喜欢数独、武术、游泳，性格有点回避，社交不多，学业很认真），在初高中衔接阶段怎么通过史料解读训练提升他的历史信息提取能力、批判性思维和自信心吗？希望你能系统分析下心理支持、学习方法、兴趣引入、知识衔接、案例等方面
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 历史-初中-史料的初步解读与信息提取进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与回应
+      type: float
+      description: 答案需基于题干学生画像（如学习基础、兴趣、认知特点等）调整教学策略，展现对不同学生的理解与关怀，并据此个别化支持或挑战。
+    - field: 格式与结构指令遵循度
+      type: float
+      description: 严格依教学要求或题目格式组织内容（如分点、表格、流程图等），结构层次清晰，便于学生理解和操作。
+    - field: 教学方法科学性与多样性
+      type: float
+      description: 采用多种科学且适合初中生认知发展的教学方法（如启发式、探究式、小组合作等），并能结合史料解读目标有效促进学生能力提升。‘多样性’不仅指方法种类，还要求方法与目标高度匹配，避免表面化。
+    - field: 史料解读与信息提取步骤清晰度
+      type: float
+      description: 史料解读与信息提取流程分步、详细且逻辑清晰，每一步均有明确操作提示，能支持学生自主复现。
+    - field: 模拟真实提问多层回应能力
+      type: float
+      description: 能预见并针对学生在史料学习中可能产生的多种真实疑问（词意、背景、方法、观点等），分层次递进回应，帮助学生建立系统理解。
+    - field: 创新与多角度思维激发程度
+      type: float
+      description: 不仅鼓励学生从多个角度分析史料，提出不同解释，还能设计具体任务或活动促进创新与批判性思维发展，避免仅停留在表面‘多角度’。
+    - field: 价值观与文化自然融入度
+      type: float
+      description: 在史料分析过程中，自然融入社会主义核心价值观和中华优秀传统文化，通过具体内容或活动潜移默化引导学生形成正确历史观和价值观，不能生硬附会。
+    - field: 表达清晰与易懂性
+      type: float
+      description: 用简明、逻辑清晰、适合初中生理解的语言表达，避免晦涩术语，并举例说明关键点，确保所有学生都能理解和模仿。
+    - field: 针对性反馈与改进指导
+      type: float
+      description: 能及时发现学生在史料解读中的具体偏差或困难，提供有针对性、可操作的改进建议，并鼓励学生自主修正与提升。
+format_mode: prompt

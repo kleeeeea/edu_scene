@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-高中-电影中的英雄主义与人性探讨（美育+德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是25岁的环境科学家，最近在设计高中德育美育课程，主题是电影中的英雄主义与人性。我想带学生深入理解：电影里的英雄形象是怎么体现人性和美德的？能解释一下吗，比如结合具体电影，说说英雄主义和责任、坚韧、善良这些美德是怎么融合的，以及对青少年成长有什么意义？
+  - question: 我是一名高中生，最近在德育美育课上学到电影里的英雄主义和人性，能不能简单说说几位电影中典型英雄都有哪些人性美德？
+  - question: 我是高中德育美育教研员，想系统地设计一套关于电影中英雄主义与人性的课程。你作为教育专家，能详细分析下各个方面吗？比如从课程目标、电影案例、课堂活动、评价和中华传统文化融合等多个角度都说说，并结合不同学生兴趣和困惑给些个性化建议和成长路径。
+  - question: 我是新入职高中美育老师，想以电影中的英雄主义和人性为主题做一次讨论课。你作为教学顾问，能详细展开说说怎么设计吗？包括选哪些电影片段、怎么分组讨论、角色扮演和艺术表达这些活动环节，还有怎么结合中华传统文化和价值观引导学生深入思考。
+  - question: 我是环境科学家，平时和青少年交流自然保护和责任感。最近在德育美育教学时觉得电影里的英雄都很完美，但现实其实不一样。你能解释一下吗？比如结合电影说说英雄人物在面对人性弱点时怎么通过坚韧、包容和责任实现成长，以及这种过程对青少年自我认知有什么启发。
+  - question: 我是高中生，性格比较内向，喜欢静静看电影。你作为学习助手，能讲讲看电影里哪些场景最能体现英雄主义和人性的融合吗？希望你能举些例子，并给我一些可以模仿或者反思的建议。
+  - question: 我是高中老师，平时喜欢木工和改键盘。最近课堂上学生讨论电影英雄主义时，有人认为英雄就得道德完美，有人觉得英雄也有缺点。你能简要说明下吗？我想用你的观点帮助学生正确看待英雄和人性的关系。
+  - question: 我是高中班主任，喜欢用故事启发学生。你作为教育专家，能不能深入说说看，在德育美育课上怎么用电影里的英雄成长历程激发学生的责任感、坚韧和善良？希望你讲讲具体的教学方法、案例、评价反馈，还有怎么结合核心价值观和中华传统文化引导学生行动。
+  - question: 我是高中生，最近刚参加了电影赏析活动，感觉不同电影里英雄主义和人性的表达方式差别挺大。你作为知识导师，能不能讲清楚点电影中这两个主题都有哪些不同的表达形式？希望能举些例子说明。
+  - question: 我是高中美育德育课程开发者，想以电影中的英雄主义和人性为主题设计校本课程。你作为教育专家，能详细分析下各个方面吗？比如课程设计理念、电影案例选择、活动环节、评价反馈、中华传统文化融合和学生个性化成长路径这些，怎么结合在一套课程方案里，请全面系统地讲讲。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-高中-电影中的英雄主义与人性探讨（美育+德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学设计是否基于学生兴趣、性格、能力及成长阶段进行差异化定制，能针对不同学生提供分层支持与个性发展空间，并在任务分配、材料选择、评价反馈等环节体现精准适配。高分要求教师能动态调整方案，关注学生成长变化。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学方案是否严格按照指定流程和结构输出，内容条理清晰，环节完整，标题与内容对应，操作步骤明晰易执行。高分要求各环节无遗漏，逻辑递进自然，便于教师和学生实际操作。
+  - field: 教学目标契合性_理由
+    type: str
+    description: 解释教学目标契合性评分的详细理由，引用具体例子。
+  - field: 教学目标契合性
+    type: float
+    description: 评估教学内容是否深度聚焦电影中的英雄主义与人性主题，紧密结合德育与美育目标，能通过多维度分析（如电影片段、现实案例、社会现象）引发学生思想碰撞与审美体验。高分要求主题贯穿始终，分析具体深入，学生能主动联系实际并形成独立见解。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否符合教育学原理，具有系统性、创新性和可操作性，能促进学生深度参与、合作探究和能力提升。高分要求方法多样、环环相扣，理论与实践结合，学生在活动中获得成长与突破。
+  - field: 问题设计与真实感_理由
+    type: str
+    description: 解释问题设计与真实感评分的详细理由，引用具体例子。
+  - field: 问题设计与真实感
+    type: float
+    description: 评估问题设置是否贴合高中生认知水平和生活体验，具有启发性、情感共鸣和现实关联。高分要求问题能激发学生主动思考，联系自身经验，推动深入表达和交流。低分为问题过于抽象、机械或与学生实际脱节。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 评估教学设计是否通过开放性任务和创新活动激发学生创造性思考，鼓励多元表达和独特见解。高分要求学生能自主提出新观点、用多种形式表达理解，活动成果有创新性和个性化。
+  - field: 价值观自然融入性_理由
+    type: str
+    description: 解释价值观自然融入性评分的详细理由，引用具体例子。
+  - field: 价值观自然融入性
+    type: float
+    description: 评估社会主义核心价值观与中华优秀传统文化是否通过情境体验、案例分析等方式自然融入教学，能引发学生主动认同和真实体验。高分要求价值观融入具体电影内容和学生实际体验，学生能表达自主感悟。仅表层罗列或灌输不得高分。
+  - field: 多元评价与反馈机制_理由
+    type: str
+    description: 解释多元评价与反馈机制评分的详细理由，引用具体例子。
+  - field: 多元评价与反馈机制
+    type: float
+    description: 评估是否为不同类型学生设计多样化评价方式（口头、书面、实践等），并提供具体、针对性反馈，促进个体成长和全面发展。高分要求评价方式多元，反馈具体及时，能根据学生表现调整指导策略，关注成长过程而非结果。
+  format_mode: prompt

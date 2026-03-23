@@ -1,0 +1,132 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-班级合唱与歌曲的情感表达（美育+德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是39岁的男老师韦潮，平时喜欢野外定向和自驾游，和学生关系好但和同事保持专业距离。我在带小学班级合唱时，希望通过合唱活动帮助学生提升情感表达、学会尊重和协作，同时结合我的兴趣和个性特点。你作为美育和德育结合的专家，能不能全方位地讲解一下小学班级合唱中怎么系统培养学生的情感表达与集体精神？还想了解下合唱活动后的反思和持续改进怎么做。
+  - question: I'm RobinsonMax, a 13-year-old in 7th grade who loves roller skating,
+      football, and STEM subjects. When it comes to our class choir, I find expressing
+      emotions through singing a bit tough compared to sports or science. As my learning
+      assistant, can you talk me through how choir activities can help students like
+      me express our emotions better through music? Please try to explain it clearly
+      with some practical examples.
+  - question: 我是四年级班主任，班级合唱时有些同学很腼腆，不太敢在大家面前开口，这种情况你怎么看？能说说你的看法，包括原因和怎么帮助他们更好参与吗？
+  - question: 我是三年级学生的家长，孩子最近参加班级合唱很开心，但我担心他只是跟着大家唱，没有真正体会到歌曲的情感。你作为美育顾问，能简要说明下小学合唱活动对孩子表达情感方面有什么主要作用吗？
+  - question: 我是新入职的小学音乐老师，合唱带班经验还不多。你作为美育和德育融合的专家，能讲得详细点，分析下班级合唱活动里怎么提升学生情感表达，又能培养他们的集体协作精神吗？最好能结合教学设计和具体案例来谈。
+  - question: I'm WilsonViolet, a 53-year-old teacher who loves tea ceremony, fishing,
+      and observing nature. In both life and teaching, I prefer intuitive, experiential
+      approaches rather than strict logical structures. As an expert in music and
+      values education, could you give me a comprehensive explanation on how to guide
+      elementary students to express emotions in class choir activities, especially
+      using more intuitive methods? I'd also like to know about practical strategies,
+      examples, and how to do reflection and continuous improvement so the activities
+      really support both aesthetic and moral growth.
+  - question: 我是六年级学生，最近我们班要参加学校合唱比赛。有些同学很积极，有的却有点应付。你作为美育学习助手，能详细说说在合唱活动中，怎么让大家都积极参与、表达情感，同时增强班级团队精神吗？
+  - question: 我是五年级家长，孩子说合唱课让他觉得跟同学关系更好了。你作为心理健康导师，能大概讲讲班级合唱活动对孩子社交和情感成长都有哪些帮助吗？
+  - question: 我是小学德育负责人，打算在全校推广班级合唱和歌曲情感表达活动。你作为美育德育综合专家，能全面分析一下活动设计和实施中要注意哪些关键点，可能遇到什么困难，以及怎么确保持续改进和效果最大化吗？
+  - question: 我是初二学生高丹，喜欢3D建模、露营和吉他，平时比较独立，和同龄人保持一定距离。最近参加班级合唱，发现很难像弹吉他那样投入情感。你作为美育学习助手，能详细说说像我这种目标导向、喜欢独立钻研的学生，在合唱时怎么更好地表达情感、融入集体？合唱结束后如何反思和持续进步？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-班级合唱与歌曲的情感表达（美育+德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评价方案是否能全面分析学生个体差异（如性格、兴趣、音乐基础），并据此形成分层分组、分角色分任务的具体教学措施，且在活动全过程持续跟踪与调整，确保所有学生获得针对性成长机会。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评价方案是否严格按照‘活动目标-活动步骤-评价方式’三段式结构完整展开，每一环节均细致描述，并紧密围绕情感表达与德育美育主题，条理清晰、层次分明。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评价方案所用教学方法是否结合小学美育、德育理论，融合音乐教育与品德培养的科学策略（如奥尔夫教学法、合作学习、反思环节），并能针对学生特点灵活调整，促进情感体验和价值观内化。
+  - field: 教学目标与情感表达融合度_理由
+    type: str
+    description: 解释教学目标与情感表达融合度评分的详细理由，引用具体例子。
+  - field: 教学目标与情感表达融合度
+    type: float
+    description: 评价教学目标是否将情感表达与德育、美育目标深度融合，且在活动设计、实施、评价全过程均有具体措施落实，能够引导学生主动体验、表达和反思，实现品德与审美双提升。
+  - field: 创新性与创造力激发_理由
+    type: str
+    description: 解释创新性与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新性与创造力激发
+    type: float
+    description: 评价方案是否通过开放任务、角色扮演、歌曲改编、情境创设等多样化方式激发学生创新思维与个性表达，鼓励学生主动参与创作，并与德育美育目标结合。
+  - field: 真实场景提问模拟度_理由
+    type: str
+    description: 解释真实场景提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实场景提问模拟度
+    type: float
+    description: 评价方案是否贴近小学实际教学，具备具体教学情境、学生特征和真实需求，能细致描绘教学环境、学生状态及具体挑战，便于针对性设计与反思。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入
+    type: float
+    description: 评价活动设计、歌曲选择、情感引导等环节是否将社会主义核心价值观和中华优秀传统文化有机融合于教学过程，且与活动内容紧密结合，学生能自然体验和认同而非被动接受。
+  - field: 学生参与度与互动性设计_理由
+    type: str
+    description: 解释学生参与度与互动性设计评分的详细理由，引用具体例子。
+  - field: 学生参与度与互动性设计
+    type: float
+    description: 评价方案是否有具体措施提升全体学生的主动参与和互动交流，关注边缘学生的参与状况，确保每位学生在合唱及情感表达中都能体验、分享和成长。
+  - field: 反思与持续改进机制_理由
+    type: str
+    description: 解释反思与持续改进机制评分的详细理由，引用具体例子。
+  - field: 反思与持续改进机制
+    type: float
+    description: 评价方案是否包含系统化的反思与持续改进环节，包括学生自评、互评、教师反馈等，能根据反馈及时调整后续教学，形成闭环优化流程。
+  format_mode: prompt

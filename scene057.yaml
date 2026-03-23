@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-高中-课程重难点串讲教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生，数学一般，快期中考试了。你作为数学专家，能不能彻底说清楚高中函数这块的重难点？麻烦分点详细讲讲，包括概念、性质、图像、常见类型、哪些地方最容易出错，还有学习方法和实际应用举例。最好讲讲中国古代数学家的故事什么的，能激发我兴趣就更好了。
+  - question: 我在教立体几何，发现学生对空间向量没啥兴趣。你作为教学顾问，能不能大概讲讲空间向量在现实生活里能有什么用？举个例子让学生觉得这知识有价值就行。
+  - question: 我在准备数学竞赛，你作为竞赛教练，能不能深入说说高中概率这块的重难点？麻烦分点讲讲基本概念、独立性、条件概率、容易出错的题型、解题思路和实际应用，再结合中国传统文化中和概率相关的趣事，帮我提升一下探究能力。
+  - question: 我是公冶素蕾，是一名中学老师，喜欢旅行、心理辅导和园艺，经常组织教师团体活动和园艺小组，和同事关系很好，也很受学生信赖。你作为数学课程专家，能帮我系统梳理下高中数列这个板块的重难点吗？最好分层说明下知识体系、重点难点、易错点、教学建议，还可以结合下中华优秀传统文化和核心价值观，顺便给我些适合教师团体和兴趣小组的活动建议，我想深入了解。
+  - question: 我是高二学生，解析几何里直线和圆的位置关系总是搞不懂。你作为学习助手，能解释一下高中解析几何里怎么判断直线与圆的位置关系吗？讲讲容易出错的地方和典型例题，最好结合下中国古代数学家的故事。
+  - question: 我是高三学生，马上要高考了，数学一直是我的弱项。你作为教育专家，能不能全方位地详细讲解下高中数学数与式这块的重难点？麻烦分点说说知识体系、容易混淆的地方、重难点、学习建议、考试技巧、实际应用，还有能融入一些中华传统数学思想就更好了。
+  - question: 我是高中数学老师，最近在研究怎么提升学生对三角函数的理解。你作为数学课程专家，能不能说说你的看法，分析一下三角函数教学的难点和易错点，再给点创新教学建议，最好结合下中华文化里和三角有关的内容。
+  - question: 我是高二学生，刚学不等式证明，觉得很难下手。你作为学习助手，能不能解释一下高中常见的不等式证明方法？讲讲常见思路、容易出错的地方和典型例题，结合下中国古代数学智慧更好。
+  - question: 我是徐艳，26岁，女老师，喜欢摄影和舞蹈，性格比较保守，平时主要和摄影社团互动，也常参加学校文化活动。你作为数学课程专家，能解释一下高中排列组合和概率之间的联系吗？讲讲教学中容易出错的地方和典型例题，最好能自然融入点中华优秀传统文化和核心价值观。
+  - question: 我是高三学生，复习导数应用时，发现求切线方程老是出错。你作为学习助手，能不能概括一下用导数求切线方程的核心步骤和常见容易出错的地方？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-高中-课程重难点串讲进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学内容和方法需基于学生多维画像（知识水平、兴趣、目标、习惯、认知风格等）差异，进行精准识别与个性化调整。高分需能针对不同类型学生提供定制化策略和反馈，体现深度关注与动态响应；低分则表现为仅泛泛而谈或无差异化设计。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 严格按照教师或题目指定的结构、顺序和层次进行内容组织。高分需不仅形式上分点分层，更在每一结构内内容饱满、逻辑紧密、衔接自然，能灵活应对复杂结构要求。低分表现为仅表面分点或遗漏结构要素，内容空洞或杂乱。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 教学设计应融合多种科学教学法，促进深度理解与主动参与。高分需体现方法多样、组合合理，并能根据不同教学内容和学生特征灵活调整。低分表现为单一灌输、机械讲解或方法堆砌无针对性。
+  - field: 重难点剖析深度_理由
+    type: str
+    description: 解释重难点剖析深度评分的详细理由，引用具体例子。
+  - field: 重难点剖析深度
+    type: float
+    description: 对课程重难点需系统、深入剖析，包括原理解释、易错点归纳、典型案例、解题策略、知识迁移与实际应用。高分需体现深入本质、多层次剖析与具体策略指导。低分表现为仅表面罗列知识或泛泛讲解，无实质性分析与指导。
+  - field: 激发创新思维能力_理由
+    type: str
+    description: 解释激发创新思维能力评分的详细理由，引用具体例子。
+  - field: 激发创新思维能力
+    type: float
+    description: 教学设计需主动引入开放性问题、跨学科链接、自主探索等环节，持续激发学生创新思维和实际问题解决能力。高分表现为多维度引导创新、鼓励多样表达与观点碰撞。低分则仅要求机械练习、重复课本内容，无创新思维引导。
+  - field: 模拟真实提问回应_理由
+    type: str
+    description: 解释模拟真实提问回应评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应
+    type: float
+    description: 能主动捕捉并深入回应学生真实疑问，对学生困惑高度共情，给予具体、启发性和有针对性的引导。高分需展现对复杂问题的多角度解答、思维延展和反思激励。低分为机械、表面或答非所问，缺乏共情与启发。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 在教学过程中自然融入社会主义核心价值观（如诚信、敬业、合作、责任、创新等），与知识点有机结合并结合中华文化适度引导。高分需润物细无声地传递价值观并有实际案例。低分为完全忽略或生硬插入口号，无实际融合。
+  - field: 中华优秀传统文化内涵体现_理由
+    type: str
+    description: 解释中华优秀传统文化内涵体现评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化内涵体现
+    type: float
+    description: 教学内容应适度融合中华优秀传统文化元素（如古代数学成就、典故、诗词、历史故事等），提升课程文化内涵和学生文化认同。高分表现为内容与文化有机结合并激发思考。低分为仅偶尔提及或完全忽略中华文化。
+  format_mode: prompt

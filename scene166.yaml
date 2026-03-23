@@ -1,0 +1,122 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-初中-主题式口语表达与逻辑组织教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中英语老师，平时喜欢用无人机航拍和AI绘画搞点教学创新，但和学生关系一直比较疏离。你作为英语教育专家，说说你的看法，我怎样结合这些兴趣，把主题式口语表达和逻辑组织的课上得更有趣、更有效？
+  - question: 你是英语教学顾问，能具体说说初中英语主题式口语表达和逻辑组织怎么训练比较有效吗？我平时教学挺重视这些，想听听具体做法。
+  - question: I'm WilsonClaire, a teacher who likes table tennis and penmanship and
+      tends to use structured but flexible methods in class. You as an English teaching
+      expert—can you explain how I can help students logically organize their ideas
+      in thematic spoken English activities? Sometimes I struggle with showing empathy,
+      so I'd like some concrete examples.
+  - question: I'm MartinezAmelia, a senior high student who enjoys baking, running,
+      and fashion styling. My confidence is pretty low and I tend to rely on others
+      to stay on track. As an English expert, can you say what the main ways are to
+      help someone like me get better at organizing ideas logically in English speaking?
+      Just say the key points.
+  - question: 你作为英语教育专家，能解释一下主题式口语表达和逻辑组织的核心原理，还有课堂怎么具体操作吗？
+  - question: 我是刚做英语教研的老师，想了解主题式口语表达训练里逻辑组织能力提升的关键要素是什么？用几句话说说，举个例子就行。
+  - question: 我是初中英语老师，你作为教学顾问，能不能彻底说清楚主题式口语表达和逻辑组织的全流程教学设计？我想系统掌握这块，烦请详细讲讲。
+  - question: 你是英语教育专家，能详细展开说说主题式口语表达和逻辑组织的教学怎么做得更有创新性和实效吗？最好结合案例讲讲。
+  - question: 我是一名初中英语教师，想把主题式口语表达和逻辑组织这块做得系统又深入。你作为专家，从各个角度详细说说怎么高质量推进？最好理论和实践都分析清楚。
+  - question: 我是初中英语老师，想提高学生在主题口语表达和逻辑组织方面的能力。你能深入讲解一下常见误区和有效训练方法吗？最好有分层和具体建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-初中-主题式口语表达与逻辑组织进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学设计与表达内容是否根据学生的学习水平、兴趣、性格等画像进行针对性调整，能体现个体需求和差异化支持，避免统一模板化。高分需展示针对不同学生群体的具体差异化举措，中分为部分适配但未充分覆盖，低分为完全无差异化。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估内容是否严格按照题目要求的结构分段、语言规范、环节完整（如开头、主体、结尾），并能根据不同任务类型灵活调整结构。高分需体现段落清晰、环节齐全、语言准确；中分为部分环节遗漏或结构不够清晰；低分为严重缺乏规范，混杂无序。
+  - field: 教学方法科学性与专业度_理由
+    type: str
+    description: 解释教学方法科学性与专业度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业度
+    type: float
+    description: 评估教学建议是否结合初中生认知特点，采用分层、互动、任务驱动等科学方法，且能具体落实到教学环节。高分需有多层级活动设计、互动与反馈机制；中分为仅有部分科学方法或活动，缺乏层次与互动；低分为机械灌输，无科学教学策略。
+  - field: 逻辑组织与表达条理性_理由
+    type: str
+    description: 解释逻辑组织与表达条理性评分的详细理由，引用具体例子。
+  - field: 逻辑组织与表达条理性
+    type: float
+    description: 评估口语内容是否结构清晰、逻辑递进合理、层次分明，并有有效的过渡和表达条理。高分需体现复杂但易理解的结构和自然过渡；中分为结构基本清楚但部分逻辑不顺畅；低分为内容混乱，缺乏明显层次与逻辑。
+  - field: 创新性与开放性引导_理由
+    type: str
+    description: 解释创新性与开放性引导评分的详细理由，引用具体例子。
+  - field: 创新性与开放性引导
+    type: float
+    description: 评估教学设计和内容是否鼓励学生多角度、创造性表达，设置高质量开放式问题和多元表达方式。高分需有多种表达形式和深入开放性问题设计；中分为仅有开放性问题但缺乏创新表达方式；低分为完全模板化，无创新或开放性。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估问题和内容是否贴近初中生实际学习场景、常见困惑和真实需求，具有实际指导意义。高分需针对真实课堂、社交或生活场景的具体表达困境提出问题并给出解决策略；中分为场景较贴近但缺乏具体指导；低分为内容与实际学习生活严重脱节。
+  - field: 社会主义核心价值观及中华优秀传统文化自然融入度_理由
+    type: str
+    description: 解释社会主义核心价值观及中华优秀传统文化自然融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观及中华优秀传统文化自然融入度
+    type: float
+    description: 评估内容是否在真实情境下自然融入社会主义核心价值观或中华优秀传统文化，鼓励学生结合自身体验表达相关品质。高分需内容与价值观自然融合，表达个体理解与实践；中分为价值观融入但略显生硬或表面；低分为直接口号式灌输，无实际结合。
+  - field: 内容深度与表达准确性_理由
+    type: str
+    description: 解释内容深度与表达准确性评分的详细理由，引用具体例子。
+  - field: 内容深度与表达准确性
+    type: float
+    description: 评估口语内容是否具有足够深度和丰富性，能表达个人观点并分析原因，且英语表达准确、细节充分。高分需观点独特、分析深入、表达规范；中分为有观点但分析浅显或表达有小错误；低分为仅简单陈述，表达错误多或内容表面化。
+  format_mode: prompt

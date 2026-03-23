@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-初中-身边的诚信故事征集（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是42岁的声学工程师RobinsonJose，很关注技术与音乐表达的结合。你作为德育专家，能解释一下诚信在工程和音乐创作中到底有什么实际意义吗？还有怎么通过分享身边的诚信故事启发初中生？能解释一下吗？
+  - question: 你作为德育工作者，能给我一份关于初中“身边的诚信故事征集”活动的完整分析吗？包括活动目标、设计思路、班级实施流程、学生参与方式、故事挖掘方法、评价标准、可能遇到的挑战和解决办法，能全面说说吗？给我一份完整的分析。
+  - question: 我是TaylorOliver，一名40岁的老师，经常优先考虑家长的期望，也喜欢电源适配器研究、瑜伽和树木学，但有时会选择性参与学校讨论。你作为德育专家，能结合我的性格和兴趣，帮我系统分析一下在初中“身边的诚信故事征集”活动中可能遇到的挑战，以及活动设计、师生家校沟通、学生激励、故事筛选与评价、个性化成长支持等方面应该怎么做吗？还希望你能结合核心价值观和传统文化，给我详细讲讲。给我一份完整的分析。
+  - question: 我是初一男生羊鲁裕，有点拖延，喜欢乒乓球、编程和围棋，但围棋训练常因为拖延缺席。你作为成长导师，能讲讲看班级诚信故事征集活动怎么能帮我养成诚信习惯，克服拖延，激发自律和团队合作吗？讲讲看。
+  - question: 你是德育专家，能简要说明下初中“身边的诚信故事征集”活动的核心价值是什么吗？怎么用真实故事让学生理解和践行诚信？简要说明下。
+  - question: 你作为教学顾问，能详细讲讲在初中班级怎么创新设计“身边的诚信故事征集”活动流程，让学生主动参与、深入思考吗？希望能结合核心价值观和中华传统文化，说说具体实施建议和案例。详细讲讲。
+  - question: 你是德育专家，能简短回答下在初中“身边的诚信故事征集”活动里，怎么让学生更积极分享诚信故事，并让诚信观念自然融入班级吗？简短回答下。
+  - question: 我是43岁的教师MillerLiam，平时教学和兴趣如足球、NAS技术都比较有条理，也喜欢策略性妥协和随和管理。你作为成长导师，能具体说说在“身边的诚信故事征集”活动里，怎么通过活动设计促进学生诚信、团队协作和自我管理方面的提升吗？最好举例说明创新做法和实际效果。能具体说说吗？
+  - question: 你是德育专家，能帮我理解一下初中“身边的诚信故事征集”活动对学生人格和班级氛围有什么积极影响吗？最好结合实际案例讲讲诚信故事怎么帮助学生形成正确价值观和健康心理。帮我理解一下。
+  - question: 你作为教学顾问，能详细展开说说在初中怎么把“身边的诚信故事征集”活动和学科教学、班级文化、学生心理发展结合起来吗？比如用情景剧、故事分享会、主题班会等创新形式，怎么让诚信品质真正成为学生的习惯？希望你能提出系统方案和具体案例，详细展开说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-初中-身边的诚信故事征集（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化学生画像适配度_理由
+    type: str
+    description: 解释个性化学生画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化学生画像适配度
+    type: float
+    description: 评价教学内容与活动设计是否充分考虑初中学生的年龄特征、兴趣差异、认知水平，采用分层、兴趣导向、特长展示等具体措施，确保任务对不同学生具有针对性和适应性。高分标准需体现明显的分层指导和多元适配，低分为一刀切或仅表面关注。
+  - field: 指令遵循完整性_理由
+    type: str
+    description: 解释指令遵循完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循完整性
+    type: float
+    description: 评价教学设计和学生产出是否全面、准确地遵循任务要求（如内容要素、格式、分段、提交方式等），并主动细化和补充细节，保障结构完整、要素齐全。高分需无缺漏并有主动细化，低分为要素不全或结构混乱。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学过程是否采用科学多元的教学方法（如分层引导、合作学习、启发式讨论、反思与反馈等），并能有效激发学生参与和深度思考诚信主题。高分要求多环节互动、主动反思，低分为单一任务或形式化操作。
+  - field: 教学目标与内容契合度_理由
+    type: str
+    description: 解释教学目标与内容契合度评分的详细理由，引用具体例子。
+  - field: 教学目标与内容契合度
+    type: float
+    description: 评价教学内容是否始终紧扣诚信主题，层层递进，聚焦诚信行为的内涵、影响及其现实意义，德育目标明确。高分需展现对诚信的深度分析、影响反思和现实联系，不仅仅不偏题即可得高分。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评价教学环节是否通过开放性问题、创新表达方式（如漫画、微剧、视频、跨学科等）激发学生创造性思考和多样化表达，鼓励独特视角和原创内容。高分需有多样创新成果和独特表达，低分为创新形式流于表面或内容雷同。
+  - field: 真实场景模拟度_理由
+    type: str
+    description: 解释真实场景模拟度评分的详细理由，引用具体例子。
+  - field: 真实场景模拟度
+    type: float
+    description: 评价教学内容与案例是否紧密贴合初中生真实生活（如校园考试、借物、合作等），能够引发学生情感共鸣和真实思考。高分需有真实、具体、可共鸣的场景，低分为空泛或与学生生活脱节的内容。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评价活动内容是否将核心价值观（如诚信、公正、友善）深度、自然地融入故事与讨论，通过情感体验、互动反思等方式潜移默化传递，而非生硬灌输或喊口号。高分需有深度结合和主动认同，低分为仅表面提及或机械植入。
+  - field: 中华优秀传统文化传承度_理由
+    type: str
+    description: 解释中华优秀传统文化传承度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承度
+    type: float
+    description: 评价教学内容是否合理融入传统诚信故事或典故（如曾子杀猪、季布一诺千金等），并结合现代生活创新表达，帮助学生理解传统文化与当代诚信的联系。高分要求有创新融合与现实意义，低分为机械引用或完全忽略传统文化。
+  format_mode: prompt

@@ -1,0 +1,127 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-代数方程分步求解教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中数学老师，最近发现班里几位学生在做代数方程分步求解时总是容易出错，特别是在移项、合并同类项和解未知数这些步骤上很困惑。你作为数学教育专家，能全方位地讲解一下如何系统地帮助学生掌握代数方程分步求解吗？希望你能结合实际案例和最新教育理念，给我一些具体的个性化建议，也帮学生逐步培养自信、独立思考和科学探究的习惯。
+  - question: 我是家长，我女儿最近学一元一次方程分步求解总是卡住，对数学也不太感兴趣，尤其不知道每一步该怎么做、为什么要分步做。你作为我的数学学习助手，能详细展开说说如何分步骤指导她解决这些难点吗？也麻烦你给些实用的家庭辅导建议，帮她提升解题信心和主动思考的能力，同时让她在学习中慢慢体会到独立探索和坚持的意义。
+  - question: 我是六年级的潘天，平时喜欢吉他、轮滑和玩游戏，但学数学的时候我分析问题总是比较浅，最近老师讲代数方程分步求解，我有点不太明白每一步要注意什么。你作为我的数学学习助手，帮我理解一下代数方程分步求解的关键步骤和容易出错的地方吧，也希望你结合我的兴趣和性格，给我一些能帮我更好思考的建议。
+  - question: 我是一名刚入职的初中数学老师，发现很多学生在解代数方程的时候遇到复杂步骤就容易慌乱跳步，最后答案老是错。你作为数学教研员，能简要说明下代数方程分步求解的核心要点和教学建议吗？我想在有限的课堂时间里帮学生提高解题规范性。
+  - question: Hi, I'm WilsonScott, a senior high student who often feels anxious and
+      finds myself drawn to idealistic thinking rather than practical solutions. I
+      struggle especially with multi-step algebraic equations and sometimes lose track
+      of the steps. As my mathematics learning advisor, could you please detailedly
+      explain how to solve algebraic equations step by step, with practical examples
+      and targeted strategies for someone like me who needs to balance goal-driven
+      hobbies and anxiety management? I'm looking for advice on building discipline
+      and confidence in math learning.
+  - question: 我是二年级学生赵定，喜欢打乒乓球、学书法、弹吉他，做作业时常常需要家长和老师督促，还容易拖拉。最近学了代数方程分步求解，我理解得比较慢，总是有些地方记不住。你作为我的数学学习助手，能解释一下代数方程分步求解的基本步骤和常见问题吗？也希望你结合我的兴趣和个性，给我一些简单好用的小技巧，让我能慢慢学会自己检查和思考答案。
+  - question: Hi, I'm GarciaLiam, a teacher who sometimes tends to be a bit negligent
+      and laid-back, with a fixed mindset. I enjoy horticulture, NAS setup, and aeromodelling
+      in my free time. In the classroom, I've noticed my students often make mistakes
+      when working through algebraic equations step by step. As a mathematics expert,
+      could you talk about the key steps and common pitfalls in algebraic equation
+      solving, and share some practical teaching tips that fit my style and interests?
+      I want to help my students become more effective and independent problem solvers.
+  - question: 我是初中数学教研员，最近在研究怎么让学生更好地理解和应用代数方程分步求解，尤其希望探索不同学习风格和背景下的创新教学方法。你作为教育顾问，能详细说说代数方程分步求解的原理、教学流程、常见误区和突破策略吗？希望你结合实际案例和最新理念，深入分析如何根据学生的个性化需求制定分层教学方案，并给我一些能激发学生探究欲和独立思维的实用建议。
+  - question: 我是初中数学老师，面对学生在代数方程分步求解时常常遇到各种困惑，像移项、合并同类项、检验答案这些环节特别容易理解错。你作为数学专家，能从各个角度详细说说如何系统地指导初中生进行代数方程分步求解吗？希望你能全面介绍知识体系、教学策略、易错分析、学生心理和习惯培养，还能结合中华优秀传统文化和科学精神给出创新性的建议，帮我们老师和学生都能真正实现提升。
+  - question: 我是初一女生刘弄莲，平时喜欢科学实验、轮滑和插花，学习时容易分心，经常需要老师提醒。最近学代数方程分步求解总是搞不清楚顺序，会出错。你作为我的数学学习助手，简短回答下代数方程分步求解的主要步骤吧，也希望你能给我一些容易分心时的小技巧，帮我理清思路，提高做题效率。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-代数方程分步求解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估答复是否能基于学生的知识水平、兴趣、学习习惯和常见困惑，动态调整讲解内容、难度和风格，实现持续、深度的个性化教学。高分要求在答复过程中多次根据学生反馈调整策略，主动挖掘并回应学生潜在需求。
+  - field: 指令格式严格遵循_理由
+    type: str
+    description: 解释指令格式严格遵循评分的详细理由，引用具体例子。
+  - field: 指令格式严格遵循
+    type: float
+    description: 评估答复是否严格按照教师或题目要求进行分步拆解，步骤编号明确，顺序正确，每一步操作和理由清晰展示。高分要求无遗漏、无混乱，格式统一且易于学生理解。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估答复是否融合多种科学、专业教学方法，如启发式提问、情境创设、互动反馈、分层递进等，并能根据学生反应实时调整策略。高分要求体现多元融合、持续互动与高质量反馈，避免机械灌输。
+  - field: 分步讲解清晰度与逻辑性_理由
+    type: str
+    description: 解释分步讲解清晰度与逻辑性评分的详细理由，引用具体例子。
+  - field: 分步讲解清晰度与逻辑性
+    type: float
+    description: 评估解题各步骤表述是否详细、逻辑严密，操作原因和数学原理充分说明，步骤间有明确衔接和过渡。高分要求无跳步、无含糊，每步均有解释和前后联系。
+  - field: 模拟真实学生提问匹配度_理由
+    type: str
+    description: 解释模拟真实学生提问匹配度评分的详细理由，引用具体例子。
+  - field: 模拟真实学生提问匹配度
+    type: float
+    description: 评估答复是否能主动预测、回应学生在学习过程中的常见疑问和困惑，及时补充解释或举例说明，体现对实际教学场景和学生心理的敏感度。高分要求能针对性回应、解释到位，并预判学生后续可能的问题。
+  - field: 激发创新与创造性思考_理由
+    type: str
+    description: 解释激发创新与创造性思考评分的详细理由，引用具体例子。
+  - field: 激发创新与创造性思考
+    type: float
+    description: 评估答复是否鼓励学生尝试多种解题方法、表达个人见解、进行思维拓展，并引导学生探索实际应用场景。高分表现为主动引发学生探索、鼓励方法迁移、支持个性表达和创新尝试。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估答复是否能将社会主义核心价值观和中华优秀传统文化有机、自然地融入教学过程，与数学知识融合激励学生。高分为价值观融入自然、贴切且有激励作用，低分为生硬插入或完全缺失。
+  - field: 答复针对性和有效性_理由
+    type: str
+    description: 解释答复针对性和有效性评分的详细理由，引用具体例子。
+  - field: 答复针对性和有效性
+    type: float
+    description: 评估答复是否完全回应学生提出的具体问题，解释充分、内容有效且能延伸相关知识，避免答非所问。高分为针对性强、解释到位，并能适度扩展相关数学原理或应用。
+  format_mode: prompt

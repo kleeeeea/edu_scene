@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-初中-我的“偶像”观讨论（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中班主任，最近学生在校园偶像选拔后有点过度模仿偶像，影响了学习和同伴关系。你作为德育教育专家，怎么引导学生建立理性健康的偶像观？简要说明下。
+  - question: 我是林友，高二男生，喜欢摄影、街舞和国际象棋，竞争意识强但理解较慢，偶像选择既看兴趣也想提升自己，有点功利。你作为学生成长顾问，能具体说说怎样建立适合我的偶像观，让偶像真正成为成长动力吗？
+  - question: 你作为初中德育老师，班里学生讨论偶像时有人说偶像影响很大但容易迷失自我。你怎么看？说说你的看法。
+  - question: 我是学校心理老师，最近有个性格内向但成绩很好的学生，因为偶像在社交媒体上出了负面新闻，情绪很低落，影响了自信和社交。你作为德育专家，能深入说说看，怎么帮助他正确面对偶像负面信息，保持自我认同和健康成长吗？
+  - question: 我是初中生家长，发现孩子喜欢网络偶像，开始模仿偶像穿着和说话，但对偶像行为其实不太了解。你作为家庭教育咨询师，详细说说家长该怎么沟通和引导孩子，帮助他们树立正确价值观吧。
+  - question: 我是MooreSummer，41岁女老师，喜欢电影、舞蹈和越剧，管理随性但有改革精神，注重美育融合。你作为德育美育教研员，能系统地讲解一下初中‘我的偶像观’主题班会如何做课程设计吗？讲讲教学目标、活动和创新点，尽量全面些。
+  - question: 我是WhiteTyler，六年级男生，喜欢数独、轮滑和书法，分析能力很强。你是班主任助手，能讲得详细点吗：班级偶像观讨论怎么设计活动，既能激发我的分析兴趣，又能让同学们多角度思考，最好有趣还能推动批判性讨论。
+  - question: 我最近教学生讨论偶像话题，发现他们很看重外貌和流行。你作为德育专家，讲讲看怎么引导学生重视偶像的内在美和社会贡献，提高他们的价值判断力吧。
+  - question: 我们德育课最近小组讨论‘偶像观’，大家对偶像的定义和选择标准意见很不一样。你觉得什么样的人值得被当偶像？有哪些标准？简要说明下。
+  - question: 我是蔡泉茂，55岁老师，喜欢木工和社区志愿服务，教学经验丰富但逻辑一般，仪式感很强。你作为德育美育课程专家，给我一份完整的分析：初中‘我的偶像观’德育课程怎么系统设计，有仪式感又能激发学生参与，包括课程目标、互动、评价和家庭协同等方面。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-初中-我的“偶像”观讨论（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评价内容是否充分结合学生群体的兴趣、性格、成长经历等画像进行针对性定制，能精准回应不同学生的实际需求，体现差异化指导，避免模板化和表面化匹配。高分需有明显针对不同学生的具体策略或内容调整。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评价回答是否严格按照教师/任务指定的结构、环节和逻辑顺序组织内容，包含所有必需环节（如引入、分析、案例、总结），且每一环节有明确标题、核心要点和必要小结。高分需体现结构完整、逻辑递进、内容前后呼应，不能仅表面分段或加标题。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价是否采用多元、科学、符合教育学原理的教学方法，如探究式、互动式、小组合作、项目式学习等，能激发学生主动参与和深度思考。高分需至少包含两种以上科学教学方法，并有具体操作环节和反馈机制。
+  - field: 思辨与批判性引导_理由
+    type: str
+    description: 解释思辨与批判性引导评分的详细理由，引用具体例子。
+  - field: 思辨与批判性引导
+    type: float
+    description: 评价是否系统、持续地引导学生从多角度分析偶像现象，鼓励质疑、辨析、反思，支持学生表达不同观点并进行论证，促进深度思维。高分需有至少一个辩论或多角度分析环节，并能引导学生自我反思和批判性表达。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价是否通过开放性问题、创造性任务、跨学科融合等方式激发学生提出独特见解、想象力和创新思考。高分需设计至少一个创新性任务或开放性表达环节，鼓励学生突破常规表达。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价是否在具体语境、故事案例、讨论情境中自然、细腻地融入社会主义核心价值观及中华优秀传统文化，引导学生自发认同，避免生硬灌输。高分需结合真实案例或情境，实现价值观的潜移默化引导。
+  - field: 模拟真实提问适应性_理由
+    type: str
+    description: 解释模拟真实提问适应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问适应性
+    type: float
+    description: 评价是否能针对学生在真实课堂中可能提出的多样化、个性化问题做出深入、具体、灵活的回应，体现对学生需求和疑惑的敏感性与专业性。高分需能针对至少两类不同学生提问做出有深度、差异化回应。
+  - field: 学生主体性体现度_理由
+    type: str
+    description: 解释学生主体性体现度评分的详细理由，引用具体例子。
+  - field: 学生主体性体现度
+    type: float
+    description: 评价是否充分鼓励学生主动参与、表达、探索，赋予学生选择权和主导权，教师主要负责引导和支持，突出学生在课堂中的主导地位。高分需有学生自主选择偶像、提出议题、参与评价等主导环节。
+  format_mode: prompt

@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-高中-史料的考证与批判性解读教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初三女生周明，喜欢茶艺、攀岩和戏剧表演，在学校戏剧社团演主角，听觉记忆还挺敏锐，但是历史分析经常停在表面。你作为历史教育专家，能结合我的兴趣和性格，详细讲讲怎么才能学会考证和批判性解读历史史料吗？能讲得详细点吗
+  - question: 你作为历史教育专家，我最近在帮学生复习高中历史，对史料考证和批判性解读特别感兴趣。能不能深入讲讲这方面的系统方法和实际案例？我想深入了解
+  - question: 我是一名高一学生，老师让我们用批判性思维分析历史史料，但我不知道该怎么开始，尤其是不同版本的历史文献怎么看。你是我的学习助手，帮我理解一下史料考证和批判性解读的基本步骤和常见误区吧
+  - question: 我叫雷蔚，是高二女生，平时喜欢古筝和戏剧表演，学习主要靠团队，自己独立分析史料总觉得很难。你作为历史教育顾问，能结合我的性格和习惯，帮我理解一下怎样在小组合作中提升史料考证和批判性解读能力吗？帮我理解一下
+  - question: 我是高中历史老师，发现班里学生在分析复杂史料时容易片面化，批判性思维有待提升。你作为历史教学专家，详细分析下各个方面，怎么系统提升全班在史料考证和批判性解读上的能力？
+  - question: 你作为历史教研员，学校让我组织一次关于史料考证和批判性解读的教师研讨活动，想要理论基础、案例、分层教学、学科融合、评价等各个方面都有。全方位地讲解一下，怎么设计这个活动并提升老师专业能力？
+  - question: 我是高二学生，老师总说要批判性解读史料，可我感觉就是背背课本。你是我的学习助手，简单说说批判性解读史料主要包括哪些核心要点就行
+  - question: 你作为历史教育专家，能具体说说高中生分析史料时怎么判断史料的真实性和可靠性吗？结合实际案例讲讲方法和注意事项，能具体说说吗
+  - question: I'm BrownEthan, a 7th grader who likes basketball and chess, and I'm
+      more introverted and focused on short-term goals. Sometimes I only look at the
+      surface facts when dealing with historical sources. As my learning assistant,
+      can you explain with examples how I can use my interests and strengths to get
+      better at source criticism and historical reasoning? Can you go into some detail?
+  - question: 我是高一学生，老师总让我们批判性地看历史课本和史料，但我还是有点不太明白具体怎么做。你作为历史学习助手，简要说明下最基本的步骤和注意事项吧
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-高中-史料的考证与批判性解读进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准匹配_理由
+    type: str
+    description: 解释个性化画像精准匹配评分的详细理由，引用具体例子。
+  - field: 个性化画像精准匹配
+    type: float
+    description: 教学内容与方法需基于学生具体学业水平、兴趣、认知风格等多维画像精准调整，分层设计应具体、动态，并能针对个别差异持续优化。高分标准要求能明确指出调整的依据、过程与成效，并反映在教学任务、互动方式等多方面。
+  - field: 格式与规范严格遵循_理由
+    type: str
+    description: 解释格式与规范严格遵循评分的详细理由，引用具体例子。
+  - field: 格式与规范严格遵循
+    type: float
+    description: 教学设计与产出须严格遵循既定结构、史料引用和表达规范。高分需在每个环节均体现分段、引用准确、表达严谨，且能规范引导学生输出。中低分表现为结构松散、格式混乱、引用不明，影响内容严肃性与可评估性。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法需系统结合教育学理论，设计环环相扣、目标明确的任务链，促进史料考证与批判性思维提升。高分需采用多种互动、探究和评价方式，并有理论支撑及成效反馈。仅有单一讲授或缺乏目标、环节设计为低分。
+  - field: 史料批判性解读指导深度_理由
+    type: str
+    description: 解释史料批判性解读指导深度评分的详细理由，引用具体例子。
+  - field: 史料批判性解读指导深度
+    type: float
+    description: 需系统引导学生多维度分析史料（真实性、立场、时代背景、作者意图、受众影响等），并鼓励提出理据充分的质疑、反思和多角度评价。高分要求分析全面深入，能引导学生主动查找佐证或反例；中分为部分分析或浅尝辄止；低分为简单复述或表面归纳。
+  - field: 真实课堂场景贴合度_理由
+    type: str
+    description: 解释真实课堂场景贴合度评分的详细理由，引用具体例子。
+  - field: 真实课堂场景贴合度
+    type: float
+    description: 教学任务、问题及活动需切实贴合高中历史课堂实际，关注学生常见困惑、兴趣点与能力水平，并具备适度挑战性。高分要能结合学生实际需求与学习痛点，设计引发深入思考的问题；中分仅为常规课堂任务，无针对性挑战；低分为脱离实际或与学科无关内容。
+  - field: 激发创造性思维潜力_理由
+    type: str
+    description: 解释激发创造性思维潜力评分的详细理由，引用具体例子。
+  - field: 激发创造性思维潜力
+    type: float
+    description: 教学中应通过多样化、开放性任务激发学生创新表达与独立见解，支持新颖观点和历史假设的提出。高分需有具体创新表达任务、作品或活动，学生有独立探究和表达空间；中分仅鼓励开放表达但缺乏创新形式；低分为机械背诵或标准答案。
+  - field: 中国价值观自然融入_理由
+    type: str
+    description: 解释中国价值观自然融入评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入
+    type: float
+    description: 应在史料分析与历史事件探究过程中，自然融合社会主义核心价值观和中华优秀传统文化，紧密结合学科内容，避免生硬灌输。高分体现为价值观与史实分析有机结合，能引导学生思考家国情怀、公平正义等；中分为偶尔提及但未深入；低分为生硬灌输或完全不涉及。
+  - field: 多元视角与包容性_理由
+    type: str
+    description: 解释多元视角与包容性评分的详细理由，引用具体例子。
+  - field: 多元视角与包容性
+    type: float
+    description: 教学应鼓励学生从不同社会、阶层、民族、文化等多元视角解读史料，促进包容性理解与观点交流。高分需有明确多角度分析任务和交流环节，并容纳合理分歧；中分仅提及多元但无具体操作；低分为只允许唯一答案，忽视其他视角。
+  format_mode: prompt

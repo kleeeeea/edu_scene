@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-基因工程与生物技术的原理与应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生，最近在学基因工程和生物技术，有点迷糊，你作为生物教育专家，能不能彻底说清楚这块的原理和应用？最好系统地讲讲，结合生活、科技发展和生命伦理啥的，帮我理清知识点，给点学习建议也行
+  - question: 我是郑玲，老师一枚，平时喜欢园艺和戏剧，最近备高中基因工程与生物技术课，内容感觉挺复杂的。你是生物教学顾问，能帮我理解一下这个主题怎么讲才生动有趣？顺便给点结合生活和案例的教学建议吧
+  - question: 我是范涵，理疗师，对基因工程和生物技术在健康方面挺感兴趣。你是生物教育专家，能不能彻底说清楚基因工程和生物技术的原理、关键技术，还有它在医学康复、健康管理上的应用？最好结合伦理和科技前沿，帮我全面理理思路，也给点适合我继续深入了解的方法
+  - question: 你是我的生物学习助手，最近我在学基因工程和生物技术，还是有点不太懂。能解释一下它的原理、流程，还有主要的应用吗？最好举点例子，顺便说说怎么学会比较好
+  - question: 你作为生物教育专家，我现在在准备生物竞赛，对基因工程和生物技术很感兴趣。能深入讲解一下这方面的原理、流程、应用，还有生命伦理吗？最好详细分析下，还能给点竞赛学习和探究建议
+  - question: 你是有经验的生物老师，能不能讲讲看基因工程在农业和医学方面怎么应用的？最好举点实际案例，也说说怎么让学生关注科技和社会责任
+  - question: 你是生物学习顾问，我基础比较弱，学基因工程和生物技术总觉得很抽象。简单说说就行，帮我理理主要原理和应用，越清楚越好
+  - question: 我是家长，孩子刚学高中生物，对基因工程和生物技术挺好奇但不太懂。你作为教学助手，能大概讲讲这块的基本原理和应用吗？最好有个生活里的例子，让我能和孩子聊聊
+  - question: 你是生物教育专家，我现在特别想深入了解基因工程和生物技术的原理、发展、应用还有伦理问题。能不能详细展开说说，系统分析下流程、应用、案例和伦理思考，帮我建立完整的知识体系，也鼓励我多参与探究和讨论
+  - question: 我是LongJames，老师，喜欢游泳和AI研究。你作为跨学科教育专家，说说你的看法，基因工程和生物技术在课程和科技融合方面有什么作用？最好结合实际案例，也谈谈教学上怎么推进学科交融和伦理探讨
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-基因工程与生物技术的原理与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学内容和互动需基于学生学习基础、兴趣、目标和实时反馈，进行分层和个性化调整。要求能动态识别学生差异，并针对不同学生提供定制化支持和成长建议，促进每个学生的最佳发展。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 内容需严格分层分点、结构清晰，合理使用图表、流程图、案例分析等辅助工具，确保信息条理明了、便于查阅。格式规范不仅体现在外观，更体现在信息架构的科学性与一致性。
+  - field: 教学方法科学性与互动性_理由
+    type: str
+    description: 解释教学方法科学性与互动性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与互动性
+    type: float
+    description: 采用循序渐进、启发式、探究式等科学教学策略，充分考虑高中生认知发展，设计多样化互动环节（如小组讨论、实验探究、角色扮演等），促使学生主动思考、合作学习，避免单向灌输与机械记忆。
+  - field: 知识系统性与逻辑严密性_理由
+    type: str
+    description: 解释知识系统性与逻辑严密性评分的详细理由，引用具体例子。
+  - field: 知识系统性与逻辑严密性
+    type: float
+    description: 内容结构需层层递进，全面覆盖核心知识点，明确各知识点间逻辑与因果关系，并能引导学生构建知识网络，进行跨章节、跨领域整合。高分要求能体现知识迁移和应用能力。
+  - field: 真实提问契合度与反馈响应_理由
+    type: str
+    description: 解释真实提问契合度与反馈响应评分的详细理由，引用具体例子。
+  - field: 真实提问契合度与反馈响应
+    type: float
+    description: 能敏锐捕捉学生真实疑问和关注点，结合问题背景、学生心理和学科知识，进行针对性、递进式解答，并引发进一步思考或探究。高分需展现多视角分析和引导学生形成科学思维。
+  - field: 创新意识与创造性思维激发_理由
+    type: str
+    description: 解释创新意识与创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创新意识与创造性思维激发
+    type: float
+    description: 通过开放性任务、创新案例、跨学科项目等方式，鼓励学生提出新想法、设计创新方案，支持多样化表达与团队合作，培养实际问题解决和创新能力。高分需体现对创新过程的引导与成果展示。
+  - field: 多领域应用与联系拓展_理由
+    type: str
+    description: 解释多领域应用与联系拓展评分的详细理由，引用具体例子。
+  - field: 多领域应用与联系拓展
+    type: float
+    description: 系统拓展基因工程与生物技术在农业、医学、环保等多个领域的实际应用，剖析各场景的技术原理、社会影响、伦理风险和挑战，引导学生建立跨学科联系和综合认知能力。
+  - field: 社会主义核心价值观与文化融合_理由
+    type: str
+    description: 解释社会主义核心价值观与文化融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与文化融合
+    type: float
+    description: 内容需自然融入社会主义核心价值观（如责任、创新、合作、服务社会）和中华优秀传统文化，引导学生形成正确价值观、社会责任感和文化自信。高分要求将价值观教育与学科内容深度融合，润物细无声。
+  format_mode: prompt

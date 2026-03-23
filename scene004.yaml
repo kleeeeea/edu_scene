@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene004/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 语文-小学-看图写话与润色教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是WilliamsElena，50岁的英语教师，喜欢戏剧和写作，平时注重课堂结构又希望学生有创造力。你作为语文教育专家，能简要说明一下在小学看图写话时，怎么用戏剧和写作活动帮助孩子观察细节、表达更丰富，同时又能兼顾课堂的条理和互动吗？
+    - question: 我叫戈娟，33岁，是会计师，喜欢旅行和打羽毛球，工作上偏理论分析，性格也比较安静。辅导孩子语文看图写话时发现他对润色和细节不太感兴趣，表达也比较保守。你作为语文教学顾问，能详细讲讲针对这种理论型、表达安静的孩子，怎么系统培养他们观察力、润色能力和创新表达的兴趣吗？我想深入了解具体方法和建议。
+    - question: 在小学语文看图写话和润色教学中，怎么帮助那些外向、爱运动的孩子激发观察兴趣，并引导他们在写作里加上生动细节和人物心理？讲讲看，有什么具体方法或例子？
+    - question: 我是龙士，54岁男老师，经验很丰富但对新教改压力挺大，喜欢散步和打门球，表达欲强也比较保守。你作为小学语文专家，能给我一份完整的分析吗？系统讲讲现在小学看图写话和润色教学的核心理念、难点、创新方法、评价体系、家校协同，以及怎么在传统和改革之间平衡。内容越全面越好。
+    - question: 我是白可馨，33岁历史学家，喜欢古籍和博物馆，平时学术合作多但社交不多。你作为语文教学专家，能解释一下小学看图写话怎么有效把历史故事或文化元素自然融入润色和创新表达吗？具体讲讲细节和例子。
+    - question: 我是SmithStella，49岁的英语教师，喜欢骑行、瑜伽和音乐欣赏，教育理念理想化又很权威，重视个人和社区成长。你作为小学语文教育专家，能系统地讲解一下小学看图写话和润色教学怎么兼顾理想主义和现实需求，重视学生个体成长、多元文化和创新表达吗？请全面分析教学目标、课堂结构、激励机制、文化融合、家校协作和师生成长等各方面。
+    - question: 在小学语文看图写话和润色教学里，对于那些性格内向、喜欢安静活动的学生，怎么激发他们主动观察和表达的积极性？我想深入了解心理引导、教学方法和具体活动设计，有没有实际案例可以分析一下？
+    - question: 我是RobertsMatthew，56岁男老师，喜欢品茶和养海水鱼，工作中反思多、社交有边界，周期性动力强，注重和家长及同事的关系。你作为小学语文专家，说说你的看法：在看图写话和润色教学中，怎么利用学生兴趣和家庭文化背景，激发他们独特的表达潜力并培养积极的写作习惯？举些例子和细节说明。
+    - question: 在小学语文看图写话和润色教学里，怎么帮助那些活泼但容易分心的孩子集中注意力，同时引导他们在写作里表达真实感受和细致观察？讲讲看，有没有具体方法和案例？
+    - question: 在小学语文看图写话和润色教学里，怎么利用趣味活动和分组讨论来有效提升学生细节观察力和表达能力？简短回答下，抓住关键点就好。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 语文-小学-看图写话与润色进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化回应深度
+      type: float
+      description: 评估指导或反馈是否结合学生年龄、能力、兴趣等个体差异，提供有针对性、分层化的建议。高分体现对学生特点的关注与定制化建议，中分为部分结合，低分为完全泛泛而谈。
+    - field: 指令遵循准确性
+      type: float
+      description: 评估答案是否遵循教师或系统给出的格式、结构、分段、字数等要求。高分为完全符合，中分为部分遗漏或轻微偏差，低分为明显未遵循。
+    - field: 教学方法科学性
+      type: float
+      description: 评估指导是否采用科学的分步引导、启发式提问等方法，符合小学语文教学规律。高分为流程清晰、分步有效，中分为有部分分步但不完整，低分为无分步或启发。
+    - field: 反馈针对性与操作性
+      type: float
+      description: 评估修改建议是否针对学生具体问题，提供明确、可操作的提升方向和范例。高分为具体问题+改进方法+范例，中分为部分问题或方法，低分为泛泛建议无操作性。
+    - field: 创新思维激发度
+      type: float
+      description: 评估是否通过开放式问题、想象力激发、多角度引导等方式，鼓励学生创造性表达。高分为有实质性创新引导，中分为有初步创新提示，低分为无创新指导。
+    - field: 课堂语境贴合度
+      type: float
+      description: 评估问题和反馈表达是否贴近真实小学语文课堂场景，语言自然、适合低龄学生。高分为口语化、具体，中分为略显书面但无成人化，低分为明显成人化或学术化。
+    - field: 中华优秀传统文化与价值观融入度
+      type: float
+      description: 评估指导过程中是否自然、适龄地融合中华优秀传统文化或核心价值观。高分为内容自然融合，中分为有提示但略生硬，低分为完全忽略或强行灌输。
+    - field: 激励性与正向引导
+      type: float
+      description: 评估反馈是否采用具体、针对性激励，给予积极评价，帮助学生建立自信心和兴趣。高分为反馈具体、有温度，中分为有激励但不够具体，低分为无激励或消极评价。
+    - field: 语言表达规范度
+      type: float
+      description: 评估答案在语法、词语使用、逻辑结构等方面是否规范、清晰，表达适合小学生习惯。高分为句子通顺、词语准确、结构合理，中分为偶有小错不影响理解，低分为语句不通或表达晦涩。
+format_mode: prompt

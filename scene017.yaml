@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-初中-名著阅读考查教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是8年级的学生HarrisJonathan，男，14岁，平时喜欢下国际象棋和玩轮滑，但我对很多事情都容易三分钟热度，学业和兴趣总是要平衡。你能不能详细说说，像我这样兴趣多、专注时间短的学生，在名著阅读考查时，怎么提升理解和表达能力？最好能结合我的兴趣和性格，举些例子和具体建议。详细说说吧。
+  - question: 我是一名初中语文老师，班里有些同学对名著阅读总是提不起兴趣，提到考试就更没劲了。你能帮我理解一下，初中生为什么对名著阅读考查这么不积极？背后都有哪些原因？帮我理解一下。
+  - question: 最近班里的同学对《西游记》名著阅读考查都觉得挺困惑的。你是我的教学顾问，能不能深入讲解一下，《西游记》在初中名著考查时有哪些教学目标、重点难点，怎么分层推进，还有没有什么创新型的教学办法？最好能举例说明怎么激发不同层次学生的兴趣和思考，也希望你能结合一些传统文化和价值观来讲讲。能深入讲解一下吗？
+  - question: 你是我的学习助手，能不能讲讲看，面对班里阅读能力差异比较大的情况，怎么设计一个有效的分层名著阅读考查方案？希望你能说说分层目标怎么设定，还有差异化辅导的方法。讲讲看。
+  - question: 我是初中语文教研组长，最近要组织一次关于名著阅读考查的专题教研。你是语文教育专家，能不能系统地讲解一下初中名著阅读考查的整体设计思路？希望能从教学目标、重难点、分层推进、创新教学设计、评价方式，再到怎么自然融入传统文化和价值观等角度，全面、深入、系统地说说。
+  - question: 你是我的学习助手，初中名著考查常见的误区有哪些？能帮我简短回答下吗？
+  - question: 我是49岁的语文老师董煜婷，平时喜欢茶艺、写诗和越剧，逻辑性一般但善于倾听，跟教学同事关系挺好。最近备课时觉得名著阅读考查的评价标准有点模糊，尤其不知道怎么结合学生实际和语文学科特点来设计。你能帮我理解一下，名著阅读考查评价标准都应该考虑哪些方面吗？希望能结合我的背景和兴趣给点建议。帮我理解一下。
+  - question: 你是语文名著阅读考查的专业顾问，能不能详细分析下各个方面：现在初中名著阅读考查主要存在哪些问题？有没有创新的解决办法？具体实施途径怎么设计？还有怎么在教学中自然融入传统文化和价值观？希望你能全面、系统、深入地讲讲。
+  - question: 你是我的学习助手，怎么把名著阅读和现实生活结合起来，让学生更主动、更会思考？简单说说就行。
+  - question: 我是56岁的初中语文老师WilsonScott，性格比较有原则，喜欢渐进地接受新事物，平时爱玩地方牌类、红色旅游和摄影，也喜欢和学生、同事通过兴趣活动交流。你能不能深入说说看，像我这样的人，怎么科学设计名著阅读考查活动，把传统和创新结合起来，同时又能增强学生对中华优秀传统文化的理解和认同？希望你能详细讲讲，举些例子和建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-初中-名著阅读考查进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估作答是否严格、全面地按照题目要求和学生画像完成任务。高分需体现对所有细节要求的精准把握、格式规范和针对性响应，并能在满足要求基础上有创造性拓展，低分表现为遗漏题目要素、格式混乱或未结合学生画像。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估回答是否基于学生多维画像（性别、年级、兴趣、能力等）进行深层次定制，能针对其独特需求、成长阶段和动机提出个性化、具体建议。高分需体现对学生心理、能力、兴趣和成长路径的精准把握，建议有实际操作性和成长引导，低分表现为建议泛泛、无针对性。
+  - field: 差异化教学建议_理由
+    type: str
+    description: 解释差异化教学建议评分的详细理由，引用具体例子。
+  - field: 差异化教学建议
+    type: float
+    description: 评估是否针对不同学生群体（能力、兴趣、习惯）提供分层、多样、具体且可操作的教学建议。高分体现建议分层性、针对性和可落地性，能有效促进各层次学生进步，低分为一刀切或无操作细节。
+  - field: 教学目标清晰性_理由
+    type: str
+    description: 解释教学目标清晰性评分的详细理由，引用具体例子。
+  - field: 教学目标清晰性
+    type: float
+    description: 评估答案是否设定明确、具体、可衡量、分层次的教学目标，并围绕目标设计环节。高分需体现目标分层、可达成性，并能据目标调整教学策略。低分表现为目标模糊、无层次或内容与目标无关联。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否基于教育学原理，能有效促进学生理解、思考和内化名著内容。高分需在方法选择上体现多样性、针对性、互动性和启发性，并结合学生反馈动态调整，促进深度学习与迁移。低分表现为方法单一、机械、与目标不匹配或无反思改进。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估是否通过开放性任务、跨学科/跨媒介活动激发学生创新表达与独立见解。高分鼓励学生主动探索、表达个性观点、进行多样艺术创作，并能引导其将名著内容与现实或自我体验结合，低分为只要求复述或背诵，无创新表达或思维拓展。
+  - field: 问题模拟真实度_理由
+    type: str
+    description: 解释问题模拟真实度评分的详细理由，引用具体例子。
+  - field: 问题模拟真实度
+    type: float
+    description: 评估问题设置是否紧贴真实教学场景，反映学生常见困惑、兴趣点或实际需求。高分体现对学生心理、实际学习过程的敏感捕捉，能引发共鸣和自我反思。低分为问题内容生硬、脱离实际或与学生学习体验无关。
+  - field: 中华优秀传统文化融入_理由
+    type: str
+    description: 解释中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入
+    type: float
+    description: 评估内容是否自然、深入地渗透中华优秀传统文化和社会主义核心价值观，通过故事情节、人物分析等方式启发学生思考现实意义。高分体现文化传递与价值引导的润物细无声，如结合情节体验、人物共鸣等方式引导学生自发思考，低分为生硬灌输或完全未涉及文化内涵。
+  - field: 表达清晰与逻辑性_理由
+    type: str
+    description: 解释表达清晰与逻辑性评分的详细理由，引用具体例子。
+  - field: 表达清晰与逻辑性
+    type: float
+    description: 评估内容表达是否结构合理、层次分明、逻辑递进，语言简明易懂。高分要求内容有明确结构、逻辑线索、深度递进，能引导学生自主学习和思考，低分为信息堆砌、表达杂乱、结构单一或无逻辑线索。
+  format_mode: prompt

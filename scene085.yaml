@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: /inspire/hdd/project/ai4education/p-liuwentao/elmes/elmes/mapping/merged_metric_mapping.json
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-高中-离子反应本质与方程式书写辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二理科生，最近学离子反应的时候总弄不清楚它的本质，也不太会写离子方程式。你能解释一下吗？最好能结合实际例子，说得详细一点，让我别再总是写错。
+  - question: 你作为化学老师，能不能全方位地讲解一下高中化学里的离子反应本质和离子方程式书写辨析？希望你能从概念、机制、书写规范、常见错误、案例和教学建议这些方面都讲得系统详细些，我好好理清楚。
+  - question: 我是陈俊风，49岁男老师，在教师圈子里挺有人缘，最近对职称评定特别上心。你能详细说说在高中化学教学和教研活动里，离子反应本质和方程式书写辨析有哪些关键要点和常见误区吗？麻烦结合实际例子，说说怎么提升自己的专业能力和职称表现。
+  - question: 我是班主任老师，最近在备课和教研时发现学生对离子反应的本质和方程式书写总有困惑。你能详细展开说说高中离子反应的核心知识、书写规范、易错点和教学策略吗？最好能结合实际案例给些改进建议，帮助我提升教学效果。
+  - question: 我是高一女生彭舒，平时比较喜欢动漫设计和做手帐，学化学时老是记不住离子反应的本质和方程式书写规则。你能简短回答下吗？用简单易懂的话让我能在作业里用得上，不容易出错。
+  - question: 我基础比较弱，最近在化学课和作业里总被老师点名离子反应和方程式书写的问题。你能解释一下吗？最好能讲讲基础概念、书写步骤和容易出错的地方，举点例子让我好理解。
+  - question: 我是初二男生丁圣，喜欢跆拳道和露营，也是班干部，经常带同学搞创新活动。你能详细说说离子反应的本质和方程式书写要点吗？最好结合我们的实际生活举例，还能给我点建议怎么组织小组活动让大家一起理解。
+  - question: 我是邹若曦，46岁的化学老师，平时喜欢旅行和书法，教学中有点粗放但能灵活平衡规则和创新。你能帮我深入了解高中离子反应及方程式书写的知识体系、易错点、教学创新案例，还有压力管理建议吗？希望能在理想化教学和实际管理间找到科学的平衡。
+  - question: 我是高一男生范夏，喜欢天文观测、攀树和虚拟现实开发，性格创新但有点自信不足。你能彻底说清楚高中离子反应的本质和方程式书写辨析吗？希望你能结合微观机制、理论、实际应用、常见误区和探究建议，还能联系下我的兴趣和团队活动，设计点互动方案让我深入理解。
+  - question: 你作为高中化学老师，能说说主要的离子反应本质和方程式书写原则吗？希望你把核心要点讲清楚，顺便提醒下我们容易犯的错。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-高中-离子反应本质与方程式书写辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学设计基于学生学情差异（基础、能力、兴趣、风格等）进行针对性调整，能动态识别并响应个体差异，实施内容、方法、资源的分层支持，体现持续跟踪与反馈。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 内容严格按照教学指令、结构要求组织，分点编号，突出重点与难点，步骤清晰，便于操作和复用。结构严密，重点突出本质与辨析，有清晰小结和拓展建议。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法严格遵循教育学和学科认知规律，体现启发式、探究式、分层递进策略。对重难点有针对性设计（如纠错环节、易错点剖析），结合真实实验或案例，注重知识迁移与认知负荷管理。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 课堂问题贴近学生真实学习过程，反映常见困惑与思考路径，问题具体、有情境、能引发探究和讨论。鼓励学生表达真实疑问，促进深入理解。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 通过开放性问题、探究任务、跨学科类比等方式激发学生创新与主动探究兴趣，鼓励多角度分析、批判性思考和自主实验设计，支持学生提出新问题和假设。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 教学内容中自然融入科学精神、实事求是、合作探究等核心价值观，结合化学学习和中国传统文化情境，润物细无声地引导价值观形成，避免生硬灌输。
+  - field: 关键知识点覆盖完整性_理由
+    type: str
+    description: 解释关键知识点覆盖完整性评分的详细理由，引用具体例子。
+  - field: 关键知识点覆盖完整性
+    type: float
+    description: 系统覆盖离子反应本质、方程式书写规则、沉淀与离子判断、常见易错点（如观测离子遗漏、沉淀判断失误、配平错误等），并提供针对性练习、案例分析和纠错环节，体现知识深度与广度。
+  - field: 学生参与度设计_理由
+    type: str
+    description: 解释学生参与度设计评分的详细理由，引用具体例子。
+  - field: 学生参与度设计
+    type: float
+    description: 设计高质量互动环节，包括师生互动、分组讨论、实验设计、课堂提问等，促进学生主动参与、表达和合作探究。互动具体、分层，能激发主动学习和团队协作。
+  format_mode: prompt

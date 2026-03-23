@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene010/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 语文-小学-写作素材积累辅导教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是四年级男孩的家长，他喜欢踢足球，但写作文总觉得没东西可写。你作为小学语文写作指导专家，讲讲看怎么帮他把兴趣和日常生活积累成写作素材吧？
+    - question: 我是三年级语文老师，班里有几个孩子写作文总是东拼西凑，感觉不真实。你作为小学写作辅导专家，能讲得详细点吗：怎样引导学生积累真实生活素材，让作文更有真情实感？
+    - question: 我是一名五年级学生，老师让我们积累写作素材，可我不知道怎么做。你是我的写作指导助手，简要说明下有什么简单实用的素材积累方法？
+    - question: 我是一名小学语文教研员，最近在调研学生写作素材积累的有效途径。你作为语文教育专家，能全面深入地讲讲：小学阶段写作素材积累有哪些科学方法、常见误区，以及中华优秀传统文化在素材积累中的作用吗？
+    - question: 我是六年级学生的家长，我女儿性格比较内向，不太主动表达，老师又要求作文素材丰富。你作为语文写作专家，能具体说说怎么帮助内向的孩子积累写作素材并激发表达兴趣吗？
+    - question: 我是一名三年级语文老师，班里有学生注意力容易分散，写作时很难集中素材。你作为小学写作专家，从各个角度详细说说怎么辅导这类孩子积累写作素材，同时怎样在过程中自然融入中华优秀传统文化和社会主义核心价值观吧？
+    - question: 我是五年级学生，平时喜欢看漫画和玩电子游戏，老师建议我多积累作文素材。你是我的写作指导助手，详细展开说说怎么把兴趣爱好和素材积累结合，让写作更有趣吧？
+    - question: 我是一名小学语文老师，辅导学生写作时发现大家积累素材的方式都很单一。你作为写作辅导专家，详细说说有哪些创新的素材积累方法可以推荐给学生吧？
+    - question: 我是六年级学生的家长，孩子要写“劳动最光荣”的作文，但觉得没有什么素材。你作为语文写作专家，说说你的看法：怎么引导孩子从生活中发现劳动的素材，并融入中华传统文化的精神呢？
+    - question: 我是赵韫玉，高三女生，喜欢吉他和攀岩，性格理想主义但有点自信不足，学习时常在功利和兴趣之间平衡。你作为语文写作指导专家，用几句话说说怎么根据我的兴趣和性格积累写作素材，让表达更有深度和个性？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 语文-小学-写作素材积累辅导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化学生画像适配度
+      type: float
+      description: 评估辅导内容是否结合学生年龄、兴趣、写作水平等画像信息，体现分层指导和兴趣导向，允许在通用基础上适度个性化，鼓励针对性提升，避免完全一刀切。
+    - field: 指令遵循与格式准确性
+      type: float
+      description: 内容结构、格式、要素应基本符合任务要求，分点清晰，便于直接应用。允许合理灵活表达，但不得遗漏核心信息或随意更改主线。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 辅导方法应基于科学教育理念，结构合理，体现能力培养目标，方法具备可持续性和迁移性。允许结合常用教学法，但须说明为何有效，避免机械灌输。
+    - field: 写作素材积累实用性
+      type: float
+      description: 推荐的方法贴近学生生活，操作性强，能直接支持写作练习，鼓励长期积累和素材多样性，避免仅限短期或脱离实际能力建议。
+    - field: 创新思维激发程度
+      type: float
+      description: 辅导过程中通过开放性问题、启发式引导等激发创新思考与表达，鼓励联想、想象、多样体裁尝试，避免单一模板化写作。
+    - field: 真实教育场景拟合度
+      type: float
+      description: 内容贴合小学语文写作辅导实际场景，关注学生常见困惑与需求，语言亲切、适龄，便于一线教师或学生理解与应用，避免理论化或成人化表达。
+    - field: 社会主义核心价值观与中华文化自然融入
+      type: float
+      description: 内容自然融合社会主义核心价值观和中华优秀文化，结合故事、人物、主题等方式潜移默化引导学生树立正确价值观，避免生硬灌输或口号化。
+    - field: 问题理解与回应深度
+      type: float
+      description: 能深入理解用户核心需求，细致分析学生可能遇到的具体困难，从年龄、兴趣、能力等多维度分层回应，提出针对性、可操作、可持续的解决方案，体现动态反馈与改进。
+format_mode: prompt

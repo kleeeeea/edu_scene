@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-小学-课堂活动设计教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级语文老师，班里有几个孩子性格比较内向，不太敢在课堂上主动发言。家长们很希望我能帮助孩子们多表达、提升自信。能结合小学阶段孩子的特点，帮我设计一个鼓励内向孩子参与表达的语文课堂活动吗？详细展开说说，包括实施流程、注意事项和传统文化元素，还有怎么照顾不同性格学生的适配。
+  - question: 我是一名刚入职的小学语文老师，班里有些学生语文基础比较薄弱，对朗读和背诵兴趣也不大。能不能帮我设计一个能激发他们朗读兴趣的课堂活动？讲讲看，最好能说说活动流程和怎么调动大家积极性。
+  - question: 我是五年级学生，最近小组合作写春天的作文，大家都不太主动，讨论也不起来。能不能简短回答下，有没有什么能让大家积极参与、互相合作的语文活动？
+  - question: 我是一名小学语文老师，带了三年班了，班里有几个孩子很爱讲故事，就是表达时经常说不清楚。你能结合语文素养帮我设计个提升他们故事表达能力的课堂活动吗？能深入讲解一下，包括活动环节、操作流程、评价、灵活调整的建议，最好还能融入一些中华传统故事元素。
+  - question: 我是四年级语文老师，班里有些学生对古诗兴趣不高，背诗也觉得枯燥。能不能讲清楚点，帮我设计一个能让学生主动参与、体验古诗之美的课堂活动？说说具体流程和怎么激发他们兴趣。
+  - question: 我是一名乡村小学的语文老师，教学资源有限，班里还有留守儿童，部分学生基础也比较薄弱。我想通过语文课外阅读活动提升学生的综合素养，但不知道怎么设计活动、调动积极性。你能全面深入地讲讲吗？请结合乡村学校实际，说说活动流程、家校协同、资源怎么用、激励机制，还有遇到困难怎么办，也希望能融入传统文化和核心价值观。
+  - question: I'm JonesChloe, a 46-year-old journalist who likes blogging and reading,
+      and I'm often collaborating professionally. I've been invited to observe and
+      evaluate a primary school Chinese class activity, but I'm not from an educational
+      background. Could you thoroughly say how to design a highly engaging and culturally
+      rich Chinese language classroom activity for primary students? Please explain
+      the reasoning, detailed steps, ways to encourage participation and collaboration,
+      how to integrate traditional Chinese values, and how to adapt for different
+      personalities. Please make sure to cover all aspects and really explain it thoroughly.
+  - question: 我是刚带班的小学语文老师，班里有几个学生情绪波动大，有时影响课堂气氛。我想通过语文活动引导他们更好地表达和调节情绪，同时带动班级氛围。你能讲讲看吗？请结合实际，说说活动流程和注意事项，还有怎么灵活调整。
+  - question: 我是二年级学生家长，我女儿胆子小，不太敢举手发言。能不能概括一下，有没有什么简单有效的语文活动能帮她克服胆怯、勇于表达？
+  - question: 我是五年级女生丁雅雯，喜欢芭蕾舞、街舞，平时有点被动，喜欢跟同伴一起活动。语文课上我有时候不太主动发言，老师希望我多参与。你能结合我的兴趣和性格，帮我理解一下，有什么适合我的语文课堂活动吗？说清楚点，举些例子。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-小学-课堂活动设计进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学适配性_理由
+    type: str
+    description: 解释个性化教学适配性评分的详细理由，引用具体例子。
+  - field: 个性化教学适配性
+    type: float
+    description: 评估课堂活动是否针对学生年级、兴趣、能力等特征，制定清晰的分层方案，并在活动流程中体现个体关注。高分要求有具体分层措施、差异化任务和动态调整机制，能够根据学生反馈适时调整活动内容与难度。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估方案是否严格按照指定结构（如‘目标-流程-评价’）分条展开，内容完整、逻辑清晰、格式规范。高分需无遗漏、各部分内容衔接紧密。中分为结构基本完整但条理欠佳。低分为内容混杂、环节缺失或格式混乱。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估活动是否融合多种现代教学方法（如合作学习、探究、反思、情境体验），并能有效促进学生认知、情感和技能发展。高分要求方法多样、环节明确，能结合学科理论或教学原理进行合理设计。中分为方法有一定多样性但缺乏系统性或理论依据。低分为方法单一、机械、缺乏互动与创新。
+  - field: 教学目标与内容契合度_理由
+    type: str
+    description: 解释教学目标与内容契合度评分的详细理由，引用具体例子。
+  - field: 教学目标与内容契合度
+    type: float
+    description: 评估活动内容与语文课程标准及本节课教学目标的匹配度。高分需目标清晰、内容紧扣主题、各环节围绕目标设计。中分为部分环节与目标关系不紧密。低分为活动内容与教学目标关联性弱或偏离主题。
+  - field: 活动可操作性与细致程度_理由
+    type: str
+    description: 解释活动可操作性与细致程度评分的详细理由，引用具体例子。
+  - field: 活动可操作性与细致程度
+    type: float
+    description: 评估活动方案是否具体、可执行，包含详细流程、时间分配、所需材料、分组方式、师生互动安排及应对预案。高分为流程细致、步骤明确、操作性强。中分为部分细节描述，流程基本可执行。低分为流程笼统、细节缺失或难以操作。
+  - field: 创新性与创造力激发_理由
+    type: str
+    description: 解释创新性与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新性与创造力激发
+    type: float
+    description: 评估活动是否包含新颖的任务设计，能有效激发学生主动思考、表达和创造力。高分要求任务结构有创新、鼓励原创表达和多样成果展示。中分为形式多样但创新性不足。低分为标准化、重复性强、无创新空间。
+  - field: 多元表达与自主选择_理由
+    type: str
+    description: 解释多元表达与自主选择评分的详细理由，引用具体例子。
+  - field: 多元表达与自主选择
+    type: float
+    description: 评估活动是否为学生提供多种表达和参与路径，允许学生根据自身兴趣和特长自主选择成果展示形式。高分为多路径并鼓励个性表达。中分为有限选择。低分为统一要求、无选择空间。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 评估活动是否将社会主义核心价值观与中华优秀传统文化自然融入教学内容，通过故事、情境、讨论或生活实际潜移默化地传递价值观，避免生硬说教。高分为价值观在真实情境中自然体现。中分为偶有生硬插入。低分为口号灌输或无实际联系。
+  format_mode: prompt

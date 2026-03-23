@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene062/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 化学-小学-常见物质溶解现象探究教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是一名小学科学老师，最近要给四年级学生讲常见物质的溶解现象。你能说说主要的溶解现象有哪些吗？简单说说就行。
+    - question: 你作为小学化学教育专家，我班上有几个五年级学生很喜欢做实验，但他们总是分不清食盐、糖、油这些物质在水里溶解的区别。能具体说说常见物质在水里的溶解现象和背后的科学道理吗？能具体说说吗？
+    - question: 我是彭雪雪，57岁的小学老师，平时喜欢京剧和书法，也常在教学中做跨学科尝试，但有时思路不够清楚。我想把化学的‘溶解现象’和书法、颜料等艺术内容结合，帮助学生理解溶解。说说主要的教学重点和注意事项吧。说说主要的。
+    - question: 我是新入职的小学科学老师，发现班里有几个学生总是分不清溶解和不溶解，有些孩子还常用生活例子提问。你作为小学科学教学顾问，能全面深入地讲讲怎么帮助学生建立正确溶解概念、设计探究活动，并针对不同学习风格有效教学吗？能全面深入地讲讲吗？
+    - question: 我是五年级学生家长，女儿喜欢做实验但不太爱记笔记。最近她在家观察糖、盐、油在水里的溶解现象，有些搞不明白。你作为化学学习助手，能深入说说看怎么帮助她理解不同物质的溶解现象，还能激发她对科学探究的兴趣吗？深入说说看。
+    - question: 我在小学科学教研组负责组织‘溶解现象’教学研讨活动，组里老师风格各不一样。你作为教研员，能详细分析下各个方面，系统梳理小学‘常见物质溶解现象探究’的教学目标、重点难点、课堂活动设计、评价方式和家庭协同等内容吗？详细分析下各个方面。
+    - question: 我是四年级学生，科学课上老师让我们观察盐、糖、油在水里的表现，我发现不太一样，有点不明白。你能具体说说为什么有些物质能溶解在水里，有些不能吗？能具体说说吗？
+    - question: 你作为小学科学教育专家，我们班有些学生上课容易走神，对生活中的化学现象不太感兴趣。能详细讲讲怎么用贴近生活的教学方法，让学生乐于探究常见物质的溶解现象，还能培养他们科学思维和合作精神吗？详细讲讲。
+    - question: 我是一名小学老师，最近讲‘常见物质的溶解现象’，有学生问为什么牛奶加水会变稀，油却浮在水上不混合。你能帮我理解一下不同物质在水中溶解或不溶解的原因和科学解释吗？帮我理解一下。
+    - question: 我是一名六年级学生，很喜欢做小实验。最近在研究可可粉、盐、糖加到水里会发生什么。你作为AI科学助教，能讲讲看它们在水里分别是什么表现，背后的科学原理是什么吗？讲讲看。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 化学-小学-常见物质溶解现象探究进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估教学内容是否充分考虑学生的年级、兴趣、认知水平及个体差异，针对性调整知识难度、语言表达和案例选择。不仅要避免生硬统一化，还应体现对不同学生需求的细致适配，并在教学环节中有实际体现。
+    - field: 指令遵循与结构规范性
+      type: float
+      description: 评估回答是否严格按照题目要求的格式、步骤与结构（如分点阐述、现象-原因-举例等），内容层次清晰，逻辑完整。优秀表现需在结构规范基础上，条理分明且环节衔接自然。
+    - field: 教学方法科学性与探究深度
+      type: float
+      description: 评估教学方法是否符合小学科学教育规律，注重探究式、互动式、实验驱动。优秀表现需有分层探究、鼓励自主提问、结果讨论、反思总结等深度环节，体现科学探究全过程。
+    - field: 知识表达准确性与适龄性
+      type: float
+      description: 评估化学知识表达是否科学、准确，语言通俗易懂、适合小学生认知水平。优秀表现需能将复杂知识转化为易懂表达，避免生僻词汇和知识错误。
+    - field: 创新与思维启发引导
+      type: float
+      description: 评估教学过程是否通过开放性提问、鼓励猜想、拓展实验等方式，激发学生创新思维和探索欲望。优秀表现需引导学生多角度思考、设计自己的实验、提出新问题。
+    - field: 生活关联与应用深度
+      type: float
+      description: 评估知识是否与学生日常生活紧密结合，不仅举例，还能引发学生共鸣或实际应用思考。优秀表现需引导学生主动分享生活经验，结合实际问题探究知识应用。
+    - field: 价值观与中华优秀文化自然融入
+      type: float
+      description: 评估教学过程中是否自然融入社会主义核心价值观（合作探究、尊重科学、环保等）及中华优秀传统文化，表达方式需自然、潜移默化，避免生硬灌输。优秀表现为在教学活动中有机体现价值观和文化元素，促进学生品格发展。
+    - field: 师生互动真实度
+      type: float
+      description: 评估教学情境是否贴近真实小学课堂，师生互动自然，能反映学生实际表达习惯和疑惑。优秀表现需模拟多轮真实互动，体现师生交流、学生主动发问与教师适当回应。
+    - field: 反馈与评价引导
+      type: float
+      description: 评估教学过程中是否引导学生进行自我反思、同伴评价或教师积极反馈，促进学生持续改进和学习动力。优秀表现需有多元反馈机制，包括自评、互评与教师鼓励，促进学习成长。
+format_mode: prompt

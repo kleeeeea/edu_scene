@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-应用题解题思路引导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我叫梁雅爱，今年55岁，是动物饲养员，平时喜欢户外徒步、宠物训练和野生动物摄影，周末常带家人到郊外拍摄野生动物照片。在动物园工作时和同事关系融洽但保持适当距离，更喜欢独自研究动物行为训练。我帮助孩子学小学数学应用题时，发现自己容易依赖他人整合信息，也常在规则与创新之间犹豫。你作为小学数学教育专家，能结合我的职业和性格特点，系统地深入讲讲小学数学应用题的解题思路，尤其是怎么用实际生活中的动物行为或户外经验来引导孩子理解题目？详细展开说说。
+  - question: 你作为小学数学学习顾问，能用几句话说说怎么帮助注意力不集中的学生理解和解决应用题吗？只要讲讲主要方法，不用展开细节。
+  - question: 我是40岁的女老师暨丽仪，平时专注硬笔书法教学，喜欢方言研究和诗歌创作。在教学中容易职业倦怠，选择性参与教研讨论，倾向渐进式改革。你作为教育专家，可以结合我的兴趣和个性，说说小学数学应用题教学里怎么用传统文化元素（比如诗词、书法）激发学生思考，并提出实用解题思路引导吗？说说你的看法。
+  - question: 我叫史雅雅，39岁，是老师，喜欢公益服务和京剧欣赏，经常组织公益讲座，也在校外结识了不少志同道合的教育工作者。我的教学理念比较理想化，边界感也很明确，教学深受学生家长认可。你作为小学数学教育专家，能结合我的背景，深入分析一下在应用题教学中怎么兼顾理想化教学和现实需求，尤其是如何通过公益和传统艺术活动引导学生合作、诚信和劳动精神？我想深入了解。
+  - question: My name is ThomasMaria. I'm a 12-year-old 6th grader who loves nature
+      observation and piano, keeps high self-discipline, prefers working alone, and
+      likes structured routines. As my learning assistant, can you specifically explain
+      how I can develop a systematic approach to solving elementary math word problems,
+      considering my personality and hobbies? Can you be specific?
+  - question: 你作为小学数学教研专家，能从各个角度详细说说小学数学应用题解题思路的教学策略吗？要包括不同学生类型、家庭背景、课堂互动、生活化关联、传统文化融入和社会主义核心价值观引导，还要指出常见误区和可持续培养方法。从各个角度详细说说。
+  - question: 我是高二学生邓喜，喜欢数字绘画、人工智能研究和羽毛球，自主学习能力强但有点过度自信，逻辑性和创新性都很突出，但不喜欢合作。我和数字绘画导师关系好，但很少参加团体创作；人工智能社团里和同学有学术交流但回避深度社交。你作为数学教育专家，可以简要说说小学数学应用题解题思路的主要方法吗？要适合像我这种逻辑强、创新性强又喜欢独立思考的人。说说主要的。
+  - question: 你作为小学数学学习顾问，能详细说说怎么为有数学焦虑的小学生提供应用题解题思路引导吗？要包括心理疏导、情境创设、家庭支持和鼓励性评价等方面。详细说说。
+  - question: 我是五年级学生，最近做应用题总觉得题目很绕，经常漏掉条件或算错。你是我的数学学习助手，能帮我理解一下做应用题时该怎么理清思路、避免失误吗？帮我理解一下。
+  - question: 你作为小学数学教研员，能全方位地讲解一下小学数学应用题解题思路引导的理论基础、教学实践、常见问题、家庭协同、价值观融入和传统文化关联吗？希望能结合具体案例，提出可持续提升学生应用题能力的整体路径。全方位地讲解一下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-应用题解题思路引导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 教学过程中能持续、主动识别并动态回应学生的年龄、学习水平、兴趣、习惯等个性特征，讲解、互动、举例等环节均体现针对性，支持学生个性化表达与参与。高分要求贯穿全程、针对性强，低分表现为无动态调整或仅表面关注。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 内容严格按教学指令和任务要求组织，结构分明，步骤完整，分步讲解、阶段小结、综合总结等环节清晰，能灵活创新但不脱离指令核心。高分要求每一步有明确分工和承接，低分表现为顺序混乱、步骤遗漏或无总结。
+  - field: 解题方法科学性与适切性_理由
+    type: str
+    description: 解释解题方法科学性与适切性评分的详细理由，引用具体例子。
+  - field: 解题方法科学性与适切性
+    type: float
+    description: 所用解题方法符合小学认知特点，步骤完整、解释充分，能根据题型选择最易理解且防止误区的方法，并说明选择理由和预防常见错误。高分要求方法贴合学生实际，低分表现为方法跳跃、解释不足或不适合学生年龄。
+  - field: 思维过程引导完整性与递进性_理由
+    type: str
+    description: 解释思维过程引导完整性与递进性评分的详细理由，引用具体例子。
+  - field: 思维过程引导完整性与递进性
+    type: float
+    description: 系统引导学生完整经历解题思考过程，包括题意分析、方法比较、分步实施、结果反思，并通过递进式追问持续深化理解。高分要求每环节有针对性追问和反思，低分仅停留在表层步骤，无分析和递进。
+  - field: 启发式提问与创新激励_理由
+    type: str
+    description: 解释启发式提问与创新激励评分的详细理由，引用具体例子。
+  - field: 启发式提问与创新激励
+    type: float
+    description: 在讲解全过程多次、有层次地提出启发性、开放性问题，激发学生创新思维和自主探索，鼓励尝试不同方法，支持学生表达独特见解，并对创新做出积极反馈。高分要求每个关键环节都有启发和激励，低分表现为仅机械灌输标准解法或仅一次性简单提问。
+  - field: 错误容忍与鼓励表达_理由
+    type: str
+    description: 解释错误容忍与鼓励表达评分的详细理由，引用具体例子。
+  - field: 错误容忍与鼓励表达
+    type: float
+    description: 积极鼓励学生表达不同思路，对错误给予具体、正向反馈，帮助分析原因并引导改进，促进创造性和自信心。高分要求针对性反馈并多次鼓励表达，低分表现为只强调标准答案或机械否定错误，无分析和鼓励。
+  - field: 社会主义核心价值观及中华传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观及中华传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观及中华传统文化自然融入
+    type: float
+    description: 在教学过程中自然融入诚信、友善、努力等核心价值观，并结合中华优秀传统文化，做到与题目和学生体验紧密关联，无生硬插入。高分要求价值观和文化元素贯穿讲解，低分表现为机械插入口号或完全未体现相关内容。
+  - field: 问题场景真实性与贴近生活_理由
+    type: str
+    description: 解释问题场景真实性与贴近生活评分的详细理由，引用具体例子。
+  - field: 问题场景真实性与贴近生活
+    type: float
+    description: 题目及讲解贴近学生实际生活经验，细节丰富，能帮助学生感受数学应用的实际价值，激发兴趣和参与。高分要求场景真实、与学生体验紧密相关，低分表现为抽象、脱离学生生活或细节单一。
+  format_mode: prompt

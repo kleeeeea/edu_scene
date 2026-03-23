@@ -1,0 +1,144 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene080/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 化学-高中-原子结构与化学键理论讲解教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是高一男生龚恒，平时喜欢做科学实验和采集植物标本，性格比较目标导向和分析型。最近在学习原子结构和化学键时有点迷糊，尤其是它们在化学反应中的作用。你作为化学教育专家，能不能结合我喜欢实验的特点，大概讲讲原子结构和化学键的基础知识，让我能更好理解实际应用？
+    - question: 我是刚入职的高中化学老师，最近要教原子结构与化学键理论。班里学生有的喜欢动手实验，有的更关注理论推导，基础也不太一样。你作为化学教育专家，能不能详细分析下原子结构与化学键理论的核心知识、教学重点难点、常见学生误区、实验设计和跨学科思路，以及怎么激发学生的科学兴趣？详细分析下各个方面。
+    - question: I'm SimmonsNathan, a 17-year-old 11th grader, passionate about drone design, VR development, and skateboarding. I know I tend to be overconfident in tech projects and try to balance that with skill-building. Sometimes, teamwork at school trips me up. You’re my chemistry mentor—can you explain how atomic structure determines the types of chemical bonds, and how this might matter for things like new materials in drones or electronics? Can you explain?
+    - question: 我是高中化学教研员，最近在负责全校原子结构和化学键理论的教学改进方案。你作为化学教育专家，能不能全面深入地讲讲原子结构与化学键理论的知识体系、教学策略、实验创新、安全点、跨学科融合，以及怎么启发学生的创新思维和科学精神？能全面深入地讲讲吗？
+    - question: I'm WhiteLuke, a 28-year-old chemistry teacher who loves basketball and football. I try to use adaptive and empathetic teaching to connect with students and build teamwork. Can you, as a chemistry education advisor, explain in detail the main differences between ionic and covalent bonds, and how I might use sports analogies or teamwork ideas to help students grasp these concepts? Please explain in detail.
+    - question: 我是高中生，最近在学原子结构和化学键理论时遇到一些难题。你作为AI化学学习顾问，能不能深入说说看原子结构和化学键理论在化学反应、物质性质和生活应用上的原理和关联？最好能结合生活或实验举些例子帮我理解。
+    - question: 我是高二女生，喜欢生物和物理，平时学习比较细心。最近学化学的时候，对原子结构和化学键的关系有点迷糊。你作为知识导师，能具体说说原子结构和化学键之间的联系，并举一些生物或物理方面的例子帮我理解吗？
+    - question: 我是高中生，最近在准备化学竞赛，特别想深入理解原子结构和化学键理论。你作为化学竞赛辅导专家，能讲得详细点原子结构与化学键理论在竞赛题目里的常见考点、解决思路和创新解题方法吗？
+    - question: 我是高一学生，学原子结构和化学键理论时总是搞不清离子键和共价键是怎么形成的。你作为化学学习助手，说说你的看法，怎么帮我区分这两种化学键？能举些实际例子让我更容易理解吗？
+    - question: 我是高三学生，准备高考，现在在复习原子结构和化学键理论。你作为AI学习助手，能不能概括一下这部分的主要知识点和复习建议，让我能高效抓住重点？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 化学-高中-原子结构与化学键理论讲解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评价教学内容和表达方式是否充分结合学生具体画像（学习基础、兴趣、认知风格等），并在内容呈现、难度分级、表达方式上做出针对性调整。高分应体现对不同学生群体的精准适配和动态调整能力。
+    - field: 格式与指令遵循度
+      type: float
+      description: 评价答案是否不仅严格遵守任务要求的格式（如分段、小标题、列表、思考题等），还在结构清晰、美观、逻辑顺序和创新表达方面体现高标准。高分要求格式规范且有助于理解、教学创新。
+    - field: 教学方法科学性
+      type: float
+      description: 评价教学是否采用科学、系统、符合教育学原理的多元教学方法，如启发式、探究式、情景模拟、小组合作等。高分需体现方法多样、互动性强、能激发学生主动参与和思考。
+    - field: 知识内容准确性与系统性
+      type: float
+      description: 不仅要求化学知识点准确无误，还要系统梳理原子结构、能层分布、主要化学键类型及形成机制，并体现知识内在联系和跨章节整合。高分需涵盖拓展内容、辨析易错点、逻辑顺序清晰。
+    - field: 创新思维激发度
+      type: float
+      description: 评价教学是否通过开放性提问、生活化类比、实验设计、跨学科整合等方式，激发学生创新思考和探索兴趣。高分需体现思维挑战、实际应用、鼓励多元表达的设计。
+    - field: 模拟真实提问覆盖度
+      type: float
+      description: 评价教学是否主动回应和覆盖学生在真实课堂中可能提出的疑问、常见误区或兴趣点，体现高度互动性和实际关照。高分需提前预测并详解典型问题，鼓励学生提出更多疑问。
+    - field: 价值观润物细无声融入度
+      type: float
+      description: 评价教学是否自然、恰当地将社会主义核心价值观或中华优秀传统文化理念与化学内容融合，要求相关性强、表达自然，能激发学生对科学与文化的综合认知。高分需体现理念融入的深度与创新表达。
+format_mode: prompt

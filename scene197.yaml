@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-历史发展的脉络与主题归纳教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中历史老师，最近班里有学生总是分不清中国古代历史发展的脉络，尤其对朝代更替和社会变革容易混淆。你作为历史教育专家，能帮我讲清楚中国古代史的主要发展脉络和主题吗？讲清楚点，最好举些典型例子
+  - question: 我是高二学生郭菊燕，平时喜欢服装设计和视频剪辑，性格偏直觉判断，经常和时尚设计课程的同学一起参与创意社团的视频剪辑活动。最近在学世界近现代史时，我对历史事件背后的社会变革和文化潮流很感兴趣，但总觉得历史发展的脉络很难系统归纳。你作为历史学科专家，能从各个角度详细说说世界近现代史的发展脉络、主要主题，以及这些历史变革对现代社会和文化（比如时尚、艺术、设计）的影响吗？希望结合我的兴趣和学习习惯，给我具体分析和学习建议
+  - question: 我是一名初三学生，老师让我们分析中国历史上的重大转折时期发展脉络和主题归纳，比如秦汉到隋唐的变化，但我总抓不住重点。你作为我的历史学习助手，能深入讲解一下中国历史几个重要转折时期的发展脉络、主要主题和对后世的影响吗？最好举些例子，也教我怎么归纳
+  - question: 我是初中生家长，发现孩子学历史总是记住了事件但理不清发展的线索，尤其中国近现代史的主题归纳很难。你作为历史教育专家，能详细说说怎么引导孩子梳理中国近现代史的发展脉络和主题吗？举些具体方法和典型事件做例子
+  - question: I am WhiteMarcus, a 54-year-old male teacher who values precise communication
+      and educational ideals. I enjoy bridge, gateball, and disciplined calligraphy
+      practice. In my teaching, I strive for thoughtful pedagogy and clear knowledge
+      delivery. Could you succinctly summarize the core historical themes and developmental
+      threads that are most effective for introducing middle school history? Please
+      keep it focused and give clear examples—just a concise overview
+  - question: 我是一名初中历史教研员，负责组织教师集体备课。最近发现老师们在归纳历史发展的脉络和主题时容易碎片化，难以系统串联各时期的联系。你作为历史教育专家，能从各个角度详细说说初中历史教学中如何科学系统地归纳历史发展的脉络与主题吗？请包括教学设计、知识结构、学生思维培养和中华优秀传统文化自然融入，举些实际教学案例和建议
+  - question: 我最近在备考，觉得历史发展的脉络很复杂，尤其世界史的主题归纳让我有点迷茫。你作为历史学习助手，能大概讲讲世界史发展的主要脉络和主题吗？说说核心要点就行
+  - question: 我叫龚韫玉，17岁，高二在读，平时喜欢文学创作和乒乓球，性格高效规划但偶尔过度自信和拖延。家里是教师家庭，作息很规律，文学社老师比较关注我，但我有时会因创作灵感打乱计划。最近学中国历史时，发现自己容易把各阶段主题搞混，归纳历史发展脉络时思路也不清。你作为历史学科专家，能深入说说看中国历史发展的主要脉络和主题归纳吗？结合我的学习特点和兴趣，给些具体归纳技巧和建议，也希望举些典型事件做例子
+  - question: 我是初中生家长，最近发现孩子对世界历史发展的脉络理解不深，只记住零散事件，主题归纳也做不到。你作为历史教育专家，能讲清楚怎么引导孩子梳理世界历史发展的脉络和主题吗？最好举些具体方法和例子
+  - question: 我是初一学生，对历史很感兴趣但总被复杂的历史脉络搞糊涂，尤其归纳中国古代史的主题时觉得很乱。你作为我的历史学习助手，能具体说说中国古代史的发展脉络和主题归纳吗？希望有例子和归纳方法，让我容易理解
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-历史发展的脉络与主题归纳进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适应性_理由
+    type: str
+    description: 解释个性化画像适应性评分的详细理由，引用具体例子。
+  - field: 个性化画像适应性
+    type: float
+    description: 评估教学内容是否基于学生的学习基础、兴趣和认知差异，系统设计分层分组和个性化任务，并在教学过程中动态调整支持策略，确保各层次学生都能获得适合自身发展的学习体验，体现高度针对性与包容性。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估教学内容是否严格、完整地按照教学任务要求与结构进行设计，条理清晰、分点明确，内容表述规范，能全面回应所有任务细节，且无遗漏或偏离。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否根据教学目标和学生实际，灵活综合运用多种科学教学方法（如启发式、探究式、合作学习、图示法、项目式等），并注重方法间的有机融合与创新，能有效促进学生深度理解和历史思维能力发展。
+  - field: 知识结构清晰度_理由
+    type: str
+    description: 解释知识结构清晰度评分的详细理由，引用具体例子。
+  - field: 知识结构清晰度
+    type: float
+    description: 评估教学内容是否系统梳理历史发展的时序脉络与主题，逻辑层次分明，有助于学生构建动态、整体的历史知识框架，并通过创新结构呈现和学生主动参与，促进知识的内在联系和多维理解。
+  - field: 启发式提问与互动_理由
+    type: str
+    description: 解释启发式提问与互动评分的详细理由，引用具体例子。
+  - field: 启发式提问与互动
+    type: float
+    description: 评估是否设计多层次、开放性、富有启发性的问题，并结合多样化互动环节（如小组研讨、角色扮演、观点碰撞等），持续激发学生主动思考与表达，课堂参与度高，学生能进行深度历史思辨。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过多元表达方式、跨学科融合和创新任务设计，鼓励学生用新颖视角分析历史事件，促进批判性与创造性思维发展，学生能产出有独创性和深度的历史成果。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估是否将社会主义核心价值观与历史教学内容深度融合，通过真实历史情境、人物抉择和现实联系，设计体验与讨论环节，引导学生理解和践行核心价值观，避免表面化、口号化表达，学生能主动联系现实生活。
+  - field: 中华优秀传统文化传承性_理由
+    type: str
+    description: 解释中华优秀传统文化传承性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承性
+    type: float
+    description: 评估是否在历史主题归纳中深入挖掘中华优秀传统文化内涵，结合历史情境与现实问题，阐释其现代价值，设计体验或实践环节，学生能理解并主动参与传统文化的现代传承。
+  format_mode: prompt

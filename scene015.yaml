@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-初中-中考专项复习教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三学生浦斌，最近老师总说我上课注意力不集中，主要是熬夜打游戏和心里老想着和田径队员比成绩。你作为有经验的中考语文备考专家，能全面深入地讲讲针对我这种情况，语文中考专项复习应该怎么科学安排吗？最好能结合我的兴趣和性格说说，包括专注力、拖延、文言文和作文还有心理调适这些，能全面深入地讲讲吗？
+  - question: 我叫白满，今年二年级，喜欢做数独和和同学打乒乓球。你是语文老师，能不能简单说说初中语文中考复习最需要准备哪些基础内容？简单说说就行。
+  - question: Hi, I'm MartinezVictor, a 5th grader who likes nature exploration and
+      martial arts. You’re a learning coach—can you help me understand how I can use
+      my planning skills and interests to prepare for the Chinese middle school entrance
+      exam, especially the language part? Help me understand, please.
+  - question: 我是一名初三语文老师，最近班里学生在阅读理解题上总是得分不高，特别是议论文和记叙文。你作为资深语文教研员，能详细讲讲中考阅读理解专项训练怎么系统设计吗？最好说说分层训练、常见易错点和怎么把传统文化、积极价值观自然融进去。详细讲讲。
+  - question: 我是一名初三学生，性格比较内向，平时喜欢一个人安静待着，写作文总觉得没啥内容，表达也很单一没自信。你是语文学习顾问，能全面深入地讲讲怎么帮我这种情况的学生突破语文作文的瓶颈吗？最好说说素材积累、结构创新、表达训练、心理调节、分层练习这些，能全面深入地讲讲吗？
+  - question: 我是初三学生，文言文总是学不好，记不住字词意思，也看不懂课文。你是中考语文老师，帮我理解一下文言文应该怎么学比较有效，最好举点例子，帮我理解一下。
+  - question: 我最近写作文总是被老师说太平淡，没什么亮点，分也不高。你作为语文老师，讲讲看怎么让作文有新意和感染力吧，最好举点例子。
+  - question: 我是初三家长，孩子准备中考语文的时候对诗歌鉴赏很没信心，总说读不懂诗人的情感和意境。你作为语文教学专家，能深入说说看中考诗歌鉴赏专项复习有什么有效策略吗？最好系统讲讲题型、解题技巧、分层训练，还有怎么把传统文化和积极价值观自然融进去。
+  - question: 我最近复习语文时发现自己答题速度很慢，尤其阅读理解和作文总是来不及写完。你作为经验丰富的语文老师，说说你的看法，怎么科学提升语文考试答题速度？最好举点例子。
+  - question: 我是初三学生，平时语文成绩一般，对议论文写作没啥兴趣，总觉得很难写好。你是语文老师，能不能用几句话说说议论文写作的核心要点？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-初中-中考专项复习进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容与方法是否紧密结合学生的个体画像（基础水平、兴趣、能力、学习习惯等），做到动态调整和针对性指导。高分需体现针对不同学生特征的具体策略或资源推荐，而非仅泛泛提及差异化。
+  - field: 指令格式与内容遵循度_理由
+    type: str
+    description: 解释指令格式与内容遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式与内容遵循度
+    type: float
+    description: 评估答案是否严格按照问题要求（如分点、结构、步骤、例题、总结等）呈现，结构清晰、便于查阅。高分需完整覆盖全部指令要素，并有清晰逻辑层级。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否符合教育学原理，如循序渐进、启发引导、分层递进、及时反馈、互动交流等。高分需体现方法的多维科学性（如分层+反馈+互动），并有实际促进理解的机制。
+  - field: 知识结构系统性与逻辑性_理由
+    type: str
+    description: 解释知识结构系统性与逻辑性评分的详细理由，引用具体例子。
+  - field: 知识结构系统性与逻辑性
+    type: float
+    description: 评估内容是否系统梳理知识结构，层次分明，逻辑清晰，突出知识点间联系和递进关系。高分需体现知识网络构建、各环节有逻辑衔接及递进。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 评估是否通过情境任务、开放性问题、创新表达等方式，主动激发学生创造性和多元思考。高分需有具体创新任务设计或鼓励多角度表达，不局限于标准答案。
+  - field: 真实场景贴合度_理由
+    type: str
+    description: 解释真实场景贴合度评分的详细理由，引用具体例子。
+  - field: 真实场景贴合度
+    type: float
+    description: 评估内容是否紧贴中考专项复习实际，聚焦学生常见困惑与需求，提出可操作、有效的解决方案。高分需针对具体难点或痛点，结合实际案例提供详细对策。
+  - field: 价值观与文化自然融入_理由
+    type: str
+    description: 解释价值观与文化自然融入评分的详细理由，引用具体例子。
+  - field: 价值观与文化自然融入
+    type: float
+    description: 评估教学过程中是否自然而然地融入社会主义核心价值观与中华优秀传统文化，引导学生思考现实意义。高分需在相关环节自然联系价值观或传统文化，避免生硬灌输。
+  - field: 表达规范与易懂性_理由
+    type: str
+    description: 解释表达规范与易懂性评分的详细理由，引用具体例子。
+  - field: 表达规范与易懂性
+    type: float
+    description: 评估内容表达是否规范、用词准确、语言简明，适合初中生理解和实际操作。高分需语言亲切、准确且便于操作，难点用通俗表达解释。
+  - field: 分层与多样化练习设计_理由
+    type: str
+    description: 解释分层与多样化练习设计评分的详细理由，引用具体例子。
+  - field: 分层与多样化练习设计
+    type: float
+    description: 评估练习是否针对不同学习水平设计分层（基础、提升、创新等），各层次练习有代表性，紧密结合实际复习需求。高分需体现分层练习的针对性和创新性，避免内容重复或分层流于形式。
+  format_mode: prompt

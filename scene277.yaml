@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-一粒米饭的旅行（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是AndersonRuby，今年60岁，是一名小学教师，平时喜欢广场舞、太极、戏曲赏析，也很注重社区活动和传统价值观的融合。你作为小学德育教学专家，能不能从各个角度详细说说‘一粒米饭的旅行’在德育课里的多维价值以及具体教学实施？希望能结合故事、案例、互动活动等，讲讲怎样把粮食来之不易、劳动意义、中华传统文化和核心价值观都自然地融进去。
+  - question: 你作为小学德育教学专家，能帮我概括一下‘一粒米饭的旅行’作为德育主题的主要价值吗？希望能简单讲讲它在劳动教育和中华传统文化方面的自然融入。
+  - question: 我是小学德育老师AndersonRuby，平时喜欢广场舞、太极和戏曲赏析，也很重视社区交流和传统文化。你作为德育与美育教学顾问，我想深入了解‘一粒米饭的旅行’主题在培养学生劳动观、感恩心和传统美德方面有哪些具体教学策略？希望举些活动案例和故事，分析如何家校社协作，详细聊聊吧。
+  - question: 我是一名小学老师，最近在德育和美育课上想把‘一粒米饭的旅行’作为主题。你觉得通过哪些艺术活动（比如绘画、戏剧、音乐）可以让学生更好地理解粮食的来之不易、劳动的价值和传统文化？说说你的看法。
+  - question: 我是小学老师，有丰富教学经验。你作为德育与美育专家，能讲得详细点吗？‘一粒米饭的旅行’主题在小学德育课里怎么做创新教学设计，包括课堂活动、家校协同、社区资源利用等等？希望你结合学生认知发展，举些例子说说怎么激发创造性思维、培养感恩，同时把核心价值观和传统文化自然融进去。
+  - question: 我是小学老师，常常会和家长交流德育内容。‘一粒米饭的旅行’这个主题在家庭德育里有哪些实践方式？比如亲子共读、家庭劳动、社区活动等，能举些例子讲讲看吗？
+  - question: 我是小学德育老师，最近准备‘一粒米饭的旅行’主题课。能不能简要说明下这个主题在培养学生节约粮食、尊重劳动和感恩心方面的主要作用？
+  - question: 我是小学老师，最近打算系统地开展‘一粒米饭的旅行’德育主题。你作为德育与美育教学专家，能全面深入地讲讲吗？比如课程目标怎么设定、教学内容和活动如何设计、评价方式怎么做、家校社协同和传统文化怎么融合？希望结合小学生的实际特点，给些创新建议和温暖关怀。
+  - question: 我是小学德育老师，最近在设计‘一粒米饭的旅行’主题活动。你作为德育专家，能具体说说吗？这个活动怎么帮助学生提升动手能力和创造性思维？最好能结合案例和细节详细讲讲。
+  - question: 我是小学德育老师，你作为教学顾问，说说你的看法吧：‘一粒米饭的旅行’主题怎么引导学生感受劳动之美和粮食来之不易？希望你能结合中华传统文化和核心价值观，举些有效的课堂活动或实践方式的例子。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-一粒米饭的旅行（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与精准回应_理由
+    type: str
+    description: 解释个性化画像识别与精准回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与精准回应
+    type: float
+    description: 教学设计需基于学生年龄、兴趣、学习风格、能力水平等多维度分析，明确展现至少两类差异化支持（如分层任务、兴趣小组、个别化辅导），并能根据学生课堂反馈和学习表现动态调整教学策略。需有具体举措关注边缘学生，杜绝模板化和一刀切。
+  - field: 指令格式遵循与内容完整性_理由
+    type: str
+    description: 解释指令格式遵循与内容完整性评分的详细理由，引用具体例子。
+  - field: 指令格式遵循与内容完整性
+    type: float
+    description: 教学内容需分段明确，结构完整，每一环节均有清晰目标、活动、评价方式，并覆盖所有指定教学任务。内容需逻辑连贯、信息无遗漏。每一环节需有可查证的内容清单和实际执行证据（如活动照片、小结等）。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法需充分体现启发式、体验式、合作学习等小学德育教学规律。全程至少包含两种高质量互动或体验活动（如角色扮演、实地体验、小组合作探究），并能针对教学目标和学生反馈灵活调整方法。避免仅表面多样化或走过场，强调深度参与和真实体验。
+  - field: 认知发展阶段适配性_理由
+    type: str
+    description: 解释认知发展阶段适配性评分的详细理由，引用具体例子。
+  - field: 认知发展阶段适配性
+    type: float
+    description: 教学内容、语言表达、活动难度需严格贴合小学不同年级的认知特点，避免过度抽象、复杂或低幼。活动应便于学生理解和操作，并鼓励自主表达与独立思考。需对不同能力学生的理解和参与情况有具体考量，并有相应调整措施。
+  - field: 激发学生创造性思维_理由
+    type: str
+    description: 解释激发学生创造性思维评分的详细理由，引用具体例子。
+  - field: 激发学生创造性思维
+    type: float
+    description: 教学环节需包含高质量开放性问题、想象力激发、创新表达或自主探究任务，至少有一项能让学生自主设计、表达独特见解或产出原创作品。评价时关注学生创新思维和独特表达，而非仅复述知识或模仿。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 教学过程需设计多层次、真实情境下的问题，引导学生表达观点、交流体验。至少包含师生互动和生生互动两个层面，并能根据学生回答进行追问或深入讨论。需有具体互动记录或案例，避免仅表面提问或单向交流。
+  - field: 社会主义核心价值观深度融入_理由
+    type: str
+    description: 解释社会主义核心价值观深度融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观深度融入
+    type: float
+    description: 教学需通过情境化故事、体验活动、实际行动等方式，将核心价值观（如劳动光荣、感恩、节约）深度融入。需促使学生自发表达或产生实际行为转化（如家庭节约、感恩行动），并有具体实施和反馈记录。避免口号式灌输，重在内化与行动。
+  - field: 中华优秀传统文化深度传承_理由
+    type: str
+    description: 解释中华优秀传统文化深度传承评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化深度传承
+    type: float
+    description: 教学需通过故事、习俗、古诗、谚语、传统技艺等多元方式，将中华优秀传统文化与活动深度融合。学生能理解、认同并践行相关美德（如节俭、感恩）。需有具体活动和成效记录，避免仅表面引用或机械记忆。
+  format_mode: prompt

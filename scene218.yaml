@@ -1,0 +1,132 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-身边的环境问题与保护教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是潘君浩，16岁，高一男生，平时喜欢跆拳道、田径和露营生存技能，性格既竞争又循规蹈矩，跟跆拳道社团和田径队的伙伴既有合作也有竞争。你作为地理老师，能结合我的兴趣和性格特点，谈谈在我们身边常见的环境问题（比如垃圾处理、水体污染、噪音等），以及青少年可以如何参与环境保护？说说你的看法。
+  - question: 你是小学地理学习助手，可以简明扼要地介绍一下日常生活中我们身边常见的环境问题吗？比如空气、水、噪音等方面，还请简单说明这些问题会带来哪些影响。概括一下就行。
+  - question: 我是一名小学地理教研员，近期正在组织老师们开展关于“身边的环境问题与保护”主题的校本课程设计。你作为地理教育专家，可以从教学目标、环境问题类型、学生探究活动、家校合作、社区参与、评价方式等多个角度，系统、全面、深入地讲讲小学阶段如何开展‘身边的环境问题与保护’模块教学吗？从各个角度详细说说。
+  - question: Hi, I'm MillerVictor, a 15-year-old male student in 9th Grade. My hobbies
+      include esports (MOBA/Strategy), street dance, and programming (Python/Scratch).
+      I often try to balance competitive gaming with creative dancing and coding projects,
+      but my motivation isn't always clear. As an AI geography teacher, could you
+      analyze in detail the various types of environmental problems around us, how
+      they impact teenagers like me, and suggest innovative ways for students with
+      diverse interests to participate in environmental protection? 详细分析下各个方面。
+  - question: 我是小学三年级班主任，最近发现学生对“身边的环境问题与保护”这个主题不是很感兴趣。你作为地理教学顾问，可以简单说说有哪些有效的教学方法和活动，能够激发学生的兴趣，让他们主动关注身边的环境问题吗？大概讲讲。
+  - question: 我是一名新手小学地理老师，刚开始接触“身边的环境问题与保护”这个模块，想知道如何结合实际生活案例，让学生更好地理解环境问题，并主动参与保护。你作为地理教育专家，可以详细解释一下具体的教学思路、活动设计和注意事项吗？能解释一下吗？
+  - question: 我是小学四年级学生，最近老师布置了一个关于“身边的环境问题与保护”的小组探究任务，我有点不知道怎么开展。你作为我的学习助手，可以详细讲讲我们可以从哪些方面入手，怎么分工合作、观察记录、提出创新建议，最后形成有意义的成果吗？能讲得详细点吗？
+  - question: I'm RiveraAlan, a 58-year-old male teacher. I balance teaching with
+      leisure activities like gateball, cycling, and bridge, always considering my
+      family's approval in personal decisions. As an AI geography teaching advisor,
+      could you elaborate in detail on how a teacher with my background can effectively
+      guide students to recognize and address environmental issues in their surroundings,
+      integrate family and community resources, and cultivate students' awareness
+      and action in environmental protection? 详细展开说说。
+  - question: I'm SmithAndrew, a 58-year-old male teacher who enjoys calligraphy and
+      3D modeling for creative expression. My teaching style is relaxed and collaborative,
+      preferring flexible, unstructured environments and attentive discussions. As
+      an AI educational consultant, can you explain in detail how teachers like me
+      can use creative and flexible approaches to help elementary students identify
+      and protect the environment around them, while fostering active listening and
+      teamwork? 能解释一下吗？
+  - question: 我是小学地理教育工作者，最近在准备一节关于“身边的环境问题与保护”的公开课。你作为地理教学专家，可以详细说说在实际教学中如何设计有趣的活动、引导学生观察分析身边环境问题，并激发他们创新思维和行动力吗？详细说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-身边的环境问题与保护进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价教学内容和方法是否充分结合学生年级、兴趣、学习能力等个体差异，能针对不同学生群体进行分层、分项、动态调整，体现精准的差异化教学设计，关注特殊、边缘或多样化需求。
+  - field: 格式与指令遵循性_理由
+    type: str
+    description: 解释格式与指令遵循性评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循性
+    type: float
+    description: 评价教学方案是否严格按任务要求的步骤、结构和格式展开，内容层次分明、逻辑清晰、环节完整，便于教师实际操作和后续评估。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评价教学内容与小学地理‘身边的环境问题与保护’的知识、能力、情感态度三维目标契合度，要求内容紧扣课程标准，结合学生生活实际，既有知识传授，又有能力训练和价值观培养，覆盖目标的深度（能迁移、创新、反思）与广度（多种情境、多主体）。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所采用的教学方法是否基于教育学原理，能促进学生主动探究、合作交流、实践操作，活动设计具体、有效，兼顾多样性与层次性，关注全体与个体发展。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 评价教学内容中环境问题及保护措施的知识点是否科学、准确、全面且系统，能区分不同类型环境问题及其成因、影响、解决策略，逻辑严密，贴合实际，无明显遗漏、混淆或错误。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价教学是否通过开放性任务、活动或问题设置，有效激发学生产生新想法、创新解决方案，鼓励批判性、创造性和迁移性思考，并能产出富有创意的成果。
+  - field: 开放性与多元视角_理由
+    type: str
+    description: 解释开放性与多元视角评分的详细理由，引用具体例子。
+  - field: 开放性与多元视角
+    type: float
+    description: 评价教学是否引导学生从多角度、多文化背景、不同主体（如家庭、社区、国际）思考环境问题，鼓励比较、讨论和观点碰撞，拓展学生思维边界和包容性。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评价教学是否自然融入爱国、敬业、诚信、友善等核心价值观，通过具体情境、故事或活动潜移默化影响学生行为，避免空洞口号化，能引发学生共鸣和实际行动。
+  format_mode: prompt

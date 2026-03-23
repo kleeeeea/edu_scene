@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene093/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 物理-小学-物理学家故事与思想启发教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是ThompsonCharles，今年31岁，是一名老师，业余喜欢Carver滑板和篮球，平时社交有选择性地倾听和防御。你能帮我理解一下著名物理学家的故事怎样能激发小学生的学习兴趣吗？讲讲看，举些例子也行。
+    - question: 我叫方承宇，今年57岁，是老师，平时喜欢旅游采风和3D建模，也常在专业平台分享作品。你能简单说说物理学家的故事在小学物理教学里有什么积极作用吗？只说主要的就行。
+    - question: 你作为教育专家，能全面分析一下物理学家故事在小学物理启蒙教育里的价值吗？最好结合一些典型故事和实际教学案例，详细讲讲各个方面。
+    - question: 我是小学物理老师，我想让学生了解物理学家的成长经历和他们面对困难的态度。你能讲清楚这些内容对小学生有什么启发吗？举点例子详细说说。
+    - question: 我是小学物理教研员，你作为课程设计专家，能彻底说清楚怎么通过物理学家故事来设计小学物理课程吗？麻烦系统地从故事挑选到教学方法、活动安排、评价方式都详细分析一下。
+    - question: 我最近在备课时想让学生感受到物理学家的探索精神和科学方法。你能具体说说怎么把这些融入小学物理课堂吗？最好举个实际教学活动的例子。
+    - question: 作为小学物理学科负责人，你是教学顾问，能给我一份完整的分析吗？物理学家故事在核心素养培养中的作用到底有哪些，涉及科学探究、创新、合作等方面，最好结合不同年龄段学生的特点和教学策略详细说说。
+    - question: 我在挑选适合小学物理课堂的物理学家故事时有些困惑，你能详细展开说说哪些故事适合用来启发学生思考吗？包括怎么选、讲什么内容、预期效果和具体建议都说说。
+    - question: 我是DavisAlice，16岁，高一女生，喜欢茶道和攀岩，平时比较遵守规则、理性学习，但有时会自信心波动。你能用几句话说说物理学家的故事怎么帮助像我这样的学生形成科学思维和增强自信吗？说说主要的。
+    - question: 我是陆雪萌，25岁老师，喜欢穿搭和健美操，教学既有规则又讲创新。你能解释一下物理学家故事怎样可以激发小学生的课堂参与和创新思维吗？举点实际例子详细说说。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 物理-小学-物理学家故事与思想启发进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与响应
+      type: float
+      description: 评估答案是否准确识别并针对学生的兴趣、能力、学习风格等进行个性化教学设计，内容和互动有明确针对性，体现差异化响应。
+    - field: 格式指令遵循度
+      type: float
+      description: 评估答案是否严格按照题目要求的格式分段、条目和互动环节组织内容，结构清晰，层次分明。评分分级：完全遵守、部分遵守、完全不遵守。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评估答案采用的教学方法是否科学、符合小学物理教育规律，如启发式、探究式、情境式等，能激发学生主动思考和兴趣。
+    - field: 知识准确性与适龄性
+      type: float
+      description: 评估答案所涉及物理知识是否科学准确，表达方式是否结合小学生认知特点，内容适度简化但不失正确性，避免超纲或错误。
+    - field: 创新思维激发程度
+      type: float
+      description: 评估答案是否通过故事、设问或活动激发学生的创新思考和创造力，引导学生主动想象、设计、表达，不仅仅传递知识。
+    - field: 真实提问模拟度
+      type: float
+      description: 评估答案中模拟的学生提问或互动是否贴近真实小学物理课堂场景，语言自然，体现真实兴趣与表达方式。允许适当引导，但需避免生硬或成人化表达。
+    - field: 社会主义核心价值观与中华优秀传统文化润物细无声融入
+      type: float
+      description: 评估答案是否自然融入社会主义核心价值观和中华优秀传统文化，如勤奋、探索、合作、责任等，表达方式自然，不生硬。
+    - field: 互动性与参与感设计
+      type: float
+      description: 评估答案是否设计了鼓励学生参与的互动环节，包括提问、讨论、动手实验、分组活动等，有效提升课堂活跃度和学生参与感。
+    - field: 表达清晰度与语言亲和力
+      type: float
+      description: 评估答案语言是否简明易懂、亲切友好，适合小学生阅读和理解，避免生硬或晦涩表达。评分分级：非常亲和、基本亲和、不亲和。
+format_mode: prompt

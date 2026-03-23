@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-文学理论应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二女生，平时喜欢写散文和短诗，但总感觉自己的作品缺乏文学理论的支撑。你作为语文老师，能帮我从文学理论的角度分析一下怎么提升自己写作的深度和思想性吗？能具体说说吗
+  - question: 我是一名高一学生，最近在学习小说结构时有些困惑。能不能简要介绍一下文学理论中关于小说结构的几种主要观点？说说主要的
+  - question: 我是高三文科班的班长，平时喜欢主持班级读书会。最近我们准备围绕“现实主义文学”做一次主题分享，你作为语文教学专家，能深入讲解一下现实主义文学的主要理论、发展历程和在中国文学中的应用吗？能深入讲解一下吗
+  - question: 我是一名高二学生，最近在复习诗歌鉴赏题时总觉得抓不到要点。你能简单说说文学理论在诗歌鉴赏题中的应用吗？简短回答下
+  - question: 你作为一名高中语文老师，名叫万克清，38岁，男，爱好书法绘画与文玩收藏，跨学科应用能力强，职业使命感驱动，严谨细致且富有同理心。你在校深受师生喜爱，家庭支持你的艺术与收藏兴趣。请站在你的个人视角，彻底说清楚文学理论在高中语文教学中的多维应用路径，如何结合传统文化与艺术素养提升学生审美、创新力与家国情怀，并给出具体的课堂互动设计与跨学科融合建议。彻底说清楚
+  - question: 我是高一学生，平时喜欢和同学一起讨论文学作品。最近我们在分析鲁迅的小说时，老师提到“象征主义”理论。你能结合具体例子，讲讲象征主义理论是怎样在鲁迅作品中体现的吗？讲讲看
+  - question: 我是高二理科生，最近在学习文学理论时总感觉抽象难懂。你作为语文老师，能结合生活实际，讲清楚点文学理论如何帮助我们更好地理解小说和戏剧吗？讲清楚点
+  - question: 我是班级语文课代表，平时喜欢组织同学们一起讨论课文。最近老师让我们准备一场关于“文学理论在现代诗歌鉴赏中的价值”主题的小组课堂辩论。你作为语文教学专家，能从各个角度详细说说文学理论在现代诗歌鉴赏中究竟有哪些作用？从各个角度详细说说
+  - question: 我是一名高三学生，平时喜欢看电影和小说。最近在写作文时，老师建议我多用文学理论分析人物形象。你能结合实际例子，讲清楚点文学理论在人物分析中的常见方法和误区吗？讲清楚点
+  - question: 你是高中语文教师付宗，39岁，男，跆拳道与电音制作爱好者，也喜欢木工制作。你在同事中享有权威，同时通过跨界社交圈缓解职业倦怠，善于创新和策略性妥协，与学生关系融洽。请结合你的职业经历，全面分析一下“文学理论视角下的跨界融合教学”在高中语文课堂的实践路径、面临的挑战及创新价值，并给出可操作的教学建议和学生参与式任务设计。全面分析一下
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-文学理论应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 教学内容针对学生的学习基础、兴趣和发展目标进行深度定制，并在教学过程中根据学生反馈动态调整方案，显著体现因材施教和差异化策略。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 教学内容严格按照要求的格式、结构和字数分点呈现，条理清晰，便于理解和操作，并能根据反馈及时优化格式。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学设计采用多元、科学的教学方法（如启发式、探究式、小组合作、案例分析等），并根据学生反馈灵活调整，促进学生主动学习、深度思考和实际应用。
+  - field: 理论应用针对性_理由
+    type: str
+    description: 解释理论应用针对性评分的详细理由，引用具体例子。
+  - field: 理论应用针对性
+    type: float
+    description: 文学理论应用紧密结合具体文本，深入分析文本细节、结构或主题，并引导学生将理论迁移到实际问题或生活经验，体现理论解决实际问题的能力。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 教学内容设计开放性任务和问题，鼓励学生独立思考、跨界融合，提出独特见解，并支持学生用新方法或视角应用文学理论，评价与主流观点的差异。
+  - field: 学生参与度设计_理由
+    type: str
+    description: 解释学生参与度设计评分的详细理由，引用具体例子。
+  - field: 学生参与度设计
+    type: float
+    description: 教学内容包含多样互动环节，鼓励学生主动表达、合作、反馈，学生参与度高且能影响课堂进程，教学安排根据学生参与情况灵活调整。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 教学内容自然嵌入社会主义核心价值观（如诚信、友善、责任、敬业等），结合文本分析与现实讨论，引导学生形成正确价值观，并鼓励其在实际生活中践行。
+  - field: 中华优秀传统文化传承性_理由
+    type: str
+    description: 解释中华优秀传统文化传承性评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承性
+    type: float
+    description: 教学内容深度融合中华优秀传统文化，结合传统文本与理论进行创新解读或比较，鼓励学生创新表达文化内涵，强化文化自信与传承意识。
+  format_mode: prompt

@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene073/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 化学-初中-典型气体制备的装置选择与原理分析教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为一名有经验的初中化学老师，能不能从实验安全、装置原理和气体性质这几个角度，详细讲讲初中常见气体（比如氧气、氢气、二氧化碳）实验室制备时装置选择的依据？最好能结合一些实际课堂和生活中的例子，讲清楚点。
+    - question: 我叫崔彤颖，今年15岁，是个初三女生，喜欢弹尤克里里和画线描水彩。化学实验时我有点选择性迎合，遇到制备气体装置的题目总觉得难以全面考虑。你能不能结合我的兴趣和性格，从氧气、氢气、二氧化碳的制备，帮我讲清楚装置选择的原理和思路？最好能举些贴近生活或艺术创作的小例子，让我容易理解，讲清楚点。
+    - question: 我是范依静，今年50岁，是一名性格温和、逻辑性一般的中学化学老师，平时喜欢自然观察和越剧表演。你作为化学教育专家，能不能彻底说清楚初中典型气体（比如氧气、氢气、二氧化碳）实验室制备装置的选择、结构原理、教学中常见误区、实验安全及其和生活实际的联系？希望讲解系统一些，方便我在课堂上借鉴和提升。
+    - question: Hi, I'm WilsonJordan, a 16-year-old senior high student. I balance VR development and athletics, and I like practical, actionable advice. Could you use a few sentences to explain what are the main considerations for choosing experimental apparatus when preparing common gases like oxygen, hydrogen, and carbon dioxide in chemistry class? I'd prefer a practical, concise answer.
+    - question: 我是初中化学新教师，最近在备课时发现学生在选择气体制备装置时总是容易混淆，尤其是氧气和二氧化碳。你作为教学助手，能不能详细分析一下如何帮助学生理清装置选择的思路，并举些容易混淆的典型例子，讲清楚点？
+    - question: 你作为一名初中化学教育专家，能不能全面深入地讲讲典型气体（氧气、氢气、二氧化碳）实验室制备的装置选择、原理分析、实验安全注意事项，以及在教学中怎么通过团队合作、实验探究等方式激发学生兴趣？希望你能结合社会主义核心价值观和传统文化，系统说说相关的教学建议和案例。
+    - question: 我是初中化学老师，发现有些学生对气体制备实验的装置结构原理总是理解不深，尤其在选择集气方法和识别气体性质时。你能不能详细讲讲初中阶段典型气体制备装置的原理、装置选择的依据、常见误区，还有怎么通过实验演示和生活类比帮助学生深化理解？
+    - question: 我最近在教学中遇到一个难题，学生在学习氧气、氢气和二氧化碳的实验室制备时，对装置选择的依据和原理总是模糊不清。你作为我的学习助手，能不能深入说说看怎么帮助学生全面理解这些气体的装置选择、原理分析，并提出一些创新的教学方法？
+    - question: 我是一名初中家长，女儿最近在学典型气体的实验室制备，对装置选择和原理有些困惑。你能帮我理解一下初中阶段氧气、氢气、二氧化碳制备时装置选择的主要依据和注意事项吗？最好举些实际例子和生活类比。
+    - question: 你作为一名有经验的化学老师，能不能说说初中常见气体实验室制备时装置选择的主要依据？突出核心要点，用简单实例说明就行。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 化学-初中-典型气体制备的装置选择与原理分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估内容是否基于学生的学习基础、兴趣与认知水平进行差异化设计，能针对不同类型学生（如基础薄弱、兴趣强烈、能力突出）提供定制化的学习支持和挑战。
+    - field: 指令遵循与格式规范
+      type: float
+      description: 评估回答是否完全按照题目要求的结构、步骤和内容作答，信息条理清晰、逻辑严密，重点突出。高分要求能灵活归纳总结，便于学生自主查阅和操作。
+    - field: 教学方法科学性
+      type: float
+      description: 评估所采用教学方法是否结合启发式、探究式、互动式等策略，能有效激发学生主动学习和深度思考。高分要求能体现分层教学、合作学习等多样化方法。
+    - field: 知识点准确性与系统性
+      type: float
+      description: 评估内容中化学知识点是否无误、结构完整，逻辑清晰，能联系相关知识，帮助学生建立系统知识框架。高分要求能结合实际应用、历史背景或跨学科知识。
+    - field: 创新思维引导性
+      type: float
+      description: 评估是否有意识设计活动或问题，鼓励学生提出假设、尝试多种方案，激发创新思维。高分要求能引导学生跨学科应用或提出原创性方案，并给予正向评价。
+    - field: 开放性问题设置
+      type: float
+      description: 评估回答中是否设置具有探究性和多角度思考的问题，能引导学生深入讨论和自主探索。高分要求问题有层次、可延展，鼓励跨学科或实际情境分析。
+    - field: 社会主义核心价值观融入
+      type: float
+      description: 评估内容是否自然融入爱国、敬业、诚信、友善等核心价值观，传递科学精神和优秀传统文化。高分要求结合化学发展史、科学家事迹等，适度引导学生树立正确价值观。
+    - field: 学生反馈与学习成效
+      type: float
+      description: 评估教学设计是否关注学生反馈和学习成效，能根据学生理解难点及时调整方法，促进持续进步。高分要求有具体的反馈收集与应用机制。
+format_mode: prompt

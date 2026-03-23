@@ -1,0 +1,124 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-概念趣味解释教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级的小学生，最近老师在讲分数，可我总觉得分数很抽象，搞不懂它到底是什么。你作为数学学习助手，能不能结合生活中的具体例子，比如切蛋糕或分苹果，帮我用通俗有趣的方式全面深入地讲讲分数的概念、意义和常见误区？能介绍一下分数和我们生活的联系，以及如何用分数解决实际问题吗？能全面深入地讲讲吗？
+  - question: 我是一名刚入职的小学数学老师，班上有些一年级小朋友注意力不太集中。你能不能用一些游戏化方式，大概讲讲怎么教他们加法进位，有没有生活里的有趣例子？
+  - question: 我是四年级学生，最近学‘周长’，老是记不住公式，也不知道生活里哪里用得到。能不能用几句话说说什么是周长，还有生活里的例子？
+  - question: 我是小学数学老师，喜欢尝试创新教学，最近要讲‘面积’。发现有的学生喜欢动手，有的觉得面积很抽象。能不能结合生活场景，系统介绍一下面积的本质、常见误区、趣味教学方法和跨学科结合的创新点？我想深入了解。
+  - question: 我叫邓雅琴，五年级女生，喜欢养植物和打乒乓球，妈妈经常陪我学习。我觉得自己数学逻辑性不太好，最近学‘分数加减法’总是觉得难。你能不能结合我喜欢的植物养护、乒乓球比赛这些生活例子，帮我深入理解分数加减法的本质和意义？我想深入了解。
+  - question: 我是二年级学生家长，孩子最近学‘奇数和偶数’，问我为什么2、4、6是偶数，1、3、5是奇数。我想不到有趣的解释。你能不能讲讲看，有哪些适合小朋友的趣味解释和互动小游戏？
+  - question: 我是四年级学生，最近学‘对称’，老师讲了很多。我挺好奇，对称在生活里真有那么常见吗？它到底有哪些有趣的用法？说说你的看法。
+  - question: 我是小学数学教研员，最近要组织‘乘法的意义’主题教研活动。你作为教育专家，能不能全方位地讲解一下乘法的本质、历史渊源、生活应用、常见误区、趣味教学和跨学科融合的可能性？希望理论和实践都能讲到。
+  - question: I'm WrightPhillip, a 32-year-old male elementary math teacher. I like
+      basketball and esports streaming. In class, some students find 'place value'
+      confusing, especially with big numbers. Can you explain place value in a fun
+      way, maybe using sports or gaming examples? Also, what are some common misconceptions
+      and practical strategies for teaching this? Please explain in detail.
+  - question: 我是三年级学生，最近学‘时间的认识’，看钟表和安排时间总是弄混上午下午和24小时制。你能不能讲讲看，怎么通俗有趣地理解时间，还能学会准确看钟表和安排自己的时间？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-概念趣味解释进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像深度适配度_理由
+    type: str
+    description: 解释个性化画像深度适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像深度适配度
+    type: float
+    description: 讲解内容和表达方式需充分结合学生的年龄、兴趣、基础水平、生活经验和认知风格等多维画像，针对不同学生做出深入、具体的差异化调整。高分要求能主动挖掘学生真实兴趣、家庭背景、表达习惯等，内容与学生实际生活紧密相关，体现个性化关怀。
+  - field: 格式规范与指令精准遵循度_理由
+    type: str
+    description: 解释格式规范与指令精准遵循度评分的详细理由，引用具体例子。
+  - field: 格式规范与指令精准遵循度
+    type: float
+    description: 内容必须严格按照任务要求的结构展开（如分层讲解、生活实例、图示、总结等），各环节完整、条理清晰，层级分明且逻辑连贯。高分要求内容结构不仅规范，还能灵活组织，环环相扣，便于学生理解和迁移，杜绝机械堆砌或遗漏关键环节。
+  - field: 概念解释科学性与严谨性_理由
+    type: str
+    description: 解释概念解释科学性与严谨性评分的详细理由，引用具体例子。
+  - field: 概念解释科学性与严谨性
+    type: float
+    description: 数学概念讲解应准确、完整，涵盖正式定义、边界条件、常见易混淆点及误区预防。高分要求主动指出学生易错点，进行澄清和纠正，避免误导性简化或不严谨表达。
+  - field: 趣味性与启发性双重融合_理由
+    type: str
+    description: 解释趣味性与启发性双重融合评分的详细理由，引用具体例子。
+  - field: 趣味性与启发性双重融合
+    type: float
+    description: 讲解需结合有趣的生活情境和启发式问题，引发学生兴趣和好奇心，促进主动思考。高分要求能通过故事、悬念、游戏等激发学生自主探索、提出新问题，避免单向灌输或枯燥讲解。
+  - field: 多元教学方法融合与互动性_理由
+    type: str
+    description: 解释多元教学方法融合与互动性评分的详细理由，引用具体例子。
+  - field: 多元教学方法融合与互动性
+    type: float
+    description: 至少融合两种以上教学方法（如图示、故事、游戏、操作活动等），并设计互动环节，鼓励学生动手、动脑。高分需体现学生主动参与、表达和反馈，教学方式多样化，非单一手段。
+  - field: 创新思维激发与开放性探索_理由
+    type: str
+    description: 解释创新思维激发与开放性探索评分的详细理由，引用具体例子。
+  - field: 创新思维激发与开放性探索
+    type: float
+    description: 设置开放性问题，鼓励学生表达新想法、尝试多种解法，激发创造性和批判性思维。高分要求引导学生举一反三，设计新问题或方案，鼓励创新表达而非标准答案。
+  - field: 真实提问模拟与生活化表达_理由
+    type: str
+    description: 解释真实提问模拟与生活化表达评分的详细理由，引用具体例子。
+  - field: 真实提问模拟与生活化表达
+    type: float
+    description: 提问和互动内容贴近小学生真实表达习惯，具有生活化、童趣化和好奇心驱动特点。高分要求能还原学生真实思维过程和好奇点，鼓励学生用自己的语言表达疑问和想法。
+  - field: 中华优秀传统文化润化与价值渗透_理由
+    type: str
+    description: 解释中华优秀传统文化润化与价值渗透评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润化与价值渗透
+    type: float
+    description: 自然融入中华优秀传统文化元素或社会主义核心价值观，与数学知识点紧密结合，体现润物细无声的教育效果。高分要求文化元素与知识点深度融合，既讲清数学原理，又传递文化价值，避免生硬插入或表面化处理。
+  - field: 层次性表达与包容性挑战_理由
+    type: str
+    description: 解释层次性表达与包容性挑战评分的详细理由，引用具体例子。
+  - field: 层次性表达与包容性挑战
+    type: float
+    description: 内容兼顾不同基础学生的理解差异，既有基础解释，也有进阶拓展。高分需体现对学有余力学生的适度挑战及对基础薄弱学生的支持，鼓励学生个性化表达和多样化思考，形成包容性的学习氛围。
+  format_mode: prompt

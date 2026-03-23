@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-小学-历史名词启蒙（如“朝代”“皇帝”）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级学生，最近在历史课上学到“皇帝”这个词，可还不太懂它到底是什么，也不清楚古代的皇帝都干什么。作为小学历史专家，你能用我们小朋友能听懂的话讲讲看‘皇帝’的意思和作用吗？最好用故事说说。
+  - question: 我是高三学生付楚翊，喜欢航模和电音，也比较独来独往。你作为教育专家，能深入讲解一下中国历史里的“朝代”是什么意思吗？希望你能结合我理工兴趣和听觉记忆敏锐的特点，分析下‘朝代’的演变、重要性，还有适合我这种学生的理解方法和启蒙建议。
+  - question: 你作为小学历史专家，能全面深入地讲讲‘朝代’和‘皇帝’这两个词吗？想了解它们的由来、发展、历史意义和对社会的影响，还希望你结合故事、案例和互动问答，讲得适合我们小学生启蒙理解。
+  - question: 我是小学历史老师，最近在课程改革时发现同事们对‘朝代’和‘皇帝’的启蒙教学有不同看法。作为教育专家，你能详细分析下这两个词在小学历史启蒙里的教学重点、难点、分层策略、趣味化方法和如何自然融入传统文化价值观吗？请结合实际案例和改革经验详细分析各个方面。
+  - question: 我是许纯老师，最近给小学生讲历史时，发现他们总把“皇帝”和“国王”搞混。你作为教育专家，能讲清楚点‘皇帝’和‘国王’的区别吗？希望你用适合孩子的方式，讲讲细节和有趣的例子，让他们明白两者不同。
+  - question: 我是六年级女生高梦倩，喜欢益智游戏、养植物和练书法，性格比较内向，也喜欢自己学习。你作为小学历史专家，能讲得详细点吗？希望你能结合我的兴趣和学习特点，详细讲讲‘朝代’和‘皇帝’的意义、演变和重要作用，还有适合像我这样独立学习的启蒙方法，并自然融入中华传统文化价值观。
+  - question: 我是五年级学生，最近看历史故事时遇到‘朝代’这个词，还不太明白它到底指什么。你是我的学习助手，能解释一下‘朝代’是什么意思吗？希望你用生活里的例子和详细讲讲中国历史上有哪些朝代。
+  - question: 我是家长，孩子最近学历史时总是搞不清楚‘皇帝’到底是干什么的。你作为小学历史专家，能解释一下‘皇帝’在中国历史里的地位和主要职责吗？希望你用适合孩子的趣味故事帮他理解。
+  - question: 我是四年级学生，老师讲到‘朝代’和‘皇帝’，但我经常分不清它们的关系。你作为我的学习助手，能简短回答下‘朝代’和‘皇帝’有什么区别和联系吗？用我们小朋友能懂的话说说。
+  - question: 我是一年级小朋友，最近总听到‘皇帝’这个词，可我不太懂它是什么意思。你作为小学历史专家，能大概讲讲‘皇帝’到底是什么吗？用我能听懂的话说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-小学-历史名词启蒙（如“朝代”“皇帝”）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估答复是否根据学生的年龄、兴趣、学习基础和认知风格进行深度调整，体现高度差异化。要求不仅在内容选择上针对学生特征，还能在表达方式、互动策略等方面做出明显调整。高分需体现对学生反馈的动态响应和多维个性化，低分仅有表面化或机械化的个性化。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估答复对教师指令的全面遵循程度，包括内容覆盖、表达格式、风格、长度和方法。高分需体现对指令核心意图的深刻理解及灵活执行，避免机械化照搬或遗漏关键环节。评分时需关注是否主动补充、优化指令而非被动完成。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估答复是否采用多元且科学的教学方法，如启发式、互动式、情境创设、分层递进等，并能根据学生反馈灵活调整，促进主动思考和深度理解。高分需体现系统性设计和动态优化，低分为单一灌输或无互动。
+  - field: 知识表达准确性与适龄性_理由
+    type: str
+    description: 解释知识表达准确性与适龄性评分的详细理由，引用具体例子。
+  - field: 知识表达准确性与适龄性
+    type: float
+    description: 评估历史名词解释是否准确、清晰、无歧义，且内容层次适合小学生认知水平。高分需逐步深化知识，避免错误、过简或学术化表达，并能根据学生理解情况适时调整。
+  - field: 激发创造性思考_理由
+    type: str
+    description: 解释激发创造性思考评分的详细理由，引用具体例子。
+  - field: 激发创造性思考
+    type: float
+    description: 评估答复是否主动引导学生创新、联想，鼓励表达个人见解、想象、提问或创造新内容，促进创造力和批判性思维。高分需有多层次创新引导，能鼓励学生提出独特想法，低分仅停留在知识记忆。
+  - field: 模拟真实提问回应_理由
+    type: str
+    description: 解释模拟真实提问回应评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应
+    type: float
+    description: 评估答复能否针对学生可能提出的真实、具体问题作出细致、耐心且贴合实际的回应。高分需辨析学生问题背后的动机和认知水平，给出有温度和深度的答复，并能适时追问或鼓励进一步思考。低分为机械答复或无视学生关注点。
+  - field: 中华优秀传统文化与价值观渗透_理由
+    type: str
+    description: 解释中华优秀传统文化与价值观渗透评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化与价值观渗透
+    type: float
+    description: 评估答复在解释历史名词时是否自然融入中华优秀传统文化或社会主义核心价值观，传递正面价值观。高分需结合典型历史故事或人物，表达方式自然、恰当，低分为无文化渗透或生硬灌输。
+  - field: 表达方式趣味性与适龄性_理由
+    type: str
+    description: 解释表达方式趣味性与适龄性评分的详细理由，引用具体例子。
+  - field: 表达方式趣味性与适龄性
+    type: float
+    description: 评估语言表达是否生动、形象、富有趣味，贴合小学生年龄特点，能激发学习兴趣。高分需善用故事、比喻、互动游戏等方式，表达内容与学生生活相关联，低分为枯燥、抽象或脱离学生实际。
+  format_mode: prompt

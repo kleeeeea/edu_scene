@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-初中-羽毛球/乒乓球双打配合教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中体育老师，最近带班时发现学生在羽毛球双打配合时经常跑位混乱、抢球，你作为体育教学专家，能具体说说造成这些配合问题的原因，以及我该怎么在教学中改进吗？
+  - question: 说说你的看法：我是ThompsonJacob，31岁，男性兽医，平时喜欢科学探究、徒步、园艺（种植宠物友好型植物）和野生动物/宠物摄影，性格偏重实践，生活方式讲究结构和亲近自然。你作为体育教学顾问，怎么结合我的兴趣和性格，把乒乓球或羽毛球双打配合训练有效地融入我的生活，让我既能提升团队协作又能激发创造力？
+  - question: 我是一名初中体育教研员，想整体提升学校羽毛球和乒乓球双打配合教学的质量。你作为体育教学专家，系统地讲解一下双打配合的核心理念、常见问题、分层教学和创新训练方法，还要融入团队协作、学生自主性培养以及中华优秀传统文化和社会主义核心价值观，能全面说说吗？
+  - question: 我是初二学生，体育课学乒乓球双打总跟队友配合不好，你作为我的学习助手，简要说明下双打配合时需要注意哪些核心要点吧。
+  - question: 我是初中体育老师，现在带一个基础较弱、性格各异的小组练习羽毛球双打。你作为体育教学专家，能彻底说清楚怎么根据学生技能和性格差异，设计分层、创新、可操作的配合训练方案，还要结合核心价值观和传统文化，提升参与度和团队精神吗？
+  - question: 我是初三学生，体育课要考乒乓球双打配合，和搭档总是失误，你作为体育老师，能简短回答下有哪些实用的配合技巧吗？
+  - question: 我是初中体育老师，班里学生性格都不一样，有的人很主动，有的比较内向，羽毛球双打配合训练时总感觉不默契。你作为体育教学专家，能讲得详细点吗？针对不同性格学生怎么分层指导和创新训练？
+  - question: 我是初中体育老师，最近让学生在乒乓球双打配合课上自己设计战术和分工。你作为体育教学顾问，讲讲看怎么引导学生自主探索、团队协作，并提升双打配合水平？
+  - question: 我是初中体育老师，学生对羽毛球双打配合兴趣不高，觉得没啥新鲜感。你作为体育教学专家，讲讲看怎样激发学生创造力，设计有趣又有效的配合训练？
+  - question: 我是初中体育老师，准备期末教学展示，主题是乒乓球双打配合。你作为体育教学专家，详细展开说说怎样设计一个既创新又能体现团队协作和中华优秀传统文化的教学方案，还要有分步指导和提升学生参与度的方法。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-初中-羽毛球/乒乓球双打配合进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学方案是否基于学生技能、心理、合作习惯等多维度持续追踪与动态分析，能根据画像变化实时调整教学目标、分组和任务分配，确保每位学生获得针对性成长路径。高分要求有画像数据记录、调整日志和差异化响应策略。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 评估教学方案结构是否完整，包含必要板块（如学情分析、目标设定、策略、步骤、评估反馈），且各板块层次清晰、逻辑严密、条理分明。高分要求内容有重点归纳、条目化呈现、格式统一，便于查阅和实施。仅有分段和标题但逻辑混乱不得高分。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学方法是否基于体育教育与运动心理学理论，结合国内外双打配合前沿案例，科学设计分层递进、情境模拟、反思提升等训练环节，并针对个体差异设定调节手段。高分要求理论支撑、实践验证、个性化适应，避免经验主义和单一重复训练。
+  - field: 教学方案的操作性与可落地性_理由
+    type: str
+    description: 解释教学方案的操作性与可落地性评分的详细理由，引用具体例子。
+  - field: 教学方案的操作性与可落地性
+    type: float
+    description: 评估教学建议是否具体、可执行，包括明确的量化目标、详细分解的实施步骤、时间与资源安排，以及科学评估与反馈机制。高分要求有预案、调整措施、操作细节和实际执行记录。仅有抽象建议或无评估反馈不得高分。
+  - field: 创新思维激发与培养_理由
+    type: str
+    description: 解释创新思维激发与培养评分的详细理由，引用具体例子。
+  - field: 创新思维激发与培养
+    type: float
+    description: 评估教学设计是否主动设置创新任务和情境，引导学生自主探索多样配合方法，鼓励形成独特战术和沟通方式，并提供展示、讨论、反思机会。高分要求有创新激励、成果转化机制和创新过程记录。
+  - field: 学生参与度与自主性提升_理由
+    type: str
+    description: 解释学生参与度与自主性提升评分的详细理由，引用具体例子。
+  - field: 学生参与度与自主性提升
+    type: float
+    description: 评估教学方案是否通过分组讨论、自主决策、过程反馈等方式充分调动学生主动性，让学生参与目标设定、方案制定和自我/互评。高分要求学生能主导部分训练流程，提出改进建议并获得采纳反馈，有自主管理和团队协作记录。
+  - field: 社会主义核心价值观深度融合_理由
+    type: str
+    description: 解释社会主义核心价值观深度融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观深度融合
+    type: float
+    description: 评估教学内容是否将团结协作、尊重他人、集体荣誉等核心价值观有机融入教学目标、活动设计、评价体系，形成可感知、可评价的行为标准，并通过具体实践深化价值观内化。高分要求有具体行为标准、实践环节和价值观评价记录。
+  - field: 中华优秀传统文化内化传承_理由
+    type: str
+    description: 解释中华优秀传统文化内化传承评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化内化传承
+    type: float
+    description: 评估教学方案是否将中华礼仪、尊师重道、和而不同等传统文化元素深度融合于教学各环节，通过实际体验、反思分享等方式实现文化认同和价值内化。高分要求文化元素与体育技能训练紧密结合，有实际体验和反思记录。
+  format_mode: prompt

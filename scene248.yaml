@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-我有名字，我有权利（基础权利启蒙）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级学生的家长，最近孩子因为名字被同学嘲笑有点自卑，甚至说不喜欢自己的名字。你作为小学政治教育专家，能详细说说怎么让孩子明白名字的意义、学会自信吗？最好结合孩子能懂的例子。
+  - question: 我是刚入职一年级的小学政治老师，班上孩子对‘名字’和‘权利’的概念都很迷糊。我想把‘我有名字，我有权利’这个主题讲得既深入又全面，还能融入社会主义核心价值观和传统文化。你作为教育专家，能详细分析下各个方面的教学思路和实践建议吗？
+  - question: 我家女儿上二年级，最近老问我为什么每个人都有名字，名字到底有什么特别的。她性格比较内向，我希望她能明白名字和被尊重、拥有权利之间的关系。你作为小学政治教育专家，能深入讲解一下这个主题吗？最好结合故事和实际例子，让我回去能和孩子互动讲一讲。
+  - question: 我带三年级班，有几个男生喜欢给同学起外号，有的同学很不高兴。我想在班会课上让大家真正明白名字的重要性，以及要尊重别人名字和权利。你作为政治教育专家，能讲得详细点吗？最好给我一些适合孩子的故事和活动建议。
+  - question: 我家孩子刚上一年级，这两天总问我为什么大家都有名字，名字到底有什么用。你能详细说说吗？最好结合一些小朋友能懂的例子，好让我回去跟他讲。
+  - question: 我是蔡胧月，退休后经常组织广场舞活动，也喜欢写作。现在给小朋友们讲‘我有名字，我有权利’，想结合我的生活经验和团队活动，用简单的话说明名字和权利的关系。你简单说说就行，有什么表达建议？
+  - question: I'm MooreSamuel, a teacher who often feels burnout but tries to stay
+      creative through AI art and rock climbing. I want to explain to my multicultural
+      class what it means to 'have a name' and 'have rights', and make the topic both
+      logical and engaging. Can you use a few sentences to sum it up, and maybe suggest
+      an interactive activity?
+  - question: 我是宰父轩帆，19岁的咖啡师，平时喜欢收藏手冲咖啡器具，也比较看重传统。最近圈里有人讨论‘名字’和‘权利’的关系，其实我也没想得太明白。你能全方位地讲解一下吗？最好结合历史、文化、法律和生活里的例子，把这个主题系统梳理一下。
+  - question: 我是四年级班主任，班里有学生因为名字特别被同学取笑，心情很不好。我想通过‘我有名字，我有权利’这个主题帮他找回自信，也让大家学会尊重别人。你能解释一下吗？最好结合实际案例和互动建议。
+  - question: 我是小学政治老师养康继，平时喜欢无人机、区块链和滑板，经常和无人机圈的朋友交流。最近想带学生们更好地理解‘我有名字，我有权利’这个主题，也想结合点科技和生活实际，让课堂更有趣。你能具体说说吗？给我点具体的活动建议和引导方法。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-我有名字，我有权利（基础权利启蒙）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估教学设计是否深入分析并动态跟踪学生的年级、性格、兴趣、学习风格等多维画像，针对不同学生群体持续进行差异化内容、活动和反馈调整，体现个体成长支持。高分要求对个体差异有持续跟踪和针对性成长支持措施，并能展示具体调整成果。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教学方案或回应是否严格按照任务要求的步骤、结构和内容展开，条理清晰，逻辑严密，所有环节完整无遗漏，格式统一规范。高分要求不仅完整遵循指令，还能做到内容分段合理、结构突出重点。
+  - field: 教学内容科学性与专业性_理由
+    type: str
+    description: 解释教学内容科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学内容科学性与专业性
+    type: float
+    description: 评估教学内容是否符合学生年龄和认知发展特点，科学运用教育学原理（如建构主义、发展心理学），设计合理的教学活动，内容有理论支撑，能有效促进学生理解并设置科学的反思与反馈机制。高分要求活动设计有理论依据，反思与反馈环节具体有效。
+  - field: 知识点分层与递进性_理由
+    type: str
+    description: 解释知识点分层与递进性评分的详细理由，引用具体例子。
+  - field: 知识点分层与递进性
+    type: float
+    description: 评估知识点讲解是否科学分层递进，由易到难、由浅入深，前后环节紧密衔接，确保学生逐步理解并能实际应用。高分要求层次划分清晰，环节递进合理，并有针对性练习检验学习效果。
+  - field: 互动性与参与度设计_理由
+    type: str
+    description: 解释互动性与参与度设计评分的详细理由，引用具体例子。
+  - field: 互动性与参与度设计
+    type: float
+    description: 评估教学活动是否充分设计师生、生生互动环节，通过提问、讨论、任务驱动、合作学习等方式提升学生主动参与和表达机会，并关注参与广度与深度。高分要求多样互动形式，确保每位学生有表达和反馈机会，跟踪参与效果。
+  - field: 创新思维激发能力_理由
+    type: str
+    description: 解释创新思维激发能力评分的详细理由，引用具体例子。
+  - field: 创新思维激发能力
+    type: float
+    description: 评估教学设计是否主动引导学生提出新观点，鼓励独特见解或创造性表达，激发创新和想象力，并为创新表达提供支持与展示平台。高分要求设置开放式任务、创新成果展示环节，并对学生创新思考给予具体支持和评价。
+  - field: 模拟真实提问场景适配性_理由
+    type: str
+    description: 解释模拟真实提问场景适配性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景适配性
+    type: float
+    description: 评估教学回应是否贴合小学生真实课堂提问和困惑，语言亲切易懂，针对学生实际问题进行具体有效解答，并鼓励主动提问和表达疑惑。高分要求能预判常见困惑，回应具体，鼓励持续追问和交流。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估教学内容是否在讲解过程中自然、润物细无声地渗透社会主义核心价值观及中华优秀传统文化，结合具体情境、故事或活动，引导学生树立正确价值观，避免生硬灌输，并关注价值观引导的实际行为效果。高分要求价值观融入具体情境、活动或故事，并能观察到学生行为或认知变化。
+  format_mode: prompt

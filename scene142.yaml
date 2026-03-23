@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-生命活动调节的内在机理剖析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是潘凌昊，33岁的男老师，平时喜欢露营、野外生存，还爱好攀岩和3D建模、工业设计。我个性比较务实，但有时候容易工作和兴趣分不开，经常和户外俱乐部的朋友一起玩。现在我在讲生命活动调节的内在机理，很想把理论和户外生存、3D设计这些实际案例结合起来，帮学生更容易理解和应用。你能具体说说吗？
+  - question: 你作为生物学科的专家，能不能彻底说清楚高中生命活动调节的内在机理？我需要一份内容特别全面、深入、系统的讲解，最好能覆盖调节机制、生理过程、相关实验和一些跨学科融合或创新教学方法，适合教研和课程设计用。
+  - question: 我是个喜欢做实验的高中生物老师，最近班里有几个学生对生命活动调节很感兴趣，但在理解神经调节和激素调节的区别时总有点迷糊。你能详细说说这个问题吗？最好能帮我设计几个有趣的实验或者案例，让他们能直观体会两者的不同。
+  - question: 你作为我的生物教学顾问，我这学期要带高一学生学习生命活动调节，班里很多学生喜欢情景模拟和探究式学习。你能深入说说看，怎么设计课堂内容，既让他们真正理解调节的内在机理，又能和日常生活联系起来？最好有详细的分析和具体活动建议，让课堂更有互动和思维拓展。
+  - question: 我是生物教研员，你作为生物教育专家，能不能全面分析一下高中生命活动调节的内在机理？希望你能从各个角度深入讲讲，给一些创新教学建议，也多考虑学生的个体差异和跨学科融合。
+  - question: Hi, I'm WilsonBrianna, a 9-year-old in 4th grade. I balance schoolwork
+      with guitar practice and yoga because I like both creative and calming activities,
+      and I enjoy mixing solo time with friends too. Can you explain how biological
+      regulation works in living things so I can understand it? Please connect it
+      to music, movement, and daily life if you can, and can you be specific?
+  - question: 我是高中生物老师，最近发现学生在学生命活动调节时总是记不住主要的调节机制。你能说说主要的调节方式和它们的基本特点吗？简单明了就行，便于课堂复习。
+  - question: 我是新入职的高中生物老师，你作为教育专家，能不能系统地讲解一下生命活动调节的内在机理？希望你能从理论框架、调节机制、实验案例、分层教学策略到怎么激发学生兴趣和科学素养都讲清楚，内容要全面深入，适合教学设计和个人成长用。
+  - question: 我是高美琳，48岁女老师，喜欢太极拳和京剧欣赏，平时教书比较灵活，喜欢慢慢调整。和学生关系不错，家长也挺信任我，经常在社区带练太极拳，还和京剧票友社团交流。最近讲生命活动调节的内在机理时，学生总问调节机制和生活有什么关系。你说说你的看法吧，能结合我的兴趣和教学风格，让讲解更贴近学生和生活吗？
+  - question: 我是高中生物老师，最近需要给学生归纳一下生命活动调节的内在机理，好让他们课后复习更方便。你能大概讲讲这个内容吗？重点突出调节机制的主线和实用价值就行。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-生命活动调节的内在机理剖析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 教学内容和方法能根据学生的知识基础、兴趣、认知风格和实际需求进行动态调整，体现差异化和适应性教学，实时响应并利用学生反馈促进个体成长。
+  - field: 格式与指令遵循准确性_理由
+    type: str
+    description: 解释格式与指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循准确性
+    type: float
+    description: 教学内容严格依照既定教学设计结构展开，分段清晰、步骤完整且顺序合理，格式规范，便于学生理解和教师评价。
+  - field: 科学性与严谨性_理由
+    type: str
+    description: 解释科学性与严谨性评分的详细理由，引用具体例子。
+  - field: 科学性与严谨性
+    type: float
+    description: 教学内容准确、系统，深入分析核心原理与最新进展，界定概念清晰，能辨析常见误区，引用权威资料，体现学科逻辑及批判性思维。
+  - field: 教学方法创新性_理由
+    type: str
+    description: 解释教学方法创新性评分的详细理由，引用具体例子。
+  - field: 教学方法创新性
+    type: float
+    description: 采用多样化、创新型教学方法（如探究、项目、跨学科、游戏、模拟等），鼓励师生互动和学生主动参与，显著提升学习兴趣和深度，突破传统讲授模式。
+  - field: 思维拓展与创新激发_理由
+    type: str
+    description: 解释思维拓展与创新激发评分的详细理由，引用具体例子。
+  - field: 思维拓展与创新激发
+    type: float
+    description: 引导学生主动提问、设计实验、提出假设、跨学科联想，鼓励高阶思维和创新能力，设置开放性任务促进深度探究和知识迁移。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 课堂提问贴近真实学习情境，反映学生实际困惑、兴趣和认知水平，具体且有情境背景，能激发讨论和深入思考。
+  - field: 价值观润物细无声融入度_理由
+    type: str
+    description: 解释价值观润物细无声融入度评分的详细理由，引用具体例子。
+  - field: 价值观润物细无声融入度
+    type: float
+    description: 教学内容自然融入社会主义核心价值观和中华优秀传统文化，传递科学精神、社会责任、团队协作等正向理念，表达自然，内容与价值观有机结合。
+  - field: 表达清晰与条理性_理由
+    type: str
+    description: 解释表达清晰与条理性评分的详细理由，引用具体例子。
+  - field: 表达清晰与条理性
+    type: float
+    description: 教学内容表达逻辑严密，结构完整，层次分明，重点突出，便于学生系统掌握和迁移应用，能够清晰展示知识关联和推理过程，避免内容堆砌、前后矛盾或遗漏。
+  format_mode: prompt

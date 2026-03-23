@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-初中-文学常识梳理教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为初中语文学习助手，能简单说说中国古代诗歌都有哪些分类？各自有什么特点？我只需要主要内容，简单说说就行。
+  - question: 我是初中语文老师，最近班里学生总是分不清小说、散文、诗歌、戏剧这四种文学体裁，你能解释一下它们的区别和联系吗？最好举些例子，能解释一下吗？
+  - question: 我是初一女生谷艳，喜欢插花和视频剪辑，平时喜欢自己独立完成作业，跟同学交流不多。你作为语文专家，能彻底说清楚我该怎么系统学习文学常识吗？最好能结合我的兴趣和性格，从知识点到方法都讲讲。
+  - question: 我是初中语文老师，学生总问我“文学常识”到底是什么，在语文学习里有什么用？你能具体说说吗？最好举点例子说明一下。
+  - question: 你作为语文教学顾问，能系统地讲解一下初中阶段文学常识的主要内容和学习方法吗？希望能覆盖知识体系、常见误区和创新实践建议，从各方面讲详细点。
+  - question: 我最近发现班里的学生对中外文学流派没什么兴趣，你是语文学习助手，能深入说说看有哪些主要的文学流派？各自有什么特点和代表作品？讲细一点。
+  - question: 我是高三学生曾先，喜欢田径、国际象棋和机器人竞赛，平时和队友关系不错但不太聊私事。你作为语文专家，能说说你的看法吗？我学习文学常识有什么优势和需要注意的地方？最好能结合我的兴趣和性格具体分析一下。
+  - question: 你作为初中语文学习顾问，能讲得详细点中国古典文学和现代文学有什么主要区别？发展过程和对我们青少年的影响分别是什么？讲细一点。
+  - question: 我是四年级学生干鹏，喜欢下国际象棋和玩滑板，专注力不是很强。你作为语文专家，能说说主要的初中语文文学常识都包括哪些内容吗？简单讲讲就行。
+  - question: 我是初中语文老师，班里学生总是搞不懂小说的三要素，你能具体说说它们分别是什么吗？各自有什么作用？最好举点例子。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-初中-文学常识梳理进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 教师能根据学生的学习基础、兴趣和困惑，主动调整讲解内容、方法和互动方式，体现针对性支持，帮助不同学生获得有效提升。高分要求教师针对多类学生差异有具体、持续的个性化措施。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 教师严格按照教学任务要求输出，内容、结构、表达方式与指令完全一致，覆盖所有指定要点，无遗漏、无随意变更。高分需体现细致分点、语言风格、结构与指令高度一致。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教师采用科学、专业的教学策略，如启发式、归纳总结、情境创设、分层递进等，促进学生理解、迁移和应用。高分需体现多样化方法和理论依据，并能灵活组合应用。
+  - field: 知识梳理逻辑性_理由
+    type: str
+    description: 解释知识梳理逻辑性评分的详细理由，引用具体例子。
+  - field: 知识梳理逻辑性
+    type: float
+    description: 知识梳理有清晰层次和递进结构，内容环环相扣，关联紧密，便于学生系统理解和记忆。高分需体现多层次结构和知识间内在联系，有助于形成整体认知。
+  - field: 激发创造性思考_理由
+    type: str
+    description: 解释激发创造性思考评分的详细理由，引用具体例子。
+  - field: 激发创造性思考
+    type: float
+    description: 教师通过开放性问题、启发任务、生活联想等方式，鼓励学生主动探索、表达独特见解或创作。高分需有具体创作任务、深度开放性讨论或跨学科联想，学生能产出原创内容。
+  - field: 模拟真实提问回应_理由
+    type: str
+    description: 解释模拟真实提问回应评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应
+    type: float
+    description: 教师能针对学生可能提出的真实疑问，进行具体、深入、有针对性的回应，结合教学内容和学生心理，帮助学生解决实际困惑。高分需能多角度分析疑问，引导学生深入思考。
+  - field: 中华优秀传统文化融入_理由
+    type: str
+    description: 解释中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入
+    type: float
+    description: 教师能自然融入中华优秀传统文化和社会主义核心价值观，将传统美德与文学常识讲解有机结合，促进学生价值认同和文化自信。高分需结合具体文学内容深入阐释，并引导学生表达个人理解。
+  - field: 学情适应性_理由
+    type: str
+    description: 解释学情适应性评分的详细理由，引用具体例子。
+  - field: 学情适应性
+    type: float
+    description: 教师能根据学生年级、学习阶段和认知水平动态调整内容难度和讲解深度，体现对学情的精准把握，帮助学生逐步提升。高分需有针对不同层次学生的分层设计和持续调整。
+  - field: 反馈与改进能力_理由
+    type: str
+    description: 解释反馈与改进能力评分的详细理由，引用具体例子。
+  - field: 反馈与改进能力
+    type: float
+    description: 教师在教学过程中定期主动收集学生理解反馈，分析学生问题，及时调整讲解策略或补充内容，实现教学优化与个别化支持。高分需有系统反馈机制、个别化调整和持续优化。
+  format_mode: prompt

@@ -1,0 +1,126 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-小学-生活现象的物理学解释教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名小学科学老师，班里有很多孩子对生活中的“水为什么会蒸发”感到好奇。你作为物理教育专家，能不能帮我把‘水蒸发’这个现象讲清楚点？让孩子们既能理解科学原理，也能从中体会到珍惜水资源和尊重科学的重要性。
+  - question: 我是六年级班主任，最近孩子们在课外劳动课上讨论“为什么夏天金属门把手会很烫手，冬天却特别冷”，你作为小学物理专家，能否全方位地讲解一下这个生活现象背后的物理原理、相关实验、实际生活应用，并结合中华优秀传统文化中关于节气和生活习惯的智慧，帮助学生养成科学思维和生活热爱？
+  - question: 我是边思琪，今年6岁，一年级学生，喜欢摄影、茶艺和科学实验，也喜欢和同学合作。最近和妈妈泡茶时发现，热水倒进玻璃杯，会有许多小水珠出现在杯壁上，这让我好奇。你作为科学学习助手，能解释一下为什么会有这些小水珠吗？希望你的答案能结合我的兴趣，鼓励我继续通过摄影和实验探索生活中的物理现象。
+  - question: 我是小学五年级的学生，最近在家观察到晒衣服时，湿衣服在阳光下干得很快，但在阴天就要很久才干。我有点不太明白其中的原因。你作为物理学习专家，能不能帮我理解一下为什么晒衣服会有这样的差别？也希望能听到一些能让我动手实验的小建议。
+  - question: 我是汪婷，18岁，高三学生，喜欢动漫设计和古筝，但上课容易分心。最近物理课上讲到‘为什么下雨天地面会变得湿滑’，你能用几句话说说这个现象的物理原因吗？也能结合我的兴趣或者给我一些好记的小建议。
+  - question: 我是杜淇，20岁，家政服务员，喜欢打扫和养花，但有点拖延，适应新环境不太快。工作时注意到家里用久的水壶底部经常有一层白色的东西，很难清理。我想知道这些白色的东西是什么，它们是怎么形成的。你能简单说说就行吗？也希望给我一些实用的小建议。
+  - question: 我是小学科学教研员，最近有老师请教我关于“为什么电灯泡在用久后会变暗甚至坏掉”这个生活现象的物理学解释。你作为物理教学专家，能深入讲解一下吗？希望能包含详细的物理原理、生活案例，以及如何在小学课堂上引导学生观察、实验和思考，同时融合珍惜资源与勤于思考等价值观。
+  - question: I am TaylorAnna, a 60-year-old female teacher who enjoys Yue Opera,
+      tea ceremony, and nutrition therapy. I tend to be methodical and critical, though
+      sometimes I am a bit negligent. My students recently noticed that when you rub
+      your hands together quickly, they feel warm. As a science education expert,
+      could you讲讲看 why hands get warm when rubbed together? Please also relate the
+      explanation to my interests in tea ceremony and nutrition therapy, and perhaps
+      share how this phenomenon reflects traditional Chinese wisdom.
+  - question: 我是小学四年级学生，最近在家观察到“冰块放在桌子上会慢慢融化成水”，我很好奇这个现象的物理学原理。你能讲得详细点吗？希望你能结合生活中的实际例子、启发我自己动手做些类似的小实验，还能讲讲其中蕴含的科学精神和中华传统文化里的智慧。
+  - question: 我是魏宜，11岁，五年级学生，喜欢阅读、田径和越剧，学习动力主要靠兴趣，专注时间不长，有时会在兴趣和成绩之间做平衡。父母工作很忙，但会抽空陪我参加活动。最近科学课上遇到了‘声音是怎么产生和传播的’这个问题，感觉内容挺多有点难。你作为小学物理专家，能详细分析下各个方面，比如声音的产生、传播、影响因素、生活中的实际应用，还有一些趣味小实验或故事，帮我学懂还想主动学下去。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-小学-生活现象的物理学解释进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评价是否深入了解并回应学生的年龄、兴趣、认知差异，不仅在内容和表达方式上有针对性调整，还能持续根据学生反馈优化教学策略，体现对个体和群体差异的敏感与适应。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评价是否严格按照教学或题目要求的结构组织内容，分段清晰，逻辑递进，关键环节无遗漏，不随意更改格式，确保师生易于理解和操作。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评价是否运用多种科学教学方法（探究、实验、讨论、启发式提问等），促进学生主动参与和深度理解，教学方式有层次递进，避免单一灌输式讲授。
+  - field: 知识准确性与表达层次_理由
+    type: str
+    description: 解释知识准确性与表达层次评分的详细理由，引用具体例子。
+  - field: 知识准确性与表达层次
+    type: float
+    description: 评价物理知识表述是否科学准确，表达层次丰富，既有基础解释，又能用多样方式（故事、动画、比喻等）帮助小学生理解，能及时纠正常见误解，无科学性错误或歧义。
+  - field: 激发学生创造力与思考深度_理由
+    type: str
+    description: 解释激发学生创造力与思考深度评分的详细理由，引用具体例子。
+  - field: 激发学生创造力与思考深度
+    type: float
+    description: 评价是否通过开放性问题、创新实验设计、鼓励学生假设和多角度探究，促进学生主动思考和创造，鼓励持续探索和表达多种解决思路。
+  - field: 生活化与真实场景情境设计_理由
+    type: str
+    description: 解释生活化与真实场景情境设计评分的详细理由，引用具体例子。
+  - field: 生活化与真实场景情境设计
+    type: float
+    description: 评价是否结合真实生活场景进行物理解释，设计具体情境或活动帮助学生理解原理并实现知识迁移，能引导学生观察、记录和分析生活中的物理现象，而非仅表面联系。
+  - field: 价值观自然融入与文化传承_理由
+    type: str
+    description: 解释价值观自然融入与文化传承评分的详细理由，引用具体例子。
+  - field: 价值观自然融入与文化传承
+    type: float
+    description: 评价讲解过程中是否自然融入社会主义核心价值观或中华优秀传统文化，通过实例、讨论或引导传递积极思想，方式自然、具体、与物理内容融合，不生硬或表面化。
+  - field: 问题理解与真实提问模拟_理由
+    type: str
+    description: 解释问题理解与真实提问模拟评分的详细理由，引用具体例子。
+  - field: 问题理解与真实提问模拟
+    type: float
+    description: 评价是否充分理解并回应小学生真实提问的动机、兴趣和表达方式，回答内容贴近学生语言和认知水平，能针对学生具体问题深入解答，并鼓励进一步提问或探索。
+  - field: 互动性与引导性_理由
+    type: str
+    description: 解释互动性与引导性评分的详细理由，引用具体例子。
+  - field: 互动性与引导性
+    type: float
+    description: 评价回答是否主动引导学生思考、提问、讨论或参与活动，有具体互动设计（如追问、反馈、讨论环节），能持续激发学生参与和表达，促进学习积极性。
+  format_mode: prompt

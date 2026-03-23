@@ -1,0 +1,113 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-小学-光与影的规律探索教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是四年级的小学生，最近科学课学了光与影的规律，但做实验时发现影子的长度和方向会变，很神奇。你作为物理专家，能详细讲讲光与影有哪些有趣的规律吗？比如为什么影子会变长变短、方向会变？举些生活例子和实验，帮我深入理解吧。
+  - question: 我是一名五年级学生，喜欢和朋友在操场玩捉迷藏。最近发现太阳光下影子很有趣，你作为我的学习助手，能讲讲看光是怎么形成影子的？有哪些因素影响影子的形状和位置？用我喜欢的户外游戏举例说明吧。
+  - question: 我是小学科学老师，班里有个三年级男孩叫乐乐，他喜欢观察窗外，经常问我光和影的问题。最近他发现同一物体在不同时间影子的形状和方向都变了，很想知道原因。你作为小学物理专家，能全方位地讲解一下光与影的形成和变化规律吗？帮我设计些实验，给点教学建议，系统说说吧。
+  - question: 我是三年级学生，和妈妈做手工时用手电筒照物体，发现影子的大小和方向都会变。你作为我的学习助手，能详细说说光与影的规律吗？帮我结合家里的手工活动举例解释一下吧。
+  - question: 我是小学生，喜欢在院子里观察影子。有时影子很长，有时很短。能帮我概括一下光是怎么影响影子的长短和方向的吗？说说主要的就行。
+  - question: 我是五年级女生，喜欢画画和做科学实验。最近发现同一个物体位置不同，影子的长度和方向也变了，不太懂为什么。你作为物理老师，能讲清楚点光和影的关系吗？能举些生活例子和实验帮我理解吗？
+  - question: 我是四年级学生，喜欢皮影戏，觉得影子变化很神奇。老师说光照方向变了，影子也会变。你能用几句话说说光怎么影响影子的形状和位置吗？简单说说就行。
+  - question: Hi, I'm RobinsonJose, a 10th grade student who likes math modeling and
+      visual projects. I often notice cool shadow patterns in my photography and video
+      editing work. Can you, as a science learning assistant, help me understand how
+      light creates shadows and why their shapes change? Please explain in detail
+      with examples from photography and video editing to help me grasp the main scientific
+      rules.
+  - question: 我是小学科学教研员，正在设计“光与影的规律探索”课程。班里有喜欢动手和合作的学生，也有对理论不感兴趣的孩子。你作为物理专家，能给我一份完整分析吗？麻烦系统梳理光与影的科学原理、教学活动、生活探究、评价方法，还要融合中华优秀传统文化，全面讲讲吧。
+  - question: 我是五年级学生，最近科学课小组合作做光与影实验，发现物体和光源位置不同，影子的变化很明显。有些原理还是不懂。你作为学习助手，能讲得详细点吗？帮我分析光与影的规律，举些生活现象和实验，详细讲讲吧。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-小学-光与影的规律探索进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 学生画像精准识别与差异化设计_理由
+    type: str
+    description: 解释学生画像精准识别与差异化设计评分的详细理由，引用具体例子。
+  - field: 学生画像精准识别与差异化设计
+    type: float
+    description: 基于学生年龄、兴趣、能力、学习风格等多维特征，精准分析学生差异，并针对性设计多层次任务、材料和支持策略。要求每类学生均有适合其发展的挑战与资源，且能动态调整分层措施以响应学生实际表现。
+  - field: 指令格式及流程遵循度_理由
+    type: str
+    description: 解释指令格式及流程遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式及流程遵循度
+    type: float
+    description: 教学活动方案应分环节列出，每一环节标题明确、步骤具体、逻辑清晰，无关键环节遗漏，且流程便于小学教师和学生理解和操作。要求所有实验、讨论、表达等环节均有明确流程指引，支持顺畅推进。
+  - field: 教学方法科学性与趣味性深度融合_理由
+    type: str
+    description: 解释教学方法科学性与趣味性深度融合评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与趣味性深度融合
+    type: float
+    description: 教学设计需系统引导科学原理探究，并巧妙融入多元趣味活动，二者密切结合，能持续激发学生主动参与、体验科学乐趣并深入思考。趣味性不仅体现在活动形式，更融入科学问题解决全过程。
+  - field: 实验探究环节设计合理性与创新性_理由
+    type: str
+    description: 解释实验探究环节设计合理性与创新性评分的详细理由，引用具体例子。
+  - field: 实验探究环节设计合理性与创新性
+    type: float
+    description: 实验设计需符合小学生安全、能力与兴趣特点，操作简明，材料易得。鼓励学生自主提出问题、选择材料、改进实验方法，并能基于实验结果生成新问题或自创探究方案，促进持续创新与多角度规律探索。
+  - field: 引导学生思考与创新表达_理由
+    type: str
+    description: 解释引导学生思考与创新表达评分的详细理由，引用具体例子。
+  - field: 引导学生思考与创新表达
+    type: float
+    description: 教学全程设置开放性思考问题和启发式任务，持续引导学生提出假设、表达独特见解或创新方案。鼓励多样化表达方式（如绘画、故事、实验报告、表演等），教师能针对学生创新行为及时给予具体、积极反馈。
+  - field: 科学术语与表达方式适龄性_理由
+    type: str
+    description: 解释科学术语与表达方式适龄性评分的详细理由，引用具体例子。
+  - field: 科学术语与表达方式适龄性
+    type: float
+    description: 科学术语和表达方式既要准确科学，又须契合小学生认知发展水平。优先采用生活化、形象化比喻和实例，帮助学生理解并能主动表达，避免用词生僻或过度简化，确保科学性与可理解性兼顾。
+  - field: 社会主义核心价值观与中华优秀文化自然融合_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀文化自然融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀文化自然融合
+    type: float
+    description: 教学内容应自然融合社会主义核心价值观与中华优秀传统文化，注重团队协作、尊重科学、热爱生活等精神的渗透，并结合中国科学史实、文化故事等，激发学生对科学与文化的兴趣与思考。融合方式应具体、有机，能引发学生共鸣和讨论。
+  format_mode: prompt

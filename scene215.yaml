@@ -1,0 +1,127 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-世界著名地标与风光教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是五年级的学生，最近对世界著名地标很感兴趣，但有点分不清哪些是最有代表性的地标。你作为小学地理专家，能不能说说主要的世界著名地标以及它们为什么有名？说说主要的就行。
+  - question: 我是一名三年级老师，班里有几个特别喜欢旅行和问问题的孩子，他们总是问我世界各地有哪些有趣的地标以及背后的故事。你作为小学地理专家，能全面深入地讲讲世界著名地标的地理位置、外观特征、历史背景和文化意义吗？能全面深入地讲讲吗？
+  - question: 我是一个四年级的小学生，对世界各地独特的建筑和风光很感兴趣，但有时候分不清地标和普通建筑有什么区别。你作为地理学习助手，能不能彻底说清楚什么是世界著名地标，它们具备哪些特点，还有它们为什么会成为每个国家的象征？彻底说清楚。
+  - question: 你作为小学地理老师，我是一名家长，孩子喜欢看地图但不太懂各地标的意义。能不能帮我详细介绍几个世界著名地标，例如它们的地理位置、外观特点和背后的故事？能讲得详细点吗？
+  - question: 你作为小学地理专家，我叫陆群，今年18岁，是高三学生，平时喜欢数字绘画和Python编程，学习风格偏理性主导，和同龄擅长数字艺术的伙伴交流频繁。母亲性格温和但较为传统，有时难以理解我对数字艺术的热情。我想了解世界著名地标在地理、文化和艺术上的多角度意义，以及它们如何激发创意。深入说说看。
+  - question: 我是三年级学生，对世界各地奇妙的地标建筑很感兴趣，喜欢在课余时间画画世界地图。你作为小学地理专家，可以讲讲看几个有趣的世界地标吗？比如它们在哪里，有什么特别的外观或故事。讲讲看。
+  - question: 我是太叔同，男，38岁老师，平时喜欢路由器配置和足球，教学任务繁重时容易焦虑。你作为小学地理专家，能不能大概讲讲在小学地理教学中，哪些世界著名地标适合孩子们了解？大概讲讲。
+  - question: 我是班可馨，今年6岁，一年级学生，喜欢舞蹈和戏剧表演，常独自练习舞蹈，父母因工作原因周末排练经常缺席。你作为小学地理学习助手，可以给我讲讲看什么是世界著名地标吗？它们有什么特别之处，有没有有趣的故事呀？讲讲看。
+  - question: 我是越妮，29岁女性保安，平时喜欢下象棋、听广播和钓鱼，工作中任务优先级高但惰性显著，行业传统观念较重。你作为小学地理专家，能不能讲清楚点世界著名地标有哪些、它们各自的特色和背后的小故事？讲清楚点。
+  - question: My name is JonesJacob, I am 19 years old, a male advertising strategist.
+      I enjoy genealogy research, mechanical keyboard modding, and programming. My
+      personality is stubborn, anxiety-prone, and I cycle between periods of intense
+      focus and withdrawal. Socially, I balance intricate hobbies with fluctuating
+      energy and self-reliance, channeling my determination into keyboard mods and
+      lineage tracing. As an AI geography assistant, can you give me a specific explanation
+      of world-famous landmarks, their geographic locations, visual features, and
+      any intriguing stories connected to them? Can you be specific?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-世界著名地标与风光进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像精准适配_理由
+    type: str
+    description: 解释用户画像精准适配评分的详细理由，引用具体例子。
+  - field: 用户画像精准适配
+    type: float
+    description: 教学内容与表达方式需针对小学阶段学生的年龄、兴趣与认知发展水平，语言简明易懂、贴近生活、能引发共鸣，并避免任何可能引起理解障碍的内容。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 教学输出严格按照题目或教学任务要求的结构、环节和风格组织，如分段、故事、互动等，条理清晰，结构完整。未按要求分段、缺失指定环节、风格偏差均为扣分项。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 内容紧扣小学地理‘世界著名地标与风光’课程标准，覆盖核心知识点（如地理位置、建筑形态、文化意义），难度适龄，无超纲、无偏题，且避免内容空泛或过度简化。
+  - field: 科学性与准确性_理由
+    type: str
+    description: 解释科学性与准确性评分的详细理由，引用具体例子。
+  - field: 科学性与准确性
+    type: float
+    description: 内容信息科学、准确、逻辑清楚，无任何知识性错误。高分需体现对事实的准确表述及适龄解释，若能提供佐证（如图片、权威来源）或用生活化案例辅助理解则更佳。出现知识性错误或表达混乱为严重扣分项。
+  - field: 启发式提问与互动性_理由
+    type: str
+    description: 解释启发式提问与互动性评分的详细理由，引用具体例子。
+  - field: 启发式提问与互动性
+    type: float
+    description: 通过开放性问题、情境设定等方式，激发学生思考和表达，鼓励讨论、分享观点，体现真实师生互动。高分需有多轮互动或引导学生深入表达；仅有简单提问或无互动为低分。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 鼓励学生进行创意表达、联想或创新实践（如绘画、写作、设计、角色扮演等），拓展思维空间。高分需有具体创新任务或活动安排，低分仅限于记忆或机械重复。
+  - field: 核心价值观润物细无声融入_理由
+    type: str
+    description: 解释核心价值观润物细无声融入评分的详细理由，引用具体例子。
+  - field: 核心价值观润物细无声融入
+    type: float
+    description: 在地标讲解过程中，自然融入社会主义核心价值观或中华优秀传统文化，表达方式贴切、融合，能引发学生思考和认同。高分为价值观与地标内容高度结合，低分为生硬插入或完全缺失。
+  - field: 真实场景模拟度_理由
+    type: str
+    description: 解释真实场景模拟度评分的详细理由，引用具体例子。
+  - field: 真实场景模拟度
+    type: float
+    description: 内容表现贴近真实小学课堂或学生实际提问，体现师生真实互动、关注学生兴趣与情感，表达自然亲切。高分需有师生对话、情感交流，低分为模板化、机械化表达。
+  - field: 内容丰富度与趣味性_理由
+    type: str
+    description: 解释内容丰富度与趣味性评分的详细理由，引用具体例子。
+  - field: 内容丰富度与趣味性
+    type: float
+    description: 教学内容充实，表达形式多样（如故事、图片、小游戏、互动等），趣味性强，能激发学生兴趣和参与。高分需多元表达并有趣味元素，低分为内容单一、缺乏趣味。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-好朋友，手拉手（处理同学矛盾）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是TaylorNeil，今年53岁，是一名男老师，平时喜欢打麻将、门球和做穴位按摩，有时候会因为太专注教学忽略一些细节。遇到班里学生因为小事和好朋友闹矛盾，你觉得我该怎么科学、有效地引导他们和好，并通过活动让他们学会换位思考和包容？说说你的看法。
+  - question: 我是陈炫宇，49岁男老师，喜欢园艺和收藏古玩，平时在学校喜欢和同事聊种花养草，周末还会去古玩市场淘东西。遇到班里的小学生和好朋友因为误会闹矛盾，你觉得我可以怎么结合我的兴趣和管理风格，帮助他们解决问题，还能让他们体会到包容和互助的意义？说说你的看法。
+  - question: 你能从各个角度详细分析一下小学政治课‘好朋友，手拉手’这个主题里，处理同学矛盾有哪些有效的教育实践吗？比如从教师、学生心理、家庭、班级氛围、具体活动设计等方面都说说，详细分析下各个方面。
+  - question: 小学政治课讲‘好朋友，手拉手’这个主题时，老师怎么帮助学生解决小矛盾，让他们学会友善和包容？简单说说就行。
+  - question: 在小学政治课‘好朋友，手拉手’这个主题下，老师应该怎么用科学和创新的方法，帮助学生解决矛盾，还能培养他们沟通和合作能力？能深入说说看吗？
+  - question: 你能系统地详细分析一下小学政治‘好朋友，手拉手’这个主题下，处理同学矛盾的全过程吗？比如预防、发生、修复、反思各环节都说说，详细分析下各个方面。
+  - question: 我是高一女生蔚娅楠，平时喜欢骑行和插花，和同学相处挺好，但有时候专注力不稳定，和老师交流会有点紧张。最近看到小学班里同学因为小事吵架，老师要讲‘好朋友，手拉手’，你觉得老师可以怎么做，既帮学生解决矛盾，又让大家体会到友善和合作？详细说说。
+  - question: 小学‘好朋友，手拉手’这个主题里，老师怎么引导学生用实际行动处理同学间的小矛盾，还能培养互助和包容的意识？能具体说说吗？
+  - question: 我是DavisSimon，1年级男生，喜欢乒乓球、羽毛球和书法，和同学合作时有点害羞，时间管理也不太好。你作为小学政治老师，能不能深入讲解一下‘好朋友，手拉手’这个主题里，遇到同学矛盾时，适合像我这样的孩子的解决办法？怎么帮助我们缓和关系、学会体谅别人，还能通过活动锻炼社交和沟通能力？能深入讲解一下吗？
+  - question: 小学‘好朋友，手拉手’这个主题里，老师怎么引导学生主动沟通、互相理解，处理同学矛盾？简要说明下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-好朋友，手拉手（处理同学矛盾）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估答案是否针对小学生的个体差异（如性格、兴趣、沟通方式、具体矛盾类型等）进行定制化回应。高分要求针对不同学生的具体特点，给出差异化、细致且有独创性的建议，并能体现对学生多样性的深入理解与关照。
+  - field: 指令遵循完整性_理由
+    type: str
+    description: 解释指令遵循完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循完整性
+    type: float
+    description: 评估答案是否严格、系统地按照教学任务或题目要求的所有内容、步骤和格式作答，且各环节有逻辑衔接、内容具体。高分要求每一要求均落实，且有细致展开和反思，不能遗漏或表面化处理。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估所采用的教学方法是否符合小学生认知和心理发展规律，体现启发式、参与式、体验式原则。高分要求设计多样化互动活动，鼓励学生主动参与、实际操作、反思和交流，方法要有层次感和持续性。
+  - field: 情境模拟真实度_理由
+    type: str
+    description: 解释情境模拟真实度评分的详细理由，引用具体例子。
+  - field: 情境模拟真实度
+    type: float
+    description: 评估内容是否真实还原小学生校园生活常见矛盾场景，情境设定具体、细致，细节贴近实际生活。高分要求场景描写自然、有代入感，人物行为和语言符合小学生实际表现。
+  - field: 解决方案实用性_理由
+    type: str
+    description: 解释解决方案实用性评分的详细理由，引用具体例子。
+  - field: 解决方案实用性
+    type: float
+    description: 评估所提供的矛盾解决建议是否具体、可操作，包含清晰的行动步骤、对话范例或操作流程。高分要求建议易于执行，能指导小学生在实际情境中有效应用，并配有实际案例或话语模板。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估答案是否鼓励学生用多元、创新的方法解决问题，激发其创造性思考和主动探索能力。高分要求至少提供两种以上新颖表达或解决方式，或引导学生自主设计方案，鼓励团队协作和自我发现。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估内容是否在实际情境中自然融入社会主义核心价值观和中华优秀传统文化，通过故事、行为、对话等细腻表达。高分要求价值观融入细致、自然，能从学生行为和故事中体现，无生硬说教或口号化表达。
+  - field: 语言表达适龄性_理由
+    type: str
+    description: 解释语言表达适龄性评分的详细理由，引用具体例子。
+  - field: 语言表达适龄性
+    type: float
+    description: 评估答案的语言是否贴合小学生认知水平，表达简洁、亲切、易懂，词汇、句式适合小学阶段。高分要求语言亲切活泼，句式短小，包含生活化、拟人化或故事化表达，能激发学生兴趣和共鸣。
+  format_mode: prompt

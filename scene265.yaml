@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-高中-坚定文化自信与中华文化传承教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高二学生，性格比较内向但对中华文化的诗词和传统节日非常感兴趣。不过我成长在一个以理工为主的家庭，父母都是工程师，对人文知识接触不多。最近我发现自己在理解“坚定文化自信与中华文化传承”方面常常只停留在表面，缺乏系统认识。你能详细分析下各个方面，帮我全面梳理这个主题吗？
+  - question: 我是高三学生家长，我的孩子对科技和现代艺术很感兴趣，但对传统文化总觉得有些枯燥。你作为政治老师，怎么看待在当前社会背景下，如何让青少年既能坚定文化自信，又能积极参与中华文化传承？说说你的看法。
+  - question: 我是一名高一学生，平时喜欢打篮球，也热衴于参加科技创新类社团活动。最近班里同学讨论中华优秀传统文化传承时，我感觉自己了解得不够多。你是我的学习助手，可以讲讲看，作为兴趣广泛的理科生，怎样才能提升自己对中华文化的理解和自信吗？
+  - question: 最近学习政治课时，我遇到一个困惑：我性格比较好奇、喜欢探究，但对历史和传统文化的内容总觉得有点难以深入。你能详细说说，坚定文化自信和中华文化传承对于我们青少年来说到底有什么现实意义吗？
+  - question: 你是我的政治老师，我是一名高二学生，性格外向，热爱参加学校的辩论队。我对中华文化传承的话题很感兴趣，但有时觉得理论知识太抽象。能不能简要说明下，为什么我们要在现代社会坚定文化自信？
+  - question: 我是班长，平时喜欢读书和写作。你作为教育专家，能从各个角度详细说说，如何设计一场能激发同学们文化自信、促进中华文化传承的校园活动？
+  - question: 我是一名高中社团成员，我们社团主打科技创新，但最近学校希望我们结合中华文化元素开展项目。你作为我的学习助手，能详细展开说说有哪些科学创新方式可以帮助我们在科技项目中体现中华文化传承和文化自信吗？
+  - question: 我是高三学生单雄锦，平时喜欢篮球和3D建模与打印，科创能力较强，主动纠错能力也不错。我的社交圈多通过篮球和3D打印项目建立，和同龄人关系密切。你能概括一下，中华文化自信对我们这种科创兴趣型学生有什么独特价值吗？
+  - question: 我是一名高一学生，成长在一个对传统文化比较重视的家庭，但我个人更喜欢现代音乐和数字艺术。最近老师布置了关于中华文化传承的研究性学习任务，我有点拿不准方向。你能讲讲看，怎样把现代兴趣和中华文化自信结合起来，让学习变得更有趣吗？
+  - question: 我是高二学生，性格开朗，乐于组织班级活动，平时喜欢和同学们一起讨论社会热点。你作为政治老师，能全面分析一下在新媒体环境下青少年坚定文化自信和中华文化传承面临的机遇与挑战吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-高中-坚定文化自信与中华文化传承进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像响应度_理由
+    type: str
+    description: 解释个性化画像响应度评分的详细理由，引用具体例子。
+  - field: 个性化画像响应度
+    type: float
+    description: 评估教学方案是否根据学生的多维个性画像（兴趣、学习基础、性格、成长经历等）进行深度定制。高分要求能针对不同学生群体制定具体支持策略，并动态调整方案。中等分为仅有简单分组或标签，低分为统一建议、无个性化体现。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估教学设计是否严格依照指定结构（分段、标题、要点、逻辑顺序等）呈现。高分要求所有结构完整、内容无缺漏、排版美观且便于查阅。中等分为部分结构混乱或有遗漏，低分为内容杂乱、难以阅读或复用。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否采用多样、科学且灵活组合的教学方法（启发式、探究式、合作式、项目式等），并能针对不同教学目标和学生特点精准匹配。高分需体现方法多元、组合创新，并有具体实施细节。中等分为方法较单一或组合浅显，低分为灌输式教学，无互动探究。
+  - field: 知识内容准确性与系统性_理由
+    type: str
+    description: 解释知识内容准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识内容准确性与系统性
+    type: float
+    description: 评估教学内容对文化自信与中华文化传承知识点的准确性、系统性与深度。高分要求涵盖定义、层次、历史演变、现实意义等多维度，结合多个真实案例与社会现象，理论与实践高度融合。中等分为内容较为片面或缺乏案例，低分为知识错误或浅显。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放性问题、案例分析、跨学科融合等方式激发学生创新思考和表达。高分要求有明确创新方案设计环节，学生能自主提出独特见解或新颖活动，鼓励多元表达。中等分为部分开放性提问但缺乏创新激励，低分为标准化答案、无创新环节。
+  - field: 模拟真实提问契合度_理由
+    type: str
+    description: 解释模拟真实提问契合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问契合度
+    type: float
+    description: 评估教学语料中的问题是否贴近高中生真实学习场景和困惑，语言自然、情境真实。高分需能反映学生实际疑问与生活体验，并能引发深入讨论。中等分为部分贴近但多为教科书化问题，低分为假设性或机械提问。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估是否将社会主义核心价值观与中华优秀传统文化自然、深入地融入教学内容与活动设计。高分要求结合真实案例和学生体验，价值观与文化传承有机融合、润物细无声。中等分为机械背诵但有部分结合，低分为完全无融合或生硬灌输。
+  - field: 学生主体参与度_理由
+    type: str
+    description: 解释学生主体参与度评分的详细理由，引用具体例子。
+  - field: 学生主体参与度
+    type: float
+    description: 评估教学设计是否鼓励并安排学生主动参与、表达观点、体验文化传承过程，体现学生在学习中的主体性和能动性。高分要求有多样深度参与环节（如调研、展示、社区实践、辩论等），学生能提出个人见解或方案。中等分为仅有单一参与方式或浅层表达，低分为被动接受、无参与体验。
+  format_mode: prompt

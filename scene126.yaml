@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-小学-自然观察与记录方法指导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为小学生物领域教育专家，我是自然科学老师，班里有些孩子在自然观察日记里总是写得很简单，不知道怎么指导他们系统地观察和记录。能彻底说清楚怎样引导小学生全面提升观察与记录的能力吗？最好结合实际案例讲讲，多说点创新方法和文化融合的思路。
+  - question: 我是四年级女生的家长，我女儿特别爱画画，但写观察日记很抗拒，总觉得文字记录很难。你作为学习助手，能帮我理解一下怎么引导她提升自然观察和记录的积极性吗？举些例子说说，具体点。
+  - question: 你作为小学生物教学顾问，能深入讲解一下像楚炎彬这样的五年级男生（喜欢书法、吉他、游泳，逻辑性强、目标导向、边界感明确、独自活动多）该怎么设计个性化的自然观察和记录方法吗？希望你结合他的兴趣和性格，举些创新的实际案例，也说说怎么把中华优秀传统文化和核心价值观自然融进去。
+  - question: 我是新入职的小学科学老师，班里有几个孩子注意力总是不集中，做自然观察和记录时很容易分心。你作为AI学习助手，讲清楚点怎么科学有效地提升他们的观察和记录能力吧，最好举些实际教学活动和激励方法让我在课堂上用得上。
+  - question: 你作为生物领域教育专家，能全面分析一下像王向这样初一男生（喜欢街舞和围棋，性格有疏离感、竞争回避、边界模糊，与同学关系若即若离，父亲常出差、母亲照料）该怎么设计适合他的自然观察和记录指导方案吗？希望你结合他的兴趣、性格和家庭，提些创新方法和实际案例，让他能建立自信、提升表达和合作能力，也说说怎么把优秀传统文化和核心价值观自然融合进去。
+  - question: I'm MartinezJoseph, a 60-year-old teacher who enjoys ballroom dance
+      and calligraphy, and I like to keep my teaching style informal and relaxed.
+      Can you say the main points about practical and creative ways to guide young
+      students in natural observation and record-keeping that fit my style and encourage
+      their creativity? Just give me the key ideas and some brief examples.
+  - question: 我是小学自然科学教研员，最近负责学校的观察日记评比，发现孩子们记录自然现象时表达方式特别单一，创新性很弱。你作为小学科学教育专家，能彻底说清楚怎么系统提升学生自然观察和记录的多样性与创新性吗？希望你结合课堂、家庭、科技等方面，多举些实际案例，也说说怎么把传统文化和核心价值观自然融合进去，最好讲得全面深入一点。
+  - question: 我是邹淇的妈妈，她今年五年级，喜欢羽毛球、戏剧和串珠，团队意识强但有时自信波动。你作为小学自然科学学习助手，说说你的看法，怎么引导她在小组合作中更好地做自然观察和记录？希望你结合她的兴趣和性格，给些实际方法和活动建议，也说说怎么把传统文化和核心价值观融进去。
+  - question: 我是三年级学生，对自然观察挺感兴趣，就是写观察日记时不知道怎么开始。你作为学习助手，简单说说有哪些有趣又有效的观察和记录方法适合我们小学生用？给我举一两个例子就行。
+  - question: I'm ThomasCaroline, a 55-year-old janitor who likes watercolor and horticulture,
+      and I value practical, rational cooperation in creative group activities. As
+      a science education consultant, can you explain how natural observation and
+      record-keeping can be adapted for elementary students to encourage cooperation
+      and creativity in groups? Please include practical examples and say how to subtly
+      bring in traditional Chinese wisdom or core values—just help me understand clearly.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-小学-自然观察与记录方法指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 教学内容与方法需针对学生具体年级、认知阶段、兴趣特征等进行差异化设计，并在活动安排、材料选择、任务分层等方面体现个体差异。方案应有针对性调整说明，并能根据学生反馈持续优化。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 教学流程严格按照课程指令分步骤呈现，各环节（如准备、观察、记录、反思等）均有清晰标题、内容及操作说明，结构条理分明、格式统一。应有标准化模板或流程表，且执行到位。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学活动遵循小学科学教育规律，采用多样化探究方式（如小组实验、实地考察、互动讨论），强调体验、合作、反思等环节。需有探究成果、过程评估，以及学生主动发现、质疑与改进的体现，避免流于表面。
+  - field: 教学方法专业细致度_理由
+    type: str
+    description: 解释教学方法专业细致度评分的详细理由，引用具体例子。
+  - field: 教学方法专业细致度
+    type: float
+    description: 对观察和记录方法、工具使用、步骤分解及注意事项进行详尽指导，包括工具演示、操作流程、环境安全、数据整理等内容。要求学生能独立、规范地完成观察记录任务，并及时纠正错误操作。
+  - field: 创造力激发有效性_理由
+    type: str
+    description: 解释创造力激发有效性评分的详细理由，引用具体例子。
+  - field: 创造力激发有效性
+    type: float
+    description: 通过多样化启发式引导和开放性问题，鼓励学生提出独特观点、尝试新颖记录方法，并有创新成果展示或创新过程分享。关注创新质量和学生表达深度，避免仅形式创新。
+  - field: 创新表达鼓励度_理由
+    type: str
+    description: 解释创新表达鼓励度评分的详细理由，引用具体例子。
+  - field: 创新表达鼓励度
+    type: float
+    description: 明确鼓励并支持学生用多种表达方式（绘画、手工、摄影、诗歌、故事等）记录观察内容，提供展示、交流与评价机会。关注表达的多样性与创造力，并组织高质量展示与深度交流。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 教学过程中自然融入社会主义核心价值观（如合作、环保、尊重生命等），通过具体行为、情感体验及活动设计体现价值观引导。要求学生在实际活动中践行相关价值观，并有反思与行为改进记录，避免机械灌输。
+  - field: 中华优秀传统文化传承度_理由
+    type: str
+    description: 解释中华优秀传统文化传承度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承度
+    type: float
+    description: 巧妙融入中华优秀传统文化元素（如古代观察方法、诗词、典故等），与自然观察主题有机结合，提升文化认同感与美育体验。要求学生了解并尝试传统文化中的自然记录方式，进行表达或分享，并能对传统方法进行创新应用。
+  format_mode: prompt

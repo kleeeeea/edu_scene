@@ -1,0 +1,126 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-初中-中英文句子互译与表达差异教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中英语老师，班里同学总把‘I miss you’翻译成‘我想你’，但他们好像不太懂这两种表达的情感和文化差异。你作为英语教育专家，能详细讲讲这方面吗？最好能结合例句和教学建议，详细讲讲。
+  - question: 我是初中生，喜欢看英文电影，总觉得‘She is very outgoing’翻译成‘她很外向’或者‘她很活泼’都怪怪的。你是我的学习助手，能深入讲解一下‘outgoing’这个词在中英文互译中的差异吗？最好多举几个例子，帮我理解下。
+  - question: 我是初中英语教研员，最近老师们都说学生在中英文句子互译时语序、时态和文化表达容易混淆，比如‘He is shy’被翻成‘他是害羞的’，结果很别扭。你作为英语教学顾问，能全方位地讲解一下初中英语互译的表达差异吗？请结合例句、误区和教学建议，从各个角度详细说说。
+  - question: Hi, I’m ThompsonEdward, a 51-year-old English teacher who loves genealogy
+      research and square dancing. My students often translate 'I’m hungry' as '我很饿',
+      but they miss some subtle differences in tone and usage. As an English education
+      expert, can you explain the main differences between these daily expressions
+      in English and Chinese? Please give some examples and advice, and make it practical
+      for classroom use.
+  - question: 我是初中生，翻译‘He is shy’时总是写成‘他是害羞的’，老师说不太对。你作为英语学习专家，能说说你的看法吗？顺便举几个例子帮我理解下。
+  - question: 我是初中英语老师，教‘It’s raining cats and dogs’这句时，学生总直接翻译成‘正在下猫和狗’，没理解习语的意思。你作为英语教育专家，能全方位地讲解一下英语习语在中英文互译中的差异吗？最好结合例句、误区和教学建议，详细说说。
+  - question: 我是郑妮妮，高二学生，喜欢诗歌和吉他。英语互译时我总直接把‘I am touched’翻成‘我被感动了’，但老师说这样不够自然。你作为英语学习助手，能简单说说‘I
+      am touched’和‘我被感动了’的差异吗？顺便给我点写作建议。
+  - question: 我是初中生，喜欢和同学用英文聊天，总不确定‘Let’s eat’是‘我们吃饭吧’还是‘我们一起吃饭’。你作为学习助手，说说你的看法吧，最好给我几个例子和建议。
+  - question: 我是初中英语老师，学生翻译‘There are many dishes on the table’时总是写‘桌子上有很多菜’，但没注意‘dish’和‘菜’的文化差别。你作为英语教育专家，说说你的看法吧，最好举例说明。
+  - question: 我是初中生，学‘How are you?’和‘你好吗？’时发现用法不太一样。你是我的英语学习助手，能简短回答下这两句话的表达差异吗？最好举个例子让我更好理解。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-初中-中英文句子互译与表达差异进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价教学内容和表达方式是否根据学生的学习水平、兴趣与认知特征进行针对性调整。高水平表现需能动态调整难度、话题选择和互动方式，明显区别不同学生群体，体现真正的差异化教学。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评价教学输出是否严格按任务要求的格式、顺序和步骤组织，内容完整，层次分明。高水平表现需对步骤和结构有明显标识，并无遗漏或混乱。
+  - field: 表达差异讲解深度_理由
+    type: str
+    description: 解释表达差异讲解深度评分的详细理由，引用具体例子。
+  - field: 表达差异讲解深度
+    type: float
+    description: 评价对中英文表达差异的分析是否深入且多维，涵盖语法结构、语用习惯、文化背景等，能结合实际语境举例并引导迁移理解。高分需至少覆盖语法、语用和文化层面，且有实际应用引导。
+  - field: 知识点结构化与递进性_理由
+    type: str
+    description: 解释知识点结构化与递进性评分的详细理由，引用具体例子。
+  - field: 知识点结构化与递进性
+    type: float
+    description: 评价教学内容是否按由浅入深、循序渐进的逻辑展开，分层清晰，帮助学生从基础句型到复杂表达逐步掌握。高分需体现阶段性目标、内容递进和知识点之间的系统联系。
+  - field: 启发式提问与引导_理由
+    type: str
+    description: 解释启发式提问与引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与引导
+    type: float
+    description: 评价教学中是否通过高质量启发性问题或开放性引导激发学生主动思考。高分需体现问题多样、层次递进，并能引导学生多角度理解和表达，促进批判性与创新性思维。
+  - field: 创造性表达鼓励度_理由
+    type: str
+    description: 解释创造性表达鼓励度评分的详细理由，引用具体例子。
+  - field: 创造性表达鼓励度
+    type: float
+    description: 评价教学是否鼓励学生尝试多样化、个性化表达，支持创新性答案，并能分析其语境适用性。高分需主动引导、积极评价并讲解不同表达的场合和效果。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评价教学内容在句子互译和表达差异讲解中是否自然融入社会主义核心价值观及中华优秀传统文化，润物细无声，引发学生思考。高分需结合实际语境与表达内容，避免生硬灌输。
+  - field: 真实提问场景还原度_理由
+    type: str
+    description: 解释真实提问场景还原度评分的详细理由，引用具体例子。
+  - field: 真实提问场景还原度
+    type: float
+    description: 评价教学提问是否贴近初中英语课堂和学生真实学习疑惑，反映常见表达困惑或错误。高分需能精准捕捉学生实际问题，并以此设计教学环节。
+  - field: 回应针对性与互动性_理由
+    type: str
+    description: 解释回应针对性与互动性评分的详细理由，引用具体例子。
+  - field: 回应针对性与互动性
+    type: float
+    description: 评价教学回应是否针对学生具体问题或表达做出精准解释，体现师生互动，能及时反馈并引导学生深入理解。高分需能纠错、追问和引导学生进一步表达或思考。
+  format_mode: prompt

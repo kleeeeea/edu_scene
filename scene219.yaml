@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-交通工具与出行路线规划教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是五年级学生，平时喜欢观察小区里各种交通工具。老师让我们了解交通工具的种类和它们在生活中的作用，你能帮我理解一下这些交通工具是怎么影响我们出行的吗？帮我理解一下
+  - question: 你作为地理学习指导老师，我叫申璇，今年18岁，是高三女生，喜欢园艺和视频剪辑，性格有时候情绪化、有时候理性，容易受他人影响但也挺有创造力。我的朋友大多是同龄人和园艺爱好者。能不能彻底说清楚，交通工具的多样化和出行路线规划对现代社会，特别是像我这样性格和兴趣多样、社交圈集中的年轻人，有什么具体影响？彻底说清楚
+  - question: 我是农村小学地理老师，班上很多孩子家离学校远，交通条件也有限。你作为小学地理教学专家，能给我一份完整的分析，怎么结合我们本地实际教学生认识不同交通工具，并引导他们规划安全高效的上学路线吗？给我一份完整的分析
+  - question: 我家孩子三年级，性格内向，学交通工具知识有点困难，不太主动提问。你能简短回答下，怎么帮助性格偏内向的孩子理解常见交通工具的用途和选择方法吗？简短回答下
+  - question: 我是小学四年级班主任，班里有的孩子对交通工具历史感兴趣，有的觉得这部分很无聊。你作为AI地理老师，能说说主要的让这些不同兴趣的学生都积极参与交通工具和出行路线规划学习的教学方法吗？说说主要的
+  - question: 我是郝宁，22岁漫画家，喜欢动漫和手办收藏，做事既讲实用也有情怀，现在有点职业迷茫，但很会把握机会。我在漫画圈和手办圈里既有边界又会交际。你作为生活学习助手，讲讲看交通工具和出行路线规划的知识对像我这样处于职业探索期、兴趣广泛、重视实用和情感价值的人有什么启发？讲讲看
+  - question: 我是城市小学地理教研组组长，学生家庭条件和住址差异很大，有的孩子住市中心每天坐地铁，有的住城郊要换好几种交通工具。你作为教育内容专家，能全面分析一下交通工具和出行路线规划教学中，怎么因材施教，既照顾市中心学生，也关注城郊学生吗？全面分析一下
+  - question: 我是三年级学生家长，我家孩子最近特别好奇各种交通工具，总问为什么有这么多、什么时候用哪种更合适。你作为地理老师，能详细说说不同交通工具适合什么情况用，并举些生活例子，帮我给孩子讲明白吗？详细说说
+  - question: 我是罗松，30岁的男老师，平常喜欢电音制作、山地骑行和攀岩，教学风格比较随性，喜欢和音乐、户外圈的朋友交流。你作为AI地理专家，能讲得详细点吗，怎么通过交通工具和出行路线规划教学，激发学生探究兴趣，并结合实际生活和团队合作，促进他们全面发展？能讲得详细点吗
+  - question: 我是小学六年级学生，家住城市边缘，每天上下学要换乘公交和地铁。你作为地理学习助手，能帮我理解一下在城市里规划出行路线时，怎么根据不同交通工具的特点做出最佳选择吗？帮我理解一下
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-交通工具与出行路线规划进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教学内容是否深入整合学生的年龄、兴趣、认知发展、居住环境及个体经历等多维特征，针对性调整学习任务、材料和互动方式。高分需体现对学生个体差异的细致洞察和定制化设计，低分则表现为表面化、模板化或仅简单分组。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学设计与作答是否严格按照教师或题目要求的格式、结构（如分步骤、表格、图示）组织，且在规范基础上展现清晰条理和可读性。高分体现对流程、细节和视觉呈现的高度重视，低分表现为随意、混乱甚至遗漏关键格式要求。
+  - field: 差异化教学建议_理由
+    type: str
+    description: 解释差异化教学建议评分的详细理由，引用具体例子。
+  - field: 差异化教学建议
+    type: float
+    description: 评估是否针对不同学生类型（如学习能力、兴趣、风格）提出具体、可落地的差异化教学建议，并明确实施方式与预期效果。高分需体现多元分层、任务调整和评价标准的差异，低分表现为一刀切或仅泛泛提及差异。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否系统结合地理学科特点与儿童认知发展规律，设计贴近实际生活的任务，促进空间思维、问题解决与知识迁移。高分要体现科学引导和真实情境，低分为机械记忆、脱离生活或方法单一。
+  - field: 互动与探究引导_理由
+    type: str
+    description: 解释互动与探究引导评分的详细理由，引用具体例子。
+  - field: 互动与探究引导
+    type: float
+    description: 评估是否通过问题、讨论、合作等多样方式引导学生自主探究和交流，激发主动参与与创新思考。高分需体现多层次互动、师生生生共探究，低分为缺乏交流、任务单调或学生被动接受。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估教学内容是否有意识引导学生提出新颖观点、创新出行方案或未来交通工具设想，超越教材知识，促进创造力与批判性思维。高分要有实际创新作品、设想或观点，低分仅停留在现有知识复述或缺乏创新引导。
+  - field: 社会主义核心价值观深度融入_理由
+    type: str
+    description: 解释社会主义核心价值观深度融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观深度融入
+    type: float
+    description: 评估教学内容是否在关键环节自然、深度融入社会主义核心价值观（如文明出行、环保、助人为乐），并与地理知识和任务有机结合。高分体现价值观在任务设计、讨论和评价中的具体落实，低分为口号化、机械化。
+  - field: 中华优秀传统文化深度体现_理由
+    type: str
+    description: 解释中华优秀传统文化深度体现评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化深度体现
+    type: float
+    description: 评估教学内容是否在情境或任务中自然融合中华优秀传统文化元素（如勤俭节约、团结协作），通过故事、习俗或实际操作促进理解与践行。高分需体现文化与任务深度融合并有学生实践，低分为表面化、机械提及。
+  format_mode: prompt

@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-小学-西方节日文化初步认知教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学英语老师，打算给三年级的孩子们讲西方节日文化，你能概括一下圣诞节、万圣节和复活节这些节日的主要内容吗？最好也给点简单有趣的教学建议，怎么带孩子们初步了解这些节日。
+  - question: 你作为英语教育专家，能彻底说清楚小学生英语课堂上怎么教西方节日文化吗？包括课程设计、教学方法、文化价值怎么渗透，以及怎样用故事、手工、游戏等让孩子们更有兴趣，还能帮助他们理解和尊重中西文化的不同和共通处。
+  - question: 我是一名美术社团指导老师，外语也不错，但团队决策时总是比较被动。你能详细展开说说，在小学英语课堂上怎么把美术和西方节日文化教学结合起来？我想既用好绘画特长，又让孩子们多点兴趣和创新力。也请帮我分析下如果在团队协作中容易观望，怎么克服，让美术和英语教学能更好融合。
+  - question: 我最近发现有些小学生对感恩节和复活节兴趣不大，也不太理解这些节日的象征意义。你能讲讲看，有哪些情景体验或互动活动能帮助孩子们更好地理解这些内容？最好举几个低年级适用的具体例子。
+  - question: I'm AndersonJason, 13 years old, a 7th grader who likes anime drawing
+      and street dance, but I rely a lot on teacher guidance. Can you be my learning
+      mentor and specifically say how learning about Western festivals in English
+      class can be fun and help me gain confidence? Please give examples using art,
+      dance, or group activities that match my interests and help me understand cultural
+      differences.
+  - question: 你是小学英语老师，怎么用简单易懂的方式给一年级的孩子介绍圣诞节、万圣节和感恩节这些西方节日？能不能概括一下，并推荐一个适合低年级的有趣课堂活动。
+  - question: 你作为小学英语教学顾问，能全面分析一下在中国小学英语课上教西方节日文化的意义、难点和科学教学策略吗？请结合跨学科、家校合作、资源创新和价值观引导等方面详细讲讲，怎么让学生在理解中西文化差异的同时，学会尊重和包容。
+  - question: 我是小学英语老师，班里孩子们喜欢万圣节和圣诞节，但对复活节、感恩节了解不多。你能具体说说，有哪些故事、手工或游戏活动可以帮助他们更好地了解这些节日的不同和文化意义？举点具体例子。
+  - question: 我是家长，我女儿一年级，对圣诞节很有兴趣，可对复活节和感恩节不了解。你能具体说说，有哪些适合家里玩的英语小游戏或手工，既能让她知道这些节日的来历，也能培养她用英语表达的兴趣？
+  - question: 我是吴青梧，今年58岁，是一名小学老师，喜欢插花、烘焙和书法，平时比较务实，表达也很精准，就是有时候逻辑性不太强，还容易过度投入学生家庭事务。你能全面深入地讲讲，像我这样的人在小学英语课堂上，怎么科学推进西方节日文化认知？要怎么平衡自己细致投入的风格和家庭沟通的边界，还能把插花、烘焙、书法这些兴趣创新地融入节日教学，让孩子们理解节日文化意义，培养尊重、合作和创新的素养。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-小学-西方节日文化初步认知进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 评价内容是否针对不同年级、兴趣、能力层次的小学生做出针对性调整，包括语言表达、活动难度、学习基础和班级差异。要求能根据学生实际情况分层设计活动，提供差异化支持和挑战，体现对个体差异的尊重和照顾。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评价内容是否严格按照教学指令和指定格式组织，包括分步、表格、要点、环节标题等，结构清晰，步骤完整。每个环节应有明确标题、内容、活动说明，便于教师和学生理解执行。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评价内容与‘西方节日文化初步认知’教学目标的契合度，既要介绍节日基本知识（如背景、习俗、象征），又要引导学生理解其文化意义和社会作用，促进初步文化比较和思考，避免仅罗列信息或超出小学生理解能力。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价是否采用循序渐进、体验式、启发式等科学教学方法，活动设计分阶段推进，知识与体验结合，鼓励学生主动探索、表达和反思。需关注环节递进性、学生参与度及思维训练，避免单一灌输或机械记忆。
+  - field: 互动与启发性_理由
+    type: str
+    description: 解释互动与启发性评分的详细理由，引用具体例子。
+  - field: 互动与启发性
+    type: float
+    description: 评价是否设计开放性问题、讨论或互动活动，促进学生真实思考、表达与合作。至少有一次实质性师生或同伴互动，并能引导学生进行创造性或批判性思考。互动应有明确目标和深度，避免流于表面或形式主义。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价活动是否有效激发学生联想、创作和比较等创新性思考，鼓励知识迁移和个性表达。创作任务需有一定深度，能促进学生对文化、习俗等进行比较、联想或创新表达，避免机械模仿或浅层创作。
+  - field: 中华文化自然融入_理由
+    type: str
+    description: 解释中华文化自然融入评分的详细理由，引用具体例子。
+  - field: 中华文化自然融入
+    type: float
+    description: 评价在介绍西方节日时，是否自然引入中国传统节日进行对比或联系，体现文化自信与包容。对比需有逻辑、有情感，能引导学生理解两种文化的异同和价值，避免生硬拼贴或机械罗列。
+  - field: 社会主义核心价值观渗透_理由
+    type: str
+    description: 解释社会主义核心价值观渗透评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观渗透
+    type: float
+    description: 评价是否通过教学内容和活动自然传递友善、包容、尊重等社会主义核心价值观，结合实际情境和学生生活体验，鼓励学生主动表达和实践。避免口号化或生硬灌输，价值观引导需具体、落地。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-教学活动设计教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中数学老师，最近发现我的班级学生在做几何证明题时总是无从下手，还老是死记公式。你作为数学教育专家，能详细说说初中几何证明题的教学活动怎么设计吗？最好能既培养逻辑思维又激发兴趣。
+  - question: 你是数学教学指导老师，最近有新老师问你：她班上的孩子学分式运算总是概念混淆、计算出错。你能解释一下初中分式运算教学活动怎么设计吗？最好能帮学生理清概念、减少错误，还能融入团队合作和诚信这些价值观。
+  - question: 我是ThomasEmily，27岁女老师，最近情绪有点消耗，教学上比较保守，但平时喜欢旅行、唱歌、游泳来充电。你作为AI教育助手，大概讲讲初中数学活动怎么设计能让我维持情绪韧性、兼顾结构化教学和自我关怀，还能在班级里自然融入包容和自律这些价值观。
+  - question: 我是一名有十年经验的初中数学骨干教师，最近学校要求我们做‘函数与生活’主题活动，希望提升学生数学应用和创新能力。你能全方位地讲解一下这个初中函数主题活动的整体设计思路吗？想听听教学目标、活动流程、学生分层、家校协作、跨学科融合、评价方法，还有怎么自然融入诚信、创新、责任这些核心价值观。
+  - question: 我是ThomasSimon，12岁男生，六年级学生，喜欢游泳、滑板、电竞，做事比较务实，喜欢团队，习惯外部监督。你作为AI教育助手，能深入讲解一下适合我的初中数学活动设计吗？希望既有实践性、合作性、外部激励，还能让我在团队里成长、变得自信解决问题，同时活动里能自然融入集体荣誉、互助友爱、责任感这些价值观。
+  - question: 我是范勇耀老师，53岁，做事条理性强，喜欢策略性妥协，平时教学比较严谨但也挺灵活，骑行俱乐部里我是可靠的跟随者，围棋圈里擅长策略妥协。你作为数学教学顾问，说说你的看法，怎么为我设计适合的初中数学教学活动，既能发挥我的条理和策略优势，还能在团队里自然融入合作和尊重这些中华优秀传统文化。
+  - question: 我是初中数学教研组长，最近发现有些学生概率和统计知识薄弱，只记公式不会应用。你能全面分析一下这类教学活动应该怎么设计吗？希望能提升学生实际应用能力，引导他们主动探究、合作学习，还能在课堂里自然融入公平、诚信、创新这些价值观。
+  - question: 我是新入职的初中数学老师，学校要求我们下学期重点做‘图形与变换’主题活动。你能从各个角度详细说说这个主题活动的整体设计吗？想知道活动目标、分层策略、课堂互动、学生个性发展、家校协作、评价体系，还有怎么在活动里自然融入创新、尊重、担当这些价值观。
+  - question: 你作为数学教育专家，很多老师都想知道‘任务驱动型’教学活动在初中数学课堂怎么用。你能概括一下这种活动的设计思路、适用场景和对学生能力培养的作用吗？
+  - question: 我是初中数学老师，最近备课‘函数’单元时发现有学生对变量和函数关系理解不透，容易混淆。你作为教学专家，讲讲看针对这种情况教学活动可以怎么设计？既要帮助学生理清变量和函数的关系，还能提升主动探究和合作能力。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-教学活动设计进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估答复是否基于学生具体画像（学习水平、兴趣、性格等）进行深入分析，并据此制定分层或定制化教学活动。需明确分层策略、动态调整机制，并确保措施落实到活动流程，鼓励针对性反馈与持续优化。
+  - field: 个性化指令遵循规范性_理由
+    type: str
+    description: 解释个性化指令遵循规范性评分的详细理由，引用具体例子。
+  - field: 个性化指令遵循规范性
+    type: float
+    description: 评估答复是否在结构上清晰分段（如‘目标-流程-评价’），并针对不同学生类型分条说明，内容层次分明。鼓励创新表达，但需保证分层设计和流程区分，避免内容混杂或结构混用。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估答复是否结合教育学理论（如建构主义、项目学习、合作探究等），针对初中数学特点采用多样化且有实际创新成效的教学方法。高分需体现理论融合、方法多元、创新举措及学生创新成果三个层级。
+  - field: 教学目标与内容契合度_理由
+    type: str
+    description: 解释教学目标与内容契合度评分的详细理由，引用具体例子。
+  - field: 教学目标与内容契合度
+    type: float
+    description: 评估答复中教学目标需具体、明确，紧扣初中数学课程标准与学生认知发展需求，内容设计与课程核心要求高度契合，任务设置能有效促进知识与能力发展，避免泛泛而谈或脱离实际。
+  - field: 激发创造性思维机制_理由
+    type: str
+    description: 解释激发创造性思维机制评分的详细理由，引用具体例子。
+  - field: 激发创造性思维机制
+    type: float
+    description: 评估答复是否设计了开放性、创新性任务，鼓励学生自主探索、多样化表达，能产出具有原创性或独特视角的成果。高分需包括开放任务、创新表达环节、成果展示与互评机制，并能激发学生提出新颖方案。
+  - field: 学生参与与互动激励_理由
+    type: str
+    description: 解释学生参与与互动激励评分的详细理由，引用具体例子。
+  - field: 学生参与与互动激励
+    type: float
+    description: 评估答复是否包含促进学生主动参与、合作交流的机制，活动流程能激发学生积极性、团队精神和交流能力，并有具体激励措施（如积分、展示机会、角色分配等）提升参与度。高分需体现学生自发组织、跨组协作或持续参与激励。
+  - field: 社会主义核心价值观融入_理由
+    type: str
+    description: 解释社会主义核心价值观融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入
+    type: float
+    description: 评估答复是否在教学活动中自然融入社会主义核心价值观（如诚信、友善、合作、创新等），结合教学情境设定具体价值引导环节，并能引发学生实际行为或反思，鼓励价值观在活动中真实体现而非流于口号。
+  - field: 中华优秀传统文化渗透_理由
+    type: str
+    description: 解释中华优秀传统文化渗透评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化渗透
+    type: float
+    description: 评估答复是否在教学活动中巧妙融合中华优秀传统文化元素（如古代数学史、算法、文化故事等），与数学内容自然结合，设计具体任务或环节促进文化传承和学科素养提升。高分需体现深度融合、学生真实体验、文化素养提升与创新表达。
+  format_mode: prompt

@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-初中-化学知识在生活安全中的应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初三女生，家里刚刚装修，爸妈很担心空气质量影响我们全家的健康。你作为生活安全导师，能不能深入说说看初中化学知识在家庭空气安全、甲醛和有害气体防护方面怎么用？我喜欢在客厅做作业，还养了宠物，具体讲讲化学原理、检测防护办法，多举些实际例子，也能聊聊中华传统文化里的居家安全智慧吗？深入说说看
+  - question: 我是农村初二男生，最近村里有人把农药当饮料喝了，家里很担心。你是化学教育专家，能不能讲得详细点初中化学知识在农村家庭用药和饮水安全方面怎么用？结合我们农村常见的生活条件和习惯，分析化学知识怎么帮我们预防误食误用、保障安全，也能说说传统农村生活里的安全经验和价值观吗？能讲得详细点吗
+  - question: 我平常很喜欢在家做小实验，也常用厨房用品和同学一起探究各种化学现象。你作为我的生活安全导师，怎么看初中化学知识在我们家庭实验和生活安全里的用处？可以结合我喜欢动手和探索的习惯，说说安全注意事项、实际例子，也能聊聊中华传统文化里的安全智慧吗？说说你的看法
+  - question: I'm ThompsonRaymond, a teacher who likes keeping a reef tank and playing
+      guitar in my spare time. My daily routine is pretty structured, and I'm curious—how
+      can junior high chemistry knowledge help me keep my reef tank safe at home,
+      especially when it comes to handling chemicals? Can you briefly explain, connecting
+      it to household safety and my hobby? 简要说明下
+  - question: 我是初中化学科普志愿者，在社区做安全讲座时发现很多家长对食品添加剂和饮水消毒很有疑问。你作为化学教育专家，能具体说说初中化学知识在食品安全和饮水消毒方面有哪些实际用处吗？结合我们社区家庭的实际情况，举些常见例子，也能聊聊中华传统文化里的饮食安全智慧和相关价值观吗？能具体说说吗
+  - question: 我是初一女生，平时有点粗心。上次实验课不小心把酸液滴到手上了。你是我的化学学习顾问，能不能讲清楚点初中化学知识在实验室安全防护和紧急处理方面怎么用？结合我粗心的特点，给些适合我的安全建议和实践方法，也能聊聊古代中国在实验和制药安全上的智慧吗？讲清楚点
+  - question: 我住在城市高层，父母工作忙，经常自己在家。你作为生活安全导师，能不能用几句话说说初中化学知识在青少年独居家庭安全防护上的用处？结合我的独居实际，说说关键注意事项，也能聊聊传统文化里的安全理念吗？用几句话说说
+  - question: 我喜欢踢足球，也常在户外野餐。你作为化学教育专家，怎么看初中化学知识在户外活动安全和环境保护方面的用处？结合我的兴趣和野外活动，说说常见的化学安全问题、环境保护措施，也能聊聊中华传统文化里的自然观吗？说说你的看法
+  - question: 我是赵鹤梦，38岁女声学工程师，喜欢音响设备DIY、音乐欣赏和乐器演奏，性格沉默、情绪稳定，平衡家庭和工作。你作为化学生活安全导师，能否全面深入地讲讲初中化学知识在家庭用水用电安全、防火防爆、食品安全、环境保护等各方面怎么用？结合我注重实用和情怀、家庭生活平衡的特点，举例分析具体场景和中华传统文化里的安全智慧，也能说说怎么增强家庭成员的安全意识和科学素养吗？能全面深入地讲讲吗
+  - question: 我是初中化学教研员，最近在设计《化学知识在生活安全中的应用》专题课程。你作为化学教育专家，能否详细分析下各个方面初中化学知识与家庭安全、食品安全、环境保护、突发事件应对等实际应用怎么联系？希望你结合不同学生年龄、城乡差异、家庭背景，谈谈个性化教学建议和中华优秀传统文化的融合策略。详细分析下各个方面
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-初中-化学知识在生活安全中的应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评价教学内容和方法是否基于学生的具体画像（如年龄、知识基础、兴趣、地域、生活习惯等）进行有针对性的差异化设计，并能根据不同学生群体持续优化教学策略，显著提升学习参与度与成效。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 评估教学内容是否严格按照教学任务要求分段，结构层次清晰（如知识讲解、案例分析、互动活动、总结与反思等），每个环节内容充实、逻辑连贯，并能灵活调整以适应课堂实际进展。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评价是否采用多样化、科学有效的教学方法（如启发式、探究式、情境模拟、实验操作等），并能根据教学目标和学生特点灵活组合，促进学生主动思考和深度理解，避免单一和机械化。
+  - field: 知识应用与生活关联深度_理由
+    type: str
+    description: 解释知识应用与生活关联深度评分的详细理由，引用具体例子。
+  - field: 知识应用与生活关联深度
+    type: float
+    description: 评价教学内容是否将化学知识与学生真实生活安全场景深度结合，案例具有代表性、现实性和复杂性，能引发学生共鸣、行动和持续关注，并促进其在生活中主动应用所学知识。
+  - field: 互动性与启发性设计_理由
+    type: str
+    description: 解释互动性与启发性设计评分的详细理由，引用具体例子。
+  - field: 互动性与启发性设计
+    type: float
+    description: 评估是否设置多样化、高质量的互动环节（如小组合作、角色扮演、开放性问题、实践调查等），促进学生主动思考、表达和合作探究，互动不仅形式多样且内容有深度，有助于激发学生高水平参与和批判性思维。
+  - field: 创新思维激发与成果呈现_理由
+    type: str
+    description: 解释创新思维激发与成果呈现评分的详细理由，引用具体例子。
+  - field: 创新思维激发与成果呈现
+    type: float
+    description: 评价是否通过任务驱动、开放式问题、项目式学习等方式系统性激发学生创新思维，鼓励提出独到见解、设计创新方案，并支持学生用多元化方式（如漫画、短视频、创意剧本等）展示学习成果，成果具有原创性和实用性。
+  - field: 社会主义核心价值观自然融合与行为引导_理由
+    type: str
+    description: 解释社会主义核心价值观自然融合与行为引导评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融合与行为引导
+    type: float
+    description: 评价是否将社会主义核心价值观（如安全责任、尊重科学、助人为乐、合作互助等）有机融入教学各环节，通过具体情境和实践活动引导学生形成正确价值观和行为习惯，强调知行合一，避免口号化和生硬灌输。
+  - field: 中华优秀传统文化内涵融合_理由
+    type: str
+    description: 解释中华优秀传统文化内涵融合评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化内涵融合
+    type: float
+    description: 评价是否巧妙结合中华优秀传统文化中的安全智慧、历史典故或科学精神，将文化内涵与化学安全知识深度融合，案例具体且与学生生活相关，增强文化认同和课程吸引力，避免生硬拼接或表面化。
+  format_mode: prompt

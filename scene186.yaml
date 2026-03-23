@@ -1,0 +1,127 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-小学-神话传说与历史关联教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学历史老师，最近在准备神话传说与中国古代历史联系的课程，班里有不少学生对历史不太感兴趣。你作为小学历史教育专家，能详细分析下各个方面，帮我系统地讲讲如何让神话传说和历史知识有机结合，既能激发学生兴趣，又自然融入中华优秀传统文化和核心价值观吗？最好能给出具体教学建议和创新方法，还能设计一个鼓励学生参与的开放性任务。
+  - question: 我是五年级学生家长，孩子刚在学校学神话传说和历史的关系，有点搞不懂。你作为小学历史老师，能简要说明下神话传说和历史之间的主要联系吗？最好举个孩子能懂的例子，简单说说就行。
+  - question: 我是小学老师，第一次教神话传说和历史的联系。班里有些孩子特别喜欢神话故事但容易分心。你作为教研员，能详细说说怎么设计一堂既有趣又有历史深度的课，让神话故事和历史知识结合起来吗？还能给点吸引学生注意力的创新教学方法吗？
+  - question: 我是三年级学生的家长，孩子很爱盘古开天辟地、女娲造人这些神话，但对历史人物和事件没什么兴趣。你作为小学历史教育专家，能讲讲看怎么通过神话传说帮助孩子理解历史发展，还能激发他对历史人物的兴趣吗？希望有具体建议和活动方法。
+  - question: 我是一名小学四年级班主任，班里有几个孩子特别喜欢画画，也爱听神话故事。你作为历史教育顾问，能详细说说怎么把神话传说和历史知识结合起来，让学生通过绘画、故事改编这些方式主动参与学习吗？希望活动里能让孩子自然感受传统文化的美，讲讲看具体怎么做和课堂建议。
+  - question: 我是小学五年级历史老师，班里有几个学生很爱编故事、想象力丰富。你作为小学历史教育专家，说说你的看法：怎么在讲神话传说和历史联系时，鼓励孩子创新，把神话和真实历史事件结合起来创编故事，还能让他们体会中华民族的智慧和团结协作精神？详细说说吧。
+  - question: 我是小学三年级学生，最近学了神话传说和历史的关系，但有点糊涂。你是我的历史学习助手，能用几句话说说神话传说和历史到底有什么联系吗？说简单点就行。
+  - question: 我是四年级学生宋菊，我平时喜欢篮球、京剧、游泳，练京剧脸谱有时候会拖延作业。老师说神话传说和历史有很多联系，但我还是不太明白。你作为小学历史学习指导老师，我想深入了解神话传说和历史怎么关联，有哪些有趣的故事能帮我记住历史？希望能结合我的视觉记忆和团队活动兴趣给些创新学习建议。最后能留个活动让我自己探索历史和神话的联系吗？
+  - question: I'm TaylorSophia, a 12-year-old 6th grade student. I love mobile photography
+      and reading, but sometimes feel left out and tend to withdraw into my hobbies.
+      You are my creative history mentor—could you please give a detailed analysis
+      of how mythological stories connect to real history, with examples from both
+      China and around the world? I'd like to know how these connections can inspire
+      creativity and inclusion in learning, and get some concrete activity ideas that
+      fit someone like me, who struggles with connecting to classmates but loves creative
+      projects. Please finish with an open-ended creative task for further exploration.
+  - question: I'm BellAlbert, a 6-year-old 1st grader. I like playing piano, doing
+      science experiments, and stargazing, but I get distracted easily and sometimes
+      put off learning new things. You are my supportive history guide—could you give
+      a comprehensive analysis of how mythological stories and history connect, using
+      examples that relate to my hobbies? I'd love some engaging teaching ideas that
+      help me focus and learn, and an activity that lets me explore myth-history links
+      in a fun, hands-on way.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-小学-神话传说与历史关联进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容、活动和表达方式是否针对学生年龄、兴趣、认知差异进行多层次调整，包括对不同能力、性格、学习偏好学生的有针对性支持，体现差异化和包容性，避免一刀切。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估教学内容是否严格按既定结构、环节输出，分段、标题、内容完整，环节不缺失，格式统一，且信息层次清晰易查找，避免环节混乱或遗漏。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否采用启发式、探究式、合作学习等多样科学教学方法，鼓励学生主动参与、交流、探究，教师能根据教学内容选择最适宜的方法，避免单一灌输或机械训练。
+  - field: 知识点准确性与关联深度_理由
+    type: str
+    description: 解释知识点准确性与关联深度评分的详细理由，引用具体例子。
+  - field: 知识点准确性与关联深度
+    type: float
+    description: 评估神话与历史事件的关联是否准确、深入，教学能结合真实历史背景、文化内涵和现实意义进行多角度分析，避免表面、牵强或错误联系，对关键知识点有辨析和纠错。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放性问题、创意活动等方式鼓励学生创新表达、想象和探索，多角度思考，能根据学生反馈调整创新任务，超越简单复述，支持学生个性化创作。
+  - field: 模拟真实提问与回应能力_理由
+    type: str
+    description: 解释模拟真实提问与回应能力评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与回应能力
+    type: float
+    description: 评估教学内容能否模拟真实小学课堂互动，预设多层次、多样化学生问题，并进行细致、个性化回应，包括追问、反问、引导深度思考，体现教师对学生个体差异的关注和互动。
+  - field: 社会主义核心价值观自然融入度_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入度
+    type: float
+    description: 评估教学是否在故事讲解和活动中自然融入社会主义核心价值观和中华优秀传统文化，结合实际生活情境，润物细无声地引导学生树立正确价值观与美德，避免口号化或脱离实际。
+  - field: 表达清晰与易理解性_理由
+    type: str
+    description: 解释表达清晰与易理解性评分的详细理由，引用具体例子。
+  - field: 表达清晰与易理解性
+    type: float
+    description: 评估教学语言是否简明、通俗，结构清晰、层次分明，避免生僻词和复杂句式，内容贴近小学生认知水平，便于理解和接受。
+  format_mode: prompt

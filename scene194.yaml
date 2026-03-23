@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-同类历史现象的比较分析（如中外改革）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为历史老师，能帮我讲清楚点中国的戊戌变法和日本明治维新这两场改革吗？我想让学生明白它们的背景、过程、结果和影响，还有具体的异同点，能详细说说吗？
+  - question: 我是KellyTyler，8年级学生，爱露营、跆拳道和乒乓球，平时有点拖延，也不太喜欢竞争。你能说说你的看法吗，关于中国的戊戌变法和日本明治维新这两场改革，它们有什么不一样，为什么一个成功一个失败？能结合我的兴趣和性格讲讲吗？
+  - question: 我是初中历史教研员，最近在备课，需要详细展开说说中国戊戌变法和日本明治维新的比较分析。能不能从政治、经济、社会、文化等方面，带着具体实例和教学建议详细讲讲两场改革的异同、影响和原因？
+  - question: 我女儿刚上初一，对历史有点抵触，最近作业要比较戊戌变法和明治维新。你能帮我理解一下这两场改革核心内容和主要区别吗？最好能用点生活例子和有趣比喻让她能感兴趣。
+  - question: 我是初一学生，老师让我们用几句话说说中国的戊戌变法和日本明治维新有哪些相同和不同。你能用简单几句话说说主要的区别和联系吗？
+  - question: 我是MillerDaniel，8年级男生，喜欢玩无人机和踢足球，但逻辑思维不太强，视觉记忆和理解比较快。你能彻底说清楚中国戊戌变法和日本明治维新这两场改革吗？希望能用图片、流程图或者实际活动帮我理解一下背景、过程、结果和影响，还能不能教我一些提升逻辑思维的比较分析方法？
+  - question: 我是班主任，学生总是分不清戊戌变法和明治维新的区别。你能帮我理解一下这两场改革在背景、目标、过程和结果上的不同吗？最好能给些适合课堂互动或者角色扮演的教学建议，让大家更容易参与和思考。
+  - question: 最近上课讲到中外改革，老师让我们概括一下戊戌变法和明治维新的主要异同。你能帮我简单概括一下它们的核心区别和联系吗？
+  - question: 我是历史兴趣小组的成员，大家想详细讲讲中国戊戌变法和日本明治维新的比较。能不能用丰富的例子和分析，详细讲讲这两场改革的原因、过程、结果、社会影响和现实启示？如果能加些小组讨论或互动建议就更好了。
+  - question: 我是初中历史老师，想设计一节关于中外改革比较分析的公开课，主题是戊戌变法和明治维新。你能彻底说清楚两场改革的背景、过程、结果和影响吗？最好能结合创新教学方法、高阶思维引导，还有积极的价值观和生活例子，让学生更深刻地理解历史现象和现实意义。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-同类历史现象的比较分析（如中外改革）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像适配性_理由
+    type: str
+    description: 解释用户画像适配性评分的详细理由，引用具体例子。
+  - field: 用户画像适配性
+    type: float
+    description: 评估内容是否充分结合初中生的认知特点、兴趣和学习基础，语言表达、举例和分析方法需贴合学生实际经验，避免超纲或抽象化。需体现对不同水平学生的适应性和分层引导。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估回答是否严格按照教师或系统要求的结构、分点及内容层级作答。需体现结构完整性、逻辑顺序及内容分层，避免仅形式分点但内容混乱或遗漏。
+  - field: 历史比较分析专业性_理由
+    type: str
+    description: 解释历史比较分析专业性评分的详细理由，引用具体例子。
+  - field: 历史比较分析专业性
+    type: float
+    description: 评估是否采用系统化历史比较方法，明确同异点，结合历史背景进行因果分析，体现逻辑深度和系统性。需有理论支撑和多角度剖析，避免表面罗列。
+  - field: 历史事实准确性_理由
+    type: str
+    description: 解释历史事实准确性评分的详细理由，引用具体例子。
+  - field: 历史事实准确性
+    type: float
+    description: 评估内容的历史事实是否准确无误，时间、人物、事件、措施等信息需严谨可靠。对于细节、因果和背景需考察其真实性，杜绝知识性错误。
+  - field: 教学方法多样性与创新性_理由
+    type: str
+    description: 解释教学方法多样性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性与创新性
+    type: float
+    description: 评估是否采用多样且适用的教学方法（如小组讨论、情境模拟、角色扮演、互动问答等），结合教学目标提高学生参与度和理解深度。创新需服务于学习效果，强调方法与内容的有机结合。
+  - field: 促进高阶思维能力_理由
+    type: str
+    description: 解释促进高阶思维能力评分的详细理由，引用具体例子。
+  - field: 促进高阶思维能力
+    type: float
+    description: 评估是否通过启发性问题、情境迁移或开放性任务，激发学生批判性、创造性思考和历史想象力。需鼓励独立见解与多角度分析，超越记忆和复述层面。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 评估社会主义核心价值观及中华优秀传统文化是否在内容中自然体现，与历史事实结合，启发学生主动思考现实意义。要求案例结合、引发思考，避免生硬灌输或与历史内容脱节。
+  - field: 模拟真实提问能力_理由
+    type: str
+    description: 解释模拟真实提问能力评分的详细理由，引用具体例子。
+  - field: 模拟真实提问能力
+    type: float
+    description: 评估教师或系统提出的问题是否贴近初中生真实认知水平和兴趣，表达自然、具体、易于理解，能引发学生思考与表达。问题需有开放性和关联性。
+  - field: 个性化反馈深度_理由
+    type: str
+    description: 解释个性化反馈深度评分的详细理由，引用具体例子。
+  - field: 个性化反馈深度
+    type: float
+    description: 评估回答是否针对学生具体困惑、兴趣点或学习水平进行个性化反馈，提出针对性建议或引导，体现对个体差异的关注。反馈需有针对性、可操作性和后续指导。
+  format_mode: prompt

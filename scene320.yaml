@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-初中-学习裁判手势与模拟执法教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中体育老师，最近发现学生们对裁判手势挺感兴趣，但理解还不够深。你能简要说明下常见裁判手势和模拟执法怎么组织吗？
+  - question: 你作为体育教育专家，有新手老师请教我怎么系统地教裁判手势和有效开展模拟执法训练。能讲得详细点吗？比如分类、动作要点、教学流程怎么设计、不同学生怎么分层、怎么激发兴趣和团队合作之类。
+  - question: 我是七年级体育老师，班里有些性格内向不善表达的学生，对篮球裁判手势挺感兴趣。你能全方位地讲解一下在体育课上怎么通过裁判手势教学和模拟执法活动，帮助他们提升表达能力、规则意识和团队协作吗？还有怎么设计创新互动活动让他们积极参与？
+  - question: 我是英语老师ThompsonAlice，27岁，喜欢电影、写作、有氧运动，教学方法比较灵活，也很重视社交和创意。现在我想在初中体育课上加入裁判手势和模拟执法的教学，希望学生能体验规则和合作。能结合我的兴趣和风格，讲清楚点怎么设计创意活动吗？举个例说明模拟执法里怎么融入团队合作和公平竞技这些价值观。
+  - question: 我是初中体育老师，班里有个胆小但喜欢篮球的学生，裁判手势他蛮感兴趣但不敢主动展示。说说你的看法，为什么会这样？怎么通过裁判手势教学帮他提升自信和参与度，同时带动班级氛围？
+  - question: 有家长说孩子学裁判手势很有兴趣，但一到模拟执法就容易紧张出错。你作为体育教学助手，详细说说初中生学裁判手势常见难点和老师可以怎么帮他们克服，让他们模拟执法时更自信规范。
+  - question: 你作为体育课程专家，我叫WilsonElena，13岁七年级女生，喜欢视频剪辑和折纸，逻辑思维很强，也喜欢创新。你能全面分析一下，像我这样的学生，裁判手势和模拟执法教学怎么设计，既能学好规则，又能发挥创意和团队合作？
+  - question: 我是新入职的初中体育老师，这学期要教裁判手势和模拟执法。你能概括一下常见手势和模拟执法的基本流程吗？
+  - question: 你是体育教育专家，我叫段树，58岁男老师，长期做高中班主任，爱观鸟和森林浴，平时课堂掌控力强，经常组织观鸟社团和生物老师徒步。现在我接手初中体育课，想把裁判手势和模拟执法教得更有组织感和趣味性。能解释一下怎么结合我的掌控力和社团经验，设计吸引学生的教学方案吗？
+  - question: 你作为体育教育专家，我叫曹雅，13岁初一女生，喜欢尤克里里和视频剪辑，和同龄人关系若即若离，常独自练习，性格疏离但能主动纠错，合作回避型，注意力不太集中。裁判手势和模拟执法教学怎么设计，才能让我既能学会规则、提升表达力，还能激发兴趣和参与度？能全面深入地讲讲吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-初中-学习裁判手势与模拟执法进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学适配度_理由
+    type: str
+    description: 解释个性化教学适配度评分的详细理由，引用具体例子。
+  - field: 个性化教学适配度
+    type: float
+    description: 评估教师是否根据学生的知识基础、兴趣、性格等差异，采取分层教学、分组活动和个别化指导，并能动态调整教学内容与方式，满足不同学生的学习需求。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学内容是否严格按照教学任务要求分点、分步骤展开，场景设定明确，环节有序，便于学生理解与操作，并能体现任务逻辑和层次。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教师是否采用多样化、符合教育学原理的教学方法（如启发式提问、情境模拟、合作学习、反思交流等），并根据学生反馈及时调整教学策略，促进深度学习和能力提升。
+  - field: 教学内容专业准确性_理由
+    type: str
+    description: 解释教学内容专业准确性评分的详细理由，引用具体例子。
+  - field: 教学内容专业准确性
+    type: float
+    description: 评估裁判手势及相关规则讲解是否严谨、规范，引用权威标准，内容准确无误，能针对学生易错点及时纠正，并避免知识性误导。
+  - field: 创新与创造力激发度_理由
+    type: str
+    description: 解释创新与创造力激发度评分的详细理由，引用具体例子。
+  - field: 创新与创造力激发度
+    type: float
+    description: 评估教学是否通过开放性任务、情境挑战等方式鼓励学生主动探究、创新表达，支持其在特殊情况或新场景下提出改进建议或个性化手势设计，并能展示创新过程与理由。
+  - field: 模拟真实提问回应度_理由
+    type: str
+    description: 解释模拟真实提问回应度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应度
+    type: float
+    description: 评估教师是否针对学生在学习过程中的真实疑问和困惑，给予具体、深入、可操作的回应和指导，帮助学生解决实际问题并跟进学习效果。
+  - field: 中国价值观自然融入度_理由
+    type: str
+    description: 解释中国价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 中国价值观自然融入度
+    type: float
+    description: 评估教学内容是否在活动、规则讲解和行为引导中自然融入社会主义核心价值观和中华优秀传统文化，如公平、公正、团队协作、礼仪等，并通过具体情境让学生体验和践行，而非仅口头强调。
+  - field: 激励与正向反馈丰富度_理由
+    type: str
+    description: 解释激励与正向反馈丰富度评分的详细理由，引用具体例子。
+  - field: 激励与正向反馈丰富度
+    type: float
+    description: 评估教师是否在教学过程中采用多样化、具体的激励与正向反馈策略，关注个体成长和团队进步，帮助学生建立自信，持续激发学习动力，反馈具体且有针对性。
+  format_mode: prompt

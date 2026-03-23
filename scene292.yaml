@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-高中-策展人初体验：策划一个班级艺术展（美育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高中生，现在负责我们班的艺术展策划，班里同学兴趣和特长都很不一样，你能帮我理解一下在策展时怎么做到尊重和包容大家的多元表达，让每个人都能被认可吗？
+  - question: 你作为美育专家，假如我是蒋耀东，一个喜欢钓鱼和电子维修的电工，在工厂里很低调又喜欢独自活动，如果让我策划班级艺术展，怎么结合自己的兴趣和性格带动团队合作？说说主要的思路。
+  - question: 最近我们班要办艺术展，我是策展人，大家对主题分歧很大，有人喜欢画画，有人想做数字艺术，还有人喜欢表演，这时候我应该怎么协调大家的意见？简短回答下吧。
+  - question: 我是韩俊材老师，最近指导学生策划班级艺术展。我比较习惯民主管理，但可能对学生情感关注不够，你能帮我理解一下，怎么在策展过程中发挥团队优势，同时提升学生的美育体验吗？详细说说。
+  - question: I'm MooreRuby, a high school junior who loves environmental protection,
+      dance, and video editing. As the curator of my class art exhibition, can you
+      give me a comprehensive and in-depth explanation of how to balance everyone's
+      interests—like environmental themes, creative arts, and teamwork—while encouraging
+      responsibility, respect, and innovation? I'd like to hear all your detailed
+      advice.
+  - question: 我是高中生，负责班级艺术展的策展，你能详细说说在策划和实施过程中，怎么激发大家的创新意识和主动参与，让展览变得有意义吗？
+  - question: 你作为我的学习顾问，我最近策划班级艺术展，发现有些同学总觉得自己不够好，不敢展示作品。帮我理解一下，策展人可以怎么帮助他们建立自信、勇敢表达自己的艺术想法？
+  - question: 你是美育专家，能全面分析一下在高中班级艺术展策划时，怎么把绘画、摄影、音乐、舞蹈这些不同艺术类型融合起来，同时激发团队协作和创新吗？说说具体方法和例子。
+  - question: 我是高中生策展人，你作为我的美育导师，能全方位地讲解一下班级艺术展策划的全过程吗？比如主题、团队、空间设计、宣传和展后反馈这些环节，想听听你的系统建议和创新做法。
+  - question: 我是高三学生姜彬柏，平时喜欢社团吉他、机器人比赛和跆拳道，团队合作很重要但有时候会因为竞赛结果焦虑。你能全面分析一下我策划班级艺术展时可能遇到的困惑和成长机会吗？策展人要怎么帮我缓解焦虑、发挥团队优势，同时顾及个人表达和协作？结合实际案例说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-高中-策展人初体验：策划一个班级艺术展（美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 考查教学设计是否基于学生多维画像（兴趣、能力、性格、成长经历等）持续动态调整任务分配、活动内容与支持策略。要求全过程体现个体差异，能针对学生反馈进行二次优化，确保每位学生都获得适合自身发展的机会和挑战。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估方案是否完全按照任务要求结构（如分段、流程、内容覆盖等）规范输出。要求各环节有明确标题、分点说明，流程细致、逻辑清晰，无遗漏、无混乱，能完整展现策展活动全流程。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估活动设计是否系统对接高中美育核心目标，包括审美能力、艺术表达、团队协作、批判性思维等。要求各环节任务均有明确目标指向，过程与成果评估能体现各目标的实际达成度。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估是否采用科学、系统的教学方法（如项目式、合作学习、反思性学习等），并结合创新性安排。要求方法多元且针对性强，能促进学生主动参与、持续思考与个性发展，且根据过程反馈灵活优化。高分要求方法有理论依据、实际成效、创新突破，而非仅形式多样。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评估活动是否通过开放性任务、跨界融合、问题导向等持续激发学生创新思维和艺术创造力。要求任务鼓励原创表达，能引导学生突破传统框架，尝试新形式和跨学科合作，并在过程中持续反思与优化。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估活动设计是否紧密贴合高中生实际策展过程中的需求、疑惑与表达方式。要求流程和问题设置能真实反映学生在策展实践中遇到的挑战和兴趣点，并能主动收集和回应学生的真实问题，促进积极参与和自我表达。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估是否在策展主题、内容及活动安排中自然融入社会主义核心价值观与中华优秀传统文化，实现情感润物细无声。要求通过主题创设、作品交流、团队协作等环节潜移默化引导学生关注社会、集体、责任等价值，避免生硬灌输，能激发学生主动表达相关体验。
+  - field: 多样性与包容性体现_理由
+    type: str
+    description: 解释多样性与包容性体现评分的详细理由，引用具体例子。
+  - field: 多样性与包容性体现
+    type: float
+    description: 评估策展活动是否鼓励并接纳不同艺术表达方式、文化背景和个体差异。要求活动覆盖表达形式（如绘画、摄影、手工、诗歌等）、文化多样性、能力差异等维度，并在分工、展示、评价体系中尊重并支持差异，确保所有学生都能自信表达和被公平评价。高分要求在活动流程、成果评审等环节有具体包容性设计和调整。
+  format_mode: prompt

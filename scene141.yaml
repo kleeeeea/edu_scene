@@ -1,0 +1,128 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-细胞代谢的物质与能量变化分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为一名有经验的高中生物老师，我是一名高一学生，最近在学习细胞代谢中物质与能量变化的知识。我对这部分内容特别感兴趣，但基础一般，时常容易分心，课堂上听到呼吸作用、光合作用这些名词就有点晕。能不能请你详细讲讲细胞在代谢过程中，物质和能量是怎么变化的？最好能结合具体例子、图示、生活实际，还有学习建议，让我能更好地理解。我想深入了解。
+  - question: 我是高二学生，最近在复习细胞代谢的物质和能量变化内容，但时间比较紧张，想抓住核心。你能帮我概括一下细胞代谢中物质和能量变化的主要过程和意义吗？概括一下。
+  - question: 我是一名自学能力比较弱的高一学生，上课容易走神，记忆力一般。你能说说主要的细胞代谢过程中物质和能量变化涉及到哪几个关键环节吗？说说主要的。
+  - question: 我是高三学生，准备参加生物竞赛。对细胞代谢的物质与能量变化分析有点疑惑，尤其是在能量转化与利用方面。你能结合实际例子，详细解释一下能量是如何在细胞代谢过程中转化和应用的吗？说说你的看法。
+  - question: I'm ThomasPiper, a 27-year-old female biology teacher who loves floral
+      arrangement and writing. As an active listener, I strive to foster meaningful
+      connections with my students and colleagues. In my teaching, I want to thoroughly
+      understand and explain the analysis of material and energy changes in cellular
+      metabolism for senior high school students. Could you thoroughly explain all
+      the key aspects, including biochemical pathways, energy flow, teaching strategies
+      for diverse learners, real-life connections, and values education? Please make
+      sure your answer is comprehensive and professional, and completely say everything
+      clearly.
+  - question: 你作为一名高中生物学习顾问，我是一名高二学生，基础一般，但对生命科学充满好奇。最近在分析细胞代谢的物质和能量变化时，发现自己总是分不清物质变化和能量变化的关系。你能用一些具体例子和生活中的现象，结合我的情况，详细说说你的看法吗？说说你的看法。
+  - question: 你是一名有耐心的生物老师，我是五年级学生ThomasJacob，喜欢拼乐高、玩数独和练书法，但逻辑思维比较弱，自信心有时不稳定，喜欢独自挑战一些任务。你能用通俗易懂的语言，结合我的兴趣，讲讲看细胞代谢中物质和能量变化的基本原理和实际意义吗？讲讲看。
+  - question: 我是高一学生，平时喜欢用图示和生活实例来理解知识，但对于细胞代谢中的物质和能量变化总觉得很抽象。你作为生物老师，能深入讲解一下细胞代谢过程中物质和能量的流转机制吗？最好能多用图示类比和生活案例，帮助我形成整体理解。能深入讲解一下吗？
+  - question: 我是一名刚刚开始带高三的年轻生物老师，发现学生在分析细胞代谢的物质与能量变化时，常常只停留在表面理解，不能深入思考机制和联系实际。你作为生物教研员，能否从各个角度详细说说，如何系统性地引导学生深入理解细胞代谢的物质与能量变化，包括教学设计、案例分析、课堂活动、评价方式等？从各个角度详细说说。
+  - question: 我是生物竞赛班的学生，平时喜欢查资料做笔记，但对于细胞代谢的物质与能量变化分析，总感觉理论和实际应用联系不上。你能结合前沿研究和现实生活，说说你的看法，怎么把理论和实际结合起来学好这部分内容？说说你的看法。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-细胞代谢的物质与能量变化分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估是否能结合学生多元特征（学习水平、兴趣、认知风格、学习目标），主动识别并动态响应个体差异，实施精准分层教学与个性化支持。优异表现包括实时调整教学策略、资源推送及差异化评价。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估内容是否严格响应全部教学任务要求，结构分明、条理清晰、层级合理，突出核心要点并有明确分步或分层呈现。优异表现包括格式统一、无遗漏、便于查阅和复盘。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学策略是否符合生物学科特点和教育学原理，能促进主动探索、深度理解和知识迁移。优异表现为多样化方法（如情境模拟、问题链、合作学习）、高阶思维培养与多维互动。
+  - field: 学科内容准确性与严谨性_理由
+    type: str
+    description: 解释学科内容准确性与严谨性评分的详细理由，引用具体例子。
+  - field: 学科内容准确性与严谨性
+    type: float
+    description: 评估知识表达是否科学、严谨，逻辑无误，能辨析常见误区并主动纠正错误，补充最新研究进展。优异表现为精确阐释核心概念、辨析易混点并引入前沿观点。
+  - field: 启发式提问与创新引导_理由
+    type: str
+    description: 解释启发式提问与创新引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与创新引导
+    type: float
+    description: 评估是否通过分层次、递进式、开放性问题激发学生探究兴趣，引导深度思考与创新尝试。优异表现为结合实际情境、多角度问题链、创新任务设计与自主探究鼓励。
+  - field: 创造性思维培养_理由
+    type: str
+    description: 解释创造性思维培养评分的详细理由，引用具体例子。
+  - field: 创造性思维培养
+    type: float
+    description: 评估是否通过多元表达（如图表、模型、故事、微视频等）和跨学科任务鼓励学生自主探索与原创表达，促进创新思维发展。优异表现为主动引导跨界表达、原创创作和多样展示。
+  - field: 社会主义核心价值观与科学精神融入_理由
+    type: str
+    description: 解释社会主义核心价值观与科学精神融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与科学精神融入
+    type: float
+    description: 评估是否自然融入社会主义核心价值观（如爱国、敬业、诚信、友善）及科学探索、团队协作等精神。优异表现为结合学科背景故事、科研团队事例，细腻引导价值观与科学精神，非生硬灌输。
+  - field: 真实问题模拟与情境贴合_理由
+    type: str
+    description: 解释真实问题模拟与情境贴合评分的详细理由，引用具体例子。
+  - field: 真实问题模拟与情境贴合
+    type: float
+    description: 评估内容是否紧密结合高中生实际生活、兴趣与常见困惑，关注社会热点或学科前沿，提升知识应用性和情境感。优异表现为结合运动、健康、饮食等实际场景，或社会热点进行知识迁移。
+  - field: 反馈与改进建议_理由
+    type: str
+    description: 解释反馈与改进建议评分的详细理由，引用具体例子。
+  - field: 反馈与改进建议
+    type: float
+    description: 评估是否针对学生表现、疑问或错误给予具体、个性化且可操作的反馈与改进建议，帮助查漏补缺、持续提升。优异表现为结合学生实际困惑，给出多元提升路径并引导自主学习。
+  format_mode: prompt

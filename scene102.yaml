@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-物体受力分析与作图教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初一学生，刚开始学物理的受力分析，画受力图的时候总分不清重力和支持力的方向，你作为物理学习助手，能简要说明下怎么判断和画这两个力吗？最好举个生活里的例子，简单说说就行。
+  - question: 我是一名初中物理老师，发现很多学生画受力图时，箭头起点、方向和力的标注都会出错。你作为物理教学专家，能具体说说标准受力图怎么画吗？最好讲讲步骤和规范，再分析一下常见错误，怎么引导学生主动改进？
+  - question: 我是物理教研员，最近负责初中物体受力分析与作图的教学改进。学生普遍分析思路不清、作图不规范，生活案例也用得少。你作为物理教育专家，能详细分析下各个方面吗？麻烦系统讲讲教学难点、作图流程、标准、误区和应对方法，还请说说怎么融合科学探究、合作交流和中华传统文化价值观进课堂，最后能列举几个启发创新思维的互动活动吗？
+  - question: 我是初二学生，最近自学物体受力分析和受力图，遇到很多实际场景，比如书放斜面、手推箱子等，总不太清楚每个力从哪来、方向是什么，也不知道标准受力图怎么画。你作为物理竞赛教练，能讲得详细点吗？麻烦结合实际例子系统讲讲，从分析到作图的步骤，常见错误和纠正建议也说说，还希望能鼓励我自己主动思考和创新解决问题。
+  - question: 我是初三学生，喜欢做实验，但画受力图时总对箭头起点、力名标注搞不清楚。你作为物理学习助手，能具体说说受力图标准画法吗？箭头怎么画，名字怎么写才规范？最好结合一个简单实验举例说明。
+  - question: 我是初二学生，画受力图时总忘记画全所有的力，比如只画重力，漏了支持力或摩擦力。你作为物理学习助手，能说说主要的受力分析步骤吗？怎么避免遗漏？说说主要的就行。
+  - question: Hi, I'm Williams Mason, a teacher who likes to blend walking in nature
+      and Go into my teaching and life. I see students often struggle with force analysis
+      and drawing force diagrams—especially with arrow directions and labeling. As
+      a physics expert, could you say more about your view? How can I guide them step-by-step,
+      maybe using nature analogies or balancing structured teaching with adaptive,
+      interactive learning? Say more about this.
+  - question: 我是初中物理老师，发现学生在受力分析和受力图时常常把重力、弹力、摩擦力、支持力等搞混，尤其在实际生活例子里更难分清楚。你作为物理教育专家，能全面分析一下吗？请讲讲这些常见力的来源、方向、标准画法、典型错误及怎么纠正，还希望能结合生活实例和启发式问题设计，帮学生真正理解和掌握受力分析和作图流程。
+  - question: 我是高一学生林民，喜欢游泳、篮球和3D打印，学物理时理性但偶尔拖延。最近分析物体受力和画受力图时，摩擦力的方向和大小总不准，特别用到篮球和3D打印场景就更难。你作为物理学习助手，能解释一下摩擦力的分析方法和受力图画法吗？最好结合我的兴趣举例说明。
+  - question: 我是初中物理新老师，刚带班发现学生受力分析和作图水平很不均，有些能分析力来源和方向但画图不规范，有些则分析都不清楚。你作为物理教学专家，能从各个角度详细说说吗？麻烦讲讲教学目标、分析与作图流程、规范要求、典型误区、分层教学、互动活动设计，还希望能融合科学探究和传统文化价值观，帮我提升全班物理学习质量。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-物体受力分析与作图进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与适配_理由
+    type: str
+    description: 解释个性化画像识别与适配评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与适配
+    type: float
+    description: 全面识别学生知识基础、学习风格、兴趣与困惑，基于数据动态调整教学内容、方法与互动，针对个体差异持续优化教学路径，确保每位学生都获得适合自身的学习支持。
+  - field: 格式与步骤规范遵循度_理由
+    type: str
+    description: 解释格式与步骤规范遵循度评分的详细理由，引用具体例子。
+  - field: 格式与步骤规范遵循度
+    type: float
+    description: 教学过程严格按照受力分析与作图标准流程实施，每一步均有明确演示、操作指导和规范要求，强调格式、符号、步骤的统一与科学，并对学生作业进行细致规范性检查与反馈。
+  - field: 教学方法科学性与系统性_理由
+    type: str
+    description: 解释教学方法科学性与系统性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与系统性
+    type: float
+    description: 教学设计环环相扣，包含情境导入、理论讲解、分层实践、反思总结及知识迁移等完整闭环，理论与实践高度融合，教学任务递进且有针对性，能促进学生深度理解与能力提升。
+  - field: 作图指导专业度与细致性_理由
+    type: str
+    description: 解释作图指导专业度与细致性评分的详细理由，引用具体例子。
+  - field: 作图指导专业度与细致性
+    type: float
+    description: 受力分析与作图指导专业且细致，详解力的种类、方向、起点、长度、箭头规范、标注标准等细节，及时指出并纠正学生常见错误，确保学生能独立规范完成受力图。
+  - field: 创新思维激发与多元表达_理由
+    type: str
+    description: 解释创新思维激发与多元表达评分的详细理由，引用具体例子。
+  - field: 创新思维激发与多元表达
+    type: float
+    description: 教学鼓励学生主动提出新问题，探索多样化受力分析和作图表达方式（如不同颜色、符号、变式场景），引导学生批判性思考受力分析的局限与拓展，培养创新与批判性思维。
+  - field: 真实场景模拟与师生互动性_理由
+    type: str
+    description: 解释真实场景模拟与师生互动性评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与师生互动性
+    type: float
+    description: 教学内容紧密结合学生生活实际，设计真实场景模拟，师生高频、高质量互动，鼓励学生主动提问、参与讨论、表达观点，并在模拟与互动中提升学习兴趣与实用性。
+  - field: 核心价值观与中华文化润化融入_理由
+    type: str
+    description: 解释核心价值观与中华文化润化融入评分的详细理由，引用具体例子。
+  - field: 核心价值观与中华文化润化融入
+    type: float
+    description: 教学内容自然融入社会主义核心价值观与中华优秀传统文化，结合科学精神，强调诚信、合作、创新等价值理念，并与物理学习过程深度融合，促进学生品德与科学素养同步发展。
+  - field: 学生困惑点回应深度与针对性_理由
+    type: str
+    description: 解释学生困惑点回应深度与针对性评分的详细理由，引用具体例子。
+  - field: 学生困惑点回应深度与针对性
+    type: float
+    description: 教师能精准识别学生在受力分析与作图中的具体困惑，采用多角度（图示、实物、类比等）细致讲解，回应后跟踪学生理解与能力提升，确保困惑被彻底消解并实现知识迁移。
+  format_mode: prompt

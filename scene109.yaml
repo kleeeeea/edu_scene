@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-模拟实验与现象预测教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中物理老师，最近在实验课上带学生做有关浮力的模拟实验，但部分学生总是预测不到物体是否会上浮或下沉。你能讲讲看怎么引导学生结合实验现象去预测浮力吗？举个例子说明一下教学细节也行。
+  - question: 你作为物理教育专家，我是一名51岁的女老师，名字叫江菊，性格有选择性倾听，在家长沟通时偏迎合型，教学自信有波动。最近在模拟电路实验教学中，发现学生对串联和并联电路的现象预测容易混淆。能详细展开说说怎么结合我的性格和兴趣设计分层实验和预测引导吗？家长沟通时怎么提升自信，也希望能结合书法绘画兴趣搞些创新活动。
+  - question: I'm JacksonAlice, a 12-year-old 6th grade girl who tries to balance
+      emotions and logic, and I love English and street dance. In physics class, we
+      did a simulation about predicting how objects move down a slope, but I'm confused
+      about how friction and angle affect speed. Can you explain how I can use simulation
+      experiments to make better predictions? Some examples would help.
+  - question: 我是初中物理教研员，最近在组织线上教研活动时，发现很多老师在讲气压和生活现象预测时抓不住重点。你能概括一下在初中物理模拟实验里气压预测有哪些关键教学方法和注意事项吗？
+  - question: 我是林兰淇，高三女生，性格有点过度自信和完美主义，服装设计喜欢追求理想效果，骑行很独立。我最近复习初中物理，觉得模拟实验预测太简单，同学分析也不完美。你能简要说明下怎么通过模拟实验培养更实际的预测能力和团队合作意识吗？
+  - question: 我是初中物理老师，最近发现学生在做热传导模拟实验时，总是预测错金属棒两端的温度变化。你能具体说说怎么优化实验设计和预测引导，帮助不同类型学生理解热传导吗？最好给些具体建议和例子。
+  - question: 你作为物理教研专家，能全方位地讲解一下初中物理模拟实验和现象预测的整体教学设计吗？希望能系统说说分层实验、能力分级、常见预测误区、跨学科融合、团队协作和科学精神等内容，结合实际案例详细一点。
+  - question: 我是初中物理老师，最近教学中发现学生做光的反射和折射模拟实验预测时总是把不同材料界面的现象搞混。你能深入说说看常见错误原因、分层预测引导、创新实验设计和怎么融入科学精神及协作价值观吗？
+  - question: 我是初中物理骨干教师，负责校级物理教研和课题创新。你可以系统地讲解一下初中物理模拟实验与现象预测的课程整体设计思路吗？希望能全面分析课程目标、分层实验、能力培养、预测训练、跨学科融合、团队合作和科学精神等环节，最好结合具体案例详细说说。
+  - question: 我是初中物理老师，班里有些学生注意力不集中，最近做声音传播模拟实验时，他们总是预测不好不同材料的传声效果。你能具体说说怎么用互动实验和有趣的预测激励方法，帮助他们理解声音传播原理并提升兴趣吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-模拟实验与现象预测进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容是否基于学生的学习基础、兴趣、性格等多维画像进行深度定制，包括举例、表达方式、任务难度及活动安排，并能动态根据学生反馈实时调整。高分需体现对不同学生群体的差异化策略和持续性个性化支持。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估内容是否严格按照题目要求的格式、结构和输出方式编写，包括分点、分步、表格、流程等。高分需排版清晰、结构严谨、无格式错误，信息呈现易读易操作。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估教学内容是否紧密围绕初中物理模拟实验与现象预测的核心目标展开，对目标进行明确分解和层层递进设计，并在每一环节设置具体达成路径、过程性反馈与达成证据。高分需呈现目标分解、达成路径、过程追踪三要素，能有效验证目标实现。
+  - field: 科学性与专业性_理由
+    type: str
+    description: 解释科学性与专业性评分的详细理由，引用具体例子。
+  - field: 科学性与专业性
+    type: float
+    description: 评估教学内容在物理学与教育学原理上的严谨性，包括实验流程、原理解释、数据处理和安全事项。高分需实验流程规范、原理解释充分、数据处理科学、风险提示具体，无知识性错误。
+  - field: 启发式引导能力_理由
+    type: str
+    description: 解释启发式引导能力评分的详细理由，引用具体例子。
+  - field: 启发式引导能力
+    type: float
+    description: 评估教学过程中是否采用启发式、探究式方法，激发学生自主思考、提问、讨论和反思。高分需设计多层次、开放性问题，鼓励学生质疑与创新，促进深度参与与自我建构。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过教学设计鼓励学生提出新假设、创新实验方案或改进实验工具，提升其创新意识和能力。高分需设置创新环节，支持学生生成性成果，并给予具体反馈和指导。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评估教学内容是否贴近真实初中生在物理实验中的提问方式和困惑，教师能敏锐捕捉并转述学生常见疑问，采用学生语言进行解释和引导。高分需真实还原学生表达习惯，并针对性解决学生实际困惑。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估在实验设计、合作或讨论环节是否自然融入诚信、合作、责任等社会主义核心价值观或中华优秀传统文化元素，且与实验主题高度相关。高分需将价值观有机与教学内容融合，通过实际体验和案例激发学生情感与责任感。
+  format_mode: prompt

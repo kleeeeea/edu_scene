@@ -1,0 +1,149 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene04/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是为体育-初中-足球射门与守门练习教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是刚入职的初中体育老师，在带九年级足球射门与守门练习时发现学生水平差异很大，有些好动但技术基础薄弱，还有几位女生兴趣不高但团队意识强。你作为体育教学专家，能具体说说我该如何设计一节针对这类差异的足球射门与守门课吗？流程、分组、趣味活动等都讲讲看，最好举些实际例子。
+    - question: 我是薄雅爱老师，最近在组织足球射门与守门练习，班级学生技能和兴趣差别挺大，但大家相处还算融洽。你作为体育教学顾问，能不能概括一下我该怎么设计一个条理清晰又能激发学生积极性的教学流程？
+    - question: 我是初中生，体育课练习足球射门和守门时总觉得动作不标准，守门也跟不上球。你作为体育老师，简单说说我可以怎么提升这两项技能，有什么实用建议？
+    - question: 你作为体育教学专家，针对初中足球射门与守门练习，班级里既有技能基础弱又有兴趣不足、团队协作能力强的不同学生，如何分层教学、设计创新有趣的分组活动，并在每个环节里融入合作、尊重规则等优秀传统文化和价值观？我想深入了解，能详细讲讲吗？
+    - question: 我是学生家长，孩子最近积极参与初中足球射门和守门练习，但我担心他在技术、团队协作和心理调适方面有短板。你作为体育教育专家，能不能深入讲讲怎么帮助孩子全面提升，同时通过创新活动和体育故事自然引导积极价值观？我想深入了解。
+    - question: I'm HarrisRyan, a 15-year-old 9th grader who loves robotics, swimming, and camping, but I often struggle with concentration and self-learning. You are a sports education expert. Could you give me a complete analysis of how football shooting and goalkeeping practice can help improve my focus, teamwork, and independent learning? Please cover all aspects in detail, including innovative and cross-disciplinary methods. Give me a full breakdown.
+    - question: 我是史君浩，二年级，喜欢轮滑和游泳，做运动时容易分心但也很理想主义。你作为体育老师，说说你的看法：足球射门和守门练习中怎么通过分层训练、趣味活动和团队合作提升我的专注和技术？有没有什么故事或游戏能让我学到团结协作和拼搏精神？
+    - question: 我是雷芝老师，平时兼顾规则与创新，喜欢公益和诗歌创作。你作为体育教学专家，能详细分析一下针对我这样老师，初中足球射门与守门教学该怎么设计一套既规范又有创造力的完整课程方案吗？请从目标、分层、趣味活动到价值观渗透等各方面详细讲讲，结合实际情境和我的兴趣最好举些例子。
+    - question: I'm GarciaFiona, a 12th grader who is good at programming and languages, and I always try to avoid distractions and keep concentrated. You are a sports education specialist. Say what you think: how can football shooting and goalkeeping practice help me further strengthen my focus, strategic thinking, and cooperation? Please give specific examples and talk about how to naturally teach teamwork and self-challenge.
+    - question: 我是一名初中体育老师，在设计足球射门与守门练习课时发现学生情况很复杂，有的技术基础弱，有的团队意识强但积极性不高。你作为体育教学专家，帮我理解一下怎么系统安排教学流程、分层分组、设计趣味活动，并在每个环节自然融入团队协作和拼搏精神？最好举些实际例子。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 体育-初中-足球射门与守门练习进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+  format:
+    - field: 个性化画像识别与回应
+      type: float
+      description: 教师需通过多种途径（观察、数据收集、学生交流等）动态了解学生体能、技能、兴趣、性格等差异，并根据画像持续调整分组、任务和指导策略。要求每节课有针对性举措，并定期采纳学生反馈，记录并跟踪个体成长变化。
+    - field: 指令格式遵循准确性
+      type: float
+      description: 教师需严格按照教学任务指令的结构和步骤组织课程内容，确保各环节顺序、目标、内容完整。不得随意删减、合并环节，所有流程需有清晰目标和实际执行记录。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 教学方法需包含动作分解、分层指导、循序渐进训练、科学防护等，针对不同水平学生设置分层练习，及时纠正错误动作，并明确防护措施，体现专业体育教学标准。
+    - field: 教学流程系统性与完整性
+      type: float
+      description: 教学流程需环环相扣，完整包含热身、专项技能讲解、分组/分层练习、实战应用、师生交流总结、拉伸放松，每一环节有明确目标和内容，环节间衔接自然且有实际执行记录。
+    - field: 创新性练习设计
+      type: float
+      description: 教师需持续设计新颖、有趣、可操作的练习活动，激发学生兴趣和创造力，并定期收集学生建议，优化创新元素。创新活动应有具体方案和执行效果反馈。
+    - field: 学生自主参与与思考激励
+      type: float
+      description: 教师需通过提问、讨论、任务设计等方式持续激励学生主动参与、思考、表达和反思，鼓励学生提出建议并实际参与教学方案决策，促进创造性及批判性思维。
+    - field: 社会主义核心价值观融入自然度
+      type: float
+      description: 教师需将团队协作、公平竞争、尊重规则、拼搏进取等核心价值观有机融入教学全过程，通过具体活动、情境设定、评价标准等方式持续引导学生践行，活动执行有实际效果记录，避免流于形式。
+    - field: 中华优秀传统文化润物细无声传承
+      type: float
+      description: 教师需将中华传统美德（礼仪、尊重、互助等）深度融入体育活动各环节，通过日常行为、语言、评价和氛围营造，使学生在潜移默化中习得与践行传统文化，有具体活动、行为记录和反馈。
+  format_mode: prompt
+format_mode: prompt

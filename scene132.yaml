@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-人体系统（消化、循环等）的协调工作分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二的石力，平时喜欢研究围棋和露营技能，逻辑跳跃但不太爱合作，总是自己钻研。最近学到人体系统的协调工作时，关于消化系统和循环系统怎么一起配合完成营养运输我有点迷糊。你能结合生动例子，帮我解释一下它们是怎么协同工作的，并给我点可以自己实践或思考的小建议吗？能解释一下吗
+  - question: 你作为生物教育专家，我是一名初中生物老师，最近要给学生讲人体各大系统（比如消化、循环、呼吸、神经）怎么协调配合的内容。我的学生基础不一，有的爱提问，有的喜欢小组活动。能结合实际教学案例，详细讲讲各系统协作的科学原理，并分享些能激发学生参与和创造力的教学方法吗？详细讲讲
+  - question: 我是初三学生，最近学到人体系统的协调工作，尤其是消化、循环和呼吸系统之间的关系。我喜欢画漫画，用画图帮助记忆。你能用学生视角，具体说说这几个系统是怎么配合的，并建议我怎么用图解或漫画来帮助理解吗？能具体说说吗
+  - question: 我对生物挺感兴趣，喜欢自己查资料和做实验，但人体系统的协作总感觉有点抽象。你能结合生活例子，讲讲看消化系统和循环系统是怎么分工协作、让人体获得和利用营养的吗？讲讲看
+  - question: 我是初中生物老师，班里有几位基础薄弱的同学，对人体系统怎么协调工作总觉得很抽象，也觉得课本知识和生活没啥关系。你能从科学原理、生活实例、创新表达活动（比如小组表演、绘图比赛），还有怎么结合传统文化和生命健康价值观等方面，全面帮他们理解和感受到学习的意义吗？能讲得详细点吗
+  - question: 我是负责校本教研的教研员，准备组织一次关于“初中生物人体各系统协调工作”的主题研讨。参与老师教学风格不一，有人希望内容讲解更系统，也有人想融入传统文化和核心价值观。你能从科学知识体系、教学策略、创新表达方法（比如流程图、角色扮演、合作探究）、传统文化与价值观融合、学生创造力培养、具体教学案例等角度，详细分析下各个方面吗？详细分析下各个方面
+  - question: 我是初二学生，喜欢用生活类比理解知识。最近学到消化、循环和呼吸系统的协调，你能用几句话说说这三个系统怎么一起工作的吗？用几句话说说
+  - question: 我是初中生物老师，班里有个学生喜欢自己归纳知识，最近在研究人体系统协调，但觉得不好用简单话讲清楚。你能简要说明下消化、循环和神经系统怎么协作的吗？让他更容易理解并能用自己的话表达。简要说明下
+  - question: 我是初一学生，刚开始学人体系统，对它们怎么配合还不太懂。你能具体说说消化、循环和呼吸系统是怎么协调工作的，并举些贴近生活的例子帮我理解吗？能具体说说吗
+  - question: 我是曾真涵，44岁的老师，喜欢社区活动和舞蹈，性格开放但对压力有点敏感，也喜欢反思。最近备课时发现学生在学人体系统协调时，常常搞混消化、循环、呼吸、神经等系统的分工和协作。你作为生物教育专家，能不能从科学原理、生活应用、教学创新、学生心理和传统文化等多角度，全面分析怎么帮助学生建立系统观念和提升生命健康意识？从各个角度详细说说
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-人体系统（消化、循环等）的协调工作分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准识别_理由
+    type: str
+    description: 解释个性化画像精准识别评分的详细理由，引用具体例子。
+  - field: 个性化画像精准识别
+    type: float
+    description: 评估教学是否基于学生的学习基础、兴趣和困惑点，动态调整内容和方法，实现分层教学、持续反馈和个别化辅导，确保每位学生都能获得适合自身发展的支持。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学内容呈现是否严格遵循指定结构化格式（如分点、层级、重点突出、统一模板），使知识结构清晰、便于梳理和复习，教师与学生均能高效应用和评价。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教师是否针对学生具体疑问，结合其背景和知识基础进行分层次、递进式引导，鼓励深度思考和自主探究，帮助学生实现知识突破和能力提升。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学是否采用启发式、探究式、情境模拟等科学教学方法，促进学生主动参与、合作、交流与知识迁移，并有具体、可产出的教学活动。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 评估内容是否准确全面覆盖消化、循环等系统核心知识点，系统梳理结构、功能、相互作用及常见误区，能结合实际情境分析系统协调，促进知识整合与迁移。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学是否持续通过开放性问题、情境设问等方式激发学生创新思考，鼓励多角度分析、假设推理和方案设计，且能观察到学生实际创新性产出。
+  - field: 多元表达与鼓励创造力_理由
+    type: str
+    description: 解释多元表达与鼓励创造力评分的详细理由，引用具体例子。
+  - field: 多元表达与鼓励创造力
+    type: float
+    description: 评估教学是否鼓励并要求学生用多种方式（如绘图、模型、漫画、视频、剧本等）表达对知识的理解与创新，教师对不同表达形式给予评价和展示，激发学生创造性思维和表达能力。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估教学内容是否在知识传授中自然融入社会主义核心价值观（如团队协作、诚信、友善等），通过具体活动或案例引导学生理解并践行相关价值观，避免生硬灌输。
+  - field: 中华优秀传统文化润物细无声传承_理由
+    type: str
+    description: 解释中华优秀传统文化润物细无声传承评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润物细无声传承
+    type: float
+    description: 评估教学内容是否巧妙结合中华优秀传统文化元素（如中医理论、古代健康观念等），与人体系统知识实际相关，激发学生兴趣和文化认同，避免机械生搬硬套。
+  format_mode: prompt

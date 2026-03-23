@@ -1,0 +1,122 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-初中-议论文写作构思教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中学生，老师让我们练习议论文写作构思，我总是卡壳，不知道从哪儿下手。你作为语文写作指导专家，能不能用几句话说说议论文写作构思的关键点？简单说说就行。
+  - question: 我叫李莹莹，今年8岁，三年级女生，喜欢瑜伽、摄影和写作，但我有点容易焦虑，做作业总是拖拉。妈妈每天接送我上下学，周末去瑜伽班也帮老师拍照。语文老师总在家长会上说我写作文老是拖到最后才写。你作为语文写作指导专家，能详细讲讲针对我这种情况，议论文写作构思怎么提升吗？希望能结合我的兴趣和性格，给我一些具体做法和鼓励建议。
+  - question: 我是一名初中语文老师，最近发现班里同学对议论文写作构思都觉得很难，特别是在主题和论证思路上容易迷糊。你作为语文学习顾问，能不能全面分析一下初中生议论文写作构思常见的难点、原因和科学突破方法？最好结合些实际案例和中华传统文化元素。
+  - question: I'm TaylorChristian, 17, a senior high school student. I love AI research
+      and mountain biking, but sometimes feel socially alienated even though I'm pretty
+      outgoing and competitive. When I write argumentative essays for Chinese class,
+      I always find it hard to structure my arguments and bring in cultural perspectives.
+      You're an expert in Chinese argumentative writing—could you thoroughly explain
+      professional strategies for writing high-level argumentative essays? Please
+      cover detailed methods, innovative ideas, how to integrate Chinese traditional
+      values, and practical steps that fit my personality and interests. Please really
+      say it all.
+  - question: 我是初二男生，喜欢打篮球和玩电脑，但我写议论文总觉得没啥新意，观点也很普通。你作为语文写作指导专家，能讲清楚点怎么在议论文写作构思上体现创新和独特观点吗？最好举些例子，帮我提升写作个性和深度。
+  - question: 我是初一女生，喜欢看书和画画，写议论文总是抓不住重点，老是偏题。你作为语文学习助手，能简单说说议论文写作构思怎么才能明确主题、避免跑题吗？给我点实用建议就行。
+  - question: 我是初中语文教研员，准备带老师们做培训，想让大家系统掌握议论文写作构思的教学方法。你作为语文教学专家，能不能全方位地讲解一下议论文写作构思的教学设计，包括目标、步骤、创新活动、评价方法，以及怎样自然融入社会主义核心价值观和中华传统文化？请说得全面深入些。
+  - question: 我是初三学生，写议论文时总觉得论据不够有说服力，选材也很单一。你作为语文写作指导老师，能帮我理解一下议论文写作构思里如何丰富论据素材并提升说服力吗？麻烦讲清楚点，有细节和例子最好。
+  - question: 我是一名初二学生，平时喜欢写随笔，但议论文写作总是理不清结构。你作为语文老师，能帮我理解一下议论文写作构思时怎样规划好文章结构，让内容更有条理吗？说说具体做法和例子吧。
+  - question: 我是初中家长，孩子写议论文时总是照搬范文，没有自己的想法。你作为语文写作指导专家，能解释一下在议论文写作构思里怎么引导孩子独立思考、形成个人观点吗？具体说说方法和举些例子吧。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-初中-议论文写作构思进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像适配性_理由
+    type: str
+    description: 解释用户画像适配性评分的详细理由，引用具体例子。
+  - field: 用户画像适配性
+    type: float
+    description: 评价内容是否充分考虑初中生不同年级、写作水平、兴趣、常见困惑等差异，分层分群提供针对性指导，体现对学生实际需求的敏感与精准响应。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评价回答是否严格按照任务/提问要求，逐项分步骤分层次呈现，结构清晰、条理分明，完整覆盖所有指定环节，并避免内容混乱、遗漏或顺序错误。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所用教学方法是否基于教育学原理，采用循序渐进、启发式、互动式、分层递进等策略，能有效促进学生思维发展和能力提升，具备实际可操作性和创新性，并对不同水平学生有差异化成长路径。
+  - field: 构思过程引导完整性_理由
+    type: str
+    description: 解释构思过程引导完整性评分的详细理由，引用具体例子。
+  - field: 构思过程引导完整性
+    type: float
+    description: 评价是否系统引导学生经历议论文构思的核心环节，包括选题、立意、结构搭建、论据筛选、论证方法等，每一环节有具体可操作指导，并针对常见难点提供解决方案与案例。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价是否通过开放性问题、案例启发、反向思考、换位思考等方式，鼓励学生多角度思考和表达独特见解，提供具体创新操作方法或示例，促进思辨与创造力提升。
+  - field: 真实问题还原度_理由
+    type: str
+    description: 解释真实问题还原度评分的详细理由，引用具体例子。
+  - field: 真实问题还原度
+    type: float
+    description: 评价内容是否基于初中生真实写作困惑和实际场景，精准识别并分析常见难题（如观点不新、论据少、结构乱等），并针对性提出切实可行的解决策略、操作建议和真实案例。
+  - field: 中华优秀传统文化融入度_理由
+    type: str
+    description: 解释中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入度
+    type: float
+    description: 评价内容是否将中华优秀传统文化元素（如经典典故、传统美德、家国情怀等）自然、恰当地融入写作指导，与主题紧密结合，既能传承文化又避免生硬堆砌，且有具体引用或操作说明。
+  - field: 社会主义核心价值观体现_理由
+    type: str
+    description: 解释社会主义核心价值观体现评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观体现
+    type: float
+    description: 评价内容是否将社会主义核心价值观（如诚信、责任、友善等）自然融入立意、论据等写作指导环节，通过具体示例或引导方式潜移默化传递正向价值观，鼓励多样化表达和理解，避免生硬灌输。
+  format_mode: prompt

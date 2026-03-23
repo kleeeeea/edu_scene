@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-高中-历史论述题的解构与论证构建教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高二学生，最近备考历史论述题时总感觉论证结构杂乱、论点不够有力。你作为历史学科专家，能全面深入地讲讲高中历史论述题的解构方法和论证构建技巧吗？
+  - question: 你作为历史学习顾问，能用几句话说说高中历史论述题的解构和论证构建有哪些核心技巧吗？我叫徐书，60岁，是老师，平时喜欢桥牌和健身，和学生关系不错但有点代沟，讲讲要点就行。
+  - question: 我是许纯，中学历史老师，喜欢园艺和编程，课堂上比较强势也在教研组推动改革，但经常和保守派有分歧。你作为历史教育专家，能全面分析一下高中历史论述题的结构解构方法，以及怎样引导学生进行有效论证吗？结合我的教学风格和困惑，给出些建议和案例。
+  - question: 我叫龚建军，二年级学生，喜欢乐高搭建和钢琴，父母工作忙但周末会陪我玩。你作为历史知识导师，说说你的看法，历史论述题怎么解构和构建论证？能结合我的兴趣和家庭情况举些简单例子吗？
+  - question: 我是邱梅玲，55岁的老师，喜欢旅行和舞蹈，学生都挺喜欢我。你作为历史教学顾问，讲清楚点高中历史论述题解构和论证构建的关键步骤，能结合我的性格和兴趣给些教学建议吗？
+  - question: 我叫廖鸿，是六年级男生，喜欢模型和科学实验，平时比较逃避，和妈妈亲近但不太愿意和爸爸交流，也不喜欢集体活动。你作为历史学习助手，能说说你的看法吗？历史论述题的解构和论证构建应该怎么结合我的兴趣和性格特点给我一些指导？
+  - question: 我是一名高三学生，历史论述题一直写不出条理，论证总是缺乏深度。你作为历史知识导师，能全面深入地讲讲怎么从结构、论据选择、价值观融入等方面系统解构和构建历史论述题吗？
+  - question: 你作为高中历史教学专家，详细说说历史论述题在结构解构和论证构建上的常见问题及应对策略吧，最好能举个例子说明怎么提升学生的逻辑表达能力。
+  - question: 你作为历史教育专家，能深入讲解一下高中历史论述题的解构思路、论证层次和创新表达技巧吗？最好结合实际教学案例和中华优秀传统文化，说说怎么培养学生的批判性和创新性思维。
+  - question: 你作为历史学科专家，能简单说说就行，高中历史论述题的基本解构方法和论证构建有哪些核心要点？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-高中-历史论述题的解构与论证构建进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容是否根据学生的学业水平、兴趣、能力短板等进行动态分层调整。高分需体现对学生画像的精准识别，持续跟踪并根据学生变化调整教学方案，包含具体分层措施和个性化响应路径。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 教学内容严格按照题目或教学流程分步展开，步骤完整、表达清晰、结构规范。高分需细致分解流程、突出关键点，并在每步中给出具体操作指引和常见错误提示，便于学生实际操作。
+  - field: 差异化教学策略运用_理由
+    type: str
+    description: 解释差异化教学策略运用评分的详细理由，引用具体例子。
+  - field: 差异化教学策略运用
+    type: float
+    description: 根据学生能力和学习风格灵活采用多种教学方法（如启发式、探究式、案例分析、情境模拟等），并能说明策略选择依据。高分需融合多策略并根据学生反馈动态调整，体现创新与适应性。
+  - field: 论述题解构科学性_理由
+    type: str
+    description: 解释论述题解构科学性评分的详细理由，引用具体例子。
+  - field: 论述题解构科学性
+    type: float
+    description: 论述题解构与论证构建严格遵循历史学科方法论，逻辑严密、结构合理、论证深入。高分需融合史料分析、因果推理、价值判断、比较视角等多重方法，论证链条完整且创新表达，能指导学生系统建构历史论证。
+  - field: 思维能力与创新激发_理由
+    type: str
+    description: 解释思维能力与创新激发评分的详细理由，引用具体例子。
+  - field: 思维能力与创新激发
+    type: float
+    description: 教学内容主动引导学生批判性思考、创新表达和多元视角分析。高分需设计开放性问题，鼓励独立见解，支持自我反思与创新表达，推动学生思维品质持续提升。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 问题设置贴近真实教学场景，能反映学生常见困惑和实际操作需求。高分需问题具有代表性，能引发深入探讨和多角度分析，并结合具体学生案例。
+  - field: 中华优秀传统文化润化_理由
+    type: str
+    description: 解释中华优秀传统文化润化评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润化
+    type: float
+    description: 教学内容自然融合中华优秀传统文化思想或方法，帮助学生理解历史多元视角，提升文化自信。高分需文化内涵与学科内容有机结合，启发学生文化认同和批判思维，避免生硬灌输。
+  - field: 社会主义核心价值观渗透_理由
+    type: str
+    description: 解释社会主义核心价值观渗透评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观渗透
+    type: float
+    description: 教学内容以自然、适度方式传递社会主义核心价值观（如公正、诚信、爱国等），与历史学科内容有机融合。高分需结合具体历史案例引导学生价值观认同，激发责任感与社会关怀，促进德育与学科融合。
+  - field: 反馈与成长支持_理由
+    type: str
+    description: 解释反馈与成长支持评分的详细理由，引用具体例子。
+  - field: 反馈与成长支持
+    type: float
+    description: 教学内容为学生提供具体、可操作的自我反馈建议，关注持续成长与能力提升。高分需有针对性成长路径、分层练习建议和自我评估工具，支持学生自主改进，设定阶段性目标并定期回顾调整。
+  format_mode: prompt

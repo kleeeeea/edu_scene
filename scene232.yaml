@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-城市空间结构与城市化问题探究教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高中地理兴趣小组的同学，最近学城市空间结构与城市化，理论和现实结合挺难的。你作为地理导师，能详细讲讲这些结构理论怎么发展的？现实里有哪些典型案例？最好还能说说怎么带动我们用理论分析身边的城市问题，给点拓展资源和探究建议，帮我们更好理解社会责任和家国情怀。我想深入了解。
+  - question: 我是任妮，今年初二，平时喜欢视频剪辑和编程，性格有点内向但在社团挺活跃。你作为地理专家，能系统地讲解一下城市空间结构和城市化吗？希望内容能结合我的兴趣，给一些生活化案例和探究方法，还想知道怎么用地理视角理解社会责任和传统文化。
+  - question: 我是四年级女生GarciaNora，喜欢跳绳和瑜伽，学习时容易分心。你是我的地理学习助手，能解释一下城市空间结构和城市化是什么吗？最好举些简单的例子帮我理解。
+  - question: 你是高中地理老师，学生觉得城市空间结构和城市化挺抽象的。能说说主要的内容，用生活中常见的例子帮我们理解吗？
+  - question: 我是曾儿，27岁老师，最近想尝试改革地理课，但对城市空间结构和城市化问题怎么教还挺有压力。你作为地理教学顾问，能讲讲看怎么突破学科壁垒、用案例和活动带动学生？还想知道多元评价和反馈怎么做。
+  - question: 我是一名高二学生，学城市空间结构和城市化时觉得理论和现实有点脱节。你作为地理专家，能讲清楚点这些理论和现实怎么联系起来吗？最好举些中国城市的例子，还希望能有针对基础薄弱同学的学习建议。
+  - question: 你是地理辅导老师，学生想知道城市空间结构和城市化的核心内容。用几句话说说，最好结合现实生活，提提怎么学更有动力。
+  - question: 我是刚开始学高中地理的学生，对城市空间结构和城市化挺感兴趣。你是地理专家，能讲讲看主要理论、现实问题和典型案例吗？还希望你能教我怎么探究和自我评价，学得更主动一些。
+  - question: 我是高中地理老师，班里学生基础和兴趣差别挺大。你作为地理教研专家，能全面深入地讲讲城市空间结构和城市化的理论、历史、案例和现实问题吗？还希望你结合教学实际，给点分层教学和多元评价的建议，最好能自然引导学生形成社会责任感和创新精神。
+  - question: 我是准备参加地理竞赛的高中生，想更深入理解城市空间结构和城市化。你作为竞赛辅导老师，能详细展开说说理论流派、新趋势和挑战吗？最好结合中外城市案例，分析各方面影响，还希望能有学习建议和反思方法，帮我提升地理素养和创新能力。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-城市空间结构与城市化问题探究进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学方案基于学生的知识基础、兴趣、能力等多维数据进行动态分层和调整，能够持续追踪并响应学生个体差异，支持差异化成长路径。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 教学内容结构清晰、层次分明，合理运用分点、图表、流程图等工具辅助知识梳理，便于学生理解和回顾。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 结合地理学科特点，采用多元化、科学的教学方法，如案例分析、地图操作、探究学习、小组合作等，提升学生主动参与和思辨能力。
+  - field: 学科知识准确性与深度_理由
+    type: str
+    description: 解释学科知识准确性与深度评分的详细理由，引用具体例子。
+  - field: 学科知识准确性与深度
+    type: float
+    description: 教学内容严谨准确，深入展现地理理论、数据和案例，注重理论联系实际和多角度分析，体现学科系统性。
+  - field: 创新思维与探究能力激发_理由
+    type: str
+    description: 解释创新思维与探究能力激发评分的详细理由，引用具体例子。
+  - field: 创新思维与探究能力激发
+    type: float
+    description: 通过问题引导、任务驱动、情境模拟等方式，激发学生自主提问、探究和创新思考，鼓励提出新见解和跨学科分析。
+  - field: 真实场景模拟与问题贴合度_理由
+    type: str
+    description: 解释真实场景模拟与问题贴合度评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与问题贴合度
+    type: float
+    description: 教学内容紧密结合学生生活经验和真实城市案例，鼓励学生参与本地实际问题分析与解决，增强知识的现实应用性。
+  - field: 社会主义核心价值观与优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与优秀传统文化融入
+    type: float
+    description: 在教学过程中自然融入社会主义核心价值观和中华优秀传统文化，引导学生关注社会责任、环境保护与和谐发展，将价值观与学科知识有机结合。
+  - field: 多元评价与个性化反馈机制_理由
+    type: str
+    description: 解释多元评价与个性化反馈机制评分的详细理由，引用具体例子。
+  - field: 多元评价与个性化反馈机制
+    type: float
+    description: 采用自评、互评、教师评价等多元方式，针对学生差异化表现提供具体、可操作的个性化反馈和成长建议，促进持续改进。
+  format_mode: prompt

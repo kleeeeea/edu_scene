@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-天气现象的观察与记录教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学五年级班主任，班里的学生有的喜欢安静看书，有的特别爱动手。你作为地理教学专家，能不能帮我深入分析一下，怎么结合学生不同的性格和兴趣，在日常教学里引导他们观察和记录天气？我想深入了解
+  - question: 你是一位小学地理学习助手，我女儿三年级，喜欢画画但不太爱写字。我希望她能养成观察和记录天气的好习惯。详细说说有哪些适合她的观察和记录办法，还有怎么在过程中激发她对自然的兴趣和环保意识？
+  - question: 我是老师单于琳雅，今年56岁，平时喜欢烹饪和心理辅导，跨学科能力还行，就是同理心不太强，和学生关系温和但有距离，和同事专业交流多但很少情感互动。你作为地理教研顾问，讲清楚点，在我这种老师的背景下，怎么有效引导小学生观察和记录天气？尤其是跨学科融合和课堂氛围方面，有哪些实用建议，最好结合我的性格特点说说操作性做法。
+  - question: 我是新入职的小学地理老师，班里有一半学生特别喜欢户外活动，另一半则喜欢安静地在教室做手工或看书。你作为小学地理教育专家，详细讲讲怎么根据不同学生的兴趣和性格进行分层教学，让天气现象的观察和记录既能照顾到活泼的孩子，也能激发文静学生的热情？希望能听到具体的活动设计、差异化评价、创新记录工具，以及怎么自然地融入科学精神和环保理念。
+  - question: 我是小学四年级学生，总觉得记录天气很单调。你作为学习助手，能不能简短回答下，有哪些简单又有趣的方法可以让我坚持观察和记录天气？
+  - question: 我是小学地理教研员，负责多个年级的教学设计。你作为教育专家，给我一份完整的分析：小学各年级学生在天气现象观察和记录能力上有什么发展差异，怎么分层设计教学，能不能推荐一些创新的观察和记录方法？希望能结合科学精神、环保和团队协作等价值观，给出可操作的建议和案例。
+  - question: 我是三年级学生的妈妈，我女儿喜欢收集小物件和拍照，就是不爱按部就班地写日记。你作为小学地理学习助手，帮我理解一下，怎么结合她的兴趣，激发她观察和记录天气的积极性？
+  - question: 我是某市小学地理骨干教师，最近学校要求开发一个基于项目学习法的“天气现象观察与记录”主题课程。你作为课程开发专家，给我一份完整的分析，详细讲讲这个主题课程的设计思路、分层教学、创新记录工具、学生评价方法，以及怎么融入科学精神、环保和团队协作等价值观，还想听听怎么结合中国传统文化和现代科技的案例。
+  - question: 我是一名刚转岗的小学地理老师，之前一直教语文，对地理不太擅长。班里有几个喜欢科学探究但基础薄弱的学生。你作为地理教育专家，讲清楚点，怎么设计适合他们的天气观察和记录活动，既能激发兴趣又能帮他们掌握基础技能？
+  - question: 我是五年级家长，我儿子特别好奇，总问天气怎么变化。你作为小学地理学习助手，能不能概括一下，小学生在观察和记录天气时要注意些什么？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-天气现象的观察与记录进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教师能基于学生的年龄、兴趣、学习风格和能力等多维度，动态调整观察和记录任务，持续追踪学生差异，针对性给予资源、任务及反馈，促进每位学生独特长处的发展。
+  - field: 指令遵循、格式与数据规范性_理由
+    type: str
+    description: 解释指令遵循、格式与数据规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循、格式与数据规范性
+    type: float
+    description: 教学活动要求学生严格且完整地遵循指定格式、流程和模板进行天气观察与记录，强调数据准确性、条理性和表达规范。教师全过程监控并及时纠正错误，培养学生规范记录与科学表达的能力。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法紧贴小学认知发展和地理学科规律，采用层层递进、启发探究、理论结合实践等策略，既重视技能训练，也注重科学原理分析和批判性思维培养，体现学科专业深度。
+  - field: 分层教学与差异化引导_理由
+    type: str
+    description: 解释分层教学与差异化引导评分的详细理由，引用具体例子。
+  - field: 分层教学与差异化引导
+    type: float
+    description: 根据学生能力、兴趣和进步速度，科学分层设置任务及评价标准。基础层聚焦核心技能和基本理解，进阶层挑战更高分析预测和综合表达，教师全过程关注各层学生的学习过程、成效和心理状态，促进全体学生成长。
+  - field: 真实场景模拟与高质量互动_理由
+    type: str
+    description: 解释真实场景模拟与高质量互动评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与高质量互动
+    type: float
+    description: 教学活动贴近生活实际，充分利用校内外真实场景，促进师生、生生间高质量互动。鼓励主动观察、提问、交流与合作，强化知识与生活的连接与应用。
+  - field: 创新表达与跨学科创造力培养_理由
+    type: str
+    description: 解释创新表达与跨学科创造力培养评分的详细理由，引用具体例子。
+  - field: 创新表达与跨学科创造力培养
+    type: float
+    description: 教学设计包含多样化开放任务，鼓励学生用绘画、故事、诗歌、数据分析等多元方式表达天气观察，推动跨学科思考和创新应用，激发学生创造力与自主表达欲望。
+  - field: 价值观引导与文化内涵融合_理由
+    type: str
+    description: 解释价值观引导与文化内涵融合评分的详细理由，引用具体例子。
+  - field: 价值观引导与文化内涵融合
+    type: float
+    description: 教学内容自然融入社会主义核心价值观及中华优秀传统文化，通过天气观察培养学生尊重自然、环保意识、团结协作精神，并结合节气、民俗等文化元素提升文化认同与社会责任感。
+  - field: 任务聚焦与主题相关性_理由
+    type: str
+    description: 解释任务聚焦与主题相关性评分的详细理由，引用具体例子。
+  - field: 任务聚焦与主题相关性
+    type: float
+    description: 教学各环节紧扣‘天气现象的观察与记录’主题，所有任务、讨论、评价均服务于核心目标，无无关内容或泛泛而谈，确保教学聚焦、有效达成学习目标。
+  format_mode: prompt

@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene144/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 生物-高中-探究性实验的设计与结果预测评价教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是郑康，30岁的男老师，喜欢潜水、茶道和虚拟现实开发，平时教学风格很严谨。你作为生物教育专家，能从各个角度详细说说：在高中生物教学中，如何设计高质量的探究性实验并引导学生科学预测结果和合理评价？希望你能结合我的课堂管理习惯和个人兴趣，全面分析一下
+    - question: 你作为高中生物教学顾问，能深入讲解一下：在探究性实验教学中，老师该怎么引导学生科学预测实验结果和进行合理评价？最好结合具体实验案例详细说说
+    - question: 我是罗金健，25岁男老师，喜欢山地骑行和露营，对职称晋升很关注，在办公室里和老师们关系也比较竞争。你作为生物教育专家，能给我一份完整的分析吗：高中生物探究性实验设计有哪些常见问题？怎么优化设计、提升师生互动和课堂竞争力？希望结合我的个人特点系统地说说
+    - question: 你作为资深高中生物老师，能帮我理解一下：探究性实验教学里，实验变量和对照组到底怎么设置才科学？麻烦举个例子细说一下
+    - question: 我最近发现学生做生物实验时很容易因为结果偏差而沮丧。你作为教学顾问，讲讲看：老师该如何引导学生正确看待探究性实验里的误差和偶然性？举例说明一下
+    - question: 我是新入职的高中生物老师，对探究性实验评价体系还不熟悉。你作为教育专家，我想深入了解一下：高中生物探究性实验的评价标准该怎么制定和落实？麻烦详细说说
+    - question: 你作为生物教学顾问，讲讲看：高中生物探究性实验教学里，分组合作有哪些有效形式和组织方法？举些例子说明一下
+    - question: 我是高二生物老师，想让学生主动思考实验方案。你作为教学助手，能帮我概括一下高中生物探究性实验方案设计的基本流程和核心要点吗？简单说说主要的
+    - question: 你作为生物教学专家，概括一下：探究性实验课后，老师怎么引导学生反思和自我评价？说说主要的思路
+    - question: 我是高中生物老师，最近在带学生做自主实验。你作为教学顾问，能具体说说：老师该怎么帮助学生从真实生活情境中发现生物探究问题，并设计实验验证？举例详细说明一下
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 生物-高中-探究性实验的设计与结果预测评价进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化回应深度
+      type: float
+      description: 评估答案是否针对不同学生画像（如兴趣、基础、学习风格等）进行分层、具体化的个性化设计与回应，并能动态调整方案以满足多样化学习需求。
+    - field: 指令格式遵循度
+      type: float
+      description: 评估答案是否严格按照教学指令要求的格式、步骤、内容输出，且有条理性、完整性，避免遗漏或随意发挥。
+    - field: 教学方法科学性
+      type: float
+      description: 评估实验设计与教学方法是否符合高中生物学科与教育学原理，涵盖对照组、变量控制、数据记录与分析、批判性讨论等科学探究流程，且能培养学生科学思维与批判性能力。
+    - field: 实验探究流程完整性
+      type: float
+      description: 评估实验设计是否覆盖完整的探究性实验流程，包括问题提出、假设、实验设计、变量控制、结果预测、数据分析及讨论反思。
+    - field: 创新性激发能力
+      type: float
+      description: 评估答案是否通过开放性问题、引导学生设计新变量组合或改进方案，激发创新思维与创造性解决问题的能力，并鼓励创新产出。
+    - field: 真实提问模拟度
+      type: float
+      description: 评估问答内容是否贴近真实课堂场景，能模拟学生在实验设计与结果预测过程中可能提出的具体、实际问题，并能针对性回应或主动引导学生深度探究。
+    - field: 价值观自然融入度
+      type: float
+      description: 评估内容是否在不生硬、不说教的前提下，结合实验过程自然融入社会主义核心价值观和中华优秀传统文化，如诚信、合作、实事求是、尊重生命等，且通过情境化表达。
+    - field: 学科表达规范性
+      type: float
+      description: 评估答案语言是否符合高中生物学科规范，专业术语使用准确，表达逻辑清晰，能体现科学思维深度（如因果分析、数据解释），适合高中生理解和学习。
+format_mode: prompt

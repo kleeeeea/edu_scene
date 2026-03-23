@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-地球圈层间的物质循环与能量交换教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高一学生，最近地理课讲了地球圈层间的物质循环和能量交换，但我觉得挺抽象的，圈层之间到底怎么相互影响？生活中又有哪些体现？你作为我的地理学习顾问，能具体说说吗？
+  - question: Hi, I'm GreenJack, a 15-year-old in 9th grade who loves 3D modeling,
+      stargazing, and table tennis. I value teamwork that respects boundaries and
+      prefer hands-on, practical learning. You are an Earth science education expert—could
+      you systemically explain the material cycles and energy exchanges among Earth's
+      spheres, maybe bringing in cross-disciplinary and real-world examples, and suggest
+      some collaborative or modeling activities that would fit my interests? System地讲解一下吧。
+  - question: 我叫常卫利，今年45岁，做采购专员，平时喜欢户外运动、烹饪和比价，适应力不算强。最近看到孩子的地理课本里讲地球圈层间的物质循环和能量交换，觉得挺有意思，但具体怎么回事不是很懂，跟我们的日常生活和工作有没有关系？你作为地理教育专家，能深入讲解一下吗？最好结合生活实际帮我理解。
+  - question: 我是杜云学，48岁老师，平时喜欢打太极拳和登山，教学上比较粗放但愿意听学生反馈。你作为地理教育专家，能说说主要的地球圈层间物质循环和能量交换是哪些吗？我想把握一下课堂重点。
+  - question: 你作为地理教研员，正在编写教案，想全面梳理地球圈层间的物质循环与能量交换，包括科学原理、过程、圈层相互作用、跨学科联系、现实意义和教学建议。能详细分析下各个方面吗？我需要系统、全面的内容用于备课。
+  - question: 我是高一学生，最近学地球圈层间的物质循环和能量交换，老是把圈层间的物质流动和能量传递搞混，比如水循环和碳循环有什么不同、太阳能量怎么在圈层流动。你作为地理学习助手，能讲得详细点吗？最好举些例子帮我理清思路。
+  - question: 我是初三学生，学地球圈层间的物质循环和能量交换，老师说很重要，但我还是有点难理解。你作为地理教育专家，能用几句话说说这个知识点的核心内容吗？
+  - question: 我是高二女生，对自然科学挺感兴趣，但地球圈层间的物质循环和能量交换总觉得不好理解，圈层具体怎么相互影响呢？你作为我的地理学习助手，帮我理解一下吧，讲详细点，最好举些例子。
+  - question: 我是高一学生，最近复习地球圈层间的物质循环和能量交换，不太清楚这些知识在现实生活中的应用，也想知道它对环境保护和可持续发展有什么意义。你作为地理专家，说说你的看法吧。
+  - question: 你作为高中地理教师助理，我是一名基础比较薄弱的高一学生，总是分不清地球圈层间的物质循环和能量交换。能不能帮我讲清楚点？最好举些例子，帮我建立清晰的理解。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-地球圈层间的物质循环与能量交换进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像精准识别与回应_理由
+    type: str
+    description: 解释用户画像精准识别与回应评分的详细理由，引用具体例子。
+  - field: 用户画像精准识别与回应
+    type: float
+    description: 能够基于学生的学习基础、兴趣、认知特点等进行差异化教学。高分要求对学生多样化需求有深入洞察，并能动态调整教学策略，提供具体、个性化的学习支持和资源。
+  - field: 指令遵循规范性与结构创新_理由
+    type: str
+    description: 解释指令遵循规范性与结构创新评分的详细理由，引用具体例子。
+  - field: 指令遵循规范性与结构创新
+    type: float
+    description: 严格按照任务指令的结构、格式和要求作答。高分不仅条理清晰、内容完整，还能根据复杂指令灵活创新结构、优化表达，充分展现对指令意图的深刻理解。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 采用多样、科学、契合地理学科和学生认知规律的教学方法。高分需灵活应用探究式、互动式等方法，并能结合理论说明方法选择的科学依据，促进学生深度学习。
+  - field: 知识内容准确性与系统性_理由
+    type: str
+    description: 解释知识内容准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识内容准确性与系统性
+    type: float
+    description: 内容科学、准确、无知识性错误，系统全面覆盖地球圈层间主要物质循环与能量交换，体现圈层间的复杂联系与动态变化。高分需结合最新学科进展，展现知识整合与深化。
+  - field: 创新性思维激发与成果产出_理由
+    type: str
+    description: 解释创新性思维激发与成果产出评分的详细理由，引用具体例子。
+  - field: 创新性思维激发与成果产出
+    type: float
+    description: 教学中主动设计开放性、跨界性任务，激发学生提出原创性见解、假设并尝试论证。高分需产出具有深度或独特性的学生作品、方案或研究成果，体现创新能力。
+  - field: 跨学科融合与实际应用_理由
+    type: str
+    description: 解释跨学科融合与实际应用评分的详细理由，引用具体例子。
+  - field: 跨学科融合与实际应用
+    type: float
+    description: 有效整合物理、生物、化学等多学科知识，促进对地球圈层物质循环与能量交换的整体理解。高分需引导学生将知识应用于分析和解决现实问题，呈现跨学科综合视角和创新应用场景。
+  - field: 社会主义核心价值观与中华文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华文化自然融入
+    type: float
+    description: 知识讲解过程中自然融入社会主义核心价值观和中华优秀传统文化，做到润物细无声。高分需将价值观与学科内容深度融合，促进学生形成科学与人文相结合的世界观。
+  - field: 真实互动与个别化回应_理由
+    type: str
+    description: 解释真实互动与个别化回应评分的详细理由，引用具体例子。
+  - field: 真实互动与个别化回应
+    type: float
+    description: 真实还原高中地理课堂师生互动，包括学生主动提问、教师针对性解答、个性化引导。高分需体现多轮互动，教师能针对不同学生提出有针对性的追问、讲解或支持，促进思维深入发展。
+  - field: 针对性反馈与持续改进建议_理由
+    type: str
+    description: 解释针对性反馈与持续改进建议评分的详细理由，引用具体例子。
+  - field: 针对性反馈与持续改进建议
+    type: float
+    description: 能基于学生学习过程中的具体表现，给予个性化、具体、可操作的反馈和提升建议。高分需体现跟踪性反馈，帮助学生制定并落实自我提升计划，支持其形成自我调节能力。
+  format_mode: prompt

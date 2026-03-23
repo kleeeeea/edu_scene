@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene316/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 体育-初中-短跑起跑与接力棒交接技术教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是刚带初中体育课的新老师，短跑项目有点拿不准。你能详细说说短跑起跑的技术要点吗？包括动作分解、常见错误和怎么提高起跑反应速度，麻烦你讲讲看。
+    - question: 作为体育教研员，想把初中短跑接力棒交接技术教得更系统。你能详细讲讲分步教学方法、常见问题和怎么解决，还有怎么用分组或游戏提升学生兴趣吗？请帮我详细讲讲。
+    - question: 我现在在带初中体育，短跑起跑姿势总是教得不太明白。你能详细说说分阶段指导的方法吗？给我举些具体例子。
+    - question: 你能说说主要的短跑接力棒交接问题和怎么快速纠正吗？我马上就要上课了，主要讲讲就行。
+    - question: 我是初中体育老师，短跑和接力项目教学一直想提升。你作为体育教育专家，能全面深入地讲讲教学设计吗？希望涉及起跑技术、接力棒交接、团队协作、课堂管理、评价和体育精神的培养。
+    - question: 你能简单说说就行，初中生学短跑起跑技术时容易碰到哪些难点？有什么建议适合他们吗？
+    - question: 我教初中体育，接力棒交接有视觉和非视觉两种方式，能解释一下它们的区别和各自适用的场景吗？最好举点例子。
+    - question: 我是初中体育老师，最近在组织短跑接力练习。你能讲得详细点吗，怎么结合分组竞赛和合作活动来提升学生团队协作和运动热情？
+    - question: 我是潘雪雪，13岁，初一女生，喜欢线描水彩和古筝，是班上的文艺骨干，经常组织大家参加艺术节，也会和隔壁班文艺委员较劲。我一直觉得成绩和朋友关系有点纠结。你觉得学短跑起跑和接力棒交接训练，对我个人成长和团队关系有哪些积极影响？说说你的看法。
+    - question: 我是初中体育老师，接力教学越来越复杂了。你作为体育教育专家，能详细分析下安全管理、心理辅导、技术进阶、团队建设、家校协同这些方面的关键做法吗？希望结合实际案例，详细分析下各个方面。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 体育-初中-短跑起跑与接力棒交接技术进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估教学内容与建议是否基于学生的具体特征（体能、性别、兴趣、性格等）进行差异化调整，体现对学生个体差异的深度关注和响应。
+    - field: 个性化格式指令遵循度
+      type: float
+      description: 评估内容组织是否严格按照指定格式、结构分层，逻辑清晰，便于检索与理解，且能够灵活适应具体场景下的不同格式要求。
+    - field: 教学方法科学性
+      type: float
+      description: 评估教学流程是否基于运动学和教育学原理，步骤合理、循序渐进、重视安全与体验，能科学促进技能掌握和运动兴趣培养。
+    - field: 技能细节与误区提示
+      type: float
+      description: 评估是否对短跑起跑和接力棒交接的关键动作细节、常见错误和纠正方法进行了充分、具体的说明，便于学生对照自查与改进。
+    - field: 创新性练习设计
+      type: float
+      description: 评估是否设计多样、富有创新性的训练活动，能够激发学生兴趣、主动探索及创新思维，超越机械重复，鼓励学生参与改进训练方法。
+    - field: 开放性思考引导
+      type: float
+      description: 评估是否通过探究性、反思性、多层次问题引导学生主动思考、讨论短跑与接力技术原理、改进方法及个人体验，促进深度学习。
+    - field: 社会主义核心价值观与文化融入度
+      type: float
+      description: 评估是否将团结协作、顽强拼搏、公平竞争等核心价值观及中华优秀传统文化自然、深度地融入教学内容，有具体情境、案例或讨论环节。
+    - field: 真实教学情境模拟度
+      type: float
+      description: 评估问答与互动是否贴合初中体育课堂实际，问题设置真实、具体，回应能解决学生常见困惑并具有实用性与情感关怀。
+    - field: 个别反馈与改进建议
+      type: float
+      description: 评估是否根据学生个体表现，提供针对性的反馈和具体改进建议，关注学生成长过程中的每一步进步与困难。
+format_mode: prompt

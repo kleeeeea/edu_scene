@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene249/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 政治-小学-庆祝我们的传统节日教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是四年级的小学生，你作为我的学习助手，能详细说说中国传统节日有哪些，以及它们的由来和主要习俗吗？详细说说
+    - question: 你是小学政治课老师，讲到“庆祝我们的传统节日”，你觉得这些节日对我们小学生成长有什么意义？说说你的看法
+    - question: 我是三年级小学生，只知道春节和中秋节，你能说说主要的传统节日和它们的习俗吗？说说主要的
+    - question: 我是龙潇潇，四年级女生，喜欢书法、串珠和吉他，还在串珠社团当组长。你作为小学政治教育专家，能详细分析下“庆祝我们的传统节日”对我这种爱好广泛、团队意识强、有点拖延和竞争意识的学生会有哪些影响吗？详细分析下各个方面
+    - question: 我是三年级女生吕清漪，喜欢写作和讲故事，有点小焦虑。你是我的学习助手，能讲清楚“庆祝我们的传统节日”为什么对我们小学生很重要吗？讲清楚点
+    - question: I'm ThomasAriana, a 6th grade girl who likes ukulele, piano and table tennis. As an educational advisor, can you explain how celebrating traditional Chinese festivals can be meaningful or inspiring for students like me who enjoy both music and sports? Can you give a concrete answer?
+    - question: 我是老师邵珠，平时上课喜欢结合规则和创新，但有时候会感到职业疲惫。你作为小学政治教学顾问，能详细展开说说在“庆祝我们的传统节日”这个主题下，如何设计既有传统又有创新的课堂活动，既能激发学生兴趣又能增强文化认同吗？详细展开说说
+    - question: 我是于梦伊老师，喜欢健身和冥想，教学风格比较温和但偶尔有点职业倦怠。你作为小学政治教育专家，能全面深入地讲讲“庆祝我们的传统节日”在小学政治课中，怎么系统地融入文化传承、学生心理成长和现代教学创新等方面吗？能全面深入地讲讲吗
+    - question: 我是六年级学生江天磊，喜欢田径、围棋和自然探索，思维方式比较跳跃。你作为我的学习助手，能简单说说中国传统节日有哪些特别值得我们关注的活动或习俗吗？简单说说就行
+    - question: I'm ThomasSadie, a 1st grade girl who likes Yue Opera, tea ceremony and ukulele, but I only join in when I'm interested. As an AI learning partner, can you comprehensively analyze how celebrating traditional festivals can help children like me develop cultural appreciation, social skills, and personal growth? Please analyze in detail.
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 政治-小学-庆祝我们的传统节日进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评价教学内容及表达方式是否针对小学生的年龄阶段、兴趣点和认知发展进行调整，能体现对学生个体差异的关注和适配。
+    - field: 指令格式遵循度
+      type: float
+      description: 评价教学设计和答案是否严格按照教学要求或指定结构完成，分段清晰，内容完整，逻辑严谨，能够准确响应教学指令。
+    - field: 教学方法科学性
+      type: float
+      description: 评价教学方式是否符合小学生认知特点，采用启发式、互动式、体验式等科学方法促进学生主动参与、理解和探究。
+    - field: 活动设计专业性
+      type: float
+      description: 评价课堂活动或任务是否基于教育学原理，能够促进学生对节日文化的理解、体验和创造性表达，活动形式丰富且针对性强。
+    - field: 真实课堂情境贴合度
+      type: float
+      description: 评价教学内容和互动是否贴近实际小学课堂，能够模拟真实学生提问和教师回应，表达自然流畅，情境真实可信。
+    - field: 创新与开放性表达
+      type: float
+      description: 评价教学设计是否包含开放性问题、鼓励学生创新思考和表达，支持学生提出新观点或独特体验，促进思维发展。
+    - field: 中国价值观融入度
+      type: float
+      description: 评价课程内容是否自然融合社会主义核心价值观和中华优秀传统文化，通过具体节日和生活情境进行价值引导，避免生硬灌输。
+    - field: 文化传承细腻度
+      type: float
+      description: 评价教学内容对中华传统节日文化的描述是否细致具体，包含丰富细节、场景和情感，能够激发学生对传统文化的认同和兴趣。
+format_mode: prompt

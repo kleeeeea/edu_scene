@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-数学思维游戏教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是四年级学生的家长，最近想通过有趣的数学思维游戏帮助孩子提升逻辑思考能力。孩子平时喜欢拼图和动手活动，但遇到复杂问题时容易放弃。你能结合这种情况，概括一下适合他的三种数学思维游戏，并简要说明每种游戏的主要玩法和对思维的帮助吗？概括一下
+  - question: 你作为小学数学教育专家，针对二年级学生，如何系统地利用数学思维游戏培养他们的空间想象力和团队协作能力？请以实际教学案例、家校共育建议和创新游戏设计为例，详细展开说说培养方法和注意事项。详细展开说说
+  - question: 我是新手小学数学老师，班上有不少孩子对数学学习缺乏兴趣。我希望通过系统设计一套数学思维游戏课程，既能激发学生的主动参与，又能锻炼他们的创新和合作意识。你能系统地讲解一下小学数学思维游戏课程的设计理念、实施步骤、评价方式和常见误区吗？系统地讲解一下
+  - question: 我是韦子的妈妈，韦子8岁，上三年级，男孩。他喜欢跆拳道、围棋和滑板，性格随机应变，艺体特长显著，在同龄人中颇受欢迎。同学和家长常夸他多才多艺，我平时全职照顾他，爸爸周末陪他下围棋并听他讲学校趣事。想让韦子在保持兴趣的同时提升数学思维，尤其是激发他在游戏中主动发现、合作和创新的能力。你能结合他的兴趣和性格，详细展开说说适合他的数学思维游戏设计思路、亲子共玩建议和如何引导他把特长优势转化为数学学习动力吗？详细展开说说
+  - question: 你作为小学数学学习助手，怎么看待在课堂中引入角色扮演类数学思维游戏对学生主动参与和创新能力的影响？请结合具体案例，说说你的看法。说说你的看法
+  - question: 我是一名小学数学教研员，正在调研数学思维游戏在不同年级段学生中的效果。你能给我一份完整的分析，系统梳理各年级（1-6年级）学生的认知发展特点、适配的数学思维游戏类型、实施建议和潜在挑战吗？给我一份完整的分析
+  - question: 我是小学数学老师尹菁，35岁，女，平时喜欢绘画、手工DIY和数字游戏，性格条理模糊，社交中等活跃。周末常与绘画兴趣小组和手工爱好者交流，同事评价我的课堂风格灵活，课后常组织数字游戏活动促进互动。你作为我的数学教学顾问，在当前班级构成下，能大概讲讲适合用来活跃课堂气氛、促进学生合作的三种数学思维游戏吗？大概讲讲
+  - question: You are an AI mathematics learning assistant. AlexanderVictor, a 13-year-old
+      7th grader, is an effective planner but has fluctuating focus. He loves guitar
+      and 3D modeling & printing, and uses these as creative outlets while balancing
+      planning habits with occasional shifts in attention. How can mathematics thinking
+      games be personalized for AlexanderVictor to enhance his logical reasoning and
+      sustained engagement, while connecting with his interests and fluctuating attention?
+      Say your view with details and examples.
+  - question: 我是一名三年级班主任，班里有几个学生数学基础较弱，缺乏自信。我希望通过数学思维游戏帮助他们建立信心、提升兴趣。你能讲清楚点，具体推荐哪些适合基础薄弱学生的游戏，以及如何组织和引导他们参与吗？讲清楚点
+  - question: 你作为小学数学创新教学顾问，最近有家长反映孩子对传统算数题兴趣不高，但对故事类和互动性强的活动很有热情。请结合实际教学经验，讲清楚点如何设计融合故事情境的数学思维游戏，既能培养学生解题能力，又能激发他们的创造力和团队意识。讲清楚点
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-数学思维游戏进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估游戏是否针对学生的年龄、兴趣、能力、学习风格等多维特征进行深度适配。高分要求游戏能动态响应个体差异，支持实时调整内容或难度，并有机制收集与应用学生画像数据。中分为仅做分层或分类，低分为统一设计，无个性化体现。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估回答是否严格、完整、按要求顺序响应任务指令。高分要求无遗漏、顺序规范、内容详实，并主动复查指令要点。中分为部分遗漏或顺序有误，低分为明显偏离、内容简略或未覆盖主要任务。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估游戏设计是否基于成熟教育理论（如建构主义、认知发展、合作学习等），并能将理论有效落地。高分要求理论依据明确，实际活动与理论环环相扣，含反思与反馈环节。中分为理论提及但未落地，低分为无理论支撑或纯机械操作。
+  - field: 教学目标与内容契合度_理由
+    type: str
+    description: 解释教学目标与内容契合度评分的详细理由，引用具体例子。
+  - field: 教学目标与内容契合度
+    type: float
+    description: 评估游戏内容是否精准贴合小学数学课程目标和当前年级重点，既不超纲也不偏题。高分要求活动围绕核心知识点，内容设计直接支撑目标达成，并有阶段性目标分解。中分为内容略泛或部分偏离，低分为严重超纲或主题无关。
+  - field: 创新思维激发性_理由
+    type: str
+    description: 解释创新思维激发性评分的详细理由，引用具体例子。
+  - field: 创新思维激发性
+    type: float
+    description: 评估游戏是否鼓励学生多角度思考、尝试多种解法、主动质疑与探索，包含开放性任务与创新表达。高分要求学生可自创规则、设计新方案，有反思与比较环节，支持多元答案。中分为部分开放但引导有限，低分为仅有标准答案或单一解法。
+  - field: 学生参与度促进性_理由
+    type: str
+    description: 解释学生参与度促进性评分的详细理由，引用具体例子。
+  - field: 学生参与度促进性
+    type: float
+    description: 评估游戏是否设计了持续、深度的学生主动参与环节，包括动手、讨论、协作、反馈等。高分要求所有学生有明确分工、持续参与、频繁互动，含合作与成果展示。中分为部分学生被动或参与环节单一，低分为教师主导、学生参与度极低。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估游戏内容是否通过真实情境、故事、角色互动等方式自然渗透社会主义核心价值观和中华优秀传统文化。高分要求情境真实、价值观融入细腻，学生在体验中感受、理解而非被动接受。中分为价值观表达明显但生硬，低分为无体现或口号式灌输。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估问题是否高度贴近真实课堂、家长或学生的实际需求，具备具体情境、对象与痛点。高分要求问题反映真实困惑、对象明确，有细节描述。中分为问题泛泛或场景虚构，低分为无实际针对性或纯理论化提问。
+  format_mode: prompt

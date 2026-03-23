@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-几何定理证明思路教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二学生，最近学几何定理证明总觉得思路很乱，特别是遇到需要辅助线或者多步推理的题，老是卡住。你能帮我讲清楚点吗？我性格细心但不自信，成绩一般，家长希望我几何能进步。能不能系统地说说怎么梳理几何定理证明思路，有哪些实用方法和小例子，最好也能帮我建立点信心。
+  - question: 我是初中数学老师，班里有几个基础比较弱、对几何兴趣也不高的学生。每次讲三角形全等的证明，他们都抓不住要点，也容易把步骤搞混。你能概括一下怎么教这类学生几何定理证明，让他们掌握核心思路还愿意参与吗？
+  - question: 我是初三女生，成绩还可以，但最近做几何定理证明（比如角平分线定理）时，总觉得能写出结论但是过程不太严密。性格有点急躁，喜欢画图但文字表达一般，妈妈希望我写证明题时条理清楚。你能全面分析一下怎么提升几何定理证明的结构性和表达能力吗？最好能结合我的情况讲讲具体训练方法、案例和心理建议。
+  - question: 我是初二学生，最近老师教我们全等三角形证明，但我总是不知道怎么加辅助线，感觉下手难。性格安静，喜欢自己琢磨但不太敢问老师，成绩也一般。你能帮我理解一下，辅助线在几何定理证明里有什么用，怎么判断什么时候要加，有没有简单好用的判断方法？
+  - question: 我是白森超，今年17岁，高二学生，喜欢数学建模竞赛，也爱摄影和剪视频，平时和建模小组同学关系不错但课外社交不多。最近遇到一个几何定理证明的难题，想高效梳理思路和方法。你能大概讲讲，针对我这种情况，几何定理证明思路有什么核心要点和高效技巧吗？
+  - question: 我是初三学生，最近学勾股定理和相关证明方法，总觉得枯燥，推理过程也难懂。我喜欢画画，性格活泼，家里希望我数学上能多发挥想象力。你能讲讲看，怎么用图像化和生活例子帮我理解几何定理证明思路，让学习变有趣吗？
+  - question: 我是刚入职的初中数学老师，对几何定理证明教学很感兴趣，但发现课堂上学生普遍思路单一、探索欲望不强，遇到复杂辅助线或多步论证就容易放弃。你能全面深入地讲讲，针对这种情况怎么设计分层、创新的几何定理证明教学吗？最好包括互动活动、探究学习、可视化工具，还有怎么自然融入科学精神和传统文化，促进学生逻辑思维和积极态度。
+  - question: 我是初二班主任，最近发现班里学生做几何定理证明难度都挺大，大家不太自信，也不会归纳总结。你是几何教学专家，能不能系统地讲解一下，针对初中不同层次学生怎么搭建有效的几何定理证明教学体系？最好说说分层分步教学、典型案例、同伴互助、生活化引导、流程图和表格这些工具怎么用，还有怎么自然融入价值观，激发大家积极参与和自主探究。
+  - question: 我是初中生，逻辑推理还行，但做几何定理证明总是漏掉关键条件，推理不够严密，老师说我表达不规范。你能讲得详细点吗？怎么提升几何定理证明的逻辑严密性和表达规范性？最好结合典型题型、思维流程和易错点分析，帮我掌握更科学的证明方法。
+  - question: I'm MartinezClaire, a 13-year-old girl in 7th grade. I enjoy plant care,
+      origami, and reading, and I prefer quiet, collaborative learning. In math class,
+      I sometimes find it hard to follow geometric theorem proofs, especially when
+      things get abstract or move too fast. Could you, as my learning assistant, please
+      talk me through how I can organize proof steps more clearly? Maybe with some
+      visual aids or collaborative strategies. Please try to explain in detail.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-几何定理证明思路进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化学生画像识别_理由
+    type: str
+    description: 解释个性化学生画像识别评分的详细理由，引用具体例子。
+  - field: 个性化学生画像识别
+    type: float
+    description: 教师能基于多维数据（如学习成绩、课堂表现、思维方式、兴趣爱好等）深度识别学生差异，并据此制定分层教学目标和措施。高分要求教师持续跟踪学生进步，动态调整支持策略，并对分层成效进行反馈与反思。
+  - field: 个性化格式指令遵循_理由
+    type: str
+    description: 解释个性化格式指令遵循评分的详细理由，引用具体例子。
+  - field: 个性化格式指令遵循
+    type: float
+    description: 严格按照教学目标或题目要求的结构和格式（如步骤、表格、流程图等）展示内容，每步必须明确教学重点、思维过程和易错点，且结构层次分明，便于学生理解和操作。高分要求学生能自主模仿或创新表达结构。
+  - field: 教学方法科学性与系统性_理由
+    type: str
+    description: 解释教学方法科学性与系统性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与系统性
+    type: float
+    description: 教学流程科学递进，环环相扣，涵盖观察、假设、推理、验证、反馈、纠错和总结等核心环节。高分要求教师能根据学生疑难点实时调整策略，并引导学生形成系统化几何证明思维，能举一反三。
+  - field: 多样化教学策略运用_理由
+    type: str
+    description: 解释多样化教学策略运用评分的详细理由，引用具体例子。
+  - field: 多样化教学策略运用
+    type: float
+    description: 灵活运用多种教学策略（如类比、问题驱动、分组合作、探究实验、生活联系等），根据内容难度和学生表现动态调整方式，促进主动参与和深度思考。高分要求策略多样且能有效促进学生自主探究和合作创新。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 教师主动引导学生探索多种证明思路，鼓励质疑、创新和尝试非标准方法（如反证法、辅助线、坐标法等），并组织学生对不同方法进行讨论与比较。高分要求学生能提出原创性思路或改进方案，并能分析创新方法的优缺点。
+  - field: 创造性表达与开放性问题引导_理由
+    type: str
+    description: 解释创造性表达与开放性问题引导评分的详细理由，引用具体例子。
+  - field: 创造性表达与开放性问题引导
+    type: float
+    description: 设计富有挑战性和开放性的探究问题，鼓励学生自主表达、绘制图形、提出新问题或改进方案。高分要求学生能主动展示、交流和反思个人思考过程，教师提供多样展示和点评机会。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 教学内容和过程自然融入社会主义核心价值观（如合作、诚信、尊重、科学精神等），通过具体活动和讨论引导学生践行价值观。高分要求价值观教育与教学深度融合，学生能主动践行并反思相关价值行为。
+  - field: 中华优秀传统文化传承_理由
+    type: str
+    description: 解释中华优秀传统文化传承评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承
+    type: float
+    description: 教学内容适度融合中华优秀传统文化元素（如古代数学家故事、传统几何思想、历史案例等），通过对比、讲述、探究等激发学生文化认同和学习兴趣。高分要求学生能主动探究、讨论中国古代数学思想，并理解其历史贡献与精神。
+  format_mode: prompt

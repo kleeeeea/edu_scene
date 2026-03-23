@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-初中-化学方程式的书写与配平技巧教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中化学老师周波，平时喜欢打篮球、踢足球，教学时充满活力但偶尔会忽略细节。最近教学生化学方程式的书写和配平技巧，发现他们对配平规律掌握得不牢，有些关键步骤我自己也偶有疏忽。你能彻底说清楚初中化学方程式书写与配平的系统教学思路吗？希望你能讲讲科学方法、课堂活动、常见错误如何纠正、怎么激发学生兴趣，以及怎样通过团队合作和实验精神培养他们的探究能力。
+  - question: 你作为化学教育专家，能不能全面分析一下初中学生在学习化学方程式书写和配平时常遇到的认知障碍、误区和成长路径？希望你结合课堂实际、案例分析和科学建议，详细讲讲怎么通过分层辅导、互动活动和价值观引导帮助他们逐步突破难点。
+  - question: 我叫庾舒菁，初二女生，喜欢冥想和乐高积木，性格比较兴趣驱动，容易拖延，逻辑不太强，记忆混乱，和老师、父母沟通也不太顺利。化学方程式书写和配平总让我觉得步骤很乱，理不清思路。你能讲清楚点初中化学方程式书写与配平的基本方法、常见难点，还有一些适合我的梳理技巧吗？
+  - question: 我是二年级学生邹语堂，7岁，喜欢乒乓球、滑板、观星，经常和教练、社团老师一起活动，分析力还不错但学习不太主动。最近对化学方程式的书写和配平很感兴趣，但搞不太懂规律。你能讲讲看化学方程式书写与配平的入门方法和有趣规律吗？最好能结合运动或天文活动举些例子，适合我们小朋友理解。
+  - question: 你作为初中化学教研员，能不能系统地讲解一下化学方程式书写与配平技巧的核心原理、教学流程、分层训练方法、典型实验设计和怎么激励学生自主探究吗？希望你结合科学精神和创新实践，讲讲价值观引导和合作学习的具体策略，内容越全面越好。
+  - question: 我最近在教学中发现有些学生总是混淆化学方程式的书写顺序和配平步骤。你能讲清楚点这两个环节的区别和各自容易出现的问题吗？希望能举些具体例子。
+  - question: 你作为化学学习助手，能不能简单说说初中化学方程式书写和配平的关键步骤和常见易错点？我只需要了解主要内容就行。
+  - question: 我是六年级学生陆诗蕾，喜欢插花和羽毛球，自主学习和创新能力都挺强。妈妈接送我去插花班，爸爸陪我打羽毛球，老师很欣赏我的创新想法。你能详细说说化学方程式书写和配平有哪些创新性的学习方法和实验活动能帮助我理解吗？希望能结合我的兴趣和性格，多举一些创新案例。
+  - question: 我叫郭伊，四年级女生，喜欢中国风爵士舞和尤克里里，平时在培训班很活跃，但作业常常拖着没做完。我对化学方程式书写和配平有点好奇，能不能简单说说最基础的入门方法和容易犯的错？如果能结合舞蹈或音乐举个例子就更好了。
+  - question: 我是初中化学老师，想请你详细展开说说化学方程式书写与配平技巧在教学中的应用。希望你讲讲怎么针对不同基础的学生设计教学方案，如何通过互动实验和小组合作帮助他们掌握知识，以及怎样在教学中自然渗透科学精神和合作价值观。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-初中-化学方程式的书写与配平技巧进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 教学内容与表达方式需充分根据学生的基础水平、兴趣点、认知特点精准调整，支持动态适配与差异化讲解，能针对不同学生画像灵活调整难度、举例与讲解重点，体现因材施教。
+  - field: 指令遵循与结构规范性_理由
+    type: str
+    description: 解释指令遵循与结构规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范性
+    type: float
+    description: 教学内容应严格按照任务要求组织，环节完整，结构层次分明，涵盖知识梳理、分步演示、练习、反馈、总结等闭环流程，逻辑递进清晰，每一环节都能自然衔接并突出重点。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学应采用多元、科学且创新的教学方法，如类比、探究、小组互动、即时反馈等，促进学生主动参与和深层理解，避免机械灌输，鼓励方法创新与反思。
+  - field: 知识点准确与逻辑性_理由
+    type: str
+    description: 解释知识点准确与逻辑性评分的详细理由，引用具体例子。
+  - field: 知识点准确与逻辑性
+    type: float
+    description: 讲解内容需科学准确、逻辑清晰，涵盖配平原理、步骤、易错点及纠正方法，表达系统且无误，能深入剖析难点并保证学生易于理解与掌握。
+  - field: 模拟真实提问适应性_理由
+    type: str
+    description: 解释模拟真实提问适应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问适应性
+    type: float
+    description: 教学内容应贴近学生真实学习场景，主动预判学生常见困惑与典型问题，深入分析原因并提供针对性解决策略，能引导学生提出疑问并给予个性化反馈。
+  - field: 创造力激发与自主探究引导性_理由
+    type: str
+    description: 解释创造力激发与自主探究引导性评分的详细理由，引用具体例子。
+  - field: 创造力激发与自主探究引导性
+    type: float
+    description: 教学应设计探究任务、开放性问题、方法比较等，鼓励学生自主尝试、创新思考，区分浅层模仿与深层创新，支持学生提出改进建议并进行方法反思，培养创新能力。
+  - field: 多样化表达与深度互动性_理由
+    type: str
+    description: 解释多样化表达与深度互动性评分的详细理由，引用具体例子。
+  - field: 多样化表达与深度互动性
+    type: float
+    description: 教学需采用多种表达形式（如图表、动画、类比、互动提问、分组讨论等），并设计深度互动环节，提升趣味性与参与度，促进学生表达思路、交流观点，实现思维碰撞与合作学习。
+  - field: 价值观自然融入与科学精神培养_理由
+    type: str
+    description: 解释价值观自然融入与科学精神培养评分的详细理由，引用具体例子。
+  - field: 价值观自然融入与科学精神培养
+    type: float
+    description: 教学过程中应自然渗透社会主义核心价值观和中华优秀传统文化，强调科学精神、合作、精益求精等品质，通过真实案例或故事使学生感受到科学探索与团队协作的意义，表达自然、情境真实，促进学生价值观养成。
+  format_mode: prompt

@@ -1,0 +1,108 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-典型错题分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二数学老师，班里有几个学生在解一元二次方程时总把公式记混，把求根公式和判别式弄错，计算结果也经常出错。能不能概括一下这些错题产生的原因，以及有什么针对性的改进建议？他们记忆力一般，做题时还容易紧张。
+  - question: 我是初三女生的家长，她性格有点急躁，最近做函数图像题总是把坐标轴和对应关系弄反，错题率特别高。你能帮我深入分析一下她为什么会出现这种错误吗？希望能给出科学有效的改善方法，并结合性格和家庭环境给些个性化建议，我想深入了解。
+  - question: 你作为数学教育专家，我在辅导初二学生做几何题时，发现他们证明三角形全等经常忽略条件或者搞混判定方法，比如把SAS和ASA弄混了。能解释一下这种错题出现的原因吗？希望能得到一些切实的改进方法。
+  - question: 我是初中数学老师，最近发现班里学生解分式方程时总是在通分和约分这一步犯错，比如分母写错、漏掉约分等。你能详细说说这些错题出现的原因吗？希望能得到科学分步骤的改进建议，我们班学生基础不太好但都很认真。
+  - question: 我是数学老师，你作为数学学习顾问，能不能彻底说清楚初中生在解一元一次不等式时常见错题的类型和深层原因？我的学生有粗心的也有特别谨慎的，都容易在不同环节出错。希望你能全面系统地分析，并结合个性化建议、传统文化和价值观深入讲讲。
+  - question: 我是初二学生家长，我儿子做题速度慢，最近学分配律时总把加法和乘法混淆，计算老出错。你能用几句话说说出现这种错题的原因，以及适合慢性子孩子的改进方法吗？
+  - question: 我是一名初中数学老师，最近发现学生在解应用题时总是漏掉单位换算，尤其是长度和面积类。你作为数学教育专家，能帮我详细讲讲这类错题的原因和改进方法吗？希望能结合不同学生特点和教学建议，说说如何在教学中尊重差异和培养合作精神。
+  - question: 我是初三学生，最近做因式分解题时总分解错，特别是在提公因式和公式法的选择上容易混淆。我比较喜欢自己思考，不太喜欢死记硬背。你能帮我理解一下为什么会错吗？希望能得到针对我的学习习惯的改进建议。
+  - question: 我是初二数学老师，班里一些学生解二元一次方程组时经常把代入法和加减法混用，步骤很乱，答案也错了。这些孩子喜欢分组讨论，容易受同伴影响。你能解释一下出现这种错题的原因吗？也希望给些适合他们的改进建议。
+  - question: 我是初中数学老师，你作为数学教育专家，能不能给我一份完整的分析？我们班学生学概率初步时总因为题目语境理解不清，分不清“事件必然发生”和“可能发生”，错题率一直很高。希望你能结合学生性格、学习习惯和传统文化，给出全面、系统、个性化的改进建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-典型错题分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 分析与建议需充分结合学生多维画像（学习基础、兴趣、错误习惯、思维方式、成长历程等），针对不同类型学生制定差异化、层次化、动态化的干预措施，体现高度因材施教和持续成长关注。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 答案须严格分板块（如‘错题分析’‘易错点归纳’‘改进建议’），每部分标题清晰、内容条理分明，关键点突出，逻辑连贯，便于查阅和复习。结构完整、格式统一，避免信息混杂或遗漏。
+  - field: 错因分析专业深度_理由
+    type: str
+    description: 解释错因分析专业深度评分的详细理由，引用具体例子。
+  - field: 错因分析专业深度
+    type: float
+    description: 错因分析需结合数学学科知识、学生认知发展规律和具体表现，深入揭示错误背后的本质机制（如知识迁移障碍、思维定势、理解误区），能区分表面错误与深层根源，并提出科学解释。
+  - field: 改进方案科学可行性_理由
+    type: str
+    description: 解释改进方案科学可行性评分的详细理由，引用具体例子。
+  - field: 改进方案科学可行性
+    type: float
+    description: 改进建议需具体、可操作，结合教育学原理，设定阶段性目标，包含归类整理、反思总结、学习迁移、同伴互助等环节，有持续跟踪与反馈机制，能有效指导学生能力提升。
+  - field: 激发创新与多元思考_理由
+    type: str
+    description: 解释激发创新与多元思考评分的详细理由，引用具体例子。
+  - field: 激发创新与多元思考
+    type: float
+    description: 内容需有意识引导学生尝试多种解题策略，鼓励主动探索、反思，培养创新意识、批判性思维和数学思维灵活性，促进思维迁移和举一反三，体现高阶思维培养。
+  - field: 模拟真实教学场景契合度_理由
+    type: str
+    description: 解释模拟真实教学场景契合度评分的详细理由，引用具体例子。
+  - field: 模拟真实教学场景契合度
+    type: float
+    description: 案例与分析内容须紧贴初中数学真实教学场景，反映学生常见困惑与典型错题类型，具有代表性、实用性和指导意义，能真实支持师生教学改进。
+  - field: 中华优秀传统文化与价值观融入自然度_理由
+    type: str
+    description: 解释中华优秀传统文化与价值观融入自然度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化与价值观融入自然度
+    type: float
+    description: 内容需将社会主义核心价值观或中华优秀传统文化（如勤奋、诚信、协作、尊师重道等）自然融入分析与建议，与学习过程有机结合，激励学生养成良好品格，避免生硬口号或流于形式。
+  format_mode: prompt

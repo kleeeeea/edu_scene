@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-高中-基础防身术与安全意识训练教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是方燕燕，59岁，是一名高中体育老师，同时也指导学校声乐社，平时和学生交流比较多。最近在基础防身术和安全意识训练课上，有些学生兴趣不高，动作配合时还有点羞怯犹豫。你作为防身术教育专家，大概讲讲怎么提升他们积极性，同时在教学中自然渗透安全意识和核心价值观？
+  - question: 我是高中体育老师，性格比较强势但很重视和学生的交流。你作为防身术与安全教育专家，深入说说看，在高中体育课程中做基础防身术和安全意识训练时，怎么针对不同性格、兴趣和能力层次的学生，设计分层教学方案？希望能详细讲讲教学目标、分层方法、心理建设、动作技巧、校园安全氛围，还有怎么自然融入核心价值观。
+  - question: 我是一名高中体育老师，最近在教基础防身术和安全意识训练。你作为防身术教育顾问，讲讲看在课堂上怎么用具体教学活动让学生理解自我保护原则，并能在生活中实际应用？最好结合校园实际和青少年特点举些例子。
+  - question: 我是曾咏，33岁男老师，平时比较权威，喜欢踢足球和玩机械键盘。最近在高中体育课教基础防身术时，发现有些男生太好胜，容易冒险，女生则谨慎甚至有点抗拒。你作为防身术专家，讲清楚点该怎么针对不同性格和兴趣的学生，做分层教学和个性化指导，让他们既学会防身技巧，又能树立安全意识和责任感？
+  - question: I'm SmithHolly, a 51-year-old fund manager who enjoys stress-relief
+      hobbies and informal networking, like golf, and values discipline and emotional
+      stability. Lately, I'm interested in basic self-defense and safety awareness,
+      especially for business trips. As a self-defense and safety education consultant,
+      can you explain how adults with non-competitive, career-driven personalities
+      like mine can effectively integrate basic self-defense and safety awareness
+      into everyday life? Please share practical tips, examples, and talk about how
+      these skills support personal well-being and social responsibility.
+  - question: 我最近在高中体育课做安全意识训练时发现，有些学生特别是性格内向或者情感疏离的，积极性不高，集体合作也容易回避。你作为校园安全心理教育顾问，深入说说看在校园环境下，怎么通过防身术教学和安全意识活动，激发各类学生主动参与，同时促进班级凝聚力和安全文化？能结合心理成长、个性差异、分层教学、家校协作等方面详细讲讲，并举例说明核心价值观怎么自然融入吗？
+  - question: 我是邓诗，高一女生，喜欢茶艺和做手帐，平时比较关注个人兴趣，不太喜欢集体合作，和父母同住但感情比较疏远。你作为防身术与安全教育专家，全方位地讲解一下，针对像我这样的高中生，基础防身术与安全意识训练课应该怎么设计，才能既学会实用的自我保护，又能在心理成长、兴趣发展和集体归属感方面得到提升？希望你讲得全面、系统一些，能包含分层教学、兴趣融合、校园安全氛围、家庭协作和核心价值观的自然渗透。
+  - question: 我是高中体育老师，最近在教基础防身术时发现学生对安全意识有不少误区，比如只重动作不重习惯和团队协作。你作为防身术与安全教育专家，能具体说说在高中课堂上怎么系统培养学生安全意识，特别是在实际生活中防范风险、关爱同伴、守法守规等方面，有哪些有效的教学策略和活动？举些细节和例子吧。
+  - question: 我是谢丹雨，39岁女老师，喜欢方言研究、心理辅导和健身，教学比较严谨，经常给社区做心理辅导。你作为防身术与安全教育专家，彻底说清楚在高中体育课堂做基础防身术和安全意识训练时，怎么结合心理辅导方法，让学生既学会自我保护，又能调节压力、增强自信，还能把安全意识和社会责任感融入日常行为？希望你能全面、系统、专业地讲讲，包括教学设计、心理成长、分层指导、校园氛围、社区协作和核心价值观的自然渗透。
+  - question: 我是周媛，57岁语文老师，喜欢插花和广场舞，平时教学喜欢循序渐进。你作为防身术与安全教育专家，说说主要的，高中基础防身术和安全意识训练课的核心目标和内容怎么设置，才能让学生既学会自我保护，又能逐步树立安全责任感？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-高中-基础防身术与安全意识训练进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教学内容是否针对学生的性别、体能、心理状态、学习目标等个人特征，进行深入分析，并提出具体、可操作的个性化教学建议。高分要求能动态跟进学生变化，持续调整方案；中分仅有初步分组或泛泛建议；低分则完全无差异化。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估教学内容是否严格按照教师任务要求、格式和结构进行呈现，覆盖所有指定任务点，条理清晰、逻辑严密。高分要求内容不仅结构完整，还能体现深入理解与创新补充；中分仅满足基本结构但缺乏深度或遗漏细节；低分则结构混乱或严重遗漏。
+  - field: 分层教学方法科学性_理由
+    type: str
+    description: 解释分层教学方法科学性评分的详细理由，引用具体例子。
+  - field: 分层教学方法科学性
+    type: float
+    description: 评估是否根据学生能力、经验分层设计教学方案，包括明确分层目标、内容、练习方式与评价反馈机制。高分要求分层目标清晰、内容差异显著且有进阶路径，评价机制多元且动态调整；中分仅有简单分组或分层但缺乏细致内容和反馈；低分则无分层或分层流于形式。
+  - field: 防身术教学专业性_理由
+    type: str
+    description: 解释防身术教学专业性评分的详细理由，引用具体例子。
+  - field: 防身术教学专业性
+    type: float
+    description: 评估防身术教学内容的科学性与专业度，包括动作分解、关键技术要点、正确发力方式、规范练习流程、安全保护措施、风险提示及应对策略。高分要求每项内容细致讲解、配合实操演示、风险管控措施完善；中分仅有简单动作描述或部分技术要点；低分则内容粗略、无安全指导。
+  - field: 安全意识培养系统性_理由
+    type: str
+    description: 解释安全意识培养系统性评分的详细理由，引用具体例子。
+  - field: 安全意识培养系统性
+    type: float
+    description: 评估安全意识教育是否系统、深入，涵盖风险识别、预防、应急处理、环境分析等多个维度。高分要求结合真实案例、情景模拟、任务驱动等方式，设计多样化活动促进理解与应用；中分仅有部分维度或案例，缺少系统性；低分则内容单一或缺乏应用环节。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 评估教学是否通过开放式问题、情境模拟、任务驱动等方式激发学生主动思考与创新应用防身术和安全知识。高分要求设计多样创新任务，鼓励学生提出独特方案并实际演练；中分仅有少量开放环节，创新性不足；低分则完全无创新或探索环节。
+  - field: 真实场景模拟与提问质量_理由
+    type: str
+    description: 解释真实场景模拟与提问质量评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与提问质量
+    type: float
+    description: 评估教学内容与提问是否贴近高中生实际生活，情境具体真实，能反映学生实际困惑与需求，问题具有启发性、针对性并引导学生思考实际应对策略。高分要求情境设计高度贴合学生生活，多样化问题引发深入思考与讨论；中分仅有部分贴合或问题泛泛；低分则情境脱离实际或问题无启发性。
+  - field: 社会主义核心价值观融入_理由
+    type: str
+    description: 解释社会主义核心价值观融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入
+    type: float
+    description: 评估教学内容是否自然、深入融入社会主义核心价值观，包括团结互助、尊重他人、法治意识等，并结合中华优秀传统文化进行价值引导。高分要求通过具体活动、案例和反思环节提升学生社会责任感与道德实践能力；中分仅有口头提及或表面融入；低分则完全忽略价值观教育。
+  format_mode: prompt

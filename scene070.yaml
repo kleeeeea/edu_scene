@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-初中-微观粒子构成与模型讲解教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中二年级的学生，最近在学习化学微观粒子构成与模型，不过我更喜欢动手做实验，理论部分总是搞不清楚。你作为化学学习助手，能结合我的兴趣和基础，说说你的看法，包括微观粒子的基本知识和模型的作用吗？
+  - question: 我是一名初中化学老师，班上有几个性格内向、基础薄弱但喜欢科学小故事的学生，在教微观粒子构成和模型时他们总觉得抽象。你作为教育专家，能详细展开说说怎么针对这类学生进行分步教学，让他们既能理解知识点也能建立科学思维吗？
+  - question: 我是一个热爱科学探索的初二学生，平时喜欢读科普书但觉得微观粒子的构成和模型太复杂了。你作为化学学习助手，能不能从各个角度详细说说微观粒子的种类、构成、模型的演变过程以及这些模型有什么重要作用？
+  - question: 我女儿今年13岁，刚开始学初中化学，对微观粒子的构成和模型不太懂。你作为教学顾问，能结合她的年龄和基础，详细说说相关知识点吗？
+  - question: 我是初三学生，复习微观粒子构成和模型时总搞不清分子、原子和离子的区别。你作为化学学习助手，可以结合我的困扰，说说你的看法，帮我理清这几个概念吗？
+  - question: 我是化学兴趣班家长，我儿子喜欢做实验但觉得微观粒子的模型太抽象。你作为化学老师，能不能简单说说模型在化学学习中的作用？
+  - question: 我是初一学生，平时喜欢画画，对抽象的化学模型不是很敏感。你作为化学学习助手，能具体说说微观粒子的构成和模型之间的关系吗？最好举个形象的例子。
+  - question: 我是初中化学教研员，发现学生在学微观粒子构成和模型时常出现概念混淆。你作为教学专家，能全面分析一下常见难点、误区以及有效的教学建议吗？
+  - question: 我是初中科学社团的指导老师，最近组织学生探究微观粒子构成和模型，希望大家能系统地理解这部分内容。你作为教育专家，能系统地讲解一下相关知识、模型演变和教学建议吗？
+  - question: 我是一名初二学生，最近学微观粒子构成和模型遇到点困惑。你作为化学学习助手，能简短回答下它们的主要内容和作用吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-初中-微观粒子构成与模型讲解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学内容需基于学生兴趣、认知水平、学习风格等多维画像动态调整，主动识别并回应个体差异，针对性设置学习任务和支持措施，促进每位学生的有效学习。
+  - field: 个性化格式与结构指令遵循度_理由
+    type: str
+    description: 解释个性化格式与结构指令遵循度评分的详细理由，引用具体例子。
+  - field: 个性化格式与结构指令遵循度
+    type: float
+    description: 严格按照指定教学结构（如分步、互动、图文、流程图等）组织内容，根据学生反馈灵活优化流程，使逻辑清晰、层次分明，且能个性化适配不同学生的接受方式。
+  - field: 教学方法科学性与专业深度_理由
+    type: str
+    description: 解释教学方法科学性与专业深度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业深度
+    type: float
+    description: 选用符合教育学和学科原理的多元化教学方法，科学设计实验、探究、类比、模型建构等活动，系统阐释微观粒子构成与模型原理及局限，体现批判性思维和专业深度。
+  - field: 知识结构系统性与层次递进_理由
+    type: str
+    description: 解释知识结构系统性与层次递进评分的详细理由，引用具体例子。
+  - field: 知识结构系统性与层次递进
+    type: float
+    description: 内容需层次分明、逻辑清晰，系统搭建微观粒子模型知识网络，体现前后衔接、内在联系，结合实际生活与后续课程，帮助学生形成迁移和应用能力。高分需体现知识框架的完整性、深度与多维联系。
+  - field: 互动与启发式教学设计_理由
+    type: str
+    description: 解释互动与启发式教学设计评分的详细理由，引用具体例子。
+  - field: 互动与启发式教学设计
+    type: float
+    description: 通过启发式问题、情境创设、互动活动等多样方式，激发学生主动思考和参与，设计多元互动环节（如小组合作、角色扮演、模拟实验等），促进表达、合作与深度思考，显著提升学习兴趣和效果。
+  - field: 创新思维激发与自主探索支持_理由
+    type: str
+    description: 解释创新思维激发与自主探索支持评分的详细理由，引用具体例子。
+  - field: 创新思维激发与自主探索支持
+    type: float
+    description: 鼓励学生提出独特见解或创新方案，支持其自主探索和模型改进，设置开放性任务引导学生超越课本知识，尝试创新表达与实践，关注学生的主动设问和探究能力。
+  - field: 社会主义核心价值观融合与科学精神培育_理由
+    type: str
+    description: 解释社会主义核心价值观融合与科学精神培育评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融合与科学精神培育
+    type: float
+    description: 在教学过程中自然融合社会主义核心价值观，如科学精神、团结协作、尊重知识、创新进取等，通过真实案例或历史事件与学科内容紧密结合，激发学生对科学的价值认同与社会责任感。
+  - field: 中华优秀传统文化自然融合与科学启迪_理由
+    type: str
+    description: 解释中华优秀传统文化自然融合与科学启迪评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化自然融合与科学启迪
+    type: float
+    description: 自然融入中华优秀传统文化元素（如古代哲学、科学家精神、诗文等），结合微观世界探索的科学内容，启发学生体会科学与文化的有机联系，增强文化自信和历史责任感。
+  format_mode: prompt

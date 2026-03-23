@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-高中-生命意义与价值的思辨（德育+美育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三男生，性格有点内向，喜欢画画和写诗。最近备战高考压力很大，经常会想：人生除了成绩还有什么意义？你作为德育和美育融合的教育专家，能全面深入地讲讲高中生如何在现实压力下理解生命的意义和价值，并结合美育视角给我一些具体成长建议吗？
+  - question: 我是一名高一女生，平时喜欢音乐和舞蹈，但最近在班级活动中总觉得自己的兴趣和班级主流价值观不太契合，有点迷茫。你作为心理老师，帮我理解一下在高中阶段，个人兴趣和集体价值观之间怎么找到生命意义和自我价值吧。
+  - question: 我是高二学生，性格比较外向，喜欢参加社团活动，也热衷志愿服务。最近遇到一个困惑：在追求个人成就和服务社会之间，生命的意义到底如何权衡？你作为班主任，能系统地讲解一下高中生如何在个人成长和社会责任之间实现生命价值的平衡，并结合德育美育融合视角给我一些创新性建议吗？
+  - question: 我是苏轩帆，58岁老师，平时喜欢养珊瑚缸、摄影和露天卡拉OK，教学风格比较随性。你作为德育美育融合的教研员，能用几句话说说，怎么结合自己的兴趣和职业使命感，在高中生命意义与价值的课程里实现德育和美育的深度融合？
+  - question: 我是一名高一新生，性格有点慢热，喜欢阅读中国古典文学，但经常被同学的现实主义想法影响，有点犹豫要不要坚持自己的兴趣。你作为语文老师，讲讲看个人兴趣（比如古典文学）对生命意义和价值有什么影响吧，有哪些具体成长建议？
+  - question: 我是高二女生，成绩一般，喜欢画画和自然观察，家里总希望我考个好大学，但我更想探索艺术和生命的多样性。你作为美育指导老师，能具体说说高中生在家长期望和个人价值追求之间怎么平衡吗？有没有融合德育和美育的具体建议？
+  - question: 我是高三学生，最近因为家里出了点事，总是想生命意义的问题，感觉前路很迷茫。你作为心理咨询师，简单说说就行，面对重大变故时，怎么用德育和美育帮助我们重新发现生命的价值和意义？
+  - question: 我是高二男生，既喜欢科学创新也喜欢绘画和音乐。最近在科技创新比赛中遇到团队合作上的矛盾，觉得个人价值和集体利益难以兼顾。你作为教育专家，能全面分析一下在科技和艺术交融中，高中生怎么理解和实现生命的多元价值吗？
+  - question: 我是赵馨怡，今年52岁，植物学家，喜欢自然探索和瑜伽，社交圈层比较分明，平时理论和实践都很看重。你作为美育德育融合的高中课程顾问，能深入讲解一下高中生命意义与价值课程怎样结合自然探索和科学精神进行设计吗？能给我一些针对性的实践建议吗？
+  - question: 我是高一学生，喜欢摄影和手工，但有时候觉得这些爱好跟学校主流追求不太相关。你作为美育与德育融合的教育专家，详细说说怎么通过自己的兴趣爱好在高中阶段发现生命的意义和价值，并让这些爱好成为成长的动力吧。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-高中-生命意义与价值的思辨（德育+美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评价教学内容与活动是否基于学生的年级、兴趣、学科背景、性格和学习风格，进行持续的差异化设计与动态调整。高分要求方案能针对不同学生群体设定明确目标、过程性反馈与个体成长追踪，体现个性化贯穿全过程。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评价教学设计是否严格按照任务要求分点分层，配足案例，涵盖全部指定要素，结构规范，过程呈现清晰。高分需无遗漏、无偏离，各环节明确、逻辑递进。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学活动是否基于教育学原理，体现系统性、层次性、过程性，包含探究、体验、互动、反思等多元环节，针对高中生认知与心理发展特征，过程有明确引导与反馈。高分要求多环节有机衔接，促进深度学习与主动参与。
+  - field: 美育与德育融合度_理由
+    type: str
+    description: 解释美育与德育融合度评分的详细理由，引用具体例子。
+  - field: 美育与德育融合度
+    type: float
+    description: 评价美育与德育在教学活动中是否深度融合，艺术体验能有效激发道德思辨，促进情感、价值观与审美能力共同发展。高分要求多层次、多方式融合，且融合贯穿活动全过程，有明确育人目标和实际成效。
+  - field: 思辨深度与逻辑性_理由
+    type: str
+    description: 解释思辨深度与逻辑性评分的详细理由，引用具体例子。
+  - field: 思辨深度与逻辑性
+    type: float
+    description: 评价教学内容是否引导学生多层次、辩证性思考，观点逻辑递进，鼓励多角度分析、反思与独立论证。高分要求学生能提出独立见解，观点有论据支撑，能与他人观点碰撞并深化认知。
+  - field: 创新思维激发力_理由
+    type: str
+    description: 解释创新思维激发力评分的详细理由，引用具体例子。
+  - field: 创新思维激发力
+    type: float
+    description: 评价教学活动是否鼓励学生以多元创新方式表达观点，提出开放性问题，激发自主思考和创造力，允许多样化成果呈现，并有机制支持个性化表达。高分要求创新表达方式多样，学生能提出新观点并获得积极反馈。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评价核心价值观及优秀传统文化是否在具体情境与美育体验中自然融入，寓教于美，能引导学生主动体会和思考社会责任与理想。高分要求价值观与美育内容有机结合，学生能主动表达和讨论其意义，过程无生硬灌输。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价提问是否贴近高中生真实生活、兴趣及成长困惑，具备情境性和现实关怀，能激发学生主动表达与参与。高分要求问题设计具启发性、共鸣感，能引发深入交流。
+  - field: 表达清晰与可理解性_理由
+    type: str
+    description: 解释表达清晰与可理解性评分的详细理由，引用具体例子。
+  - field: 表达清晰与可理解性
+    type: float
+    description: 评价教学内容语言简明、结构清晰，逻辑顺畅，信息层次分明，易于高中生理解和接受。高分要求用通俗语言分段解释，结合案例说明，条理清楚，学生能快速抓住要点。
+  format_mode: prompt

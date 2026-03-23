@@ -1,0 +1,117 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-初中-现代文阅读方法教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中语文老师，最近发现不少学生在现代文阅读理解上遇到困难。有些学生能读懂意思，但分析文章结构和作者观点时总是抓不住重点。你作为语文教学专家，能全面分析一下怎样系统提升初中生的现代文阅读能力吗？希望能结合实际课堂案例详细讲讲方法和效果。
+  - question: 我最近学现代文阅读，老是抓不到重点，不太明白作者到底想表达什么。你能讲清楚点，有哪些实用的方法能帮我提高现代文阅读理解吗？最好举个例子说明一下。
+  - question: 我是区里的语文教研员，最近要做一次现代文阅读教学专题培训。你能详细分析下各个方面吗？比如教学理念、学生容易出的问题、分层教学怎么做、家校协同、创新活动设计，还有怎么把优秀传统文化融合到现代文阅读里？希望能结合实际案例说说每个环节的操作和效果。
+  - question: 我是高兆贵，51岁男老师，平时喜欢象棋和摄影，也经常参加教育局的摄影比赛。作为教学经验丰富的语文老师，我很关注现代文阅读教学的实际效果。你能详细说说，怎么结合我的兴趣和教学经验，把现代文阅读方法和文本结构分析能力提升结合起来？最好举些具体做法和例子。
+  - question: 我是初中生家长，最近发现孩子现代文阅读有点迷茫，你能用几句话说说家长怎么帮孩子提高阅读理解吗？核心要点就行。
+  - question: 我是初中语文老师，发现学生在现代文阅读上经常出现一些误区，比如只看表面的意思，忽略深层次的内容。你能讲清楚点，有哪些常见问题？怎么帮助学生科学有效地克服这些误区？最好能举例说明。
+  - question: 我是刘钰，高三学生，男，喜欢数学建模竞赛、植物标本采集和科学实验，平时经常和生物老师讨论采集方法。我觉得语文现代文阅读总是没有理科那么有逻辑，理解起来有点吃力。你能讲得详细点吗？结合我的兴趣和性格，怎么能系统提升现代文阅读能力？最好有具体方法和案例。
+  - question: I am a junior high school Chinese teacher and also enjoy photography
+      and meditation outside the classroom. Could you briefly explain what key strategies
+      help students improve modern text reading comprehension? Please mention examples
+      that fit my teaching style.
+  - question: 我是一名初中语文老师，最近在现代文阅读教学中，想培养学生的批判性思维和自主探究能力。你能解释一下有哪些具体方法吗？能举例说明吗？
+  - question: 我是初中语文老师，最近在筹备现代文阅读专项教研活动。你作为教育专家，能从各个角度详细说说现代文阅读教学吗？希望能涉及教学目标、核心方法、分层策略、学生常见问题、家校协作、创新活动设计，还有怎么把优秀传统文化和核心价值观自然融合进去，最好有具体案例。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-初中-现代文阅读方法进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像适配度_理由
+    type: str
+    description: 解释用户画像适配度评分的详细理由，引用具体例子。
+  - field: 用户画像适配度
+    type: float
+    description: 评价内容是否基于学生的具体特征（如阅读能力、兴趣、学习习惯、成长阶段等）进行个性化调整，能否针对不同类型学生提出有针对性的建议或方案，并体现对学生差异的充分尊重和理解。
+  - field: 问题模拟真实度_理由
+    type: str
+    description: 解释问题模拟真实度评分的详细理由，引用具体例子。
+  - field: 问题模拟真实度
+    type: float
+    description: 评价教学设计或答复是否基于初中生真实的现代文阅读困惑、学习场景和常见问题，能否反映学生在实际学习中遇到的具体障碍或疑问。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评价内容是否严格按照任务要求的结构、格式输出，条理清晰，分点明确，便于理解和操作，格式规范且易于实际应用。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所推荐的现代文阅读方法是否有教育学理论或认知规律支撑，结构系统、层次分明，能够科学促进学生阅读理解能力的提升，并结合理论给出实践解释。
+  - field: 方法实用性与操作性_理由
+    type: str
+    description: 解释方法实用性与操作性评分的详细理由，引用具体例子。
+  - field: 方法实用性与操作性
+    type: float
+    description: 评价所提供的阅读方法是否具体、可操作，便于学生实际应用，具备可迁移性；通过详细实例或步骤说明操作过程，能帮助学生举一反三。
+  - field: 创新思维引导性_理由
+    type: str
+    description: 解释创新思维引导性评分的详细理由，引用具体例子。
+  - field: 创新思维引导性
+    type: float
+    description: 评价教学内容是否引导学生多角度、发散性、批判性思考，鼓励提出独立见解和开放性问题，并能将文本解读与现实生活、个人经验相结合，促进创新表达。
+  - field: 中华优秀传统文化润化_理由
+    type: str
+    description: 解释中华优秀传统文化润化评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润化
+    type: float
+    description: 评价教学内容是否自然融合中华优秀传统文化元素，引导学生体会传统美德、家国情怀等，并能与现代文本内容形成对比、联系或启发，深化文化理解。
+  - field: 社会主义核心价值观体现_理由
+    type: str
+    description: 解释社会主义核心价值观体现评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观体现
+    type: float
+    description: 评价教学内容是否将社会主义核心价值观（如诚信、友善、敬业、爱国等）自然融入文本分析和讨论，能够结合现实生活引导学生价值观养成，而非表面化、形式化处理。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-高中-电场与磁场的对比与综合辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是雍邦，40岁男老师，最近在教学中总感觉自己讲解电场和磁场对比时很混乱，也有点倦怠。你作为物理教学顾问，能不能结合我的情况，具体说说怎么更有条理地给学生讲清这两个场的异同和联系？能具体说说吗？
+  - question: 我是一名高中物理老师，最近发现学生总是把电场和磁场搞混，觉得带电粒子在这两个场里的运动规律一样。你作为物理学习助手，能不能帮我讲清楚电场和磁场在本质、产生原因、作用效果等方面有哪些不同？最好结合生活中的例子，讲清楚点。
+  - question: 我是一名刚入职的高中物理老师，课堂上带学生分析电场和磁场的综合辨析时总是觉得难以深入，尤其是实验设计和实际应用方面。你作为物理教育专家，能不能从本质、异同、历史发展、实验、生活应用、常见误区和学法等多个方面，帮我系统梳理一下怎么引导学生建立科学的辨析思维？能讲得详细点吗？
+  - question: 我是高三学生，复习电场和磁场时总感觉知识点很散，做综合题容易搞混。你作为物理学习助手，能不能详细讲讲这两个场的概念区别、数学描述、力的作用、实际应用和高考常考点？详细讲讲。
+  - question: 我是刚上高中的新生，老师讲电场和磁场我有点懵，总分不清它们的区别，也不知道生活里怎么用到。你能大概讲讲这两个场的主要区别和实际应用吗？
+  - question: 我是高二学生，复习电场和磁场的时候有些地方总搞混，像力的方向和场的来源。你能不能简短回答下这两个场的本质区别和各自应用？
+  - question: 我是四年级学生曹强，喜欢钢琴、足球和乒乓球，最近在课外书看到电场和磁场，感觉挺有意思但又不太懂。你作为科学学习助手，能不能全方位地讲解一下电场和磁场是什么，有什么区别，生活里有哪些有趣的应用，还有中国科学家在这方面有哪些重要贡献？全方位地讲解一下吧。
+  - question: 我是物理教研员，现在要准备一次关于电场和磁场对比与辨析的教师培训，想请你作为物理教育专家，从本质、历史发展、物理图像、数学描述、实验、跨学科联系、实际应用、学生误区、创新教学方法等各个角度详细说说这两个场的区别和综合教学设计。从各个角度详细说说。
+  - question: 我是家长，孩子刚上高中，总说分不清电场和磁场，做题时力的方向和场的来源老是混了。你作为物理教育专家，能帮我理解一下这两个场的核心区别和联系吗？最好能结合些生活例子，这样我也能更好地和孩子沟通。帮我理解一下。
+  - question: 我是邵蕾，6岁一年级女生，喜欢玩益智游戏和小提琴。看动画片时看到有人被电到或者用磁铁吸东西，有点好奇电和磁到底有什么不一样。你作为科学学习助手，能不能讲清楚点电和磁分别是什么，有什么区别？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-高中-电场与磁场的对比与综合辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 教学内容能根据学生的学习基础、兴趣、理解难点等个体差异进行针对性调整。能主动分析学生类型，灵活采用差异化举例、解释或补充，及时根据学生反馈调整讲解，体现因材施教。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 严格按照教学指令或系统要求的结构和步骤展开，分点明确，条理清晰。结构不仅规范，还能帮助学生理清知识脉络、促进理解与应用。避免机械分点，内容与结构需高度匹配。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 采用科学的教学方法，融合循序渐进、类比、探究、互动等多种策略。根据不同知识点灵活选择合适方法，促进学生深度理解和迁移应用，鼓励学生主动参与，避免单一灌输。
+  - field: 概念辨析准确性_理由
+    type: str
+    description: 解释概念辨析准确性评分的详细理由，引用具体例子。
+  - field: 概念辨析准确性
+    type: float
+    description: 对电场与磁场的定义、性质、区别等核心概念讲解科学准确，无知识性错误。能清楚区分易混淆概念，主动辨析学生常见误区，解释相关原理，防止误解。
+  - field: 综合对比分析深度_理由
+    type: str
+    description: 解释综合对比分析深度评分的详细理由，引用具体例子。
+  - field: 综合对比分析深度
+    type: float
+    description: 能从至少三个以上关键维度（如产生原因、场线分布、力的作用对象、实际应用、数学表达等）系统深入对比电场与磁场。每一维度有具体分析和本土化举例，结构层次分明，能引导学生进行批判性思考和迁移应用。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 教学中主动设置开放性问题、探究任务或实验，引导学生自主提问、分析、讨论或设计实验，促进创新和批判性思维。评价依据包括问题的开放性、探究深度、学生主动参与度及对创新思考的引导。
+  - field: 生活实际关联性_理由
+    type: str
+    description: 解释生活实际关联性评分的详细理由，引用具体例子。
+  - field: 生活实际关联性
+    type: float
+    description: 讲解紧密结合中国学生熟悉的生活场景、社会热点或科技前沿（如高铁、手机、磁悬浮、无线充电等），帮助学生理解和应用知识。举例具体，具有本土特色和时代感，能增强学习兴趣与应用意识。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 在讲解过程中自然而恰当地融入社会主义核心价值观、科学精神、爱国情怀等，体现中华优秀传统文化。能与物理知识内容有机结合，激发学生责任意识、民族自豪感和科学探索精神，语言自然、深度融合。
+  format_mode: prompt

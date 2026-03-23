@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-跨章节知识的整合与网络构建教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高二学生，最近在复习细胞呼吸和光合作用时总觉得知识点太多、联系不清。你作为我的生物学习助手，能不能系统地分点讲讲光合作用和细胞呼吸之间的联系和区别，还有它们在高中生物不同章节里的综合知识网络？顺便说说有什么学习建议，系统地讲解一下吧。
+  - question: 我是一名高三学生，最近在准备生物联赛，发现细胞代谢、遗传和生态学之间好多知识点交叉，总是理不清思路。你作为学科专家，能详细分析下各个方面，帮我梳理这些章节的核心知识是怎么相互联系的吗？最好举些实际答题的例子，详细分析一下吧。
+  - question: 我是一个喜欢用知识网络图学习的高中生，现在在复习生物的细胞结构和遗传信息传递，感觉这两个部分关系有点复杂。你作为成长导师，能详细说说它们在高中生物里的联系和区别吗？顺便给些用知识网络图整合的建议，详细说说。
+  - question: 我是新手高一生物老师，最近备课发现学生老是分不清生命活动调节和生态系统调节的主要区别和联系。你作为教研员，能帮我说说主要的点吗？说说主要的就行。
+  - question: 我是一名高二学生，最近自学生物时对生态系统里的能量流动和物质循环这两个知识点整合有点困惑。你作为我的学习助手，能帮我理解一下它们之间的关系和在不同章节里的知识衔接吗？帮我理解一下吧。
+  - question: 我是高中生物兴趣小组的组长，最近要组织一次主题为“从分子到生态”的跨章节知识整合活动。你作为生物教学专家，能详细讲讲怎么系统梳理分子生物学、细胞学、遗传学和生态学之间的知识联系吗？顺便给我们一些创新的小组讨论和探究式学习建议，详细讲讲吧。
+  - question: 我是生物老师，班里有几位学生喜欢用类比法来学习，可整合动植物生命活动相关知识时总是容易混淆。你作为AI学习助手，能不能讲得详细点，帮我设计一个跨章节知识网络梳理方案，并举例说明怎么用类比法帮助学生区分和联系动植物的生命活动？能讲得详细点吗？
+  - question: I'm PowellEllie, a biology teacher who enjoys engaging with local communities
+      through dialect study and poetry, and I value meaningful discussions and thoughtful
+      educational reform. Right now, I'm working on helping my students connect molecular
+      biology and genetics concepts in high school biology, especially through collaborative
+      and reformist teaching strategies. As a subject expert, can you specifically
+      explain how molecular biology integrates with genetics and suggest some innovative
+      classroom activities to support this? Can you elaborate?
+  - question: 我是一名高一学生，对生物实验设计很感兴趣，但整合细胞结构、代谢和遗传相关实验知识时总是抓不到重点。你作为我的实验指导老师，能不能简要说明下怎么有效整合这几个方面的实验知识？简要说明下就行。
+  - question: 我是一名高三学生，最近在准备生物一轮复习，对蛋白质合成和遗传信息表达的跨章节知识梳理有点迷茫。你作为我的学习助手，能具体说说蛋白质合成和遗传信息表达在高中生物各章节里的知识联系吗？能具体说说吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-跨章节知识的整合与网络构建进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评价教学设计是否依据学生的学习基础、兴趣、认知风格和具体薄弱环节进行动态、差异化调整。高分需展现对学生画像的主动收集、分析和实时响应，能针对不同学生分层施教并追踪调整。低分表现为忽视学生差异，教学内容和方法一刀切，无个性化支持。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评价作答是否严格按照任务要求的格式、结构、要素进行，包括分点、图示、举例、分层等。高分要求所有指定要素齐全，结构分明，便于查阅。低分为要素缺失、结构混乱或未分点，影响评估效果。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评价教学方案是否结合教育学原理，采用探究、启发、合作、归纳等多样化方法促进深度理解。高分需体现方法创新与适切性，能有效促进知识迁移和系统思维。低分为单一灌输式教学，无探究、合作或启发设计。
+  - field: 跨章节知识整合深度_理由
+    type: str
+    description: 解释跨章节知识整合深度评分的详细理由，引用具体例子。
+  - field: 跨章节知识整合深度
+    type: float
+    description: 评价是否系统整合多个章节知识点，构建层级分明、联系紧密的知识网络。高分需体现跨章节、跨领域深度融合，揭示本质联系、因果关系及系统性思维，并能举例实际应用。低分为简单排列知识点或只讲单一章节，缺乏整合和联系。
+  - field: 创新思维激发程度_理由
+    type: str
+    description: 解释创新思维激发程度评分的详细理由，引用具体例子。
+  - field: 创新思维激发程度
+    type: float
+    description: 评价是否通过开放性问题、情境模拟、任务驱动等方式激发学生创新与批判性思维。高分需有具体创新任务，鼓励多元视角与个性表达，设计成果分享与评价环节。低分为仅复述课本知识，无创新或探索任务。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 评价内容是否贴近真实课堂，体现师生互动、学生主动提问、教师针对性追问与反馈。高分需有多轮互动，师生间有追问、纠错、知识迁移、思维拓展等过程，展现真实学习与纠错环节。中分为有单轮表层互动但未深入探究，低分为无互动或机械输出。
+  - field: 社会主义核心价值观与中华优秀传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融入
+    type: float
+    description: 评价内容是否自然融入社会主义核心价值观（如科学精神、合作、责任）与中华优秀传统文化（如尊重生命、和谐共生），并与生物学内容有机结合。高分需结合实际案例，体现文化底蕴与价值引领，启发学生思考人与自然关系。低分为未涉及价值观或文化，内容空洞。
+  - field: 知识表达逻辑性与清晰度_理由
+    type: str
+    description: 解释知识表达逻辑性与清晰度评分的详细理由，引用具体例子。
+  - field: 知识表达逻辑性与清晰度
+    type: float
+    description: 评价表达是否层次分明、逻辑严密、语言准确，能清晰展现知识递进、因果关系和批判性分析。高分需有总分结构、递进关系、重点突出，能用图示辅助表达复杂关系，并具备科学性和批判性。中分为表达基本清楚但缺乏深入逻辑或批判分析，低分为内容杂乱、顺序混乱、语言模糊。
+  format_mode: prompt

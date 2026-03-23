@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-小学-重要发明与生活变迁教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是SmithZachary，39岁男老师，喜欢用FL Studio和Ableton做音乐，也爱研究生存技能和数学建模，性格比较有条理也偏独立。你能结合我对技术和自我驱动学习的兴趣，详细说说‘重要发明’是怎么一步步改变人们日常生活的吗？最好举一些和音乐制作、生活技能或数理思维相关的例子，让我能系统理解发明的实际意义，也能启发学生主动思考。
+  - question: 我是五年级的小宇，班里最近在做‘家里最有用的发明’活动。我家人都爱做饭，我也常帮妈妈洗菜切菜。冰箱是怎么发明的？它具体怎么改变了家庭生活？能解释一下吗？最好用我们能懂的例子说说。
+  - question: 我是一年级的小欣，喜欢画画和拼积木，爷爷经常给我讲以前的故事。家里有了电灯，晚上很亮很方便。你能简单说说电灯是怎么发明的吗？它给我们的生活带来了哪些主要变化？最好举个例子让我明白。
+  - question: 我二年级，喜欢和爸爸一起玩遥控汽车。最近学到交通工具的发展。你能大概讲讲汽车是怎么发明的吗？它对我们生活有什么大变化？最好用我们小朋友能懂的例子。
+  - question: 我是四年级的小雅，喜欢画画也爱看书，妈妈是护士。家里很重视健康，现在医院用的体温计很方便。体温计是怎么发明的？它给我们生活带来了哪些具体变化？能解释一下吗？最好结合我爱画画和健康的兴趣举下例子。
+  - question: 我是尹剑，51岁的男老师，喜欢戏曲表演、民俗活动和骑行，在教学中注重规则也鼓励创新。你能详细讲讲印刷术是怎么被发明的吗？它对中国和世界的生活带来了哪些深刻影响？请结合小学历史教学、中华传统文化，还有我对规则与创新平衡的理念，系统分析下印刷术的意义，并结合戏曲、民俗等例子说明，强调创新、合作和珍惜知识的重要性。
+  - question: 我是吴峻熙，55岁老师，喜欢文玩和围棋，平时对学生管理比较粗放但注重威严。你能从各个角度详细说说‘火的利用和控制’这个重要发明对人类生活带来的变迁吗？请结合小学生认知、历史教材重点，多举生活和历史实例，系统说明火的利用如何影响饮食、居住、社会发展、文化变迁等，还要自然融入珍惜、合作、勤劳等正向价值观，让学生能全方位理解火的重要意义。
+  - question: 我是三年级的小亮，喜欢收集邮票和拼装模型，家里还有个邮筒。最近学邮政发展。你能详细讲讲邮政系统和邮票是怎么发明的吗？它们怎么一步步改变了人们沟通和生活方式？最好结合我们小学生平时寄信、集邮的兴趣举例，让我能更容易理解这些发明的重要性，也体会到合作和守信的价值。
+  - question: 我是RobinsonAurora，41岁的女律师，工作很忙压力大，喜欢健身跑步等技能型活动，但习惯不太自律，经常拖延。你能解释一下电话是怎么发明的吗？电话为什么会成为改变生活的重要发明？最好结合律师工作、压力管理和健身等实际生活举例，让我能理解电话带来的便利，也激励自己更好利用发明改善生活。
+  - question: 我是六年级的小哲，喜欢踢足球和读科普书，最近在做‘家里的科技小发明’主题研究。你能系统地讲解一下自来水系统是怎么发明和发展的，以及它是如何一步步改善人们生活环境和健康的吗？请结合我们小学生的视角、日常体验和家庭活动举例，全面分析自来水对城市、农村和个人生活的影响，还要自然渗透珍惜水资源、勤劳创新的价值观，让我们能真正理解自来水系统的重要意义。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-小学-重要发明与生活变迁进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价内容与表达方式是否针对不同学生的年龄特点、兴趣爱好、学习基础等进行差异化调整，能体现对学生个体需求的充分关注，支持多样化学习体验。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评价内容是否严格按照教学任务要求的结构、步骤和格式进行组织，包含所有必要环节，分段清晰，逻辑严密。需体现格式规范性与内容完整性，不能仅满足基本分段。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评价内容是否紧密围绕‘重要发明与生活变迁’的主题，教学目标明确且分层，能引导学生理解发明与生活变迁的关系，并促进实际迁移、反思和表达。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学方法是否符合小学生认知特点，采用多样化、启发式、探究式等科学方法，支持学生主动参与、表达和合作。方法需结合互动、分层引导，避免单一讲授。
+  - field: 知识准确性与适宜性_理由
+    type: str
+    description: 解释知识准确性与适宜性评分的详细理由，引用具体例子。
+  - field: 知识准确性与适宜性
+    type: float
+    description: 评价内容是否真实、准确、科学，表达方式和难度符合小学生认知水平，避免专业术语和事实错误，确保知识点无误且易于理解。
+  - field: 创造力激发度_理由
+    type: str
+    description: 解释创造力激发度评分的详细理由，引用具体例子。
+  - field: 创造力激发度
+    type: float
+    description: 评价教学内容是否持续通过开放性问题、创意活动或探究任务，激发学生创新思维和想象力，支持多角度表达和多层次创意展示。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价问题与回答是否贴近小学生真实思维和表达方式，能回应学生实际困惑，语言自然亲切、富有生活气息，具备真实互动感。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价知识传递过程中是否自然融入社会主义核心价值观和中华优秀传统文化，方式润物细无声，与知识内容紧密结合，能激励学生形成正向价值观。
+  format_mode: prompt

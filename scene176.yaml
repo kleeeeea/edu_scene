@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-高中-书面表达的地道性与文采提升教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高一男生，英语成绩一般，写作文总觉得表达不够地道，句子有点中式，英语老师你能说说主要的提升地道表达的方法吗？说说主要的就行
+  - question: 我是一名高二女生，很喜欢英语写作，经常在作文里加点修辞，但总觉得还不够像母语者那样地道有文采。你作为英语写作专家，能不能系统讲讲看怎么提升高中英语书面表达的地道性和文采？我想深入了解
+  - question: 我是一名高三学生，考试作文老是分数提不上去，老师说我表达不够自然，有点机械。你能简单说说有哪些方法让英语作文表达更自然地道吗？简单说说就行
+  - question: 我是高一学生，喜欢英语但写作文时句子总觉得有点简单，没啥文采。你作为英语写作专家，能不能讲清楚点，具体说说怎么让高中英语作文更有文采和表现力？
+  - question: 我是郝友，42岁高中英语老师，喜欢机械键盘改装、滑板和Python，平时教学很讲仪式感，也挺看重职称晋升，和同事关系有点竞争。你作为英语写作专家，能结合我的这些情况，讲讲看怎么在教学中有效提升学生英语书面表达的地道性和文采？
+  - question: 我是一名高三女生，写英语作文总用简单词句，怕出错不太敢创新。你作为英语写作专家，能全面深入地讲讲怎么在保证准确的前提下提升英语书面表达的地道性和文采吗？能全面深入地讲讲吗
+  - question: 我是呼延珠，女，17岁高二学生，喜欢跑步和攀岩，性格上比较有边界感，和同学关系礼貌但不亲近，家庭里跟妈妈关系更好。你作为我的英语学习助手，能不能系统地讲解一下像我这样性格和社交特点的学生，怎么提升高中英语书面表达的地道性和文采？系统地讲解一下
+  - question: 我是一名高二学生，单词背得还可以，就是写作文时表达不太地道，想让句子更自然。你作为英语写作顾问，能不能讲清楚点，介绍点实用的句型和表达方法？
+  - question: 我是贺卫，60岁男老师，喜欢诗词创作、家谱编修和健身，性格比较包容爱反思，在教师圈和文化圈都挺活跃。你作为英语写作专家，能讲得详细点吗？结合我的文化爱好和性格，分析下怎么在高中英语写作教学里融合地道表达、文采提升和中华优秀传统文化元素？
+  - question: 我是一名高三女生，英语写作成绩总是不好，感觉作文没文采也不够地道。你作为英语写作专家，能具体说说有什么实用的方法和训练建议能帮我提升作文文采和表达地道性吗？能具体说说吗
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-高中-书面表达的地道性与文采提升进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准匹配_理由
+    type: str
+    description: 解释个性化画像精准匹配评分的详细理由，引用具体例子。
+  - field: 个性化画像精准匹配
+    type: float
+    description: 评估方案是否基于学生多维画像（如英语水平、兴趣、目标、习惯、障碍）实现针对性教学设计，并能动态调整资源与方法以适应学生成长变化。高分要求细致区分不同学生类型、需求，并结合具体案例数据进行个性化干预。
+  - field: 格式指令严格遵循_理由
+    type: str
+    description: 解释格式指令严格遵循评分的详细理由，引用具体例子。
+  - field: 格式指令严格遵循
+    type: float
+    description: 评估方案是否精准执行教师或系统设定的写作格式要求（如字数、段落结构、语言风格等），并灵活应对特殊格式需求。高分要求格式细节无遗漏，能根据不同任务设计差异化格式指导。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否体现分层指导、过程引导、有效反馈、动态调整、差错分析与激励机制。高分要求包含个性化辅导、阶段目标设定、定期反思与方案迭代，促进持续能力提升。
+  - field: 地道表达与文采提升策略_理由
+    type: str
+    description: 解释地道表达与文采提升策略评分的详细理由，引用具体例子。
+  - field: 地道表达与文采提升策略
+    type: float
+    description: 评估是否系统、具体且可操作地指导学生提升英语表达的地道性与文采，包括词汇升级、修辞手法、句型变换、语境适应等。高分要求多种范例、前后对比、创意表达方法，并有迁移指导，促进实际应用。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估是否通过开放性问题、跨学科视角、鼓励表达独特观点、激发原创内容等有效促进学生创新思考和个性表达。高分要求设计多样创新任务、头脑风暴、同伴互评及反思环节，支持原创性输出。
+  - field: 模拟真实提问场景_理由
+    type: str
+    description: 解释模拟真实提问场景评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景
+    type: float
+    description: 评估问题是否贴近高中英语写作实际，涵盖学生真实困惑、常见难点、任务类型多样化，能反映不同层次学生需求。高分要求问题具体、情境真实，类型丰富，易于引发针对性教学。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估在提升地道表达与文采的同时，是否自然、恰当地融入社会主义核心价值观及中华优秀传统文化，做到润物细无声，结合具体写作情境分析价值观与论点关联。高分要求表达自然、贴切、能启发学生思考。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估方案是否针对用户画像的深层需求（如写作障碍、心理因素、学习习惯）给予深入、实用、可操作建议。高分要求细致分析困惑，提供多方案解决思路，兼顾心理与技能成长，并有持续跟进措施。
+  format_mode: prompt

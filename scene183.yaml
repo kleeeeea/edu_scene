@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-小学-文物“开口说话”教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名小学历史老师，最近在组织学生开展“文物开口说话”的主题活动。班里有几个孩子性格比较内向，不善表达，但对历史和文物很感兴趣，希望通过文物故事激发他们的表达欲望。你能从文物故事设计、情感引导、表达训练等方面，全面分析一下如何帮助这些孩子在活动中自信开口，让文物真正‘说话’吗？全面分析一下
+  - question: 你作为小学历史课程设计专家，我正在准备“文物开口说话”课堂，想让学生用自己的话讲讲青铜器的故事。考虑到时间有限，请你简要说明下有哪些适合小学生的文物讲述方法和注意事项，以及如何让讲解更有趣。简要说明下
+  - question: 我是四年级学生，最近老师让我们做‘文物开口说话’的历史小剧场，我选了兵马俑，但我表达能力一般，有点紧张。你能讲清楚点怎么用兵马俑的故事，让我在表演中既能表现历史意义，又能让同学们喜欢我的讲述吗？讲清楚点
+  - question: 我是一名五年级学生，最近学校组织‘文物开口说话’的活动，我很想让古代的陶俑‘说’出自己的故事。你能讲讲看陶俑在中国历史中的地位和有趣的事例吗？讲讲看
+  - question: 我是李贵，今年54岁，是一名针灸师，对中医养生、园艺种植和太极拳很感兴趣，平时性格比较疏离，喜欢独处，和家人关系并不亲密。我希望通过‘文物开口说话’活动，把中医文化和古代文物结合起来，激发孩子们对传统文化的认同。你作为小学历史教育专家，能详细说说如何结合中医文物（如铜针、药罐等）设计活动，既能体现文物背后的文化精神，又能让孩子们主动参与吗？详细说说
+  - question: 我是一名小学历史教研员，最近学校要举办大型‘文物开口说话’主题课程研发，我希望设计一个系统化、层次分明的课程体系，既能满足不同年龄段学生的认知发展，又能体现中华文化传承和创新。能全面深入地讲讲吗
+  - question: 我是沈孟，今年16岁，高一学生，平时喜欢武术、吉他和围棋，性格上既有逃避倾向又自信，记忆方式比较混合，喜欢独处但也能适应集体要求。老师布置了‘文物开口说话’的历史研究任务，要我们分析一件文物如何代表中国历史的某个阶段并与现实生活产生连接。你能结合我的兴趣和性格，给我一份完整的分析，从文物故事、历史意义、现实联系、表达方式都具体讲讲吗？给我一份完整的分析
+  - question: 我是一名小学家长，女儿很喜欢历史文物，但表达能力不是很强，经常害怕在班级活动中发言。最近学校组织了‘文物开口说话’的项目，我想帮助她在活动中找到自信，表达自己对文物的理解和感受。作为教育专家，你能深入说说看有哪些有效的方法和具体建议，能帮助孩子在活动中主动表达和享受过程吗？深入说说看
+  - question: I'm JenkinsMadison, a 9th grade student. I love guitar, poetry writing,
+      and recitation, but I struggle with independent learning and often rely on group
+      support. Our history teacher asked us to prepare a 'Speaking Artifacts' project,
+      letting an ancient artifact 'tell its story' to the class. Can you explain clearly
+      how I can use my creative hobbies to make this presentation engaging, considering
+      my tendency to seek help and adapt to group ideas? Tell me more about it
+  - question: 我是陈亦，高三女生，喜欢自然观察、绘画和视频剪辑，学习时容易焦虑但能持续专注，理解力适中。美术老师和生物老师都鼓励我用观察力和创造力参与‘文物开口说话’活动。你作为历史教育专家，能说说主要的适合像我这样性格的学生参与文物故事讲述的策略和注意事项吗？说说主要的
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-小学-文物“开口说话”进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否全程针对目标学生的年龄、认知特点和兴趣，语言、例子与学生实际生活紧密关联，并能根据学生反馈即时调整讲解，体现对个体差异的持续关注。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估回答是否在所有环节完整、准确地执行教师或题目的格式和结构要求（如分点、角色扮演、第一人称等），无一处遗漏或偏离，且格式保持高度一致性。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否系统采用多元教学方法（启发式、探究式、互动式等），每节课至少包含两种互动/启发环节，并能根据学生反馈及时调整教学策略，始终鼓励学生主动参与和表达。
+  - field: 知识准确性与层次性_理由
+    type: str
+    description: 解释知识准确性与层次性评分的详细理由，引用具体例子。
+  - field: 知识准确性与层次性
+    type: float
+    description: 评估历史知识内容是否完全准确，讲解是否有明确层次递进（如由浅入深、先易后难），并能根据学生认知水平动态分层讲解，避免内容过于简单或复杂，确保所有学生都能理解核心知识。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 评估是否在课堂多个环节（至少三次）通过开放性问题、想象、角色扮演等方式持续激发学生创新思考和表达，并组织学生主动创作、分享自己的想法，非仅偶尔涉及。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估是否能主动捕捉并自然回应学生真实提问（至少两类），每次都给予针对性解释和引导，鼓励学生进一步追问，体现高度课堂互动。
+  - field: 中华优秀传统文化传承度_理由
+    type: str
+    description: 解释中华优秀传统文化传承度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化传承度
+    type: float
+    description: 评估内容是否贯穿中华优秀传统文化及社会主义核心价值观，讲解过程中自然融入工匠精神、民族团结等故事，至少有两个环节引导学生主动认同和传承传统文化。
+  - field: 情感共鸣与表达_理由
+    type: str
+    description: 解释情感共鸣与表达评分的详细理由，引用具体例子。
+  - field: 情感共鸣与表达
+    type: float
+    description: 评估是否在整个教学过程中通过故事、拟人化、情感表达等多种方式持续激发学生情感共鸣，至少两次鼓励学生表达和分享个人感受，使学生对文物产生兴趣和认同。
+  format_mode: prompt

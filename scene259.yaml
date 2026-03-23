@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-多元文化与尊重差异教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中政治老师，班里有来自不同民族的学生，大家因为习俗和饮食差异偶尔有点摩擦。你作为教育专家，能解释一下为什么在多元文化环境里要尊重差异，这对我们初中生来说有什么意义？能解释一下吗
+  - question: 我是初二学生，最近政治课讲到多元文化，老师让我们思考在班级里怎么做到互相尊重。你作为AI学习助手，可以详细说说多元文化和尊重差异具体怎么做吗？详细说说
+  - question: Hi, I’m SmithSkylar, a senior high student who loves psychology and
+      history. I’m boundary-sensitive and value deep but considerate interactions.
+      As an education expert, could you briefly explain how to respect personal boundaries
+      while promoting understanding in multicultural discussions? Use a few sentences,
+      please.
+  - question: 我是五年级的罗月瑜，平时喜欢钢琴和田径，课后常去兴趣班。作为老师，你能说说多元文化和尊重差异在我们小学生中主要有哪些表现吗？说说主要的
+  - question: 我是初中政治教研员，最近要准备一场关于“多元文化与尊重差异在青少年成长中的作用”的专题讲座。你作为教育专家，能彻底说清楚这个主题吗？希望你能系统地从理论、校园实践、家庭和社会环境、中华传统文化等各方面详细展开
+  - question: 我是初三学生，班里有不少来自不同地区的同学。小组合作时有时会因为表达方式不同产生误解。你作为AI学习助手，可以详细展开说说在多元文化环境中初中生如何提升沟通能力、学会尊重差异吗？详细展开说说
+  - question: 我是刚入学初中孩子的家长，班里同学文化背景很丰富。最近孩子说有些同学穿衣、说话方式和自己不一样，感觉有点不适应。你作为教育专家，能解释一下家长怎么帮助孩子理解和尊重多元文化差异吗？能解释一下吗
+  - question: 我是初中政治老师，学校最近在搞多元文化主题教育周。你作为教育专家，可以全方位地讲解一下多元文化教育在初中阶段的价值和具体做法吗？希望你能系统地说说课程设计、校内活动、家校合作、师生互动、社会资源整合，还有怎么自然融合社会主义核心价值观和中华传统文化
+  - question: 我是初中学生，最近生活里遇到一些关于民族习俗的误解，想更好地理解和尊重不同文化。你作为政治学习助手，可以详细讲讲多元文化和尊重差异的核心理念、实际意义，还有在我们学生日常生活里的具体表现吗？详细讲讲
+  - question: 我是初中生家长，家长群最近在讨论怎么引导孩子在多元文化环境中成长、学会尊重差异。你作为教育专家，能详细说说家长在家庭教育中有哪些具体做法可以帮助孩子理解和包容不同文化吗？详细说说
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-多元文化与尊重差异进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教师能否基于学生的多元背景（如民族、兴趣、认知水平等）进行精准识别，并据此提供差异化支持。强调对个体差异的敏锐捕捉、实际调整教学内容或方法，以及持续性回应学生需求。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估教学内容是否严格按照任务要求进行，结构分明、要素齐全。需明确分点、案例、互动等环节，内容无遗漏，条理清晰，且符合教学设计规范。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估教学内容是否紧密围绕‘多元文化与尊重差异’主题，包含明确目标、深度分析、实际应用及自我反思环节。要求能结合真实校园或社会场景，提出具体策略，并引导学生探讨差异背后的文化与价值意义。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估教学方法是否符合初中生认知特点，能够因材施教并采用创新型活动。重点考察方法的科学性、情境感、学生参与度及创新性，避免单一、机械灌输。
+  - field: 互动与启发性设计_理由
+    type: str
+    description: 解释互动与启发性设计评分的详细理由，引用具体例子。
+  - field: 互动与启发性设计
+    type: float
+    description: 评估是否设计了多样、深入、富有层次的互动环节，能激发学生主动参与、表达和思辨。互动需超越表面提问，涵盖小组合作、角色体验、观点碰撞等，且能引导学生深入探讨多元文化与差异的复杂性。
+  - field: 创造力激发与开放性引导_理由
+    type: str
+    description: 解释创造力激发与开放性引导评分的详细理由，引用具体例子。
+  - field: 创造力激发与开放性引导
+    type: float
+    description: 评估是否通过开放性问题、创新任务等方式激发学生创造力和自主探索。任务需具有挑战性、开放性，鼓励学生提出独特见解、设计创新方案，避免仅限于知识记忆或复述。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估核心价值观（如包容、平等、友善等）是否以情境、案例等自然方式融入教学。需结合真实生活或校园案例，潜移默化传递价值观，避免口号化、生硬灌输。
+  - field: 中华优秀传统文化融合_理由
+    type: str
+    description: 解释中华优秀传统文化融合评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融合
+    type: float
+    description: 评估中华优秀传统文化理念（如‘和而不同’‘求同存异’等）是否与多元文化主题有机融合。需结合学生实际体验，深化对尊重差异与和谐共处的理解，并引导学生将传统理念应用于现实生活。
+  format_mode: prompt

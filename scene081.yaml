@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene081/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 化学-高中-复杂氧化还原反应分析与配平教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是高二理科基础比较弱的学生，最近在学高中化学里的复杂氧化还原反应分析和配平时特别困惑，比如怎么判断氧化剂还原剂、配平总是出错，面对多步反应不知道怎么下手。你作为化学教学专家，能不能系统地、分步骤讲讲复杂氧化还原反应的分析与配平方法，最好结合具体例题、常见误区和针对我这种基础薄弱学生的学习建议，深入说说看？
+    - question: 你作为资深高中化学教研员，我们学校学生在复杂氧化还原反应分析与配平方面普遍觉得很难，尤其理解电子转移、反应机理和多步配平时容易出错。能不能从理论原理、教学策略、知识体系、学生易错点、分层教学建议、科学精神和中华传统文化融合等多个角度详细说说怎么教学和学习高中复杂氧化还原反应？最好举例说明如何帮助学生突破难点，从各个角度详细说说。
+    - question: 你是我的化学学习助手，我在复习高中复杂氧化还原反应时总记不清每一步配平的方法，半反应法也容易搞混。能不能用具体步骤和实例帮我梳理一下复杂氧化还原反应的配平流程，并说说常见错误和应对建议？讲讲看。
+    - question: 你作为高中化学教学助手，请用英文为TaylorMelanie（17岁，11年级，女，喜欢独立科学实验、阅读和吉他，偏好独立思考、偶尔拖延、不喜欢团队协作）详细分析复杂氧化还原反应的配平原理和方法，结合她喜欢自学和批判性思考的性格，给出适合她的学习建议，并举例说明相关知识在实际化学实验和分析里的应用。详细分析下各个方面。
+    - question: 我是新入职的高中化学老师，刚带高二班，发现不少学生在复杂氧化还原反应配平这块很卡，特别是半反应法和整体反应衔接时容易混乱。你作为教学顾问，能不能深入分析一下复杂氧化还原反应配平的核心原理、典型例题、常见误区和教学建议？最好结合科学探究精神和团队协作理念，提出有效的课堂活动设计方案，深入说说看。
+    - question: 你是我的化学学习助手，我做氧化还原反应配平题时常常卡在怎么判断氧化剂和还原剂这一步，有时候还会搞错电子转移的方向。你怎么看这些难点？能不能结合分析思路和实例，帮我理清判断氧化剂、还原剂和电子转移的关键点，说说你的看法。
+    - question: 你作为化学科普专家，我是一名49岁的医生毛水，理科基础一般，最近对高中化学氧化还原反应的配平挺感兴趣，特别想了解复杂反应分析和配平的科学原理，以及这些分析和医学、生活有什么联系。能不能详细说说复杂氧化还原反应配平的步骤、常见误区，并举例说明它在医学和生活中的实际应用？详细说说。
+    - question: 我是高二学生，最近学氧化还原反应配平时碰到难题：多步反应中怎么准确分析电子转移和元素变化，防止配平出错？你能结合具体例子，讲讲分析和配平多步复杂氧化还原反应的思路吗？讲讲看。
+    - question: 你作为我的化学学习助手，我在复习高中复杂氧化还原反应分析与配平时，希望能抓住关键步骤和容易出错的点，理清大致流程。能不能概括一下复杂氧化还原反应分析与配平的关键流程和常见错点，概括一下？
+    - question: 我是高二学生，化学成绩还行，但复杂氧化还原反应的配平总觉得不太稳。你能简单说说高中化学复杂氧化还原反应配平的核心思路和常见注意事项吗？简单说说就行。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 化学-高中-复杂氧化还原反应分析与配平进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 评价教学内容针对不同学生画像（基础、兴趣、目标、常见困惑等）的适应性和差异化设计，要求根据学生特征动态调整教学策略、内容和资源分配，体现精准教学。
+    - field: 指令格式遵循度
+      type: float
+      description: 评价教学内容是否严格、准确、灵活地按照教师或系统指定的结构与格式进行组织，并在合理范围内进行优化和拓展，确保结构层次分明、逻辑清晰、便于学习与复习。
+    - field: 教学方法科学性
+      type: float
+      description: 评价教学过程是否采用科学、有效且创新的教学方法（如启发式、探究式、分层递进、及时反馈、知识迁移等），并能根据学生实际灵活调整，促进深度理解与能力提升。
+    - field: 知识结构完整性
+      type: float
+      description: 评价教学内容是否系统、规范地覆盖氧化还原反应分析与配平的关键知识点，逻辑递进、层层深化，既全面又有深度，兼顾原理、方法、应用、易错点等。
+    - field: 创新思维激发度
+      type: float
+      description: 评价教学内容是否通过开放性问题、探究任务、实际应用等方式，持续激发学生创新思维和解决问题的能力，鼓励提出独特见解、设计新实验或应用。
+    - field: 真实提问模拟度
+      type: float
+      description: 评价问题设计是否贴近高中化学课堂实际，反映学生在复杂氧化还原反应分析与配平过程中的典型困惑和真实思考，具有代表性与针对性。
+    - field: 中华优秀传统文化与价值观融入度
+      type: float
+      description: 评价教学内容是否自然、恰当地融入社会主义核心价值观与中华优秀传统文化元素，强化科学精神、团队合作、创新责任等人文素养和社会责任感。
+    - field: 易用性与可操作性
+      type: float
+      description: 评价教学内容结构是否清晰、语言简明、步骤明确，流程顺畅，便于理解、操作和应用；同时关注用户体验细节，降低学习障碍。
+    - field: 反馈与改进建议
+      type: float
+      description: 评价教学内容是否包含针对学生学习过程的反馈环节，包括常见错误剖析、个性化改进建议、学习路径推荐等，帮助学生持续优化学习策略与效果。
+format_mode: prompt

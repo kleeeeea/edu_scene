@@ -1,0 +1,122 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-专题讲座设计教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高三语文老师，班里学生水平差距比较大，不少人对古诗词鉴赏没什么兴趣，家长也不太关注。你作为语文教学专家，能全面分析一下专题讲座怎么设计才能提升大家的古诗词鉴赏能力吗？最好细说每个环节和不同学生的策略。
+  - question: 我是高中语文教研组的，最近想设计一个关于现代诗歌创新表达的专题讲座，希望能照顾一些成绩一般但喜欢写作的学生。你作为讲座设计顾问，能讲清楚点怎么安排流程和内容，让他们更有创新写作的动力吗？
+  - question: 我是雷菊燕，初二女生，喜欢画画和看书，但是上课经常分心，只有遇到比赛或奖励才会特别积极。你作为语文教学专家，如果要给像我这样的学生设计专题讲座，能详细讲讲怎么吸引注意力、激发学习动力吗？最好结合我的兴趣和性格具体说说讲座每个环节怎么设计，举些例子。
+  - question: 我是高一语文老师，班里学生自主学习动力不强，家长也只关注成绩不太陪伴。你作为讲座设计顾问，讲清楚点怎么设计一个专题讲座，让学生更主动学语文？具体说说导入、互动和总结环节怎么做。
+  - question: I'm MartinSadie, a writer who loves poetry and creative writing, and
+      I thrive on external encouragement and group collaboration. As a lecture design
+      consultant, could you use a few sentences to share how a high school Chinese
+      literature lecture could inspire students like me to get into creative writing,
+      especially focusing on teamwork and motivation?
+  - question: 我是一名高三语文组长，今年高考语文改革后，学生们对新的阅读理解和综合素养要求都有压力。你作为语文教学专家，能全方位地讲解一下专题讲座怎么系统提升学生的阅读理解能力和语文综合素养吗？希望能详细说说讲座目标、结构、互动、评估，还有怎么融入传统文化和价值观，举些实际例子。
+  - question: 我是新来的高中语文老师，班里学生能力不错但创新表达方面有点弱。你作为讲座设计顾问，详细说说专题讲座怎么培养他们的创新表达能力，特别是写作和交流环节有哪些具体做法？举些例子。
+  - question: 我是高中语文备课组长，学校让我们设计一场把中华优秀传统文化融入语文教学的专题讲座。你作为语文教学专家，能给我一份完整的分析吗？希望能讲清楚讲座设计理念、内容、互动和评价怎么安排，还要说说怎么让不同基础的学生都能感受到传统文化的魅力，举些例子。
+  - question: 我是桑帆，43岁男老师，最近职业倦怠感挺重，和学生关系虽然表面还行但其实挺紧张，我喜欢茶道和跆拳道，也经常跟茶友交流。你作为语文教学专家，能具体说说专题讲座怎么帮我改善和学生的关系，激发师生互动吗？结合我的兴趣和现状具体提些建议和讲座设计方案。
+  - question: I'm ThompsonMelanie, a 14-year-old student who loves piano and puzzles
+      but often procrastinates and doesn't like practical tasks. As a Chinese language
+      teaching expert, could you give me a brief overview of how a Chinese lecture
+      can help students like me stay motivated and deal with procrastination, especially
+      by combining creativity and practical skills?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-专题讲座设计进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准识别_理由
+    type: str
+    description: 解释个性化画像精准识别评分的详细理由，引用具体例子。
+  - field: 个性化画像精准识别
+    type: float
+    description: 讲座设计需基于多维学生数据（学业、兴趣、认知风格、成长背景等），动态更新个体画像。要求差异化目标、内容与活动安排，能持续追踪学生成长并据反馈调整。需有数据采集、分析与应用证据。
+  - field: 个性化指令遵循度_理由
+    type: str
+    description: 解释个性化指令遵循度评分的详细理由，引用具体例子。
+  - field: 个性化指令遵循度
+    type: float
+    description: 讲座结构需分环节、分任务，内容与命题要求高度对应。各环节目标、内容、评价标准明确，并有流程记录与执行反馈。需有实际行动与成果证据，避免流程与设计脱节。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 所用教学方法需有明确教育理论依据，结合学生认知阶段和心理需求，方法选择与内容、目标高度匹配，能促进深度理解与能力迁移。要求有方法选择逻辑、理论支撑及成效数据，体现持续优化。
+  - field: 教学方法多样性_理由
+    type: str
+    description: 解释教学方法多样性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性
+    type: float
+    description: 根据学生实际和目标，灵活组合多种互补性教学方法。方法间有机融合，能促进多元能力发展和主线目标达成。要求具体说明方法组合逻辑及协同效果，有学生能力提升证据。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 系统设置高阶开放性问题、跨领域创意任务或真实情境探究，鼓励学生批判性、创造性思考。要求创新活动有层级设计、持续跟进与成果展示，能量化创新思维提升。
+  - field: 创造性表达机会_理由
+    type: str
+    description: 解释创造性表达机会评分的详细理由，引用具体例子。
+  - field: 创造性表达机会
+    type: float
+    description: 为所有学生提供多样且充足的创作、表达或展示机会，支持个性化选择。成果需获得多元评价与持续改进建议，体现学生主体性和成长过程。要求有表达形式统计和改进反馈数据。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 讲座内容需将社会主义核心价值观与中华优秀传统文化有机融合，结合文本与学生实际，采用故事、讨论、体验等方式自然引导学生认同和践行。要求有情境设计、学生感知与行为转化证据。
+  - field: 文化传承润物细无声_理由
+    type: str
+    description: 解释文化传承润物细无声评分的详细理由，引用具体例子。
+  - field: 文化传承润物细无声
+    type: float
+    description: 讲座需通过内容、体验活动、创作实践等多元方式，让学生在潜移默化中理解、认同和传承中华优秀传统文化。重视情感共鸣、实际参与与内化过程，有学生文化认同与参与度统计。
+  format_mode: prompt

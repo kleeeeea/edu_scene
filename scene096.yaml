@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-小学-磁现象的观察与探究教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是五年级学生家长，我女儿最近在课上接触了磁铁，但她比较内向，怕做错。我想帮她在家里做一些观察和探究磁现象的活动，让她能自信表达自己的发现。你作为物理学习助手，能解释一下适合这个年龄段孩子怎么开展磁现象探究吗？希望能有具体的操作建议，能解释一下吗？
+  - question: 我是小学科学老师，最近在教磁现象时发现孩子们实验时不太主动，一些学生还容易分心。你作为小学物理教学顾问，能彻底说清楚小学磁现象观察与探究的教学设计思路吗？希望从分层活动、学生参与、科学探究流程到评价和家校配合都能细致讲讲，彻底说清楚。
+  - question: 你是物理专家，我是四年级学生，最近对磁铁很好奇，为什么有些东西能被磁铁吸引，有些不能呢？能解释一下其中的科学道理，还能告诉我怎么自己动手做实验观察吗？能解释一下吗？
+  - question: 我是新入职的小学科学老师，你作为教学专家，能帮我完整分析一下怎样系统设计和实施磁现象观察与探究的课程吗？希望你能从教学目标、学情分析、分层教学、探究流程、学生参与、评价方法和家校合作等方面详细展开，给我一份完整的分析。
+  - question: 我是三年级学生家长，我孩子很喜欢做手工，也爱实验，但磁铁和其他金属的区别总是搞不明白。你作为物理学习助手，能讲讲看适合这年龄孩子的磁现象观察与探究活动怎么设计，让他能更好理解吗？讲讲看。
+  - question: 我是小学科学老师，你作为物理教学顾问，能概括一下磁现象观察与探究在小学教学里的核心目标和主要方法吗？概括一下就行。
+  - question: 我是五年级学生，你是我的学习助手，能用几句话说说磁铁有哪些常见用途，观察磁现象时要注意什么吗？用几句话说说。
+  - question: You are my science learning adviser. I'm Matthew, a 5th grader who likes
+      Go, Sudoku, and robot building. I usually prefer solo, structured activities
+      and focus on rational learning without distractions. Could you detailedly explain
+      how I can observe and explore magnetic phenomena in a way that fits my interests
+      and learning habits? Please give examples and suggestions connected to my hobbies,
+      and detailedly expand on this topic.
+  - question: 我是潘茂，20岁宠物美容师，平时喜欢手工DIY宠物服饰、拍宠物照和观察动物行为，社交圈比较固定，压力大容易崩溃。最近我对小学物理里的磁现象观察很感兴趣，想知道这种科学探究能不能用在我的工作或兴趣里。你作为物理专家，能帮我理解一下磁现象观察与探究对宠物美容和动物行为有什么启发或实际应用吗？帮我理解一下。
+  - question: 我是毛梦，43岁女老师，喜欢种菜养花、硬笔书法和打羽毛球，社交圈主要是同事和家长，平时偏爱户外活动。最近我在设计小学磁现象观察与探究课程，希望学生能主动参与、体验科学探究流程，并能自然融入合作、尊重事实等价值观。你作为物理教学专家，能详细讲讲怎么结合学生实际和学科特点，系统设计这样的课程吗？详细讲讲。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-小学-磁现象的观察与探究进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学设计是否细致分析并针对学生的具体特征（如年级、兴趣、认知基础、性格等）进行针对性调整，包括内容选择、活动安排和表达方式等，体现对个体差异的关注和响应。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估内容是否严格按照指定任务要求的结构和格式（如分点、标题、步骤、逻辑顺序等）组织，表达清晰、条理分明，便于理解和执行。高分需体现步骤完整、结构规范和关键要素齐全。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否符合小学生认知发展规律，遵循科学探究流程（如观察、提问、假设、实验、分析、归纳），内容准确无误，能引导学生自主思考和探究。高分需体现探究环节的完整与科学性。
+  - field: 活动设计专业度_理由
+    type: str
+    description: 解释活动设计专业度评分的详细理由，引用具体例子。
+  - field: 活动设计专业度
+    type: float
+    description: 评估活动是否安全、适合小学生年龄特点，具备可操作性和趣味性，同时能有效促进对核心知识的理解与应用，并有安全防护措施与难度把控。高分需兼顾安全、趣味、实用和适龄性。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学设计是否通过开放性问题、假设、跨学科联系等方式，激发学生的创新意识和探索欲望，鼓励尝试新思路和自主创造。高分需有具体创新环节和鼓励措施。
+  - field: 学生主动参与度_理由
+    type: str
+    description: 解释学生主动参与度评分的详细理由，引用具体例子。
+  - field: 学生主动参与度
+    type: float
+    description: 评估是否充分调动学生主动性，包括动手实验、分组讨论、结果展示、提问等多种形式，促进多方互动与表达。高分需体现学生主导、教师引导的动态互动。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估教学内容和活动是否自然融入社会主义核心价值观（如尊重科学、团结协作、诚实守信、勇于探索等）及中华优秀传统文化，方式自然、具体，避免口号化或生硬灌输。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估课堂提问设计是否贴近小学生实际认知水平和兴趣，问题具体、生活化，能激发好奇心。高分应体现问题的生活关联性、疑惑性和可操作性，不强求完全原创。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教师回应是否针对学生具体需求、兴趣或困惑，提供有针对性、分层次的引导和帮助，帮助学生克服困难、提升兴趣。高分需体现针对不同学生的具体应对和持续跟进。
+  format_mode: prompt

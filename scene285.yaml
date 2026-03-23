@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene285/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 德育美育-初中-“负责任的公民”辩论赛（德育）教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是高三的蔡兰，最近参加了“负责任的公民”辩论赛。我擅长动漫设计和演讲，但有时候容易分心。你能用几句话说说，负责任的公民到底是什么？在辩论中我怎么能展现出自己的优势？
+    - question: 你作为德育专家，能详细展开说说在初中‘负责任的公民’辩论赛里，怎么引导学生真正理解并践行负责任的公民行为吗？最好结合校园和社会的真实例子，详细分析下常见困惑和老师可以用的教育方法。
+    - question: 我是初中道德与法治老师，我们学校要办‘负责任的公民’辩论赛。你作为教育专家，能全面深入地讲讲负责任公民的核心素养和培养路径吗？还想听听美育活动对责任感形成有哪些促进作用，麻烦结合学生心理、团队协作和实际困境系统讲讲。
+    - question: 你作为初中班主任，能详细分析下在‘负责任的公民’辩论赛筹备、实施、总结各阶段，如何全面培养学生责任意识吗？请从道德认知、情感体验、行为训练、团队协作、家校联动等方面详细分析下各个方面，并结合案例说明效果。
+    - question: 你是初中德育老师，能详细说说‘负责任的公民’辩论赛如何通过团队合作和观点碰撞，培养学生责任感和社会参与意识吗？请举例说明具体做法。
+    - question: 我最近在网上看到初中‘负责任的公民’辩论赛，能帮我概括一下这种活动对学生道德成长有什么积极影响吗？
+    - question: 你作为德育教学顾问，能深入说说看‘负责任的公民’辩论赛里学生可能遇到哪些道德困境和团队冲突吗？老师可以怎么引导他们提升责任和沟通能力？最好结合实际案例详细讲解。
+    - question: I'm ThompsonAlice, a teacher with a flexible approach who loves creative writing and aerobics, and I often blend structured planning with spontaneous social activities. As an educational expert, could you say your thoughts on how teachers like me can foster civic responsibility in junior high 'Responsible Citizen' debates? Please include some practical methods and examples, but keep it moderately detailed.
+    - question: 我是罗月月老师，经常组织艺术和科学实验的跨学科活动，也喜欢团队协作。在‘负责任的公民’辩论赛中，我该怎么发挥自己的优势，促进学生责任感和创新能力发展？你可以说说你的看法，最好结合具体做法和案例。
+    - question: 我是高一的邓玲，喜欢服装设计和外语学习，合作意识挺强，批判性思维也不错，就是有点拖延。你作为学习助手，能讲讲看我在‘负责任的公民’辩论赛里怎么结合兴趣和优势，提升团队贡献和责任感吗？最好举几个例子。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 德育美育-初中-“负责任的公民”辩论赛（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化学生画像适配度
+      type: float
+      description: 评估方案是否针对初中生的年龄、认知发展阶段、兴趣、性格等多元画像进行差异化设计，能否为不同类型学生提供有针对性的支持与激励措施。
+    - field: 指令格式遵循度
+      type: float
+      description: 评估方案是否严格依照教师或教学场景设定的步骤、内容和格式要求呈现，无遗漏、混乱或随意发挥，确保实施的可操作性和规范性。
+    - field: 教学方法科学性
+      type: float
+      description: 评估所采用教学方法是否符合教育学理论，如合作学习、讨论式教学、探究学习、批判性思维培养等，且能结合德育美育目标，促进学生深度学习与成长。
+    - field: 教学方法专业细致度
+      type: float
+      description: 评估教学方案对流程、环节、评价等细节的把控是否周密，能否体现专业的教学设计水平，包括备赛、实施、反馈、评价等全流程。
+    - field: 创新思维激发性
+      type: float
+      description: 评估方案是否设计开放性、跨学科、前瞻性的问题与活动，鼓励学生独立思考、质疑、创新，超越教材内容提出独特见解。
+    - field: 创造性表达引导度
+      type: float
+      description: 评估是否鼓励和引导学生通过多样化、创新性的方式（如演讲、海报、微电影、情景剧等）表达学习成果，促进表达力和创造力提升。
+    - field: 社会主义核心价值观融入度
+      type: float
+      description: 评估方案是否将社会主义核心价值观（如责任、诚信、友善等）与德育目标自然融合，且能够结合中华优秀传统文化，促进学生内化于心、外化于行。
+    - field: 价值观表达的自然性
+      type: float
+      description: 评估价值观融入的方式是否细腻自然，能够通过案例、故事、实践等方式潜移默化地影响学生，而非生硬灌输。
+format_mode: prompt

@@ -1,0 +1,115 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-初中-地形图的判读与应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中地理新教师，最近备课时发现班里有学生对地形图判读很畏难，特别不理解等高线和地形剖面图的绘制。你作为地理教学顾问，能详细说说实际教学中怎么系统地讲解地形图判读方法、等高线的作用和地形剖面图绘制技巧吗？还有针对学生心理特点，给些分层建议和激发兴趣的方法吧。
+  - question: 我是一个对地理有些兴趣，但学地形图判读时总分不清地势高低和坡度变化。你作为地理学习助手，能解释一下怎么用地形图和等高线判断地势高低、坡度陡缓吗？最好举点常见的例子帮我掌握这些技巧。
+  - question: 我是初中生，平时喜欢户外活动，但觉得地形图判读很抽象，实际用时容易出错。你作为地理老师，能解释一下地形图在户外活动中的应用吗？比如怎么选路线、避开危险区域，还能结合我的兴趣给些实用建议吗？
+  - question: 我是一个认真踏实的初中女生，老师让我们总结地形图判读的常见错误和注意事项。我怕遗漏关键点。你作为地理学习助手，能简要说明下初中地形图判读中容易出错的地方和要注意的要点吗？
+  - question: 我是初中地理教研员，最近组织教师研讨，想设计更深度的地形图判读与应用教学方案。你作为地理教育专家，能详细展开说说地形图教学的理论基础、判读流程、学生常见问题分析、分层教学设计，以及怎么融合中华优秀传统文化和核心价值观吗？最好有充分的论述和案例分析。
+  - question: 我是刚入职的初中地理老师，班里学生基础差异挺大，有的对地形图完全不懂，有的能自主学习。你作为地理教学专家，能系统地讲解一下地形图判读与应用的教学流程、重点难点、分层指导策略和个性化成长建议吗？最好能兼顾基础薄弱和有探究力的学生，还结合中华优秀传统文化和核心价值观，提点具体实践方案。
+  - question: I'm GarciaOliver, a 16-year-old high school student focused on guitar,
+      Go, and electronic music production. My focus fluctuates, I learn better with
+      structured guidance, and I prefer passive collaboration due to being introverted.
+      As a bilingual geography learning assistant, I want to deeply understand how
+      to interpret different landforms on topographic maps, analyze slope and elevation
+      changes, and apply these skills to both studies and my personal interests. Can
+      you explain thoroughly and suggest learning strategies and creative exercises
+      that fit my style and hobbies?
+  - question: 我是初中生，平时对地理兴趣不大，但老师最近让我们分析地形图在生活中的作用。你作为地理老师，能解释一下地形图在日常生活和实际应用中的价值吗？比如灾害预防、交通规划之类，举点具体例子让我好理解。
+  - question: 我是卢亦，高二女生，喜欢园艺、科学实验和吉他，父母在政府部门工作，和同学常做科学实验，园艺社团成员。最近学地形图判读，老师让我们简短说说它在园艺或社区活动中的实际应用。你作为地理学习助手，能简短回答下地形图判读在园艺或社区活动里的实际用途吗？
+  - question: 我是初中地理教师，教学地形图判读时发现学生对综合应用和能力提升没系统认知。你作为地理教育专家，能全方位地讲解一下地形图判读的知识体系、实际应用场景、分层教学策略、学生兴趣激发方法吗？还希望结合中华优秀传统文化和核心价值观，给出具体可操作的教学建议和案例分析。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-初中-地形图的判读与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学适配度_理由
+    type: str
+    description: 解释个性化教学适配度评分的详细理由，引用具体例子。
+  - field: 个性化教学适配度
+    type: float
+    description: 评估教学内容是否充分考虑学生的学习基础、兴趣、认知风格和发展差异，采用分层、差异化策略，提供针对性支持与反馈，能动态调整教学方案，确保每类学生都获得适合自身的学习体验。
+  - field: 指令遵循与结构规范性_理由
+    type: str
+    description: 解释指令遵循与结构规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范性
+    type: float
+    description: 评估教学内容是否严格按照既定教学流程和要求分段、分主题，结构层次分明，逻辑严密、衔接自然。高阶表现包括有明确的学习引导、回顾与迁移环节，支持学生自主梳理知识。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估教学方法是否契合地理学科特点，融合启发式、探究式、合作学习及实践活动，方法多样、互动性强。高阶表现包括创新性设计和跨学科融合，能激发学生主动参与与多元表达。
+  - field: 知识点准确性、系统性与深度_理由
+    type: str
+    description: 解释知识点准确性、系统性与深度评分的详细理由，引用具体例子。
+  - field: 知识点准确性、系统性与深度
+    type: float
+    description: 评估地形图相关知识讲解是否科学准确，系统全面，覆盖基础要素、判读方法、实际应用及典型误区。高阶表现包括深度剖析、跨学科联系、知识拓展和案例分析，能促进学生理解本质和迁移能力。
+  - field: 创造性思维与自主探究激发_理由
+    type: str
+    description: 解释创造性思维与自主探究激发评分的详细理由，引用具体例子。
+  - field: 创造性思维与自主探究激发
+    type: float
+    description: 评估教学内容是否通过开放性问题、项目任务、真实情境等方式，激发学生创新思考和自主探究能力。高阶表现包括鼓励多角度表达、独立思考、方案展示与反思，支持持续探究。
+  - field: 学生视角与语言自然度_理由
+    type: str
+    description: 解释学生视角与语言自然度评分的详细理由，引用具体例子。
+  - field: 学生视角与语言自然度
+    type: float
+    description: 评估内容和表达是否贴近初中生真实学习场景，语言自然、亲切，符合学生认知水平、表达习惯和实际困惑，关注学生感受和成长需求。高阶表现为主动引入学生视角、语言风格和典型疑问，提高亲和力和共鸣感。
+  - field: 价值观与文化润泽融入度_理由
+    type: str
+    description: 解释价值观与文化润泽融入度评分的详细理由，引用具体例子。
+  - field: 价值观与文化润泽融入度
+    type: float
+    description: 评估内容是否自然、隐性地融入社会主义核心价值观或中华优秀传统文化，结合地理知识引导学生热爱祖国、关注生态保护、理解家乡人文地理等。高阶表现为润物细无声，将价值观与地理知识有机融合，促进学生家国情怀和社会责任感。
+  format_mode: prompt

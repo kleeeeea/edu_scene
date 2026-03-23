@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-初中-社区志愿者服务体验与反思（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是王曼，高一女生，最近一直独自参加社区环保志愿服务，喜欢手工DIY和文学创作，性格独立但容易被大家的意见带着走。你作为德育成长顾问，能给我一份完整的分析吗？帮我深入解析下我的体验、反思成长点，还有怎么提升团队合作能力和责任感，尤其是如何坚持自我？
+  - question: 我是初一学生刘洋，第一次做社区老人关怀志愿服务，性格有点内向，和老人交流时很紧张，不太会表达关心。你作为心理辅导员，能深入讲解一下我怎么克服内向，提升和老人交流的自信和技巧，还有这次活动可以怎么反思和成长？
+  - question: 我是初三学生张晨，最近在社区参加环保宣传志愿活动，主要负责发宣传单和讲垃圾分类。面对陌生人我表达不太清楚，碰到不理解的人就会紧张。你作为志愿服务指导老师，能讲得详细点吗？帮我分析下我的优缺点，还希望你能指导我怎么反思和提升沟通能力。
+  - question: 我是初一学生李妍，第一次参加社区图书整理志愿服务，有点怕自己分工做不好会影响别人。你作为德育顾问，帮我理解一下团队合作在这种活动里的重要性，还有我怎么能更好地融入团队？
+  - question: 我是初二学生王宇，社区义务植树时发现有同学偷懒，我想劝大家一起努力，但又怕被疏远。你作为成长导师，帮我理解一下怎么在志愿服务里坚持责任感，还有如何用合适的方法影响身边人？
+  - question: 我是初二家长，我女儿最近参加了社区志愿服务，但她觉得只是帮了点忙没什么收获。你作为德育专家，简单说说就行，初中生做社区志愿活动有什么意义，家长该怎么引导孩子更有收获？
+  - question: 我是社区志愿者队长张玲，最近带初中生做垃圾分类宣传，有些孩子很主动，有些比较被动，好像对活动意义没太多想法。你作为德育顾问，能具体说说吗？帮我分析下初中生参与社区志愿服务的表现和困惑，还有怎么激发他们的责任感和主动性？
+  - question: 我是初三学生周雨薇，最近参加了社区关爱空巢老人的志愿服务，觉得自己还不够细心，也怕和老人交流时说错话。你作为心理辅导老师，简单说说就行，怎么让自己在这类活动里更细致，让老人感受到真正的关心？
+  - question: 我是初中美育老师，最近带学生做社区环境美化志愿服务，有的学生很积极设计墙绘，有的只做了最基本的任务。你作为美育专家，详细分析下各个方面，帮我解读学生的表现和心理，还希望你能指导我怎么引导他们发现美、提升责任感和创新力，以及具体教学建议和反思方向。
+  - question: 我是老师白玲玲，57岁，喜欢外语和自然观察，教学时比较注意细节。最近组织初中生参加社区志愿服务，发现有些学生遇到点小挫折就不太有热情了。你作为德育顾问，能解释一下吗？帮我理解怎么在志愿服务中帮助学生树立正确的服务精神和面对挫折的积极心态？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-初中-社区志愿者服务体验与反思（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否充分结合学生具体画像（如年级、兴趣、能力、社区背景等），针对不同学生群体给出差异化、具体化建议与反思。高分需体现对学生独特性的深入理解，内容有针对性和细致响应，避免模板化。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估是否严格按照任务要求的格式、结构和内容要素作答，分段清晰，逻辑顺序合理，涵盖所有指定环节，无遗漏或混乱。高分需体现环节紧密衔接、内容详实且结构明确。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估内容是否紧密围绕社区志愿服务的德育目标，聚焦品德塑造、社会责任感、团队协作、服务意识等核心主题，反思有层次和深度，能体现品德成长、社会认知和自我提升的多维度。高分需有具体行为分析及价值观内化过程。
+  - field: 反思引导专业性_理由
+    type: str
+    description: 解释反思引导专业性评分的详细理由，引用具体例子。
+  - field: 反思引导专业性
+    type: float
+    description: 评估是否采用科学、结构化的反思方法（如‘挑战—应对—改进’、目标设定、同伴互评等），内容有逻辑、有层次，能帮助学生形成可持续自我提升路径，高分需体现反思逻辑链和具体改进行动。
+  - field: 情境模拟真实度_理由
+    type: str
+    description: 解释情境模拟真实度评分的详细理由，引用具体例子。
+  - field: 情境模拟真实度
+    type: float
+    description: 评估内容是否贴近真实初中生在社区志愿服务中的体验，包含具体细节、真实互动、现实挑战和情感变化。高分需描绘复杂情境（如冲突、误解、协作障碍等），并呈现具体解决或应对过程。
+  - field: 创新思维激发性_理由
+    type: str
+    description: 解释创新思维激发性评分的详细理由，引用具体例子。
+  - field: 创新思维激发性
+    type: float
+    description: 评估内容是否鼓励学生提出新颖的服务方式、独特改进建议或富有创造性的见解，激发学生创新能力与个性表达。高分需有具体创新举措或独到见解，避免传统做法或机械重复。
+  - field: 价值观自然融入性_理由
+    type: str
+    description: 解释价值观自然融入性评分的详细理由，引用具体例子。
+  - field: 价值观自然融入性
+    type: float
+    description: 评估社会主义核心价值观、中华优秀传统美德等是否通过具体故事、行为或真实体验自然呈现，内容与生活场景紧密结合。高分需价值观融入行为与感受中，避免机械罗列或生硬灌输。
+  - field: 激励性与正向引导_理由
+    type: str
+    description: 解释激励性与正向引导评分的详细理由，引用具体例子。
+  - field: 激励性与正向引导
+    type: float
+    description: 评估内容是否具有积极向上的情感色彩，能具体肯定学生努力与成长，提出有操作性的激励措施，帮助学生形成持续参与的动力与自信。高分需有情感共鸣与具体行动建议，促进长期成长。
+  format_mode: prompt

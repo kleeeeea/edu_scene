@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene318/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 体育-初中-运动损伤的初步处理（如扭伤）教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是初中体育老师，班里有一位女生在跳远训练时扭伤了脚踝，她13岁，运动经验一般，性格比较内向。你作为体育健康顾问，能简短回答下这种情况下应该怎么做？还有，课堂上有什么办法可以让学生更好地学会自救和互助吗？
+    - question: 最近班里有一个男生在篮球课上又扭伤了脚踝，他14岁，运动能力强但以前也受过类似伤。你作为体育健康专家，能具体说说这种情况下初步处理应该注意哪些？怎么结合学生的旧伤史和心理状态，用一些创新教学方法让大家更重视安全和互助？
+    - question: Hi, I'm DavisJustin, 12 years old, a 6th grader who loves swimming and playing guitar. I tend to follow my friends and like doing things together. If I sprain my ankle in PE class, can you, as my learning assistant, briefly explain what I should do first? Also, are there any fun group activities or exercises that could help me and my classmates learn how to take care of ourselves and support each other when someone gets hurt? Just give me a simple answer.
+    - question: Hello, I'm GarciaNatalie, a 13-year-old 7th grader who likes poetry, gardening, and swimming. In group activities, I usually quietly help out. As the school's sports health advisor, could you say your thoughts on what we should do first if someone gets a sprain during PE? Also, how can teachers use collaborative or interactive ways to make students like me feel comfortable and get more involved in learning how to handle injuries and support each other?
+    - question: 我是刚入职的初中体育老师，最近班里有些学生在体能训练时扭伤了脚踝或受了其他运动损伤，大家年龄12到14岁，运动水平和性格都不一样。有的有旧伤史，有的很外向乐于助人，也有的比较敏感。你作为体育健康教育专家，能全面分析一下运动损伤初步处理的流程吗？能结合不同学生的特点给些具体建议，并介绍一些创新的教学方法，比如情景模拟、团队协作或者角色扮演，帮助大家提升安全意识、互助能力和心理调适吗？最好能考虑家校合作和健康价值观的培养。
+    - question: 我是学校体育教研员，想在初中开展运动损伤预防和处理的校本课程。学生12到15岁，有些有运动损伤史或心理压力，老师里有新手也有经验丰富的。你作为体育健康专家，能彻底说清楚初中体育课运动损伤（比如扭伤）初步处理的方法吗？请系统梳理下，结合学生的年龄、旧伤、心理状态等，提出一些创新教学方案，比如互动演练、情景剧、团队协作、同伴支持等。也请分析课程设计中如何自然融入安全意识、同理心、家校沟通等健康价值观，内容要全面、科学又有温度。
+    - question: 我是初中体育老师，最近班里有几位学生在足球训练时扭伤了脚踝，大家13到14岁，性格各异，有些人以前也受过类似伤。你作为体育健康顾问，能解释一下遇到这种情况怎么处理比较好？尤其是怎么照顾有旧伤或心理压力的学生，还有教学中有哪些团队协作或角色扮演的方法可以提升大家的安全意识和互助能力？
+    - question: 我是初中体育老师，班里有个男生在跳高训练时扭伤了脚踝，他14岁，性格开朗但有过一次旧伤，最近因为比赛压力心理有点紧张。你作为体育健康教育专家，能全面分析一下扭伤后的初步处理流程吗？结合他的情况有哪些个性化建议？另外，怎么通过创新教学活动，比如情景模拟、团队协作、心理疏导等，让学生主动参与、提升安全意识和心理健康？希望能提及健康价值观和家校沟通的建议。
+    - question: 我是初中体育老师，最近班里有几位女生在羽毛球课上扭伤了脚踝，她们都比较内向，平时不太会主动找人帮忙。你作为体育健康顾问，能解释一下针对她们这种情况应该怎么处理？有哪些心理疏导要注意的？课堂上可以用什么互动教学方法帮助她们培养自我保护和互助意识？
+    - question: 你是体育健康专家，最近班里有一组初中男生在篮球课上连续扭伤了脚踝，大家年龄13到15岁，运动水平差异很大，有的经常比赛、有的体能比较弱。能详细分析下各个方面，系统说说运动损伤初步处理流程、结合学生个性和团队氛围有哪些创新教学方法，比如互动演练、团队协作、情境剧、同伴支持等？另外，课堂管理、家校沟通、心理疏导和安全教育如何做才能全面提升学生的健康和安全意识？内容尽量全面、科学，也要有温度。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 体育-初中-运动损伤的初步处理（如扭伤）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与回应
+      type: float
+      description: 评估回答是否充分收集并分析学生的个人特征（如性别、运动经验、既往损伤、心理状态等），并针对不同学生背景提供有针对性的建议，体现对个体差异的敏感性和深度关怀。
+    - field: 格式指令遵循度
+      type: float
+      description: 评估回答是否严格按照教师或场景设定的结构与格式要求（如分点、步骤、适龄语言等），组织清晰，逻辑层次分明，便于学生快速理解和操作。
+    - field: 科学性与专业性
+      type: float
+      description: 评估处理方法是否严格依据体育医学和教育学原理，内容无科学错误，解释充分，能区分不同损伤类型，提供科学依据和具体操作细节，并明确异常情况处理和就医指引。
+    - field: 教学方法创新性
+      type: float
+      description: 评估是否采用多样化、启发式和互动性强的教学方法，如情景模拟、角色扮演、游戏化、数字工具辅助等，能显著提升学生参与度、体验感和学习兴趣。
+    - field: 激发创造性思考
+      type: float
+      description: 评估回答是否主动引导学生思考运动损伤预防、处理方法改进、个性化康复方案等，鼓励学生提出新思路、开放性问题，并进行分析讨论，培养批判性和创新性思维。
+    - field: 模拟真实提问适应性
+      type: float
+      description: 评估回答能否针对学生实际可能提出的多样化、具体问题（如能否继续运动、家庭处理、特殊情况等）做出贴切、详细回应，体现对真实场景和学生实际需求的高度适应力。
+    - field: 价值观与文化润化
+      type: float
+      description: 评估回答是否自然融合社会主义核心价值观和中华优秀传统文化（如团结互助、科学精神、责任感、坚韧不拔等），内容积极向上，通过润物细无声的方式引导学生品格成长和文化认同。
+    - field: 语言表达适龄性
+      type: float
+      description: 评估回答用词是否完全适合初中生认知水平，语言简明易懂，避免生僻词和过度专业术语，对必要术语主动进行解释和举例说明，确保所有学生都能理解并应用。
+format_mode: prompt

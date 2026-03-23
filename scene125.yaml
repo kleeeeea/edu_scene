@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene125/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 生物-小学-生物与环境关系的认知教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是殳晶，二年级女生，喜欢跆拳道和写作，现在在班级里当小组长。我最近对生物和环境的关系很感兴趣，你能简单概括一下这方面的内容吗？
+    - question: 你作为学习顾问，能详细说说小学生在学习生物和环境关系时容易遇到哪些问题吗？还有，有哪些好的引导方法可以帮助他们理解？
+    - question: 我是三年级学生，最近老师让我们观察身边的动植物来学习生物和环境的关系。你觉得这样做有什么好处？说说你的看法。
+    - question: I'm PhillipsViolet, a teacher who likes gaming and reading, and I teach in a democratic but practical way. Sometimes I find it hard to connect emotionally with my students. Can you detailedly share some creative ideas and examples for helping elementary kids understand how living things relate to their environment during class?
+    - question: I'm JacksonIris, a senior high school student balancing calligraphy, makeup, and environmental protection interests with my studies. I want to deeply understand how organisms interact with their environment and how students like me can strengthen our environmental responsibility. Can you explain this topic in detail, with lots of examples and analysis?
+    - question: Hi, I'm Evan, 8 years old in 3rd grade. I really love stargazing and exploring nature, and I'm always up for a challenge. Can you quickly explain why it's important for living things to have a good relationship with their environment? If you can, use some real-life or nature examples!
+    - question: 我是小学科学老师，想让学生通过团队活动和项目式学习更深入理解生物和环境的关系。你能详细讲讲怎么设计这样的教学吗？
+    - question: 我是小学教研员，你作为教育专家，能系统地讲解一下生物和环境关系的知识吗？最好结合小学课堂和创新活动，从各方面详细说说。
+    - question: 我是二年级家长，最近想通过日常生活现象帮助孩子理解生物和环境的相互影响。你能讲清楚点怎么做吗？最好举些例子。
+    - question: 我是小学科学教师，现在在备课关于生物和环境关系的内容。你能详细分析下这个主题的各个方面吗？希望能结合生态系统、人与自然、动植物互相依赖等内容，还有一些实际的教学案例。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 生物-小学-生物与环境关系的认知进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与响应
+      type: float
+      description: 评估教学内容与表达是否根据学生的年级、兴趣、学习风格等特征，进行有针对性的深度定制。需体现对不同学生差异的敏感识别和动态调整，包括案例选择、表达方式、互动策略等，能够因材施教，促进每位学生的有效学习。
+    - field: 指令格式遵循度
+      type: float
+      description: 评估教学设计是否严格按照指定结构、分段、层次及语言风格组织内容，无随意增减、遗漏或顺序错误，表达规范、条理清晰，能让小学生易于理解和把握学习流程。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评估所采用教学方法是否建立在小学认知规律基础上，科学、系统地促进学生主动思考、探究与合作。需体现多样化教学策略（如情境创设、启发探究、小组协作、实践体验等），并能根据学习目标和内容选择最适宜方式，有效提升学习效果。
+    - field: 知识准确性与表达清晰度
+      type: float
+      description: 评估教学内容中生物与环境关系的知识是否科学、准确，表达是否简明、贴合小学生认知水平。要求核心概念表述无误，语言通俗易懂，避免使用生僻词汇或模糊表述，能有效帮助学生理解和掌握关键知识。
+    - field: 创新思维激发度
+      type: float
+      description: 评估教学是否通过开放性任务、情境设定、多样表达等方式，激发学生的创新思维和独立探索。鼓励学生表达独特见解，提出新问题，设计新方案，能够超越简单记忆与复述，发展创造性解决问题能力。
+    - field: 互动性与参与度设计
+      type: float
+      description: 评估教学过程是否包含多样化的互动与参与设计，如小组合作、观察记录、动手实践、课堂问答等。要求能有效调动学生积极性，促进同伴交流、合作和反思，避免学生被动接受知识。
+    - field: 社会主义核心价值观融入度
+      type: float
+      description: 评估教学内容是否将社会主义核心价值观（如尊重生命、爱护环境、团结协作、责任担当等）自然、深入地融入情境与活动，能引导学生在真实情境中体验和践行。要求价值观融入具体学习任务和行为指导，避免表面化或口号式。
+    - field: 中华优秀传统文化传承度
+      type: float
+      description: 评估教学是否将中华优秀传统文化元素（如诗词、寓言、民俗、传统智慧等）与生物与环境主题有机结合，通过启发性讨论、创意表达等方式，增强文化认同和审美体验，避免形式化或无关拼贴。
+    - field: 知识应用与迁移能力
+      type: float
+      description: 评估教学是否设计了知识应用和迁移环节，鼓励学生将所学知识用于分析实际生活中的生物与环境现象、解决真实问题，或迁移到新情境中。高水平要求能引导学生进行深层次迁移，提出改进建议或创新方案。
+format_mode: prompt

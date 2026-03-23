@@ -1,0 +1,160 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-小学-人体感官功能与探索教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: I’m HarrisGianna, 11 years old in 5th grade. I enjoy line and watercolor
+      painting, science experiments, and table tennis. I usually learn by adapting
+      and trusting my intuition, though I understand things slowly and build up knowledge
+      patiently. Could you please explain the main functions of the human senses and
+      how they help us explore our world? Just a clear summary, thanks.
+  - question: Hi, I’m HarrisGianna, 11 years old in 5th grade. I love painting, doing
+      science experiments, and playing table tennis. I usually take time to understand
+      new things but like to figure them out my own way. Could you use a few sentences
+      to tell me why we have five senses and how they work together?
+  - question: I’m HarrisGianna, an 11-year-old girl in 5th grade. I really enjoy line
+      and watercolor painting, doing science experiments, and playing table tennis.
+      I usually learn slowly and trust my intuition, building up knowledge step by
+      step. I want to understand deeply how my senses work, how their structures help
+      me in painting and experiments, and what I can do to protect them. I’m curious
+      about how the senses interact and support creativity. Could you explain in detail?
+  - question: I’m HarrisGianna, 11 in 5th grade, and I love painting and doing science
+      experiments. I usually learn by adapting and using intuition, but I take my
+      time to understand things. When I paint, I notice my eyes and hands working
+      together. Can you talk about how sight and touch coordinate during painting
+      and why it’s important?
+  - question: I’m HarrisGianna, 11 years old, 5th grader, and I enjoy painting, science
+      experiments, and table tennis. I usually learn by adapting and trusting my intuition,
+      but I sometimes feel my senses get tired or overwhelmed after activities. Can
+      you help me understand what sensory overload means, how it happens, and what
+      I can do to avoid it when I’m painting or playing sports?
+  - question: I’m HarrisGianna, 11 years old in 5th grade. I really like painting,
+      doing science experiments, and playing table tennis. I’m patient and learn things
+      gradually. Can you talk about how our sense of smell works and why it matters
+      in everyday life or creative things like painting and experiments?
+  - question: I’m HarrisGianna, 11 years old in 5th grade. I love line and watercolor
+      painting, science experiments, and table tennis, and I usually learn patiently
+      and by intuition. You’re a biology education expert—can you give me a complete,
+      deep explanation of all five senses? I want to know about their structures,
+      functions, how they interact, how to protect them, and how they help me with
+      painting and sports. Could you talk about every aspect in detail?
+  - question: I’m HarrisGianna, 11 years old in 5th grade. I enjoy painting, science
+      experiments, and playing table tennis, and I take a patient, creative approach
+      to learning. Can you give me a full analysis of how our five senses help with
+      learning and creativity, and what I can do to protect and strengthen my senses
+      in my hobbies and at school?
+  - question: I’m HarrisGianna, 11 years old, 5th grade, and I like painting, science
+      experiments, and playing table tennis. I usually learn step by step and trust
+      my intuition. I often wonder about how our ears work, how we hear, and how to
+      protect our hearing, especially when I’m playing sports and it gets noisy. Can
+      you explain these things in detail?
+  - question: I’m HarrisGianna, 11 years old in 5th grade. I love painting, science
+      experiments, and table tennis, and I learn step by step using intuition. After
+      science experiments, I notice my sense of touch helps me explore materials.
+      Can you talk specifically about how touch helps us explore the world, and give
+      examples from painting or experiments?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-小学-人体感官功能与探索进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否充分结合不同年级、知识水平、兴趣点和生活经验，采用适宜的语言、难度和示例，体现因材施教。高分标准需体现明显的多层次适配与差异化教学设计，并能针对特殊学习需要（如学困生、学有余力者）做出精准调整。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估内容是否严格且细致地按照教学任务或题目要求输出，包括分条、表格、流程图、问答等，结构层次清晰，示例与扩展内容齐全。高分需体现格式创新、内容排版美观、便于学生快速理解和使用。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估内容是否全面、准确覆盖‘人体感官功能与探索’主题的核心知识点，包括各感官功能、器官、探索活动、生活应用等，且内容与课程标准深度和广度要求一致。高分标准需涵盖跨学科联系和知识整合，且无遗漏、无偏离主题。
+  - field: 科学性与准确性_理由
+    type: str
+    description: 解释科学性与准确性评分的详细理由，引用具体例子。
+  - field: 科学性与准确性
+    type: float
+    description: 评估生物学知识的科学性、准确性和深度，包括定义、原理、现象等的正确性，且表述规范、逻辑清晰。高分需体现科学解释的层次性，能适当解释原理、现象之间的联系，并用贴合小学阶段的科学语言表达。
+  - field: 教学内容完整性与深度_理由
+    type: str
+    description: 解释教学内容完整性与深度评分的详细理由，引用具体例子。
+  - field: 教学内容完整性与深度
+    type: float
+    description: 评估内容是否覆盖全部核心知识点，且能深入探讨感官功能细节、联系及实际应用。高分需体现知识的层次性，对高年级或学有余力学生有适度拓展（如感官间协作、感官保护、感官障碍等）。
+  - field: 教学方法创新性_理由
+    type: str
+    description: 解释教学方法创新性评分的详细理由，引用具体例子。
+  - field: 教学方法创新性
+    type: float
+    description: 评估教学方法是否多样、富有创意，能激发学生主动参与、体验和探究。高分需体现多种创新方式（如小组实验、游戏、角色扮演、项目化学习、情境模拟等），并能结合信息技术或校外资源，形成独特的学习体验。
+  - field: 创造力激发程度_理由
+    type: str
+    description: 解释创造力激发程度评分的详细理由，引用具体例子。
+  - field: 创造力激发程度
+    type: float
+    description: 评估内容是否鼓励学生主动提出问题、创新思考，开展开放性探索。高分需设置多层次、跨学科、富有挑战性的创新任务，引导学生超越教材内容，发展科学思维和想象力。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估问题设定是否高度贴近小学生实际兴趣、生活体验和认知特点，反映真实课堂疑惑和好奇心。高分需体现问题的多样性、层次性和生活关联性，能覆盖不同兴趣和认知层次学生。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估内容在讲解科学知识的同时，是否自然融入社会主义核心价值观或中华优秀传统文化，促进学生形成正确的科学观、健康观、合作观等。高分标准要求情境贴切、表达自然，且能激发学生情感认同和行为实践。
+  format_mode: prompt

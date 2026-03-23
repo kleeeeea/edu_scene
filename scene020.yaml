@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-初中-阅读习惯培养教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中语文老师，班上有几个男生平时喜欢打篮球，对阅读不太感兴趣，语文成绩也一般。我想帮助他们养成良好的阅读习惯，你能解释一下吗？最好结合他们的兴趣具体说说。
+  - question: 你作为语文教育专家，我女儿刚升初一，之前特别喜欢看漫画，但现在只爱刷短视频，不愿意主动读课外书，能不能讲清楚点，怎么帮助她重新建立阅读习惯？
+  - question: 我是初中生家长，儿子今年初二，平时喜欢玩手机游戏，不太爱读书，性格有点急躁。你作为专业的语文学习顾问，能详细分析下各个方面，怎么科学系统地帮他养成良好的语文阅读习惯吗？
+  - question: 我是一名初中语文教师，班上有几个学生喜欢科幻小说，但对课内文学作品兴趣不高，也不乐意写读书笔记。你作为语文教育专家，能详细讲讲怎么利用他们的兴趣激发他们主动读课内作品和写读书笔记吗？要有具体建议和例子。
+  - question: My name is MartinezTheodore, I am a 34-year-old teacher who loves rock
+      climbing, basketball, and astrophotography. My teaching style is pretty informal
+      but with clear authority, and I like a mix of structure and feedback. How can
+      I help my middle school students develop good Chinese reading habits, given
+      my style and interests? Help me understand, especially how my hobbies and personality
+      might help.
+  - question: 我是初中生，老师说我阅读量太少，语文成绩也不好，平时喜欢玩电脑和看动画片，不太爱看书。简单说说就行，怎么才能开始培养好的阅读习惯？
+  - question: 我是范涵爽，31岁女老师，喜欢手工DIY和自然观察，经常组织学生参加户外和手工活动，和当地手工艺社团也很熟。你能给我一份完整的分析吗？怎么结合这些兴趣和资源，在初中语文教学中科学有效地培养学生的阅读习惯？要有理论、方法、案例、传统文化等内容。
+  - question: 我是初三学生，平时喜欢写网络小说，但不喜欢读课本上的名著，觉得太枯燥。你能全面分析一下，像我这样有写作兴趣但不爱读名著的人，怎么调整阅读习惯、激发对名著的兴趣？要有具体建议和例子。
+  - question: 我是初中语文老师，班里有几个学生喜欢讨论漫画和流行文化，但不太爱读课外书，写作文也没什么素材。讲清楚点，怎么引导他们把兴趣转成阅读动力，提高写作素材？最好有实际例子。
+  - question: 我是一名初中家长，女儿今年初一，性格内向，喜欢画画，也不太愿意和我聊读书的事。说说主要的，怎么帮助她培养乐于阅读和主动表达的好习惯？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-初中-阅读习惯培养进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像理解与适配_理由
+    type: str
+    description: 解释个性化画像理解与适配评分的详细理由，引用具体例子。
+  - field: 个性化画像理解与适配
+    type: float
+    description: 评估回答是否基于学生多维画像（兴趣、基础、性格、阅读习惯等）进行深入分析，并制定动态、差异化的教学方案。要求结合成长变化持续调整，体现精准与灵活的个性化支持。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估回答是否严格按照任务要求的结构、条目和格式输出，内容完整、条理清晰，分条细致，逻辑关系严密。需完整覆盖所有任务点，避免遗漏、混乱或随意发挥。
+  - field: 教学方法科学性与系统性_理由
+    type: str
+    description: 解释教学方法科学性与系统性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与系统性
+    type: float
+    description: 评估所用教学方法是否有理论与实证支持，包含分阶段目标、活动流程、反馈与评估机制。方案需系统性促进阅读习惯养成，明确每阶段目标与调整策略。
+  - field: 教学内容的实用性与可操作性_理由
+    type: str
+    description: 解释教学内容的实用性与可操作性评分的详细理由，引用具体例子。
+  - field: 教学内容的实用性与可操作性
+    type: float
+    description: 评估建议是否具体、可落地，包含明确时间安排、方法、工具、范例和跟踪调整措施，便于教师和学生实际执行与持续优化。
+  - field: 模拟真实提问的还原度_理由
+    type: str
+    description: 解释模拟真实提问的还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问的还原度
+    type: float
+    description: 评估问题设置与回答是否紧贴初中语文课堂及学生真实困惑，分析具体场景与实际问题，给出针对性解决方案。需避免内容泛化或脱离教学实际。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估回答是否设计开放性任务、跨学科活动或项目制学习，鼓励学生自主探索、创作和表达，产出多样化成果，推动创新思维与表达能力发展。
+  - field: 中华优秀传统文化与价值观融入度_理由
+    type: str
+    description: 解释中华优秀传统文化与价值观融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化与价值观融入度
+    type: float
+    description: 评估内容是否将中华优秀传统文化和社会主义核心价值观自然、深度地融入阅读活动，结合具体文本、主题和行为引导，帮助学生在实践中理解与践行价值观。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估回答是否深入挖掘学生画像背后的内在需求，体现同理心，针对性提出支持方案，并关注学生心理、表达与成长过程，提供持续跟踪与优化措施。
+  format_mode: prompt

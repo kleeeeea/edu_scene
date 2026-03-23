@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-初中-排球垫球与传球接力教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是五年级女生ClarkJade，喜欢传统武术、插花和摄影，但上体育课容易分心、紧张，老师说我边界感不清楚，希望我在排球垫球和传球接力时能更专注、合作。你作为体育教育专家，能详细展开说说怎么针对我这种情况设计个性化教学吗？最好能分步骤讲讲，举些创新活动和家庭支持的例子，还能结合我的兴趣给点建议。
+  - question: 我是刚接触排球垫球和传球接力的学生，你能简要说明下这两个技能的主要动作要点和安全注意吗？分点说清楚就行。
+  - question: 我是初中体育老师，班里有不少基础薄弱、积极性低、合作能力参差不齐的学生。你作为体育课程设计专家，能全方位地讲解一下排球垫球和传球接力的分层教学设计吗？最好能细分训练方案、创新玩法、激励措施、家校合作和团队文化建设这些方面，还能举些案例或流程清单。
+  - question: 我是高一男生BrownJulian，喜欢骑行、跆拳道和动漫创作，但比较依赖指导、界限感强，听觉记忆好但理解一般。老师让我参加排球垫球和传球接力，我在团队合作时有点不适应。你能解释一下怎么结合我的兴趣和性格帮我提升参与度和团队协作吗？举些适合我的练习和沟通方法，分点说说。
+  - question: 你作为体育老师，能说说你的看法吗？排球垫球和传球接力到底怎么帮助学生提升团队精神和坚持品质？最好结合实际例子和激励方法讲讲。
+  - question: 我是体育班主任，我们班有几个学生上排球垫球和传球接力时总分心，动作和配合都不好。你能讲讲看怎么针对他们设计分层训练和激励方法吗？顺便说说安全注意和提升专注力的办法。
+  - question: 你是排球教学专家，针对初中生刚开始学垫球，怎么设计有趣又有效的练习让他们掌握动作要领，同时增强团队协作？能具体说说吗？举些活动方案和案例。
+  - question: 你是初中体育课程负责人，要办一次‘排球垫球与传球接力’主题的体育节，参加学生基础差异大、积极性低、团队意识也不强。能从各个角度详细说说怎么系统设计这次活动吗？最好讲清楚分层训练、趣味竞赛、家校协同、文化融合、安全保障这些内容，还能给出具体流程和创新案例。
+  - question: 我是初中体育老师，班里有些学生对排球垫球和传球接力没兴趣还怕难。你能详细讲讲怎么通过创新活动、分层激励和情感沟通帮他们建立自信和兴趣吗？最好能结合实际案例说明，还能融入体育精神和传统美德。
+  - question: 我是初中生，想了解下排球垫球和传球接力的基本动作要点和团队合作的意义。你能概括一下吗？说说主要内容和操作建议就行。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-初中-排球垫球与传球接力进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准识别_理由
+    type: str
+    description: 解释个性化画像精准识别评分的详细理由，引用具体例子。
+  - field: 个性化画像精准识别
+    type: float
+    description: 评价方案是否基于多元数据（技术、兴趣、性格、参与度、学习风格等）进行全面、动态的学生画像识别，并据此制定针对性分层策略（分组、练习内容、心理支持等），能持续跟踪调整，关注个体成长轨迹而非一次性分组。
+  - field: 个性化指令遵循度_理由
+    type: str
+    description: 解释个性化指令遵循度评分的详细理由，引用具体例子。
+  - field: 个性化指令遵循度
+    type: float
+    description: 评价输出内容是否严格按照预设结构（如分层目标-活动-建议表格、步骤说明等）组织，逻辑清晰、格式规范，分层细致且有针对性，每层均有具体、可操作指导。高分需体现分层颗粒度、结构稳定性及操作性，避免要点堆砌或结构模糊。
+  - field: 教学内容科学性与系统性_理由
+    type: str
+    description: 解释教学内容科学性与系统性评分的详细理由，引用具体例子。
+  - field: 教学内容科学性与系统性
+    type: float
+    description: 评价教学内容是否遵循体育教学与运动技能习得规律，流程完整（含动作讲解、示范、分层练习、反馈、纠错、评估），并能针对易错点设专门纠错与提升环节。高分需体现内容递进、反馈有效、纠错细致，且各环节科学衔接。
+  - field: 教学活动专业度与适切性_理由
+    type: str
+    description: 解释教学活动专业度与适切性评分的详细理由，引用具体例子。
+  - field: 教学活动专业度与适切性
+    type: float
+    description: 评价活动设计是否充分结合初中生身心发展特点，兼顾趣味性、安全性与技能发展，难度分级合理，能激发积极性。高分需体现年龄适配、趣味创新、分层挑战、安全措施完备及风险预案细致，避免仅满足基本安全与趣味。
+  - field: 创新与变式引导_理由
+    type: str
+    description: 解释创新与变式引导评分的详细理由，引用具体例子。
+  - field: 创新与变式引导
+    type: float
+    description: 评价方案是否系统引导学生尝试多样化练习方式、创新玩法，鼓励主动思考与问题解决，设有创新/变式环节，自主设计任务与分享机制。高分需体现创新活动与核心技能紧密结合、学生参与度高、创新成果有展示和评价。
+  - field: 问题情境真实度与实践关联_理由
+    type: str
+    description: 解释问题情境真实度与实践关联评分的详细理由，引用具体例子。
+  - field: 问题情境真实度与实践关联
+    type: float
+    description: 评价方案是否基于真实初中体育课堂情境，关注教师和学生常见困惑及典型需求，结合具体案例分析策略与效果，能提出可操作、可落地的解决方案。高分需体现案例细致、问题真实具体、策略有实证反思，避免泛泛而谈或理想化。
+  - field: 中华优秀文化润化与价值引导_理由
+    type: str
+    description: 解释中华优秀文化润化与价值引导评分的详细理由，引用具体例子。
+  - field: 中华优秀文化润化与价值引导
+    type: float
+    description: 评价内容是否自然融入中华优秀传统文化或社会主义核心价值观（如团队协作、拼搏进取、尊重规则等），通过具体教学活动激发学生认同感和正向行为。高分需体现文化元素与教学深度融合、表达自然，避免口号化或形式化。
+  - field: 激励与正向反馈机制设计_理由
+    type: str
+    description: 解释激励与正向反馈机制设计评分的详细理由，引用具体例子。
+  - field: 激励与正向反馈机制设计
+    type: float
+    description: 评价方案是否为不同层次学生设计个性化、有效的激励与正向反馈机制，包括阶段性目标、差异化表扬、进步记录、挑战任务等，帮助学生建立信心、持续成长。高分需体现激励多样性、个体差异关注、成长记录与团队正向氛围。
+  format_mode: prompt

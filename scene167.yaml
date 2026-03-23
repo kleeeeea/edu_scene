@@ -1,0 +1,116 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-初中-听力关键信息抓取与笔记教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中英语老师，班里学生基础差异挺大，在听力关键信息抓取和笔记这块表现也不一样。你能全面分析一下初中英语听力关键信息抓取与笔记的核心技巧吗？能结合基础、进阶、拔尖三个层次的学生，分别说说具体训练方法、笔记策略和创新活动，还要结合实际教学场景举例，分层讲讲，内容尽量全面点。
+  - question: 你能说说你的看法吗？我是初中生，英语听力总抓不住重点，笔记记得也乱，有没有什么实用技巧能帮我抓住关键信息、做高效笔记？希望能结合我的情况给些具体建议，最好举点例子。
+  - question: 你作为英语教育专家，能不能系统地讲解一下初中英语听力关键信息抓取与笔记的分层教学设计？希望能细致分析基础、进阶、拔尖学生的差异，分别制定有针对性的训练任务、工具和创新活动，再结合批判性思维、开放表达和科技融合的理念，讲讲多元化教学方案和评价标准。内容需要系统、全面，请详细说说。
+  - question: 你是英语教学专家，我在教学中发现学生在听力抓取关键信息和记笔记方面差异挺大。能不能全方位地讲解一下如何针对不同层次学生分层教学？希望能结合实际案例，讲讲基础、进阶、拔尖学生的训练方法、笔记工具、创新活动，以及怎么引导他们开放表达和思考，内容尽可能全面和落地。
+  - question: I'm DavisAlbert, an English teacher who enjoys woodworking and swimming.
+      My classroom tends to be structured and authoritative, but I sometimes struggle
+      with keeping things organized and staying consistently motivated. In teaching
+      English listening, I notice students have trouble capturing key information
+      and taking notes effectively. Can you explain some practical, structured strategies
+      for helping students of different abilities with listening note-taking and information
+      extraction, taking into account my teaching style and personal traits? I'd appreciate
+      it if you could explain in some detail and give examples.
+  - question: 我是冯茂，高三学生，平常喜欢围棋、攀树、摄影，跟同学经常组队活动。我自主学习能力还不错，最近想提升英语听力抓关键信息和记笔记的效率。你能用几句话说说高效记笔记的策略吗？最好适合我这种爱探索、喜欢团队合作的学生。
+  - question: 你作为英语老师，能帮我概括一下初中英语听力课上高效抓取关键信息和做笔记的主要方法吗？我想给全班简单梳理一下。
+  - question: 我是宋蕾艳，六年级女生，喜欢烘焙、讲故事和做手工，平时和同学关系挺好，经常一起做活动。英语听力练习时我总分不清哪些信息最重要，记笔记也有点乱。你能解释一下像我这样爱动手、喜欢团队活动又有点边界模糊的学生，怎么抓住英语听力中的关键信息并记好笔记吗？希望能详细举些例子。
+  - question: 我是段志伟，13岁，初一男生，爱跳街舞、轮滑，性格比较循规蹈矩，也有点被动。班里我一般是默默观察型，轮滑什么的也总看别人先做。最近英语听力练习老师要求抓关键信息和记笔记，我总怕记不全，也不太敢主动问问题。你能讲得详细点吗？能针对我的性格和兴趣，深入分析一下怎么样才能高效抓住英语听力关键信息并记实用的笔记？最好举些例子和具体方法。
+  - question: I'm RobertsAaron, a senior high student who likes swimming, esports,
+      and 3D modeling. I often switch between理性和感性，既注重成绩，也喜欢自己探索新东西。做英语听力时，有时抓不住关键信息，记笔记也容易乱，尤其在细节和主旨之间拿捏不好。你能解释一下像我这样的学生，如何用逻辑与创意结合的方法，提高英语听力抓要点和做笔记的效率吗？希望能详细说说，举些具体例子。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-初中-听力关键信息抓取与笔记进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像与分层适配度_理由
+    type: str
+    description: 解释个性化画像与分层适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像与分层适配度
+    type: float
+    description: 评估教学设计是否基于学生能力、兴趣、障碍等个性特征，提供明确分层（基础、进阶、拔尖），并在任务安排、资源支持与反馈上体现针对性，动态调整分层方案以适应学生发展。
+  - field: 格式与流程指令遵循度_理由
+    type: str
+    description: 解释格式与流程指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与流程指令遵循度
+    type: float
+    description: 评估教学方案与学生产出是否严格按照既定格式（如表格、流程、步骤）执行，任务流程完整且环环相扣，教师有明确检查与纠正机制，学生笔记结构清晰、内容齐全、无遗漏。
+  - field: 真实学习场景还原度_理由
+    type: str
+    description: 解释真实学习场景还原度评分的详细理由，引用具体例子。
+  - field: 真实学习场景还原度
+    type: float
+    description: 评估教学内容、语料和任务是否高度贴合初中英语听力实际情境，能反映学生真实困惑、典型错误及需求，教学过程包含具体案例或情境再现并引导学生解决实际问题。
+  - field: 教学方法科学性与循证度_理由
+    type: str
+    description: 解释教学方法科学性与循证度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与循证度
+    type: float
+    description: 评估教学方法是否基于教育学原理与循证研究，流程系统、有效，包含分阶段训练、反馈与动态调整机制，能通过数据或实例验证对学生关键信息抓取与笔记能力的提升。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学设计是否鼓励学生用多样化、创造性方式记录和表达听力关键信息，包括表现形式（流程图、思维导图、图表、符号等）和内容创新（归纳、联想、重组），并允许学生自主设计或选择表达方式。
+  - field: 开放性表达与批判性思考鼓励度_理由
+    type: str
+    description: 解释开放性表达与批判性思考鼓励度评分的详细理由，引用具体例子。
+  - field: 开放性表达与批判性思考鼓励度
+    type: float
+    description: 评估教学是否引导学生在笔记中主动表达个人观点、联想、疑问和批判性思考，任务与评价机制鼓励学生提出有价值的问题或不同看法，促进深度学习与创造性思考。
+  - field: 价值观与文化融入的自然度_理由
+    type: str
+    description: 解释价值观与文化融入的自然度评分的详细理由，引用具体例子。
+  - field: 价值观与文化融入的自然度
+    type: float
+    description: 评估教学内容在听力信息抓取与笔记过程中是否自然融入社会主义核心价值观或中华优秀传统文化，结合听力主题适度引导学生思考相关价值观，实现内容与文化的有机结合而非生硬灌输。
+  format_mode: prompt

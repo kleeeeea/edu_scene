@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-高中-近代物理学入门概念阐释教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是潘敏，高中物理老师，平时喜欢方言和绘画，教学风格偏民主但有点疏离。最近在近代物理学入门课上，想让学生主动探究光的波粒二象性。你能简短回答下，怎么用科学精神和社会主义核心价值观启发他们？如果能结合教学场景举个例子就更好了。
+  - question: 我是石丽，高一女生，平时喜欢环保实践和攀岩，性格有点功利但情绪挺稳定，是我们环保团体的进取者。最近学原子结构，感觉原子模型的演变跟现实有点脱节。你能具体说说这个发展过程吗？最好结合实际例子，顺便给我点适合我这种性格和兴趣的学习建议，科学探索和价值观方面也提一提。
+  - question: 最近在研究近代物理学，发现量子力学被说成科学史上的重大变革。你能全面分析一下，为什么量子力学的诞生这么重要吗？希望能讲讲历史背景、理论突破，还有它对哲学和社会的影响，最好结合科学家故事和中国物理学家的贡献，顺便说说它跟科学发展和价值观之间的联系。
+  - question: 我是红力，初二男生，喜欢围棋、摄影和观星，性格有点边界敏感，周末常独自用望远镜看天体，爸妈和爷爷都很支持我的兴趣。最近对光的本性很感兴趣，你能系统地讲解一下现代物理学里关于光的本质吗？希望内容全面一些，比如波粒二象性、经典实验、现代应用，最好能结合我的兴趣点和性格给点学习建议，科学精神和价值观也说说看。
+  - question: 我想让高中生更好地理解‘能量量子化’这个近代物理核心概念。你能深入说说看怎么通过创新教学活动帮助学生掌握吗？希望能分层次讲讲理论基础、经典实验、现实应用，最好结合中国科技发展和团队协作的故事，顺便给点具体教学方案和成长建议，科学精神和价值观也别落下。
+  - question: 我是刘行才，物理老师，今年55岁，平时喜欢组织老年大学活动和旅游采风，也爱和老友打麻将。现在教近代物理学，想让学生明白相对论里的时间膨胀效应。你能讲清楚点吗？最好结合科学家故事和核心价值观，把理论基础和现实意义说得条理清楚，还要有点生动案例。
+  - question: I’m CooperStella, a 50-year-old teacher who’s meticulous but sometimes
+      emotionally exhausted by my career. I balance it out with rock climbing, painting,
+      and meditation. Can you detailedly explain how to introduce the concept of uncertainty
+      in quantum mechanics to high schoolers in a way that’s both rigorous and emotionally
+      engaging? I’d appreciate practical classroom strategies, examples, and advice
+      on promoting scientific thinking and teamwork, with a touch of socialist core
+      values.
+  - question: 最近在教近代物理学，想让学生理解光电效应的基本原理。你能大概讲讲怎么用生活化案例和科学精神让他们容易明白吗？顺便提一下创新和价值观方面的启发。
+  - question: 我最近在高中物理课上，想通过团队合作和科学探究活动让学生掌握原子核结构的主要知识。你能详细说说怎么设计这些活动吗？最好能结合科学家故事、现实应用，还要把价值观和科学精神融进去。
+  - question: 我在准备高中近代物理学入门课程，想围绕‘微观粒子的发现与认识’做全方位教学设计。你能全方位地讲解一下吗？希望能从知识体系、核心实验、科学家精神、创新教学方法、价值观引领、学科融合等方面系统地说说，并给出具体教学活动和成长建议，内容要全面、科学、有温度，还要深度融合核心价值观。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-高中-近代物理学入门概念阐释进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与适配_理由
+    type: str
+    description: 解释个性化画像识别与适配评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与适配
+    type: float
+    description: 评估内容是否根据学生的知识基础、兴趣、认知障碍和学习动机等多维度精准识别，并主动调整表达方式（如用词、例子、互动等），形成高度个性化教学。高分需体现动态诊断与多层次适配，而非仅表面化调整。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估内容是否严格按照教学指定的步骤、格式和层次分段，结构清晰、逻辑连贯。高分需在遵循基础上，展现内容丰富和环节完整（如有引入、探究、应用、反思等），而非仅形式合格。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估是否结合现代教育学原理（启发式、探究式、合作式、跨学科等），并针对近代物理难点创新性设计教学活动。高分需融合多样化方法并有实质创新，激发学生主动参与和深度思考。
+  - field: 知识结构与逻辑清晰度_理由
+    type: str
+    description: 解释知识结构与逻辑清晰度评分的详细理由，引用具体例子。
+  - field: 知识结构与逻辑清晰度
+    type: float
+    description: 评估内容是否层次分明、递进明确、系统整合，体现关键概念的引入、对比、递进、整合和总结，帮助学生建立完整的认知框架。高分要求知识点间有深度联系，逻辑严密，形成知识闭环。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估内容是否通过开放性问题、真实情境、跨学科融合等方式，鼓励学生提出新问题、探索新思路，激发创新意识和自主探究能力。高分要求有多样化创新激励措施、学生主动创造性产出。
+  - field: 模拟真实提问与回应能力_理由
+    type: str
+    description: 解释模拟真实提问与回应能力评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与回应能力
+    type: float
+    description: 评估内容能否准确模拟高中生在学习近代物理时常见的多样化真实疑问，主动引导并用生活化、易懂的方式作出针对性解答。高分需体现不同层次、不同背景学生的疑问，并有高质量、共情的回应。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入
+    type: float
+    description: 评估内容在阐释物理知识时，是否能顺畅、自然地融入社会主义核心价值观（创新、奉献、合作、责任等）和中华优秀传统文化（科学精神、家国情怀等），并结合物理学发展与学生成长实际进行正面价值引导。高分需深度融合知识与价值观，激发学生社会责任感和科学报国情怀。
+  - field: 表达清晰与易理解性_理由
+    type: str
+    description: 解释表达清晰与易理解性评分的详细理由，引用具体例子。
+  - field: 表达清晰与易理解性
+    type: float
+    description: 评估内容用语是否简明、准确，符合高中生认知水平，善用形象比喻、生活化语言，避免过度专业术语和晦涩表达。高分需多样化表达技巧，确保复杂概念易于理解和掌握。
+  format_mode: prompt

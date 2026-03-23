@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-小学-历史地图寻踪教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学历史老师，这学期打算做'历史地图寻踪'主题活动课。你作为教育专家，能从各个角度详细说说怎么设计一套既能激发学生兴趣、又能分层分组，还能融入传统文化的历史地图寻踪教学方案吗？希望你给我系统、具体的建议，内容越全面越好。
+  - question: 我刚开始教三年级历史，孩子们没怎么接触过历史地图寻踪。你能简单说说怎么让他们尽快适应这种活动，还能提升他们对地图的兴趣吗？概括一下就行。
+  - question: 我是四年级学生的家长，我女儿喜欢画画但对历史不太感兴趣。这次老师让做历史地图寻踪，我担心她适应不了。你作为学习助手，可以讲讲看怎么结合她的兴趣帮她完成任务，还能慢慢引导她喜欢历史吗？举几个实际例子吧。
+  - question: 我是六年级学生崔艳，喜欢烘焙和讲故事，但专注力有时不太稳定，学习上比较理性也有点迎合型，学校和家庭是我的主要活动圈。你作为知识导师，能深入说说看，怎么根据我的这些特点设计历史地图寻踪活动，让我既能专注学习历史，又能发挥兴趣和自主探究吗？举例详细讲讲，最好也说说怎么让家里人帮我一起提升专注力。
+  - question: 我是小学历史教研员，打算在学校全面推广历史地图寻踪。你作为教学专家，能全面深入地讲讲吗？包括怎么统一目标、分层任务设计、激发学生创新合作、家校互动以及怎么巧妙融入家乡文化和历史价值观，最好内容系统又有操作性。
+  - question: 我是小学老师，班里有几个特别好动但喜欢地图的学生。你作为教育专家，能深入讲解一下怎么设计既能让他们动起来又能学到历史地图知识的寻踪活动吗？最好结合游戏、分组、激励等方法举例说明，讲详细点。
+  - question: 你是历史学习助手，能讲讲看小学历史地图寻踪活动里怎么通过分组合作提升学生的历史理解和团队合作吗？举几个具体活动和策略就好。
+  - question: I'm SmithPaisley, a teacher who loves writing and rock climbing, and
+      I always try to bring energy and innovation into my teaching. As an educational
+      expert, can you talk about how I can use my reformist and energetic style to
+      design a primary school history map scavenger hunt that's creative, engaging,
+      and naturally brings in values and cultural appreciation? Please share some
+      practical strategies and examples.
+  - question: 你作为小学历史教学顾问，能概括一下历史地图寻踪活动主要能在哪些方面帮助学生？比如理解历史知识、探究能力和团队合作等，说说核心要点吧。
+  - question: I'm SmithGabriel, a teacher who enjoys wilderness camping, AI research,
+      and skateboarding. I teach with a flexible and democratic style, and value balancing
+      outdoor and intellectual pursuits. As an educational specialist, can you talk
+      about how I can combine my flexible teaching approach and outdoor interests
+      with primary history map scavenger hunts? I'd like some examples and strategies
+      for encouraging autonomy, curiosity, and democratic participation while respecting
+      diverse learning boundaries.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-小学-历史地图寻踪进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估活动设计是否基于学生多维画像（兴趣、能力、学习风格、发展需求等）进行针对性调整，体现有效分层、分组及个性任务；能促进不同学生优势发展，并对差异学生有持续支持。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估答案是否严格按照指定格式（结构、步骤、表达规范、标识等）输出内容，条理清晰、分步明确，展现规范意识和执行力，便于查阅、评价与复用。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评估活动是否紧密围绕历史地图寻踪的核心教学目标（空间认知、历史事件理解、综合思维、批判性分析等），任务设计促进相关能力发展，并有明确目标达成证据或过程记录。
+  - field: 科学教学方法应用_理由
+    type: str
+    description: 解释科学教学方法应用评分的详细理由，引用具体例子。
+  - field: 科学教学方法应用
+    type: float
+    description: 评估是否采用高质量的启发式、探究式、合作学习等科学方法，活动过程包含深度探究、有效互动、系统反思等环节，能激发学生主动学习、深度思考和团队协作，且有具体过程记录。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估活动是否设置高质量开放性问题或任务，鼓励学生原创表达、跨界思考、方案设计，支持多元表达与创造性解读历史地图内容，能激发学生提出新观点并有创新成果展示。
+  - field: 问题模拟真实度_理由
+    type: str
+    description: 解释问题模拟真实度评分的详细理由，引用具体例子。
+  - field: 问题模拟真实度
+    type: float
+    description: 评估问题或活动情境是否紧密贴近学生真实生活与学习体验，具备足够趣味性、复杂性和实际意义，能引发真实兴趣和探索欲望，情境复杂度与学生发展水平高度匹配，且有学生反馈佐证。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估活动是否在内容或过程设计中自然融入社会主义核心价值观和中华优秀传统文化，通过具体情节、问题、合作行为等引导学生体验并践行相关价值观，过程有情感体验和反思，避免生硬灌输。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教师或系统对学生个性化需求（兴趣、困惑、特长、发展目标等）是否有深入回应，包括具体指导、鼓励、资源支持和成长方案，能促进学生个性发展和持续提升，有过程跟踪和成果记录。
+  format_mode: prompt

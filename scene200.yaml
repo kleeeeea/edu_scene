@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene200/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 历史-高中-复杂历史事件的多维度归因教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为高中历史老师，能讲清楚点甲午战争为什么会爆发吗？我班上有同学觉得原因很复杂，麻烦分析一下不同方面的归因，比如政治、经济、国际等。
+    - question: 我是高二历史选修班的学生，最近在复习鸦片战争。老师说不要只看表面，要从很多角度分析它为什么会发生。你能详细讲讲鸦片战争的多维度原因吗？比如英国和中国的背景、经济利益、文化冲突、政治体制这些方面。
+    - question: 我是刚入职的高中历史老师，最近要讲辛亥革命。你作为教育专家，能深入说说看辛亥革命发生的多维度原因吗？想让学生明白社会矛盾、思想、经济、国际这些因素都有哪些影响。
+    - question: 你是我的历史学习助手，能不能大概讲讲‘文化大革命’是什么原因引发的？说说主要的政治、社会、个人因素就行。
+    - question: 我是高三历史教研员，你作为教育专家，能从各个角度详细说说第二次世界大战为什么会爆发吗？希望你能全面讲清楚经济、政治、意识形态、国际关系这些各方面的影响。
+    - question: 我是高中的学生，最近学到五四运动，但还不太清楚它为什么会发生。你能解释一下五四运动爆发的原因吗？想知道社会背景、思想、外部压力这些方面的影响。
+    - question: 你做高中历史老师，能否概括一下冷战为什么会爆发？说说意识形态、经济体系、国际格局这些主要原因就行。
+    - question: 我是高二历史班的学生，最近学到‘改革开放’，老师让我们分析它发生的原因。你能讲清楚点改革开放为什么会发生吗？想知道经济、政治、社会、国际这些方面怎么影响的。
+    - question: 你作为高中历史学科带头人，能全面深入地讲讲巴黎公社为什么会建立吗？希望你从社会结构、经济压力、思想变革、国际背景这些方面系统地分析一下。
+    - question: 我是高一学生，最近学美国南北战争，搞不太清楚为什么会打起来。你能讲清楚点美国南北战争爆发的原因吗？麻烦说说经济、社会、政治、文化这些方面的影响。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 历史-高中-复杂历史事件的多维度归因进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与响应
+      type: float
+      description: 评估答案是否精准识别学生的学业水平、兴趣方向与认知风格，并在内容难度、表达方式和举例等方面做出针对性调整。要求体现至少两项学生特征，并据此调整教学策略。
+    - field: 指令格式遵循度
+      type: float
+      description: 评估答案是否严格按照任务或提问要求的格式、结构进行分点、分层、突出重点组织，内容排版清晰，便于学生理解和复习。要求至少有明显的层次和序号标识。
+    - field: 教学方法科学性与多样性
+      type: float
+      description: 评估答案是否根据内容与学生特点，采用2种及以上科学、专业的教学方法（如探究式、案例分析、对比法、情境模拟等），并体现方法创新与互动性。
+    - field: 多维度归因分析深度
+      type: float
+      description: 评估答案是否至少从政治、经济、文化、国际等三个及以上维度进行归因分析，且对各维度有具体展开，能明确阐述各因素之间的联系与作用。
+    - field: 创新思维激发度
+      type: float
+      description: 评估答案是否通过开放性问题、观点碰撞、反思引导等方式，激发学生主动提出新见解或独立思考历史事件归因。要求至少有一个开放性提问或引导学生自主表达。
+    - field: 模拟真实提问契合度
+      type: float
+      description: 评估答案是否紧密贴合高中生在复杂历史事件归因学习中的真实提问需求，针对学生具体困惑或兴趣点做出详细回应。要求能准确捕捉并解决学生实际问题。
+    - field: 社会主义核心价值观及优秀传统文化自然融入
+      type: float
+      description: 评估答案在归因分析过程中，能否自然、适度地融入社会主义核心价值观和中华优秀传统文化，避免生硬说教，启发学生理解历史与现代价值观的联系。
+    - field: 个性化反馈与成长建议
+      type: float
+      description: 评估答案是否根据学生当前分析水平和表现，给予具体、针对性的学习建议或成长方向，帮助学生持续提升综合分析能力。要求反馈内容有针对性和可操作性。
+format_mode: prompt

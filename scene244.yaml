@@ -1,0 +1,108 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-我的家庭角色和责任教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是老师，宰父慧慧，31岁，平时喜欢茶艺、骑行、书法，性格比较内敛但重视仪式感，跟同事和茶艺群体都保持适度距离。我现在在小学教政治，准备讲“我的家庭角色和责任”，你觉得该怎么全面分析不同家庭成员的角色和责任？还有，怎么结合我的这些个人兴趣，让课堂更有传统文化气息，激发学生主动探究？能全面分析一下吗？
+  - question: 你作为小学政治老师，能说说你对“我的家庭角色和责任”这个主题怎么看吗？讲讲看，最好能带个互动环节让学生也能参与分享自己的家庭角色体验。
+  - question: 我是三年级学生，你作为我的学习助手，最近学到“我的家庭角色和责任”，你能具体说说在家里我能做哪些事情吗？能具体说说吗？也帮我想想还能怎么帮助家人。
+  - question: 我是高二女生沃怡，17岁，喜欢机器人编程和穿搭，性格批判且喜欢跳跃思考，和母亲很亲密，父亲工作忙，师生互动时我常提一些不太常规的问题。最近在想“我的家庭角色和责任”，你能详细分析下各个方面吗？比如家庭成员的分工、青少年在家里的责任、批判性思维怎么看待这些角色、还有怎么把兴趣和家庭责任结合起来？请从多个角度详细分析一下，还希望能结合我的性格和兴趣给点具体建议。
+  - question: 我是初三男生曹宪萌，15岁，喜欢观星、跆拳道和电竞，性格比较被动、理解慢但很受兴趣驱动，平时社交也挺被动的。我想知道，作为初中生，我在家庭里的角色和责任该怎么体现？你能全面分析一下吗？最好结合我的性格和兴趣，给我一些具体建议，还能用点传统文化故事举例。
+  - question: 你作为小学政治教育专家，面对像我这样二年级女生MartinFaith，7岁，喜欢摄影和中国爵士舞，性格目标感强又逻辑思维好，你觉得“我的家庭角色和责任”这个主题，怎么能帮助我把兴趣和家庭责任结合起来？讲讲看，也可以推荐一个适合我的互动活动。
+  - question: 你是我的家庭教育指导老师，能不能系统地讲解一下“我的家庭角色和责任”在小学生成长中到底有多重要？麻烦你从各个方面详细说说，包括角色分工、责任培养、沟通技巧、传统文化和价值观怎么融进去，还有能用在家里的各种互动方法。
+  - question: 我是肖墨渊，44岁，材料工程师，性格有点惰性又不喜欢权力，平时喜欢DIY、徒步和摄影，社交圈不大。你能帮我理解一下像我这样独处型、惰性的父亲在家庭里的角色和责任怎么体现吗？说说你的看法，最好结合我的性格和兴趣给点实用建议，还能聊聊传统文化里的家庭责任故事。
+  - question: 我是五年级学生，最近学“我的家庭角色和责任”，你能用几句话说说小学生在家里一般有哪些责任吗？说说主要的，也欢迎我自己补充。
+  - question: 你作为小学政治老师，能简短回答下“我的家庭角色和责任”这个主题吗？简单说说，顺便启发我们想想自己在家里的角色。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-我的家庭角色和责任进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配性_理由
+    type: str
+    description: 解释个性化画像适配性评分的详细理由，引用具体例子。
+  - field: 个性化画像适配性
+    type: float
+    description: 评价内容是否充分结合学生的年龄、性格、兴趣及家庭背景，针对不同学生群体做出有针对性的调整，案例和语言风格贴合学生实际，体现差异化与尊重个体差异。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 内容结构是否严格按照题目或任务要求分点、分段，条理清晰、无缺漏，格式规范（如有标题、小结等），确保表达有序、易于理解。
+  - field: 教学内容科学性与深度_理由
+    type: str
+    description: 解释教学内容科学性与深度评分的详细理由，引用具体例子。
+  - field: 教学内容科学性与深度
+    type: float
+    description: 内容是否系统准确反映小学政治知识点，分工与责任具体，结合实际生活场景，并能引导学生理解家庭角色背后的意义，促进情感认同和行为转化，避免仅停留在表面罗列。
+  - field: 教学方法多样性与适切性_理由
+    type: str
+    description: 解释教学方法多样性与适切性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性与适切性
+    type: float
+    description: 是否采用多种符合小学生认知和心理特点的教学方法（如角色扮演、游戏、绘画、故事创编等），促进主动参与和真实体验，方法与内容紧密结合并有实际操作环节。
+  - field: 创新思维引导性_理由
+    type: str
+    description: 解释创新思维引导性评分的详细理由，引用具体例子。
+  - field: 创新思维引导性
+    type: float
+    description: 是否鼓励学生用新颖、创造性的方式探索和表达家庭角色与责任，支持多元表达（如漫画、清单、故事、视频等），并引导学生提出新观点或解决方案，激发思维活力。
+  - field: 开放性问题设置_理由
+    type: str
+    description: 解释开放性问题设置评分的详细理由，引用具体例子。
+  - field: 开放性问题设置
+    type: float
+    description: 是否设置能激发学生自主探究和表达的开放性问题，鼓励从不同角度思考家庭角色与责任，支持个性化、多元回答，避免唯一答案或简单罗列。
+  - field: 价值观融合与文化认同_理由
+    type: str
+    description: 解释价值观融合与文化认同评分的详细理由，引用具体例子。
+  - field: 价值观融合与文化认同
+    type: float
+    description: 内容是否自然融入社会主义核心价值观（如敬老爱亲、团结互助）和中华优秀传统文化（如孝顺、尊老爱幼），通过实际行为、故事、情感体验等深度体现价值认同，避免表面化或口号式表达。
+  format_mode: prompt

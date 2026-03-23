@@ -1,0 +1,112 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-初中-世界气候类型的分布与成因教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初三女生，最近地理学习有些吃力，尤其是世界气候类型的分布和成因总是记不住，你作为地理老师，能不能讲讲看，帮我理清楚这些知识点？最好结合一些具体例子和我日常可能遇到的场景。
+  - question: 你作为地理教育专家，我现在在准备初中地理考试，对世界气候类型的分布与成因还是有点迷糊，能解释一下吗？最好能结合一些实际例子和地图讲讲。
+  - question: 我是苏真，五年级女生，喜欢串珠和街舞，理解力一般，有时候思维跳得快。我在地理课上老师讲世界气候类型的分布和成因，我觉得有点复杂，能不能讲讲看，最好结合串珠、街舞或者我平时的生活来举例，让我容易理解些？
+  - question: 我是新入职的初中地理老师，你作为学科教学顾问，能不能从各个角度详细说说世界气候类型的分布与成因？希望你结合学生的兴趣、课堂实际、教学活动设计和跨学科资源，系统全面地分析，方便我设计课程和活动。
+  - question: 你作为地理教学专家，我需要为学校地理社团准备一场关于世界气候类型分布与成因的讲座，内容要非常详细，能不能彻底说清楚，包括各类气候分布规律、形成机制、实例、教学创新和价值观引导？希望能兼顾不同层次学生的理解。
+  - question: 我是廖子骞，初二男生，喜欢街舞、电子竞技和吉他，习惯和队友分工合作。我最近在地理课上学到世界气候类型的分布与成因，总觉得太抽象，能深入讲解一下吗？最好能结合团队、街舞、游戏里的分工协作，帮我理解这些知识点。
+  - question: 你作为地理学科专家，能不能全面分析一下世界气候类型的分布与成因？希望能涵盖全球各主要气候类型、成因分析、典型地区举例以及一些创新教学建议，适合初中阶段的深入学习。
+  - question: Hi, I'm JamesEliza, a senior high student who enjoys makeup, table tennis,
+      and foreign language learning. Sometimes I feel both included and alienated
+      in group activities. Could you briefly explain the global distribution and causes
+      of world climate types? If possible, connect it to my interests and social experiences
+      so I can understand it better.
+  - question: 你作为地理老师，我最近在备课，能不能简要说明下世界气候类型分布的主要特点和成因？结构清晰、要点突出就行，适合初中生课堂使用。
+  - question: 我是申屠菊，27岁女老师，喜欢自然观察、摄影和园艺，常在教职工休息室分享心得，也会拍摄校园植物角照片发给学生家长。作为一名有同理心的地理教师，我希望你能解释一下世界气候类型的分布与成因，最好结合自然观察和园艺的体验，方便我在教学和与家长交流中用得上。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-初中-世界气候类型的分布与成因进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学能否根据学生的学习基础、兴趣与认知差异，动态调整内容、方法和目标。要求教师主动诊断学习状态，分层设定目标，并根据过程反馈及时调整教学策略，确保不同层次学生均有进步空间。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学内容是否严格遵循既定教学流程与环节，每环节有清晰标识与衔接，便于操作与评价。要求流程完整无遗漏，关键环节（引入、讲解、举例、互动、总结）均有体现，并有明确过渡。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否采用多样、适宜的教学方法（如启发式、分层、探究、合作等），并能根据学生反馈灵活调整。要求方法与内容、学生实际紧密结合，避免单一灌输式教学。
+  - field: 知识准确性与系统性_理由
+    type: str
+    description: 解释知识准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识准确性与系统性
+    type: float
+    description: 评估教学内容是否覆盖全部核心知识点，知识表述准确，逻辑清晰、结构系统。高分需体现知识迁移、实际应用与联系、成因分析的深度与广度，避免仅停留在表面知识罗列。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放性问题、跨学科联系、探究实践等激发学生创新思维。高分要求能引导学生提出独立见解、设计方案，并鼓励多学科、多角度分析气候问题。
+  - field: 互动性与参与感_理由
+    type: str
+    description: 解释互动性与参与感评分的详细理由，引用具体例子。
+  - field: 互动性与参与感
+    type: float
+    description: 评估是否设计多样、有效的互动环节，包括主动表达、合作探究和反馈交流。高分需大多数学生积极参与，能表达观点、影响教学流程，互动不仅限于表面形式。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估知识讲解过程中是否恰当、自然地融入社会主义核心价值观和中华优秀传统文化，能结合学科内容引发学生思考人与自然关系、可持续发展等正向价值观。高分要求价值观融入具体情境，促进学生内化。
+  format_mode: prompt

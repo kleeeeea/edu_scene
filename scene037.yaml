@@ -1,0 +1,133 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-单位换算练习教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为教育专家，我是许乃，35岁男老师，兴趣是陆冲滑板和潜水（水肺/自由潜），性格务实且同理心强，在同事中很受欢迎，经常组织潜水活动带领团队出游，周末常在滑板公园结交运动爱好者。最近我在小学数学单位换算教学中，想让学生理解单位换算的具体意义和实际应用，尤其希望结合生活、运动或探险场景，提高学生的参与感和兴趣。讲清楚点。
+  - question: 我最近在辅导小学生数学时，孩子总是搞不清楚长度、重量、容量这些单位之间怎么换，尤其是米和厘米、千克和克这些容易混淆的部分。你作为我的学习助手，可以帮我梳理下单位换算的基本方法和易错点吗？帮我理解一下。
+  - question: 我是三年级学生的家长，你作为教育专家，能具体说说怎么在家用游戏或日常活动帮助孩子掌握单位换算吗？孩子平时喜欢做手工和画画，想让他学得更有趣些。能具体说说吗？
+  - question: 我是一名小学数学老师，班里有几个孩子总把单位换算题做错，尤其是容量单位（升和毫升）换算，经常混淆。你能帮我总结一下教学中可以用哪些简洁有效的引导方法吗？大概讲讲。
+  - question: Hi, you are an educational consultant. I am TaylorKevin, a 14-year-old
+      8th Grade student. I balance competitive esports (MOBA/Strategy) and football
+      alongside academic responsibilities, but I often struggle with time management
+      and switch between emotional and rational decision-making. My self-learning
+      skills are strong but I selectively comply with tasks. Can you provide a detailed
+      explanation of how to master unit conversion in math, and offer layered practice
+      strategies that fit my lifestyle and interests? Please include relevant examples
+      and connect with personal, sports, or gaming scenarios. 详细展开说说。
+  - question: 我是小学数学教师，最近发现部分学生对单位换算总是记不牢，尤其是米、厘米、毫米之间的关系，你作为教学顾问，有什么分层辅导建议和生活化活动可以帮助他们提高吗？讲讲看。
+  - question: 我是缪雪雪，58岁资深老师，平时喜欢茶艺和健康饮食，教学理念比较理想化，关注传统文化和生活方式。在教容量单位换算时，如何将中华文化和健康生活理念自然融入课堂，让学生既掌握知识又体会到生活的智慧？大概讲讲。
+  - question: 你作为小学数学教研专家，我是简芝，37岁的翻译，性格循规蹈矩，社交圈以语言爱好者为主，平时喜欢旅行和阅读，和同事保持标准的职场距离。请用中文全面系统地分析小学单位换算的知识体系、常见误区、教学策略、文化资源融入、分层练习设计及家庭互动方法。详细分析下各个方面。
+  - question: You are a math learning coach. I am MartinezBenjamin, a 16-year-old
+      introverted 10th Grade student who learns best through auditory memory and prefers
+      structured team activities like chess and rock climbing. I often struggle with
+      procrastination and logical reasoning, relying on group support. Please provide
+      a thorough discussion on advanced unit conversion concepts, with layered explanations,
+      practical examples, and strategies that leverage team learning and auditory
+      strengths. 我想深入了解。
+  - question: 你作为小学数学教学专家，能全方位梳理单位换算练习的教学设计、分层辅导、生活化应用、文化融入、家庭互动等各个方面吗？希望内容系统、深入，适合一线教师参考。全方位地讲解一下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-单位换算练习进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教学内容是否基于学生的具体特征（如年级、能力、兴趣、学习风格等），并能动态调整内容和难度，持续跟进学生发展。高水平表现要求教学设计能反映出对个体差异的深度关注，且有明确的调整和反馈记录。
+  - field: 指令遵循准确性_理由
+    type: str
+    description: 解释指令遵循准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循准确性
+    type: float
+    description: 评估内容是否严格按照教师或系统要求的结构、步骤与细节完成，尤其在复杂指令下能合理拆解、创新执行，并有清晰交付。高水平要求不仅无遗漏、顺序合理，还能根据实际情况优化指令执行方式。
+  - field: 分层教学设计合理性_理由
+    type: str
+    description: 解释分层教学设计合理性评分的详细理由，引用具体例子。
+  - field: 分层教学设计合理性
+    type: float
+    description: 评估是否根据学生不同学习水平科学设计分层内容，明确各层目标、难度和支持措施。高水平要求分层任务有动态调整，且每层都能获得针对性成长空间和反馈。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学方法是否系统、科学，体现启发式、情境创设、递进式学习、学科融合等原则。高水平要求方法多样，流程递进清晰，能激发学生主动参与和思考，并有教学效果反馈或证据。
+  - field: 开放性任务与创造力激发_理由
+    type: str
+    description: 解释开放性任务与创造力激发评分的详细理由，引用具体例子。
+  - field: 开放性任务与创造力激发
+    type: float
+    description: 评估是否设计具有挑战性和多解性的开放性探究活动，引导学生主动思考单位换算的多元应用，鼓励创新表达、自主提出问题和解决方案。高水平要求任务能激发学生多角度思考，并有学生创新成果展示。
+  - field: 模拟真实提问贴合度_理由
+    type: str
+    description: 解释模拟真实提问贴合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问贴合度
+    type: float
+    description: 评估教学问题和情境是否贴近小学生真实课堂和生活，反映实际学习中常见困惑、兴趣点及表达方式，提升真实感和代入感。高水平要求问题设计充分考虑学生年龄、语言习惯和真实需求。
+  - field: 中华优秀传统文化融入度_理由
+    type: str
+    description: 解释中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入度
+    type: float
+    description: 评估内容是否自然融合中国传统度量衡、历史故事等中华优秀传统文化元素，帮助学生理解单位演变与文化背景，增强文化自信。高水平要求文化内容与知识点有机结合，能启发学生思考古今变化和文化意义。
+  - field: 社会主义核心价值观体现_理由
+    type: str
+    description: 解释社会主义核心价值观体现评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观体现
+    type: float
+    description: 评估教学活动是否自然而然融入社会主义核心价值观（如合作、诚信、勤奋、责任等），通过具体活动、案例促进正面行为和价值观养成。高水平要求价值观与教学内容高度契合，并能通过学生行为或产出体现。
+  - field: 反馈与诊断能力_理由
+    type: str
+    description: 解释反馈与诊断能力评分的详细理由，引用具体例子。
+  - field: 反馈与诊断能力
+    type: float
+    description: 评估是否包含对学生作答过程的个性化反馈，能诊断常见错误、分析原因，并提供具体改进建议。高水平要求针对不同学生的错误类型给出细致诊断，提供多元化、可操作的改进路径，并跟踪改进效果。
+  format_mode: prompt

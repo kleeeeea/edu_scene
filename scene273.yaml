@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-“谢谢你”表达日（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是四年级班主任，班里有几个性格害羞但内心很善良的孩子，在“谢谢你”表达日活动中，他们总是难以主动表达感谢。你能结合他们的年龄和性格特点，能具体说说吗？
+  - question: 你作为小学德育专家，近期我们学校开展了“谢谢你”表达日，但有些家长反映孩子在家里很少主动表达感谢，甚至对亲人也很羞于开口。请结合孩子们可能面临的心理障碍、家庭氛围影响以及学校活动设计，全面分析一下如何促进孩子主动表达感谢，并让他们在生活中养成习惯。全面分析一下
+  - question: 我是三年级家长，孩子比较活泼，有时表达感谢只用简单的“谢谢”，没有更多情感和具体内容。你能详细说说如何引导孩子在“谢谢你”表达日用更丰富、更有创意的方式表达感谢吗？
+  - question: 我是新入职的小学德育老师，刚刚参与“谢谢你”表达日的组织工作。面对部分学生不愿意参与表达活动，甚至有些抵触感谢的话题，你能简短回答下，如何激发他们的参与积极性？
+  - question: As MillerKatherine, a 30-year-old primary school teacher who values
+      vocational fulfillment and channels interests in floral arrangement and piano
+      into creative outlets, I find it challenging to foster genuine emotional connection
+      in my class during 'Thank You' Expression Day. Many students seem reserved or
+      formulaic in their gratitude. From the perspective of my empathy deficit and
+      democratic teaching style, can you describe in detail how I might encourage
+      authentic and creative expressions of gratitude among my students? Can you be
+      specific?
+  - question: 我是蒲丽，48岁，担任小学老师，教学风格偏传统、注重权威，课余喜欢戏剧表演和插花。最近学校开展“谢谢你”表达日，部分学生表达感谢时流于形式，缺乏真情实感。我本身对形式感较敏感，压力下更倾向依赖权威，希望能在自己的班级推动更有温度、更具创新的感谢表达。你能结合我的性格和兴趣，能全面深入地讲讲吗？
+  - question: 你作为小学美育德育教研员，“谢谢你”表达日活动已在多个学校展开，但不同年龄段、性格的孩子参与度和表达方式有很大差异。请结合低年级和高年级学生的心理特点、家庭环境影响、教师指导策略等方面，全方位地讲解一下如何设计分层次、富有创意和互动性的‘谢谢你’表达日活动，让每个孩子都能积极参与并有所收获。全方位地讲解一下
+  - question: 我是五年级学生家长，平时孩子对家人表达感谢比较少，只有在学校活动时才会说“谢谢”。你能概括一下，日常家庭中如何让孩子自然而然地表达感谢，并把‘谢谢你’的习惯真正融入生活吗？
+  - question: 我是初三女生张雪，喜欢科学实验和穿搭，平时和同学关系不错，但表达感谢时总觉得有点尴尬。老师在‘谢谢你’表达日鼓励我们用创意方式表达感谢，你能解释一下，像我这样分析力强但自信有时波动的学生，如何用自己喜欢的方式表达感谢，同时让别人感受到真诚吗？
+  - question: 作为小学美育德育教师，我在组织“谢谢你”表达日时，发现有些孩子只是机械地说“谢谢”，缺乏情感投入和个性表达。你能深入说说看，如何通过课堂活动和家庭合作，引导孩子将感谢变得真诚且有创造力，并促进社会主义核心价值观和中华优秀传统文化的自然融合吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-“谢谢你”表达日（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估活动是否基于学生年龄、年级、性格等个体差异，分层设计表达任务、支持措施及反馈，能精准回应不同学生的需求与特质。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估方案是否严格按照任务要求，分环节、分学生类型作答，结构清晰、内容完整，每一部分均有明确指令回应，环节无遗漏。
+  - field: 教学目标与流程清晰度_理由
+    type: str
+    description: 解释教学目标与流程清晰度评分的详细理由，引用具体例子。
+  - field: 教学目标与流程清晰度
+    type: float
+    description: 活动是否有具体、分层教学目标，各环节目标清晰，流程完整且逻辑连贯，环节作用明确，便于教师理解与实施。
+  - field: 科学性与可操作性_理由
+    type: str
+    description: 解释科学性与可操作性评分的详细理由，引用具体例子。
+  - field: 科学性与可操作性
+    type: float
+    description: 活动设计是否充分结合儿童心理发展和德育美育理论，方案有理论依据，操作步骤具体可落地，包含教师支持建议和明确的活动效果评估方式。
+  - field: 学生参与与互动性_理由
+    type: str
+    description: 解释学生参与与互动性评分的详细理由，引用具体例子。
+  - field: 学生参与与互动性
+    type: float
+    description: 活动是否强调学生主动参与和同伴互动，设计合作、分享、互助等环节，促进情感交流和社会性成长，关注不同学生参与度。
+  - field: 创新性与创造力激发_理由
+    type: str
+    description: 解释创新性与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新性与创造力激发
+    type: float
+    description: 活动是否为学生提供充分自主创作空间，鼓励多元表达方式，明确创新评价标准，支持学生主导创意过程与反思，创新成果需有实际表现。
+  - field: 情感共鸣与体验深度_理由
+    type: str
+    description: 解释情感共鸣与体验深度评分的详细理由，引用具体例子。
+  - field: 情感共鸣与体验深度
+    type: float
+    description: 活动是否通过故事共鸣、角色扮演、情感回顾等环节，引导学生深度体验和表达真实情感，包含具体反馈与反思，促进自我成长。
+  - field: 社会主义核心价值观融入_理由
+    type: str
+    description: 解释社会主义核心价值观融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入
+    type: float
+    description: 活动是否将友善、感恩、团结等核心价值观自然融入具体情境和行动体验，通过真实案例和生活实践引导学生认同和践行，并有具体行为追踪或反馈。
+  format_mode: prompt

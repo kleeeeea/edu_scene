@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-高中-跨时段专题史的贯通与探究教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是HarrisTheodore，一名高三学生，最近在学习中国历史的跨时段专题时有点迷茫。你能具体说说‘社会变迁’在中国历史上不同时期是怎么体现的吗？我对科技创新和日常生活的变化格外感兴趣，能帮我把各个时期的社会转型和这些方面连起来讲讲吗？最好有些例子，让我思路清晰一点，也能为我的VR开发找找灵感。能具体说说吗？
+  - question: 中国古代到近现代女性社会地位都发生了哪些主要变化？能帮我概括一下吗，最好把重要的转变和主要原因简单说说。
+  - question: 我是段国，宠物美容师，最近下班后在自学历史，特别对‘中西交通与中外交流’这个贯穿古今的话题感兴趣。你能从政治、经济、文化、科技、社会等各个角度详细说说，中国历史上中西交通和交流的演变、重要节点和影响吗？最好有代表人物和具体事例，顺便也给我点调节情绪和自学历史的小建议。从各个角度详细说说吧。
+  - question: 你怎么看从中国古代到近现代‘家国情怀’的变化？能结合历史上的人物和案例，说说你的看法吗？最好讲讲不同阶段都有什么代表性的转变和影响。
+  - question: 麻烦你全面分析一下中国历史上‘士人阶层’的角色、地位和影响力是怎么随着不同历史时期发生变化的？想了解他们在政治、社会、文化、教育等方面的作用转变，还有有哪些关键人物和事件可以举例说明？最好也说说这些变化对我们现代社会有什么启发。全面分析一下吧。
+  - question: 我是赵蕊蕊，现在教书，最近在思考科举制对中国社会的影响。你能帮我概括一下科举制在中国古代各朝代主要的变化特点，以及它对社会流动和文化传承起了哪些作用吗？概括一下就好。
+  - question: 我一直觉得中国历史上‘统一和分裂’交替出现挺有意思的，你能讲清楚点，这种循环对社会和文化有哪些重要影响吗？希望能结合一些历史时期和例子，让我更容易理解。
+  - question: 你能讲讲看中国历史上农业和手工业的发展是怎么互相影响、地位怎么变化的吗？最好结合不同时期和一些具体例子，把它和社会变革联系起来说说。
+  - question: 我想深入了解一下中国历史上那些思想解放运动，比如它们是怎么推动社会变革和历史进步的。你能详细展开说说，包括这些运动的起因、过程、关键人物和影响吗？希望能帮我系统梳理下各个时期思想解放运动对社会结构、文化氛围和国家发展的作用。详细展开说说吧。
+  - question: 我是张媛，高一学生，平时既喜欢戏剧表演，也热衷做科学实验。最近历史课学到‘中国历史上科技与文化的互动’，觉得挺有意思。你能详细分析下各个方面，比如科技创新如何推动文化发展，文化又怎样促进科技进步？希望你能结合不同历史时期和真实案例，深入讲讲它们的相互影响，以及对中国社会的深远意义。也想听听你对我们当下的启示。详细分析下各个方面吧。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-高中-跨时段专题史的贯通与探究进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评价教学内容与方式是否基于具体学生画像（学习基础、兴趣、认知风格、能力层次等）进行差异化设计与调整，体现对学生个体差异的精准支持，涵盖表达、任务、互动等环节。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评价教学设计或回答是否严格按照教师设定的结构、步骤和格式作答，内容完整、层次分明，回应所有要求，逻辑清晰，无遗漏或混乱。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所用教学方法是否基于现代教育理论（如建构主义、合作学习、探究式学习等），能有效促进学生理解、迁移、应用跨时段专题史知识，并兼顾启发性、探究性和学生主体参与，包含多样化教学活动。
+  - field: 问题引导与思维拓展_理由
+    type: str
+    description: 解释问题引导与思维拓展评分的详细理由，引用具体例子。
+  - field: 问题引导与思维拓展
+    type: float
+    description: 评价问题设计是否具有递进性、开放性和多角度，能层层深入引导学生思考，从事实、背景、立场到后果，促进建立历史时空观和多元分析能力。高阶问题能激发批判性和创造性思维。
+  - field: 跨时段史实贯通性_理由
+    type: str
+    description: 解释跨时段史实贯通性评分的详细理由，引用具体例子。
+  - field: 跨时段史实贯通性
+    type: float
+    description: 评价是否以专题主线系统梳理并贯穿至少两个及以上历史时期的相关事件、人物和思想，深入分析历史发展的连续性、阶段性和变迁，揭示内在联系与影响机制，避免仅表层串联或简单罗列。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价教学活动或任务是否有效激发学生独立见解、创新表达和批判性思考，鼓励学生提出新观点、进行跨学科整合或创造性历史表达，设置高阶创新任务（如虚拟情境、历史推理、观点辩论等）。
+  - field: 中华优秀传统文化润化_理由
+    type: str
+    description: 解释中华优秀传统文化润化评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化润化
+    type: float
+    description: 评价是否将中华优秀传统文化及社会主义核心价值观自然融入历史教学，通过具体史实、人物和情境引发价值共鸣，实现润物细无声的教育，避免生硬灌输或形式主义。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价教学问题是否贴近高中历史课堂实际，能反映学生在跨时段专题史学习中的真实困惑、兴趣和常见认知障碍，问题具有针对性、启发性和可操作性。
+  format_mode: prompt

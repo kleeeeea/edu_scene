@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene150/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 英语-小学-自然拼读规则应用教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是刚入职的小学英语老师，最近教自然拼读规则，发现孩子们容易把相似的字母组合搞混，比如‘ea’和‘ee’、‘ou’和‘ow’。你作为英语教育专家，能帮我讲讲看，自然拼读里常见的易混淆字母组合有哪些吗？最好举些例子说明。
+    - question: 我是三年级孩子的家长，他在学英语自然拼读时总把元音发音搞错，比如'a'、'e'、'i'、'o'、'u'这些。你能大概讲讲小学自然拼读里元音的发音规则吗？
+    - question: 你作为小学英语教学顾问，我想深入了解自然拼读规则在不同年级的应用策略，包括怎么根据年龄和学习差异调整教学，能全面深入地讲讲吗？举些实际例子分析一下。
+    - question: 我是四年级英语老师，班上有孩子总记不住单词拼读，特别是像‘milk’、‘desk’这种双辅音结尾的词。你作为英语学习助手，能讲讲看小学自然拼读里双辅音结尾单词怎么教效果更好？最好有具体方法和例子。
+    - question: 我是小学一年级学生，最近学自然拼读时遇到‘magic e’这个规则有点搞不懂，比如‘cake’里那个‘e’不发音但‘a’变长。你能解释一下‘magic e’的拼读规则吗？说说为什么这样，举几个例子给我听听。
+    - question: 你作为小学英语教师培训顾问，能不能概括一下自然拼读教学里常见的误区有哪些？说说主要的就行。
+    - question: 我是小学英语教研员，最近要组织一次自然拼读教学培训。你作为自然拼读专家，能不能彻底说清楚小学自然拼读规则体系，包括常见规则、难点、教学案例、易错点和分层建议？内容越全面越好。
+    - question: 我是五年级英语老师，班里学生自然拼读基础差距挺大。你作为小学英语教学专家，能给我一份完整的分析吗？希望你能详细讲讲分层教学怎么做，包括诊断基础、设计活动、个性化辅导和评价方法。
+    - question: 我是三年级学生的家长，我孩子英语拼读总是卡在‘th’、‘sh’、‘ch’这些辅音组合上。你作为学习助手，能帮我理解一下这些常见辅音组合的自然拼读规则吗？说明一下要点和具体发音方法。
+    - question: 你作为小学英语教学顾问，我想知道自然拼读规则在激发孩子英语学习兴趣方面到底有什么作用？全面分析一下，包括原理、实践方法、家校协同和常见问题处理，最好有实际案例。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 英语-小学-自然拼读规则应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像精准响应
+      type: float
+      description: 评价教学内容是否充分结合学生的具体画像（如年级、英语基础、兴趣、学习习惯等），实现有针对性的教学设计和表达。优质表现应体现对学生差异的深度理解与响应，内容有明显定制化痕迹。
+    - field: 格式与指令遵循度
+      type: float
+      description: 评价教学设计是否严格依照任务指令和指定格式（如分步骤、表格、环节划分等），内容结构清晰、便于教师直接应用。优质表现应在格式上有条理、层次分明，并能灵活补充必要环节。
+    - field: 教学方法科学性
+      type: float
+      description: 评价所采用的教学方法是否符合自然拼读教学规律和小学认知发展特点，体现专业性、分层引导及多样化。优质表现应包含听说读写结合、游戏化、差异化引导，并能根据学生反馈灵活调整。
+    - field: 知识点准确性与系统性
+      type: float
+      description: 评价自然拼读规则讲解是否准确、系统，涵盖核心知识点，无明显遗漏或错误。优质表现应逻辑清晰，例词典型，能区分易混淆点，并适当拓展相关知识。
+    - field: 互动性与启发性
+      type: float
+      description: 评价教学活动是否设计了鼓励学生参与、思考和表达的互动环节，能激发主动探索和创造性思维。优质表现应有多样互动（如游戏、小组讨论、开放性提问），并能启发学生提出问题或表达观点。
+    - field: 创造力激发程度
+      type: float
+      description: 评价教学内容是否鼓励学生进行创新表达、联想或自主创作，提升英语学习的创造性。优质表现应有创新活动，如拼读接龙、故事编写等，激发学生想象力。
+    - field: 真实提问模拟度
+      type: float
+      description: 评价问题是否贴近实际小学英语课堂场景，能反映教师或学生真实需求、困惑或兴趣。优质表现应具体、针对性强，能引导真实教学改进。
+    - field: 价值观润物细无声融入
+      type: float
+      description: 评价内容是否自然融入社会主义核心价值观或中华优秀传统文化，如合作、诚信、尊重等，且表达方式细腻自然，无生硬说教。优质表现应通过活动、例词、合作环节等潜移默化传递正向价值。
+format_mode: prompt

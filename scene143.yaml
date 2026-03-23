@@ -1,0 +1,127 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-种群遗传与现代进化理论的应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是吴静，今年50岁，是一名教学严谨、深受学生尊敬的资深女教师，平时喜欢阅读和攀岩。我的性格比较内敛保守，和同事关系保持适当距离。最近在教授高中生物的“种群遗传与现代进化理论应用”时，发现学生对这些理论的实际意义兴趣不大，难以理解它们与社会、科技之间的联系。你作为一名生物学专家，能否简短回答下，如何在课堂教学中有效帮助学生认识种群遗传与现代进化理论在现实中的价值？
+  - question: As a 35-year-old male teacher named CollinsTheodore who values structured
+      career progression and enjoys PC building, esports streaming, and rock climbing,
+      I find my students often struggle to see how population genetics and modern
+      evolutionary theory connect with technology and medicine. As my intelligent
+      learning consultant, can you tell me more about how these theories are applied
+      in biotechnology and medical research? Please explain and give some examples—just
+      make sure you really clarify it.
+  - question: 我叫缪欢馨，今年37岁，是一名逻辑性强、善于倾听但性格偏保守的女教师，平时喜欢练硬笔书法和结伴旅行。在教学中遇到学生对“种群遗传与现代进化理论”的复杂性和抽象性感到迷茫，难以将理论和现实案例结合。你作为生物学导师，能解释一下，如何通过课堂活动和生活实例，让学生更容易掌握这些理论吗？
+  - question: 我是高二学生，平时对生物有些兴趣，但觉得“种群遗传与现代进化理论”内容抽象难懂，尤其不明白这些理论在现实生活中到底能干什么。你作为我的智能学习顾问，能不能结合身边的例子，帮我解释一下这些理论的实际应用？能解释一下吗？
+  - question: My name is SimmonsEvelyn, a 46-year-old female teacher who enjoys film
+      appreciation, drama, and cross-disciplinary exploration. I often adapt my teaching
+      to students' needs, drawing inspiration from film and drama, but also rely on
+      structured, authoritative support. As a biology education expert, can you detail
+      how to integrate film or drama-inspired approaches into teaching population
+      genetics and modern evolutionary theory, while still ensuring scientific accuracy
+      and helping students develop value-driven thinking? Please, could you really
+      expand on this in detail?
+  - question: 我是一名新手高中生物老师，最近负责“种群遗传与现代进化理论的应用”这一章节的教学设计。我发现学生对遗传多样性和进化机制的实际意义不是很敏感，也缺乏探究欲望。你作为教学助理，能帮我理解一下，怎么通过引导学生自主探究和结合社会热点案例，激发他们的学习兴趣和创新思维？
+  - question: 我是姜生，18岁，高三男生，平时理解知识较慢。喜欢电音制作、植物标本采集和航模制作，与同校的电音爱好者组建了社团，每周交流制作经验，也常独自去郊区采集植物标本，并与植物园专家建立了指导关系。我在学习“种群遗传与现代进化理论的应用”时，总觉得难以把握知识体系和实际意义，尤其迷惑于这些理论与现实世界的具体联系。你作为生物学导师，能不能系统地讲解一下该专题的核心知识、实际应用、与社会和科技的联系，并结合我喜欢的植物学和创新活动，帮我梳理学习思路？系统地讲解一下
+  - question: 我是高中生物教研组组长，带领团队探索“种群遗传与现代进化理论的应用”在跨学科课程设计中的创新实践。我们想从生物、信息技术、社会学、伦理等多个角度，深入探讨该理论如何丰富学生的学科视野和社会责任感。你作为跨学科教学专家，从各个角度详细说说，怎么系统整合不同学科资源，设计有深度、有创新性的课程，并自然融入科学精神、社会责任、人与自然和谐共生等价值观？
+  - question: 我是高一学生，平时对生物有点兴趣，但对“种群遗传与现代进化理论的应用”不是很明白。你作为我的生物学导师，能大概讲讲这些理论在现实生活中有哪些具体应用吗？
+  - question: 我叫余兆贵，今年56岁，是一名具有强烈职业使命感和开放反思能力的资深男教师，日常兴趣包括太极拳、桥牌和珊瑚缸养殖，经常参与校内外社团活动，社交网络广泛。我的教学风格容易投入但有时边界模糊。近来在指导学生探究“种群遗传与现代进化理论的应用”时，发现学生缺乏主动思考社会责任和人与自然关系的意识。你作为生物教育专家，能全面分析一下，如何借助该理论引导学生理解科学精神、履行社会责任，并结合实际案例和课堂活动促进学生创新思维？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-种群遗传与现代进化理论的应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估答案是否能根据学生的学习水平、兴趣、提问背景等，进行针对性差异化回应。高分要求能主动探查学生需求，动态调整讲解方式，体现对个体差异的深刻理解与引导。中分表现为部分针对性但未深入，低分为标准化答复，无关心学生背景。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 答案是否严格遵循教学或题目要求，结构分明（如分点、分层、标题），条理清晰，逻辑严密。高分要求层次清楚、重点突出、可快速查阅。中分为基本分点但层次不够，低分为无结构或混乱。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 答案是否采用科学、循序渐进的教学方法（如启发式提问、案例分析、数据图表等），体现生物学科逻辑。高分要求能引导学生主动思考、迁移应用，并善用辅助工具。中分为有部分引导但方法单一，低分为机械罗列知识点。
+  - field: 知识准确性与深度_理由
+    type: str
+    description: 解释知识准确性与深度评分的详细理由，引用具体例子。
+  - field: 知识准确性与深度
+    type: float
+    description: 答案中的生物学知识是否准确、严谨，且能结合教学目标提供适度深度与拓展。高分要求无知识性错误，深入解读原理，结合实际案例说明理论适用条件、局限性及前沿动态。中分为准确但浅显，低分为有错误或片面解释。
+  - field: 创新思维激发与引导_理由
+    type: str
+    description: 解释创新思维激发与引导评分的详细理由，引用具体例子。
+  - field: 创新思维激发与引导
+    type: float
+    description: 答案是否通过开放性问题、跨学科联想、现实情境设问等方式，激发学生创新思考和批判性分析。高分要求能引导学生多角度分析、提出新观点，并鼓励质疑或改进现有理论。中分仅有简单开放性提问，低分只要求记忆和复述。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评估问题或情境是否贴近真实高中生在学习过程中的常见疑惑、兴趣点或探究需求，体现学生真实思维与表达特点。高分为有生活气息、能激发好奇心。中分为略贴近但缺乏情境细节，低分为机械提问、脱离学生实际。
+  - field: 社会主义核心价值观与传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与传统文化自然融入
+    type: float
+    description: 在讲解过程中是否顺畅、自然地融入社会主义核心价值观或中华优秀传统文化（如科学精神、尊重多样性、社会责任等），并与生物学内容有机结合。高分要求内容融入自然、契合主题并有启发意义。中分为表层融入但缺乏启发，低分为生硬堆砌或脱离生物内容。
+  - field: 学科交叉与现实应用关联_理由
+    type: str
+    description: 解释学科交叉与现实应用关联评分的详细理由，引用具体例子。
+  - field: 学科交叉与现实应用关联
+    type: float
+    description: 答案是否结合其他学科知识（如数学统计、信息技术、社会学等）或现实生活场景，帮助学生理解理论实际价值。高分要求有具体跨学科应用案例，启发学生关注生物学知识实际作用与意义。中分为简单提及但缺乏具体案例，低分为仅停留在生物理论描述，无现实或跨学科联系。
+  format_mode: prompt

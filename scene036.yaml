@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-生活中的数学教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是二年级孩子的家长，我女儿很喜欢画画和编故事，就是老把“晴”和“睛”搞混。你作为语文专家，能帮我理解一下，有哪些有趣又有效的方法适合爱创作的孩子区分这两个字？帮我理解一下
+  - question: 我是周晖，一年级男生，喜欢数独和机器人搭建，平时和同学、家里人关系都挺好。我总是把“左”和“右”搞混，你作为语文学习助手，有没有简单又有趣的方法让我记住这两个字？说说主要的
+  - question: 我是小学语文老师，班里有几个学生对“近义字”很感兴趣，但像“看”和“瞧”、“听”和“聆”他们总是混淆。你作为教育顾问，能不能讲清楚点，怎么用小组游戏或编故事的方式让孩子们有趣地分清这些字？
+  - question: 我是一年级家长，我孩子喜欢唱歌和模仿动画角色，但他觉得背生字很无聊。你作为语文专家，能不能帮我理解一下，有哪些办法能结合动画和表演，让识字变得更有趣？帮我理解一下
+  - question: 我是三年级语文老师，班里有几个学生喜欢自己编口诀记生字，也很喜欢和同学合作。你作为语文专家，能深入讲解一下，怎么鼓励他们自己发明有趣的记忆办法和造词造句，帮助提升识字和辨析能力吗？能深入讲解一下吗
+  - question: 我是小学教研员，最近要组织全校的趣味识字活动，既要考虑不同年级和兴趣的孩子，还想让活动里自然融合中华传统文化和核心价值观。你作为教育顾问，能不能给我一份完整的分析，系统梳理一下创新的趣味识字与辨析活动设计方案？
+  - question: 我是新手二年级语文老师，班上很多学生喜欢角色扮演游戏。你作为语文教育专家，能不能全方位地讲解一下，怎么利用角色扮演和故事接龙，让孩子们有趣地识字和辨析形近字，还能融入中华文化和正面价值观？
+  - question: 我是五年级女生的家长，我女儿喜欢历史故事和小组讨论，但她最近总把“传”和“傅”、“赏”和“赏”这些形近字混了。你作为语文专家，能讲得详细点吗，怎么结合历史故事和小组活动，让她有趣地分清这些字，还能感受到中华文化的魅力？
+  - question: 我是小学语文老师，最近发现有些学生总是分不清多音字，比如“乐”和“行”这种。你作为语文专家，说说你的看法，怎么通过有趣的课堂互动和小组活动帮助孩子们准确理解这些多音字？
+  - question: I'm SmithHolly, a 51-year-old teacher who enjoys yoga, opera, and meditation.
+      I value mindfulness and a balanced, methodical teaching style. As a Chinese
+      language education consultant, could you briefly share some core strategies
+      for making character recognition and differentiation engaging for primary students,
+      maybe with some interactive or mindfulness-based activities? Just a short summary
+      is fine.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-生活中的数学进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化支持与差异化教学_理由
+    type: str
+    description: 解释个性化支持与差异化教学评分的详细理由，引用具体例子。
+  - field: 个性化支持与差异化教学
+    type: float
+    description: 根据学生的兴趣、能力和学习风格，适度调整教学内容和方法，给予分层指导和个别关注，促进每个学生的成长。关注但不苛求全面精准画像，更重视对明显差异的合理回应。
+  - field: 教学流程规范与环节完整_理由
+    type: str
+    description: 解释教学流程规范与环节完整评分的详细理由，引用具体例子。
+  - field: 教学流程规范与环节完整
+    type: float
+    description: 教学材料和活动按照要求的结构组织，环节清晰、顺序合理。允许灵活调整细节，但需保证核心环节不缺失。
+  - field: 科学合理的教学方法_理由
+    type: str
+    description: 解释科学合理的教学方法评分的详细理由，引用具体例子。
+  - field: 科学合理的教学方法
+    type: float
+    description: 采用多样化、适合小学生认知和发展水平的教学方法，结合知识传授与能力培养，灵活运用操作、合作、讨论等方式。
+  - field: 生活化数学应用_理由
+    type: str
+    description: 解释生活化数学应用评分的详细理由，引用具体例子。
+  - field: 生活化数学应用
+    type: float
+    description: 将数学知识与学生真实生活关联，设计有现实意义的生活场景或任务，引导学生发现和应用数学于日常生活。
+  - field: 创新与多样思维激发_理由
+    type: str
+    description: 解释创新与多样思维激发评分的详细理由，引用具体例子。
+  - field: 创新与多样思维激发
+    type: float
+    description: 通过开放性问题、鼓励多方案探究和反思，激发学生创新意识和多元思考。允许并鼓励不同解法和表达。
+  - field: 多元表达与探索机会_理由
+    type: str
+    description: 解释多元表达与探索机会评分的详细理由，引用具体例子。
+  - field: 多元表达与探索机会
+    type: float
+    description: 为学生提供多种表达和探索方式，如口头、书面、绘画、模型等，鼓励个性展示和多元视角，评价关注过程和理解。
+  - field: 核心价值观与合作体验_理由
+    type: str
+    description: 解释核心价值观与合作体验评分的详细理由，引用具体例子。
+  - field: 核心价值观与合作体验
+    type: float
+    description: 在教学和活动中自然融入诚信、合作、责任等社会主义核心价值观，鼓励分工协作和互助，通过故事、活动等方式潜移默化影响学生。
+  - field: 真实互动与开放性提问_理由
+    type: str
+    description: 解释真实互动与开放性提问评分的详细理由，引用具体例子。
+  - field: 真实互动与开放性提问
+    type: float
+    description: 设计贴近学生生活和兴趣的开放性问题，鼓励学生主动提问、交流和讨论，师生、生生互动充分，氛围积极。
+  format_mode: prompt

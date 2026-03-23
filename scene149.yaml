@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-高中-生物学图表与数据的解读与推断教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生，老师讲了血糖调节的实验数据和折线图，但我对图里的趋势和变量关系总是搞不清楚。你作为生物学学习顾问，能帮我理解一下这些图表的核心信息和怎么解读吗？最好能结合生活中的血糖变化举例讲讲，帮我理解一下。
+  - question: 我是一名刚入职的高中生物老师，发现学生对生态系统能量流动的图表总是难以理解。你作为学科专家，能全面深入地讲讲这类图表的教学要点和如何培养学生的数据解读与推断能力吗？最好从图表结构、课堂活动设计等方面系统分析一下，并结合实际案例和生活应用说清楚。能全面深入地讲讲吗？
+  - question: 我是高一学生，虽然生物成绩一般，但对动植物实验数据挺感兴趣。老师最近让我们分析植物光合作用的柱状图，我总是看不懂横纵轴和各个柱子的意思。你作为我的生物学习助教，能帮我讲清楚点吗？最好用具体的光合作用案例详细解释下，讲清楚点。
+  - question: 你是生物学教育专家，我是ThomasKenneth的老师，他是个慢热的二年级男孩，喜欢足球、滑板和吉他，理解速度有点慢。在给他讲动物体温变化的简单图表时，你会怎么用结构化又耐心的方式帮他理解主要内容？说说主要的就行。
+  - question: 我是濮妮老师，生物课上发现学生对遗传实验统计图表分析总是有困惑。我自己喜欢诗歌和茶艺，平时社交圈主要是文学爱好者，课堂上也喜欢保持节奏和边界。你作为教学顾问，能解释一下怎么科学引导学生理解遗传实验图表吗？最好结合实际和生活案例说说，也给我点适合我这种教学风格的建议。
+  - question: 我是高三学生，生物成绩还可以，但做人口数量变化的折线图题时总是容易忽略变量变化和因果关系。你作为生物学助教，能帮我理解一下这种折线图的解读方法吗？最好结合城市人口变化的实际例子讲讲，帮我理解一下。
+  - question: 你是一名资深生物学教研员，最近教研时发现老师和学生在生物实验数据分析和图表推断的高阶能力培养上有不少难点。能不能从趋势判断、变量关系分析、假设推断、跨学科方法、生活化应用等各个角度详细说说，高中生物学图表与数据解读的教学策略和创新方法？从各个角度详细说说吧。
+  - question: 我是高二学生，喜欢用生活现象来理解生物知识，但对种群密度变化的散点图总是分析不好。你作为生物学学习顾问，能详细展开说说怎么科学系统地分析这种散点图吗？最好结合实际生活的案例，讲讲怎么提升数据素养和科学探究能力。
+  - question: 我是邱依静老师，高中生物教师，最近觉得有点职业倦怠。我喜欢摄影、舞蹈和手工DIY，习惯渐进式改革和策略性妥协，也希望保持一定社交距离。你作为教学顾问，我想深入了解怎么通过图表和数据分析在课堂上激发学生科学探究兴趣，同时兼顾自己的成长和教学质量。能详细分析一下，最好结合创新思维、生活案例和教师自我调适的具体做法。
+  - question: 我是何红老师，高中生物教师，最近发现学生在酶促反应速率的图表解读上总容易混淆变量关系。我最近职称压力大，团队合作还算擅长，但感觉有点心力交瘁。你能简要说明下怎么高效清晰地教学生抓住这类图表的核心要点吗？最好能顺便提提团队协作的积极意义。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-高中-生物学图表与数据的解读与推断进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准匹配_理由
+    type: str
+    description: 解释个性化画像精准匹配评分的详细理由，引用具体例子。
+  - field: 个性化画像精准匹配
+    type: float
+    description: 评价教学内容和方法是否充分根据学生的学业基础、兴趣、认知风格等个体差异进行针对性设计，能否有效满足不同层次、类型学生的学习需求，体现分层、分组、差异化指导。
+  - field: 严格遵循格式与指令_理由
+    type: str
+    description: 解释严格遵循格式与指令评分的详细理由，引用具体例子。
+  - field: 严格遵循格式与指令
+    type: float
+    description: 评价答案对教师或题目要求的结构、表达、步骤和格式的遵循度，是否完整、准确、规范地覆盖所有必答要素，无遗漏、无偏差。
+  - field: 教学方法科学严谨_理由
+    type: str
+    description: 解释教学方法科学严谨评分的详细理由，引用具体例子。
+  - field: 教学方法科学严谨
+    type: float
+    description: 评价教学设计是否采用多样化、系统性、分层次和启发式方法，促进学生主动参与、合作探究和知识建构；能否根据学生反应及时调整，避免单向灌输和机械重复。
+  - field: 数据与图表解读能力培养_理由
+    type: str
+    description: 解释数据与图表解读能力培养评分的详细理由，引用具体例子。
+  - field: 数据与图表解读能力培养
+    type: float
+    description: 评价是否系统指导学生识别、分析图表关键要素（坐标轴、趋势、异常、数据分布等），是否分层推进分析、推断、归纳和批判性思考，展示清晰完整的思维与分析过程。
+  - field: 思维创新引导_理由
+    type: str
+    description: 解释思维创新引导评分的详细理由，引用具体例子。
+  - field: 思维创新引导
+    type: float
+    description: 评价是否通过开放性任务、条件变式、跨情境迁移等方式，激发学生创新思考，支持多角度解读、自主探究，鼓励学生提出新观点或方案，体现高阶思维培养。
+  - field: 生活化与跨学科联系_理由
+    type: str
+    description: 解释生活化与跨学科联系评分的详细理由，引用具体例子。
+  - field: 生活化与跨学科联系
+    type: float
+    description: 评价教学内容是否与现实生活现象、社会实际问题或其他学科知识有机结合，促进知识迁移、综合应用和跨领域创新，帮助学生理解知识的实际意义和多元价值。
+  - field: 社会主义核心价值观润物细无声融入_理由
+    type: str
+    description: 解释社会主义核心价值观润物细无声融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观润物细无声融入
+    type: float
+    description: 评价是否在教学过程中自然融入社会主义核心价值观和中华优秀传统文化，体现科学精神、社会责任、团结协作等正面价值观，方式自然得体、恰如其分，无生硬灌输。
+  - field: 真实提问场景模拟_理由
+    type: str
+    description: 解释真实提问场景模拟评分的详细理由，引用具体例子。
+  - field: 真实提问场景模拟
+    type: float
+    description: 评价问题设计是否贴近真实教学和生活场景，涵盖学生在课堂、考试或实际生活中常见的困惑、误区和需求，具备典型性、复杂性和现实意义，能激发深度思考和探讨。
+  format_mode: prompt

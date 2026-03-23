@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-初中-不同泳姿的技术分解练习教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中女生，最近学了蛙泳、自由泳和仰泳，但动作总是记不住，老师让我多做技术分解练习。你作为体育专家，能帮我理解一下不同泳姿的技术分解练习吗？帮我理解一下，举些具体例子吧。
+  - question: 我是一名初中体育老师，最近要在教研会上分享如何针对不同学生设计分层、创新性的泳姿技术分解练习。你作为体育教学专家，能详细分析下各个方面吗？希望讲讲动作分解、常见错误、安全保障、团队协作和创新方法。
+  - question: Hi, I'm ThompsonKenneth, a teacher who values team dynamics and gradual
+      classroom reform. You, as a sports skills consultant, could you help me deeply
+      understand how to design and implement technical breakdown practices for different
+      swimming strokes for junior high students? I want to know about differentiation,
+      innovation, teamwork, safety, and practical examples. I want to really dig into
+      this topic.
+  - question: 我在教初中生仰泳时发现他们容易下沉或者呼吸不畅，你作为运动技能顾问，能简要说明下仰泳技术分解练习的关键点吗？核心要点简单说说就行。
+  - question: 我儿子上初中，最近在体育课练自由泳时腿部动作老不协调，还容易抽筋。你作为体育专家，能深入讲解一下自由泳腿部技术分解练习的方法、常见错误和安全防护吗？能深入讲解一下吗，最好举些案例。
+  - question: 我在初中体育教学时发现学生喜欢小组合作做技术练习，但有些动作细节总是不到位。你作为体育老师，能详细说说怎样用分组合作和创新方法帮学生掌握蛙泳、自由泳等泳姿的技术分解练习吗？详细说说吧，最好有些具体例子。
+  - question: 我是高三女生叶娜，喜欢钢琴和手工DIY，比较创新但有点拖延，喜欢主动合作。你作为体育教学专家，能从各个角度详细说说怎么针对像我这种创新、合作但容易拖延的学生，设计系统化、创新性的泳姿技术分解练习吗？希望内容全面细致，结合我的兴趣和特点。
+  - question: 我是三年级女生雷蕾蕾，喜欢摄影、插花和乒乓球，做事很有规划，有时对自己的蛙泳技术特别自信，容易忽略团队配合。你作为体育专家，能具体说说蛙泳技术分解练习的方法、常见错误和安全建议吗？希望结合我的特点具体说说。
+  - question: 我是一名初中男生，喜欢和同学比赛游泳，但自由泳动作总觉得不流畅，换气也容易乱。你作为体育老师，简单说说自由泳技术分解练习的关键点和改进建议吧。
+  - question: 我是初中体育老师，班里有些学生基础弱但很积极，有些动作标准但缺乏创新。你作为体育专家，能具体说说怎么针对不同层次学生开展创新性的泳姿技术分解练习吗？希望有具体细节和建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-初中-不同泳姿的技术分解练习进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化学生画像适配度_理由
+    type: str
+    description: 解释个性化学生画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化学生画像适配度
+    type: float
+    description: 评估技术分解练习是否基于学生多维画像（能力、兴趣、体能、心理等），制定分层、分组与动态调整策略，确保每一类学生均获得针对性支持与资源，并有具体适配记录。
+  - field: 指令遵循与内容结构规范性_理由
+    type: str
+    description: 解释指令遵循与内容结构规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与内容结构规范性
+    type: float
+    description: 评估方案是否严格按照教学任务或教师指令要求，完整呈现规定结构（如三段式），各段落层级清晰、要点分条，表达规范，无遗漏或混乱。
+  - field: 教学方法科学性与流程完善度_理由
+    type: str
+    description: 解释教学方法科学性与流程完善度评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与流程完善度
+    type: float
+    description: 评估练习方法是否符合运动学与教育学原理，包含动作分解、分步合成、即时反馈、互动评价、反思调整等完整教学流程，并能根据学生反馈动态优化方案。
+  - field: 技术动作细节准确性与层次清晰度_理由
+    type: str
+    description: 解释技术动作细节准确性与层次清晰度评分的详细理由，引用具体例子。
+  - field: 技术动作细节准确性与层次清晰度
+    type: float
+    description: 评估泳姿分解是否细致到关键动作环节，分层分步清晰，能明确指出要领、常见错误及针对性纠正方法，适应不同学生水平。
+  - field: 练习过程安全保障与风险防控_理由
+    type: str
+    description: 解释练习过程安全保障与风险防控评分的详细理由，引用具体例子。
+  - field: 练习过程安全保障与风险防控
+    type: float
+    description: 评估练习设计是否系统考虑安全因素，包括场地分区、辅助器材、师生比、巡视、应急预案、学生安全教育等，能有效预防和处置风险。
+  - field: 创新能力与创造力激发_理由
+    type: str
+    description: 解释创新能力与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新能力与创造力激发
+    type: float
+    description: 评估练习方案是否通过开放式问题、变式练习、自创挑战等方式，激发学生主动探索与创新，设有创新成果展示与评价环节，并鼓励跨组合作与反思。
+  - field: 真实场景问题契合度与针对性_理由
+    type: str
+    description: 解释真实场景问题契合度与针对性评分的详细理由，引用具体例子。
+  - field: 真实场景问题契合度与针对性
+    type: float
+    description: 评估练习内容是否针对学生实际遇到的难题（如换气、恐水、动作不协调等）进行具体分析，给出分层解决方案与个别辅导措施，体现问题导向与教学应对能力。
+  - field: 社会主义核心价值观与团队精神融入_理由
+    type: str
+    description: 解释社会主义核心价值观与团队精神融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与团队精神融入
+    type: float
+    description: 评估练习内容是否自然融入社会主义核心价值观和团队精神，通过分组协作、互助互评、价值观引导等方式，促进学生在实践中体验团结、友爱、进取、责任等价值观，并设有体验表达与反思环节。
+  - field: 反馈与评价机制完善度_理由
+    type: str
+    description: 解释反馈与评价机制完善度评分的详细理由，引用具体例子。
+  - field: 反馈与评价机制完善度
+    type: float
+    description: 评估练习过程中是否设有多元、及时的师生和生生反馈机制，包括即时评价、阶段总结、个别辅导和自我反思环节，并能依据反馈动态调整练习内容和教学策略。
+  format_mode: prompt

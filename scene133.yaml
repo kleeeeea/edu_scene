@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-遗传基本规律的理解与应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二学生，最近学生物时，对遗传基本规律有些疑惑。老师讲了孟德尔的分离和自由组合定律，但我还是搞不懂这些规律怎么用在实际生活里，比如家族遗传病、动植物育种之类的。能讲得详细点吗？最好能结合案例、实验设计或者互动游戏之类的创新方法帮我理解
+  - question: 你是我的学习助手，我叫赵妍，17岁，高二女生，喜欢攀岩和经济学研究。我的性格有点拖延，而且理想主义，比较在意个体竞争，有时候学习情绪化。和父母关系一般，周末常在攀岩馆和朋友交流。最近生物课讲遗传基本规律，我有点抓不住重点，总觉得知识和生活的联系很远。你能详细说说遗传基本规律到底包括哪些内容，怎么和我的兴趣（比如攀岩或经济学研究）结合起来理解？希望你能用思维导图或者情景模拟之类的方法帮我记住重点，也能给我一些适合我性格的学习建议
+  - question: 我在复习生物遗传基本规律，总分不清分离定律和自由组合定律的区别和联系。你能简短回答下这两个定律的核心要点吗？最好能用一个小实验或小游戏帮助记忆
+  - question: 我是刚入职的初中生物老师，准备给学生系统讲遗传基本规律，但发现有些学生对抽象知识很难产生兴趣、容易混淆概念。你作为生物教学专家，能不能系统地讲解一下遗传基本规律的知识体系、教学难点、常见误区、创新教学方法（比如角色扮演、情景模拟、家庭参与等），还可以结合科学家事迹或中华优秀传统文化来激发学生兴趣？希望你能讲得全面、深入、专业
+  - question: 你作为生物专家，能不能详细展开说说遗传基本规律在现实生活和科学研究里的应用？比如遗传病预防、动植物育种、亲子鉴定这些方面。希望你能结合实际案例、探究活动或者合作学习的方法来说明，还请指出学生容易产生的误区，以及怎么培养科学思维和责任感
+  - question: 我是初三学生，最近生物课讲遗传基本规律，但我觉得很难抓住重点。你能大概讲讲这些规律最重要的部分吗？平时有什么小方法或小游戏可以帮助记忆
+  - question: I'm RobinsonKimberly, a 49-year-old female film director. I often find
+      inspiration in scripts and biographies, and I love traveling to experience new
+      cultures. As my biology learning assistant, could you help me understand the
+      basic laws of genetics, especially how they connect with creativity and innovation?
+      Please reference creative processes and suggest an interactive or visual way
+      to learn that's suited to my background. Help me understand it
+  - question: 我是初中生，对遗传基本规律有点困惑，特别是分离定律和自由组合定律的实际意义。你能不能讲清楚点这两个定律分别是什么、生活里有什么例子？如果能用情景模拟或小故事帮助解释就更好了
+  - question: 我是初二学生，最近学遗传基本规律时听说了孟德尔的豌豆实验。你能解释一下孟德尔豌豆实验的过程、结果和它对遗传规律发现的意义吗？最好能结合一个适合学生的互动活动或游戏帮助理解
+  - question: 你是生物教学专家，我叫于瑾萱，今年11岁，五年级女生，喜欢越剧和朗诵。性格创新性强，功利心萌芽，有点完美主义。妈妈是越剧票友，经常带我参加票友聚会，钢琴老师要求严格，每周两次一对一辅导。我想系统了解遗传基本规律的各个方面内容，包括知识体系、实际应用、常见误区、创新学习方法（比如角色扮演、家庭参与或情景模拟），以及怎么用科学精神和优秀传统文化的故事激发我学习兴趣。能不能详细分析下各个方面，给我适合我的个性和兴趣的建议
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-遗传基本规律的理解与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 教学内容与方法需基于学生多维画像（学习水平、兴趣、认知风格、学习障碍等）实施差异化设计，且能根据学生阶段性发展动态调整，确保不同类型学生均获得有效支持。
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 教师需针对学生具体疑问、兴趣或障碍，进行深入、针对性回应，提供个性化学习建议，并有计划地进行后续跟踪反馈，确保学生困惑被真正解决。
+  - field: 指令遵循规范性_理由
+    type: str
+    description: 解释指令遵循规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循规范性
+    type: float
+    description: 教学设计或答复须严格按任务要求、格式与内容指示完成，结构清晰，逻辑严密。评估应关注对细节、关键环节的把握，以及对特殊或复杂要求的适配能力。
+  - field: 教学内容科学性与延展性_理由
+    type: str
+    description: 解释教学内容科学性与延展性评分的详细理由，引用具体例子。
+  - field: 教学内容科学性与延展性
+    type: float
+    description: 教学内容需科学准确，系统严谨，覆盖学科核心知识点，深入分析常见误区和前沿进展，并能联系生活实际、学科交叉领域，启发学生多角度思考。
+  - field: 教学方法多样性与创新性_理由
+    type: str
+    description: 解释教学方法多样性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性与创新性
+    type: float
+    description: 教学应融合多样化方法（实验、模拟、游戏、讨论、跨学科探究等），并有具体创新举措，提升学生参与度和理解效果。创新性应体现在方法、工具或活动设计的新颖性及实际成效上。
+  - field: 激发创造性思维能力_理由
+    type: str
+    description: 解释激发创造性思维能力评分的详细理由，引用具体例子。
+  - field: 激发创造性思维能力
+    type: float
+    description: 通过问题引导、开放性任务、探究活动等方式，有计划地激发学生创新思考、提问、假设与自主探究能力，并鼓励表达独特见解和创新成果。
+  - field: 模拟真实提问契合度_理由
+    type: str
+    description: 解释模拟真实提问契合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问契合度
+    type: float
+    description: 教学内容和表达应紧贴初中生认知水平和兴趣点，采用生活化案例、通俗语言，针对学生常见困惑进行有效回应，帮助其将知识应用于实际。
+  - field: 价值观自然融入层次_理由
+    type: str
+    description: 解释价值观自然融入层次评分的详细理由，引用具体例子。
+  - field: 价值观自然融入层次
+    type: float
+    description: 社会主义核心价值观和中华优秀传统文化应在教学中自然融入，结合学科活动、故事、探究、讨论等，促进学生科学素养与人文精神发展，避免生硬或形式化植入。
+  format_mode: prompt

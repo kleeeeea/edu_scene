@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-生态系统结构与功能的分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中生，对生态系统的结构和功能有点基础，但不太明白最主要的内容，你作为生物老师能不能大概讲讲相关知识，重点说清楚核心要点？
+  - question: 我是一名初中生物老师，最近备课时发现学生对生态系统结构与功能的分析兴趣不高，理解也比较困难。你作为生物教育专家，能不能详细展开说说这部分内容？希望你能系统梳理知识体系、实际应用、课堂活动设计以及怎么激发学生的探究兴趣。
+  - question: 我是吴怀，初二男生，喜欢科学实验和编程（Python/Scratch），平时也有艺体特长，学习很自律，爸妈是科研工作者，经常陪我做实验。最近生物课学到生态系统结构与功能分析，我想深入理解并结合我的兴趣探索。你作为AI生物老师，能不能深入讲解一下这部分内容？最好能结合科学实验和编程的角度给我一些建议，让我在生活中能主动分析生态系统。
+  - question: 我最近在园艺种植中发现生态系统结构和功能的知识很关键，但具体细节不是很清楚。你作为生物老师，能不能详细说说这方面内容，并结合园艺举个例子？
+  - question: 我是初中生物兴趣小组成员，最近大家在讨论生态系统结构与功能时有不同观点。你作为生物老师，能不能说说你的看法？最好举些例子说明这些知识对实际生活有什么帮助。
+  - question: 我是贾娟敏，22岁医生，喜欢园艺种植，也经常读医学期刊。在园艺社群交流时大家对生态系统结构和功能的科学理解不太统一。你作为生物老师，能不能概括一下这部分内容，让我好在社群里分享？
+  - question: 我最近在生物课上听到生态系统结构与功能分析，但感觉内容很杂乱。你作为学习助手，能不能讲清楚这部分知识？希望你能详细说说主要分类、构成要素和它们之间的关系。
+  - question: 我是初三学生，对生态系统结构与功能分析很感兴趣，希望能全面系统地掌握这部分内容。你作为生物教育专家，能不能全面深入地讲讲生态系统结构与功能？包括理论基础、实际应用、创新探究、人与自然关系还有中国传统文化里的相关观点。
+  - question: 我是一名初中生，最近在小组合作探究活动中遇到生态系统结构与功能相关的具体问题。你作为生物老师，能具体说说这部分知识在探究活动中的应用吗？最好举个例子说明怎么做生活化观察和分析。
+  - question: 我是刚入职的初中生物老师，发现学生对生态系统结构与功能分析参与度很低，理解也比较浅。你作为生物教研专家，能不能彻底说清楚这部分教学策略、知识梳理、案例分析，还有怎么结合核心价值观和传统文化进行教学？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-生态系统结构与功能的分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评价教学是否基于学生的兴趣、知识水平、常见误区等进行差异化设计和反馈，能动态调整案例、提问和讲解方式。高阶表现应体现持续追踪个体成长，主动挖掘潜力，针对性补救与拔高。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评价教学内容是否严格响应教学任务要求，内容结构分明、条理清晰，合理使用表格、图示等视觉工具，语言规范且突出重点。高阶表现包括主动优化表达，提高信息可读性。
+  - field: 教学目标适配性与迁移拓展_理由
+    type: str
+    description: 解释教学目标适配性与迁移拓展评分的详细理由，引用具体例子。
+  - field: 教学目标适配性与迁移拓展
+    type: float
+    description: 评价教学内容是否全面、准确且深入覆盖初中'生态系统结构与功能分析'的核心目标，并有效设计迁移应用环节。高分需体现深度迁移（如跨领域联系、复杂情境应用）和系统性思考。
+  - field: 教学方法科学性与学科思维培养_理由
+    type: str
+    description: 解释教学方法科学性与学科思维培养评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与学科思维培养
+    type: float
+    description: 评价是否采用符合初中生认知规律的科学方法（如探究、情境模拟、小组合作等），并有意识培养分析、归纳、系统思考等核心学科思维。高阶表现包括引导学生自我反思和元认知提升。
+  - field: 知识点准确性、逻辑性与科学拓展_理由
+    type: str
+    description: 解释知识点准确性、逻辑性与科学拓展评分的详细理由，引用具体例子。
+  - field: 知识点准确性、逻辑性与科学拓展
+    type: float
+    description: 评价知识点表述是否科学、准确、严密，能明晰区分相关概念，逻辑自洽。高分需体现对知识内在联系的深入剖析和高阶科学拓展（如引入学科前沿或跨学科视角）。
+  - field: 激发创新与思辨能力_理由
+    type: str
+    description: 解释激发创新与思辨能力评分的详细理由，引用具体例子。
+  - field: 激发创新与思辨能力
+    type: float
+    description: 评价是否通过高质量开放性问题、创新任务或探究活动，激发学生独立思考、质疑与创新。高分需体现学生有独特见解或创造性成果，鼓励批判思维和多元视角。
+  - field: 真实互动与有效反馈_理由
+    type: str
+    description: 解释真实互动与有效反馈评分的详细理由，引用具体例子。
+  - field: 真实互动与有效反馈
+    type: float
+    description: 评价教学是否模拟真实课堂互动，主动回应学生困惑、追问、误解，并提供针对性反馈和引导。高分需体现持续追踪学生思维变化，促进深度学习与反思。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入
+    type: float
+    description: 评价教学内容是否自然、深度地融合社会主义核心价值观和中华优秀传统文化，紧密联系生态系统主题，促进价值观内化。高分需体现文化内涵与科学知识深度融合，启发学生践行绿色生活、人与自然和谐共生。
+  format_mode: prompt

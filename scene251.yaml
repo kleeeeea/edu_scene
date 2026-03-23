@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-法律如何保护“少年的你”（未成年人保护法）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是JonesAdrian，今年45岁，是一名运动员。我喜欢打门球和玩单口喜剧，平时比较怕压力，也不太喜欢强权的氛围，工作和生活都喜欢有条理、内容为主的活动。法律是怎么保护那些像我这样容易受压力影响的青少年，特别是在他们需要支持和有内容的活动时？大概讲讲就行。
+  - question: 我是初一女生李凌菲，喜欢吉他和动漫设计，在学校艺术社团很活跃，家里一般都是我妈照顾我，爸爸因为工作经常不在家。我性格比较有艺术特长，也很讲逻辑，但有时候理解东西会慢一点，情绪还算稳定。你能具体说说《未成年人保护法》在我这些校园生活、兴趣发展、家庭环境里能提供哪些保护和支持吗？举点例子更好。
+  - question: 我是ThompsonCarl，今年18岁，高三男生，很喜欢武术和足球，既注重个人竞争，也很看重队友之间的归属感。我想深入了解一下，《未成年人保护法》在像我这种充满竞争的环境里，怎么保护我们的安全、公平待遇、心理健康，还有怎么引导大家形成好团队精神？举些例子，详细说说。
+  - question: 我最近发现有同学在网上发了我的照片，还配了挺难听的评论，我心里很不舒服。你能具体说说《未成年人保护法》在这种网络欺凌和隐私被侵犯的情况下能帮我什么吗？最好讲清楚点。
+  - question: 我是初二学生，爸妈总喜欢查我手机聊天记录，感觉自己的隐私都没了。你能讲得详细点吗？想知道《未成年人保护法》在家庭里是怎么保护我们隐私的，还有家长这样做到底合不合理，有什么沟通方法和心理建议？
+  - question: 我是初中政治老师，学生问我，如果在学校里遇到老师或同学对未成年人有不当言语或行为，该怎么用《未成年人保护法》保护自己？简要说明下主要做法和要注意的地方。
+  - question: 我是胡丽丽，今年44岁，是老师，平时喜欢学习新技能和看书，教学时比较有仪式感和掌控欲，工作投入也很高，有时候会和生活界限模糊。你能讲讲看，《未成年人保护法》对我们老师有哪些要求，尤其在保护学生权益和促进他们健康成长方面？最好结合实际教学说说。
+  - question: 我是一个初中家长，我孩子性格偏内向，最近在学校社团活动里被同学排挤，变得很不自信。你能全方位地讲解一下，《未成年人保护法》在校园社交、心理健康、反欺凌这些方面是怎么保护未成年人的？希望能有系统的家庭、学校和社会建议，还有实际案例分析。
+  - question: 我是初中政治老师，学校准备办一个未成年人保护法主题活动。你能全方位地讲解一下这部法律的主要内容、怎么实施、跟校园生活相关的重点条款吗？最好结合案例帮我设计具体的法律教育方案和建议。
+  - question: 我是RobinsonJasmine，29岁，记者，喜欢诗歌和有启发性的交流，工作风格比较随性但很自律，合作时喜欢低压力、界限也很清楚。你能详细说说《未成年人保护法》是怎么支持青少年在网络和公共场合安全、自由地表达自己的吗？最好结合我的新闻和诗歌兴趣举些例子和建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-法律如何保护“少年的你”（未成年人保护法）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价内容是否针对学生的具体年龄、兴趣、生活经验和认知水平进行定制，体现对个体差异的深度关怀。高分要求内容和互动均高度贴合学生实际，低分为模板化处理或忽视学生特征。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评价内容是否严格按照教学任务要求的结构进行分段和组织，且各环节内容充实、逻辑清晰。高分为结构创新且完整，低分为分点表面化、内容混杂或缺失关键环节。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所采用的教学方法是否多样且有效，包括启发式、情境模拟、探究式、小组互动、持续反馈等。高分要求学生有充分参与和思考空间，低分为单向灌输或无互动。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 评价法律知识点的准确性、全面性和逻辑性，要求覆盖核心条款，结合多个实际场景深入解读法律应用。高分为知识体系完整、案例丰富且分析深入，低分为内容零散、片面或有知识性错误。
+  - field: 创新思维引导性_理由
+    type: str
+    description: 解释创新思维引导性评分的详细理由，引用具体例子。
+  - field: 创新思维引导性
+    type: float
+    description: 评价内容是否通过多层次开放性问题、假设情境、多角度讨论等方式，激发学生创新思考、批判性分析和自主探究。高分要求有多层次问题设计，鼓励原创观点并有同伴互评，低分为仅要求记忆或机械问答。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价内容中的提问是否贴近初中生真实生活、兴趣和表达习惯，语言自然、情感化，反映学生实际困惑。高分为高度生活化、情感共鸣的提问，低分为书面化、脱离学生实际。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价讲解法律知识时，是否自然融入社会主义核心价值观和中华优秀传统文化，通过生活案例和亲切语言引导学生理解，避免机械灌输。高分为案例驱动、润物细无声地传递价值观，低分为生硬口号或与内容脱节。
+  - field: 表达清晰友好度_理由
+    type: str
+    description: 解释表达清晰友好度评分的详细理由，引用具体例子。
+  - field: 表达清晰友好度
+    type: float
+    description: 评价语言是否通俗易懂、表达清晰、语气亲切，贴合初中生认知特点。高分为语言生动、形象、易理解，低分为术语多、表达晦涩或语气生硬。
+  format_mode: prompt

@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene314/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 体育-初中-中考体育项目模拟测试教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是初三班主任，班里有几位体育基础比较弱的学生，马上要参加中考体育模拟测试。你作为体育教学顾问，能详细分析下各个方面吗？希望你从体能提升、心理调适、阶段目标、过程性评价、团队协作、核心价值观和创新训练方法等角度系统地讲讲，越全面越好。
+    - question: 我是初中体育老师，班里有学生第一次参加中考体育项目模拟测试，情绪很紧张。你作为教育专家，能说说主要的心理调适方法吗？核心要点简单说说就好。
+    - question: 我是初三女生家长，孩子基础偏弱，体育成绩也不太理想，下个月要模拟中考体育项目。你作为体育教学专家，能详细讲讲针对她情况怎么科学制定训练计划吗？希望有分阶段目标、过程性评价，还要结合女生体质和心理特点的建议，越详细越好。
+    - question: 我是高二学生曹军，男，17岁，性格偏回避型，平时喜欢自己练吉他和做动漫二次创作，和同学关系不太近。最近学校组织中考体育项目模拟测试，我觉得自己运动基础一般，尤其对集体项目有些排斥。你作为体育学习助手，能用几句话说说怎么让我更好地参与体育项目，提升集体认同感和兴趣吗？
+    - question: 我是初一学生家长，孩子身体素质不错，但第一次参加中考体育项目模拟测试时有点紧张，发挥得一般。你作为体育教学顾问，能帮我理解一下中考体育模拟测试的过程性评价怎么做吗？希望你讲讲怎么通过阶段性反馈让孩子持续进步。
+    - question: 我是刚入职的初中体育老师，班里有些学生体育基础很弱，马上要参加中考体育项目模拟测试，整体表现差别很大。你作为体育教育专家，能深入说说看针对这类学生怎么实施分层次和分阶段的训练与评价吗？希望你讲讲怎么提升整体水平，同时关注学生个体成长。
+    - question: I am ThomasSofia, a 37-year-old female forensic pathologist. My work is very structured and stressful, so I balance it with yoga and hiking, and I value practical-ideal balance and articulate communication. As a sports education expert, could you thoroughly analyze how the physical fitness, psychological resilience, and teamwork skills developed in junior high school simulated sports exams can benefit students in high-pressure careers like mine? Please cover all relevant aspects and analyze them in detail.
+    - question: 我是四年级学生汪贤，男，9岁，喜欢打电竞、画画和编程，性格挺随机应变的，和同学关系也不错。最近学校介绍了初中中考体育项目的模拟测试，我还不是很了解。你作为体育教学助手，能讲讲这些体育项目有哪些特点和乐趣吗？适合我们低年级同学怎样参与？
+    - question: 我是初中体育教研员，发现学生在中考体育项目模拟测试时有体能弱的，也有心理压力大的。你作为体育教育专家，能解释一下怎么结合过程性评价和个体差异，设计激励和反馈机制帮助不同学生健康发展吗？详细说说你的建议。
+    - question: 我是初中生，最近第一次参加了中考体育项目的模拟测试，成绩一般。你作为体育学习助手，能具体说说我可以从哪些方面改进吗？希望你分析一下训练方法、心理调适和过程性评价，帮我提升成绩和信心。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 体育-初中-中考体育项目模拟测试进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与回应
+      type: float
+      description: 评估回答是否能够基于学生的性别、体能、运动基础等多维度特征，精准分析并提出针对性的训练建议，能随学生表现动态调整方案，体现个体化与差异化支持。
+    - field: 指令格式与内容遵循度
+      type: float
+      description: 评估回答是否严格遵循题目要求的格式（如分点、分段、结构层级）、内容要素（如流程、注意事项、评分标准等），条理清晰，逻辑严密，且无遗漏，不仅形式合规，还需内容完整且有深度。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评估所给教学方法是否符合体育教学科学原理，系统性强，能兼顾安全、成效和实际操作，涵盖理论与实践，能有效提升学生体育成绩，避免机械重复或不符合学生实际能力的做法。
+    - field: 过程性评价与反馈机制
+      type: float
+      description: 评估方案是否设计了系统的过程性评价与个别化反馈机制，能动态记录学生训练进展，及时调整方案，鼓励学生发现和改进自身不足，支持持续进步。
+    - field: 创新思维与自主探索激励
+      type: float
+      description: 评估回答是否主动鼓励学生自主思考、尝试新训练方法或策略，参与方案制定，反思总结训练效果，教师能引导并评价学生创新表现，激发创造性解决问题能力。
+    - field: 模拟真实提问情境还原
+      type: float
+      description: 评估语料中的提问与回答是否充分贴近初中中考体育项目模拟测试的实际场景，内容具体细致，具备可操作性和现实针对性，避免空泛抽象。
+    - field: 社会主义核心价值观自然融入
+      type: float
+      description: 评估回答是否在具体体育活动过程中自然融入社会主义核心价值观，如团结协作、顽强拼搏、公平竞争等，并结合中华优秀传统文化，表达方式流畅、具体，非机械套用口号。
+    - field: 语言表达规范与引导性
+      type: float
+      description: 评估回答用语是否规范、准确、积极向上，表达清晰有力，具备良好引导性和激励性，能够激发学生学习动力，杜绝消极、模糊或不当表达，体现专业素养和教育关怀。
+format_mode: prompt

@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-我是校园小卫士（德育+美育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为教育专家，我是初二女生简莲慧，喜欢骑行和冥想，性格比较疏离独立，和同学关系一般，活动也喜欢一个人。妈妈很忙，周末我都自己在家。想请你讲讲看，我怎么能结合自己这些特点参与到“我是校园小卫士”的德育美育活动里？
+  - question: 你是校园活动顾问，我最近要组织“我是校园小卫士”主题活动，怎么能让学生既学到德育又体验美育？简要说明下。
+  - question: 你是小学德育美育专家，能全方位地讲解一下“我是校园小卫士”主题活动怎么设计吗？希望你能系统讲讲目标、融合、创新和传统文化这些方面。
+  - question: 我是小学老师陆艳，40岁，性格循规蹈矩，有点缺乏同理心，和学生关系比较疏远。你作为教育专家，能彻底说清楚我怎么开展“我是校园小卫士”德育美育活动吗？希望你能结合我的特点系统讲讲方案和建议。
+  - question: 你是我的学习导师，我是六年级男生赖水，喜欢街舞、篮球、钢琴，性格比较有竞争意识也喜欢合作，有时候太自信但也会主动问老师问题。我在篮球队是主力，经常和街舞社排练节目，但钢琴课老是拖作业。你能深入讲解一下，“我是校园小卫士”这个活动我有什么优势和挑战？还有哪些创新建议能帮助我在德育美育方面更好成长？
+  - question: I'm RobinsonBruce, a teacher who loves woodworking, lab work and rock
+      climbing. You, as an education expert, how would you suggest I creatively integrate
+      'I am a Campus Guardian' in my class, so it fits both character education and
+      aesthetic experiences—and also matches my own interests and teaching style?
+      Could you please explain clearly?
+  - question: 我是小学老师富蕾，喜欢健身、手工和烘焙，教学上既守规则又喜欢创新，平时会带学生做手工烘焙活动。你作为教育专家，能结合我的兴趣和性格讲讲看怎么把“我是校园小卫士”主题做得有德育和美育体验吗？
+  - question: 你作为小学德育美育专家，能详细讲讲“我是校园小卫士”主题怎么科学融合德育美育目标，还能设计创新活动，并把中华优秀传统文化自然融入其中吗？希望你能详细说说方案和建议。
+  - question: 我是小学老师邱舒，喜欢阅读、心理辅导和越剧表演，性格比较创新，有职业使命感，也喜欢参加戏剧社和辅导年轻老师。你作为校园活动顾问，能详细说说我怎么结合兴趣和特点，把“我是校园小卫士”做成有创新和吸引力的活动吗？
+  - question: 我是小学家长，孩子要参加“我是校园小卫士”主题活动，主要能收获什么？简单说说就行。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-我是校园小卫士（德育+美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评价是否基于学生多维画像（性格、兴趣、能力、学习习惯等）进行分层支持，明确区分至少两类不同学生群体，针对性提出具体的分层建议与措施，且在活动反馈中体现对个体成长的持续关注。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评价答案是否严格按照任务要求的结构和内容要素分层呈现，逻辑清晰、环节完整，无随意增减或遗漏。高分要求每一部分有明确小标题与内容，完全覆盖指令要点。
+  - field: 教学目标与方法专业性_理由
+    type: str
+    description: 解释教学目标与方法专业性评分的详细理由，引用具体例子。
+  - field: 教学目标与方法专业性
+    type: float
+    description: 评价是否设定具体、可衡量、符合小学生认知水平的德育与美育双重目标，并采用科学、系统和高互动性的教学方法。需明确过程评价（如阶段性自评、互评）与结果评价机制。
+  - field: 活动设计科学性_理由
+    type: str
+    description: 解释活动设计科学性评分的详细理由，引用具体例子。
+  - field: 活动设计科学性
+    type: float
+    description: 评价活动方案是否流程细致、环节衔接紧密，兼顾德育与美育目标，具备可操作性、可持续性和实效性。高分需有分组、材料、评价与反馈展示等完整设计，并设有持续改进或后续跟进机制。
+  - field: 创新与创造力激发_理由
+    type: str
+    description: 解释创新与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新与创造力激发
+    type: float
+    description: 评价是否通过开放式任务、赋权学生自主创作和表达，激发创新思维。高分要求成果形式多样（如童谣、漫画、徽章、微剧等），设有创新激励机制（如评选、展示、奖励），并鼓励学生尝试新方法或表达方式，创新性有明显区分度。
+  - field: 模拟真实提问场景_理由
+    type: str
+    description: 解释模拟真实提问场景评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景
+    type: float
+    description: 评价问题设置是否贴近小学实际校园生活，反映具体需求、困惑或兴趣，并能激发学生主动表达和教师精准回应。高分需问题具备真实情境、明确指向性和互动性。
+  - field: 中华优秀传统文化融入_理由
+    type: str
+    description: 解释中华优秀传统文化融入评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入
+    type: float
+    description: 评价活动中是否将中华优秀传统文化内容与德育、美育目标有机融合，体现文化自信与核心价值观。高分要求具体文化元素（如传统美德、艺术形式、故事）与活动深度结合，润物细无声地影响学生。
+  - field: 正向价值观引导_理由
+    type: str
+    description: 解释正向价值观引导评分的详细理由，引用具体例子。
+  - field: 正向价值观引导
+    type: float
+    description: 评价是否通过具体行为、任务和情境，主动引导学生践行社会主义核心价值观，突出责任、友爱、诚信等品质。高分需学生在活动中主动担当、互助，行为有明显积极转变，并能提出自我改进或帮助他人的实际建议。
+  format_mode: prompt

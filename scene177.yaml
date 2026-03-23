@@ -1,0 +1,108 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-高中-学术讲座的听力理解与笔记策略教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高中英语学习者，听学术讲座时遇到专业词汇和复杂句型容易分心，笔记也总是很凌乱。你作为英语讲座学习顾问，能解释一下怎么提升听力理解和笔记能力吗？能解释一下吗
+  - question: 你作为英语教育专家，我是高三学生陈丹，女生，18岁，喜欢冥想和美妆，性格竞争回避但积极应对，兴趣驱动，学习时短时专注，功利与兴趣并重，社交上与同学关系融洽但有距离，经常参加美妆社群。针对我在学术讲座听力和笔记方面容易分心、难抓重点的问题，简单说说就行
+  - question: 我是一名高中英语老师，最近负责组织学术讲座听力与笔记能力提升的教研。你作为高级英语教育专家，请从高中生学习心理、学术讲座语言特点、听力理解策略、笔记方法、课堂活动设计、评价指标、家庭支持、中华优秀传统文化等角度，详细说说学术讲座听力理解与笔记策略的教学设计和实施路径。从各个角度详细说说
+  - question: 我是刚上高一的学生，英语听力基础一般，学术讲座一听就紧张没信心。你作为英语讲座顾问，能具体说说怎么设计有效的听力训练和笔记策略吗？能具体说说吗
+  - question: 我是高中生家长，发现孩子英语学术讲座听力和笔记能力都很薄弱，容易漏掉关键信息、笔记也很乱。你作为讲座辅导专家，能深入讲解一下怎么从家庭、学校和个人成长等方面帮助孩子系统提升英语听力和笔记能力吗？能深入讲解一下吗
+  - question: 我刚升高二，最近听学术讲座时总抓不到重点，笔记也很零散。你是英语讲座学习助手，能简短回答下有哪些实用的听力和笔记技巧吗？简短回答下
+  - question: 我是邹心，男，35岁，英语教研组骨干教师，喜欢骑行和航拍，性格规则与创新平衡、寡言内敛，周末与摄影爱好者结伴活动，社交时习惯倾听。你作为同领域教师，能讲得详细点吗：如何提升高中英语学术讲座听力和笔记教学，兼顾学生差异、创新课堂活动、科学评价和价值观引领？能讲得详细点吗
+  - question: 我是高中生，英语学习时容易被环境干扰，笔记也总是只记关键词，逻辑不清。你作为学术讲座笔记策略专家，能具体说说怎么训练听力专注和提升笔记结构化能力吗？能具体说说吗
+  - question: 我是高中英语新教师，班里学生听力水平参差，有些对学术讲座没兴趣，笔记能力也很弱。你作为高级英语讲座辅导专家，能从教学目标、分层指导、创新活动、评价机制、家庭协同、心理激励和中华优秀传统文化融合等方面，给我一份完整的分析吗？给我一份完整的分析
+  - question: 我是董天磊，男，10岁，五年级学生，喜欢足球、自然探索和虚拟现实游戏，性格合作回避、逻辑跳跃、间歇拖延，情绪和理性交替，功利排斥型。社交上经常不参加足球训练，作业提交不稳定，独自玩虚拟现实游戏，父母计划送我参加自然探索夏令营改善社交能力。你作为英语学术讲座学习顾问，针对我将来进入高中后的英语听力和笔记能力培养，说说你的看法
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-高中-学术讲座的听力理解与笔记策略进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准匹配_理由
+    type: str
+    description: 解释个性化画像精准匹配评分的详细理由，引用具体例子。
+  - field: 个性化画像精准匹配
+    type: float
+    description: 评估教学建议是否基于学生的英语水平、学习风格、兴趣、目标等多维度画像，进行差异化分层指导，能针对不同学生的具体需求和成长路径设计专属方案，并动态调整。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估笔记结构是否严格依照指定层级（主题、主论点、细节支持、个人反思等）展开，条理清晰，内容完整，每一层级均有具体内容，且排版规范，便于查阅与复习。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估所推荐教学方法是否有明确教育学、认知心理学等理论依据，能系统提升听力理解与笔记能力，并在方案中阐明理论支持、操作流程及预期效果，避免经验主义或机械训练。
+  - field: 学术讲座场景适配度_理由
+    type: str
+    description: 解释学术讲座场景适配度评分的详细理由，引用具体例子。
+  - field: 学术讲座场景适配度
+    type: float
+    description: 评估教学内容是否高度契合高中英语学术讲座听力与笔记场景，突出学术讲座的结构化论证、数据证据、学术术语、逻辑链条等特征，笔记能反映讲座逻辑与深度分析，明显区别于日常对话听力。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估教学内容是否有明确且具体的机制激励学生在笔记和学习过程中进行批判性思考、归纳总结、独立见解表达，支持学生主动提出问题、联系实际、创新表达，并为创新提供结构化引导。
+  - field: 模拟真实提问场景_理由
+    type: str
+    description: 解释模拟真实提问场景评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景
+    type: float
+    description: 评估内容是否覆盖高中生在学术讲座听力与笔记过程中常见具体问题，针对性提出可操作、分步骤的解决方案，并结合真实案例或操作流程，帮助学生解决实际困惑。
+  - field: 社会主义核心价值观及中华优秀传统文化深度融合_理由
+    type: str
+    description: 解释社会主义核心价值观及中华优秀传统文化深度融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观及中华优秀传统文化深度融合
+    type: float
+    description: 评估教学内容是否将社会主义核心价值观与中华优秀传统文化自然、深度地融合到教学过程和笔记反思中，促进学生诚信、合作、自主、勤奋等品质的内化，并通过具体活动引导价值观践行，避免流于表面。
+  format_mode: prompt

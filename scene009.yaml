@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-小学-课外阅读指导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名五年级学生的家长，孩子平时喜欢看漫画和轻松故事书，对经典儿童文学兴趣不大。怎么才能一步步引导他从这些兴趣阅读过渡到经典书籍，并帮他养成好的阅读习惯和审美？帮我理解一下
+  - question: 你作为小学语文教育专家，我班里有几个三年级学生，喜欢看书，就是写读后感很难下笔，总是写得很短。为什么会这样？怎么帮他们提升写读后感的能力？讲讲看
+  - question: 我是一名六年级语文老师，班里有几个学生对课外阅读兴趣很低，觉得读书枯燥，不愿主动看书。你作为小学语文教育专家，能不能从各个方面详细讲讲，怎么系统性提升小学生课外阅读的兴趣和能力？全方位地讲解一下
+  - question: 我是四年级女生的妈妈，我女儿喜欢和同学一起读书，爱讨论故事，但总是只读自己喜欢的童话和冒险类书，对别的题材都不感兴趣。怎么能让她多尝试不同类型的课外书，拓宽阅读面？详细说说
+  - question: 我是一名三年级语文老师，班里有个男生性格内向，课外阅读兴趣一般，但他对历史和科学书有点兴趣，父母一直很忙很少陪伴。结合他的情况，怎么设计个性化的课外阅读指导方案，既激发兴趣又能提升理解力，还能帮助他树立积极的价值观？详细展开说说
+  - question: 我女儿四年级，爱看课外书，但看完总是不太会表达自己的想法。家长平时可以用什么小办法帮孩子学会表达读书体会？简单说说就行
+  - question: 你是我的语文学习助手，我叫袁权，今年14岁，初二，男生。我平时喜欢轮滑、跆拳道、观星活动，性格有点内向，理解力一般，抗干扰能力强，和同龄人保持适度距离，周末有时和父亲短暂互动。我对语文课外阅读不太感兴趣，觉得很多内容跟生活没啥关系。你能不能给我大概讲讲，像我这种情况，怎么找到适合自己的课外阅读方式，让我觉得阅读有意义？
+  - question: 你是小学语文教育专家，我是五年级男孩的家长，孩子看课外书时老是注意力不集中，看一会儿就想玩，我担心会影响学习。家长可以怎么帮他提高课外阅读时的专注力，慢慢养成好的阅读习惯？讲讲看
+  - question: 我是小学语文教研员，最近发现学生在课外阅读时容易浅尝辄止，喜欢快速看故事，缺乏深度思考，主题归纳和价值观引导都做得不好。小学阶段应该怎样有效引导学生进行深度阅读和主题探究，并在过程中自然融入核心价值观和中华优秀传统文化？详细讲讲
+  - question: 我是小学语文老师，班里有些孩子家庭教育资源有限，父母都很忙，课外阅读很难得到家里支持。你能不能从学校、老师、同伴、社区等各方面，系统分析一下在家庭支持有限的情况下，怎样科学地开展小学课外阅读指导，让学生喜欢阅读、提升能力，还能自然融入核心价值观和传统文化？给我一份完整的分析
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-小学-课外阅读指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 能够基于学生的年级、阅读水平、兴趣、性格等多重画像，提供差异化且具体的建议或反馈。要求在方案设计和互动环节中明确针对不同学生画像的调整措施，体现对个体成长需求的持续关注，并能动态更新画像信息。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 内容需严格按照教师或任务要求的格式输出（如分点、分层、举例），结构清晰、逻辑严密，且内容层次分明，便于理解和操作。高质量回答应做到格式与内容同等重视，避免仅表面分点，且能灵活适应不同格式要求。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法需体现教育学原理（如差异化指导、循序渐进、启发式教学等），并提供清晰、可执行的流程或细节。高分回答应有创新性、可落地性和针对性，能持续跟进学生成长，避免模板化或机械流程。
+  - field: 阅读策略指导有效性_理由
+    type: str
+    description: 解释阅读策略指导有效性评分的详细理由，引用具体例子。
+  - field: 阅读策略指导有效性
+    type: float
+    description: 能提供具体、可操作且多样化的阅读方法或技巧，依据学生实际情况持续提升阅读能力。策略需兼顾选书、笔记、复述、思维导图等，并关注长远成效和可持续性，避免单一或泛泛的建议。
+  - field: 激发创造性思维_理由
+    type: str
+    description: 解释激发创造性思维评分的详细理由，引用具体例子。
+  - field: 激发创造性思维
+    type: float
+    description: 通过开放性问题、创意活动或多样表达方式，鼓励学生创新思考和表达。高分要求活动设计新颖、可操作，并能结合学生兴趣促进思维拓展和个性发展，避免仅形式创新或缺乏持续引导。
+  - field: 模拟真实提问场景适应性_理由
+    type: str
+    description: 解释模拟真实提问场景适应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景适应性
+    type: float
+    description: 能够针对学生、家长或教师在实际课外阅读指导中的常见困惑，提供具体、可落地且可持续的解决方案。高分回答需结合真实场景，具备针对性、操作性和后续跟进措施，避免空泛理论或一次性建议。
+  - field: 社会主义核心价值观与传统文化融入_理由
+    type: str
+    description: 解释社会主义核心价值观与传统文化融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与传统文化融入
+    type: float
+    description: 内容应自然融入社会主义核心价值观和中华优秀传统文化，通过读物选择、活动设计等方式潜移默化地引导学生树立正确价值观。高分回答要求价值观内容与阅读主题和活动有机结合，能激发学生思考和践行，避免生硬灌输或与主题脱节。
+  - field: 个性化激励与反馈机制_理由
+    type: str
+    description: 解释个性化激励与反馈机制评分的详细理由，引用具体例子。
+  - field: 个性化激励与反馈机制
+    type: float
+    description: 根据学生兴趣、特长等个体差异，设计多元化、持续性的激励和反馈方式。高分要求激励措施有针对性、反馈及时有效，并能持续激发学生阅读动力，关注成长过程和表达多样性，避免一刀切和单一反馈。
+  format_mode: prompt

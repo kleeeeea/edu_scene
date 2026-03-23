@@ -1,0 +1,113 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-生活应用中的物理原理剖析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初三学生，家里烧水时水壶盖经常被蒸汽顶起来，你作为物理学习助手，能简单说说这个现象涉及哪些物理原理吗？
+  - question: 我是初中物理老师，学生们很关心骑自行车上下坡的感觉。你作为物理教育专家，能讲讲骑车上下坡时都有哪些物理原理吗？
+  - question: 我是初三学生，喜欢探索生活里的科学。你作为资深物理教育专家，能不能系统地讲解一下杠杆原理在日常生活中的应用？分几个方面详细说说吧。
+  - question: 我是物理老师，学生们对电磁炉工作原理很感兴趣，你作为物理知识顾问，能说说主要的物理原理吗？
+  - question: 我是初中生，打篮球时总觉得球的弹跳挺神奇，你作为我的物理学习助手，能具体说说这背后的物理原理吗？
+  - question: 我是初二学生，家里装修时看到师傅用滑轮搬重物。你作为物理教育专家，能详细讲讲滑轮在生活里怎么用，以及它的物理原理吗？
+  - question: Hi, I'm KellyJustin, a 12-year-old 6th grader who likes VR games, programming,
+      and martial arts. You're a physics expert—could you please help me analyze in
+      detail how inertia works in daily life? Please cover things like VR gaming,
+      martial arts, and programming, and analyze each aspect thoroughly.
+  - question: 我是初中生，最近很好奇家里冰箱为什么能制冷。你作为物理教育专家，能深入讲解一下冰箱的制冷原理还有它在生活里的应用吗？
+  - question: 我是初二学生，喜欢观察生活现象。你作为我的物理学习助手，能解释一下下雨天路面为什么会很滑吗？
+  - question: Hi, I'm BrownPeter, a 16-year-old high schooler who likes athletics,
+      Sudoku, and swimming. You're my physics learning assistant—can you explain how
+      buoyancy works in swimming and daily life, and give some detailed examples?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-生活应用中的物理原理剖析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与动态响应_理由
+    type: str
+    description: 解释个性化画像识别与动态响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与动态响应
+    type: float
+    description: 评估教学活动是否基于对学生个体差异（学习能力、兴趣、性格、认知风格等）的深入识别，并在教学全过程中动态调整目标、内容、方法和反馈，持续满足不同学生的成长需求。要求在多个环节体现个性化支持，并有具体证据说明响应过程。
+  - field: 指令格式与结构遵循度_理由
+    type: str
+    description: 解释指令格式与结构遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式与结构遵循度
+    type: float
+    description: 评估教学设计与答题内容是否严格按照题目要求的格式、结构和内容组织，确保每环节内容完整、顺序准确，细节到位（如每步均有标题、说明、材料、流程等），无随意省略、合并或更改，且有逻辑衔接。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学方法是否科学、专业，符合现代教育学原理。要求采用多样化、互动性强的教学方式（如探究式、合作学习、情境模拟、反思讨论等），并根据目标和学生特点选择最适合的方法。需有具体环节体现方法的创新性、针对性及学生主动参与度，并能说明方法选择的依据。
+  - field: 生活场景与物理原理结合深度_理由
+    type: str
+    description: 解释生活场景与物理原理结合深度评分的详细理由，引用具体例子。
+  - field: 生活场景与物理原理结合深度
+    type: float
+    description: 评估教学内容是否将物理原理与真实生活场景深度融合。要求不仅举例生活现象，更引导学生主动分析原理、迁移应用、解决实际问题，并鼓励提出改进或创新方案，体现知识的实际价值和应用能力。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放性任务、鼓励尝试与反思、支持多角度探索等系统方法激发学生创新思维。要求学生能提出独特见解、方案或新问题，并能评价、完善自己的想法。高分需有学生主动创新成果或突破性思考过程的证据。
+  - field: 真实提问与学生兴趣关联度_理由
+    type: str
+    description: 解释真实提问与学生兴趣关联度评分的详细理由，引用具体例子。
+  - field: 真实提问与学生兴趣关联度
+    type: float
+    description: 评估提出的问题是否紧密结合初中生真实生活经验和兴趣，能激发持续探究与深度思考。问题需具备开放性、探究性和延展性，并能引发学生进一步追问或实验。高分需有多层次、递进性提问和学生主动参与追问。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入度_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化自然融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入度
+    type: float
+    description: 评估教学过程中是否自然融合社会主义核心价值观和中华优秀传统文化，将价值观引导与物理知识、生活场景有机结合，提升学生社会责任感和文化认同感。要求润物细无声，不影响教学连贯性，有具体场景与知识结合的体现。
+  format_mode: prompt

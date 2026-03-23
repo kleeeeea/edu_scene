@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-高考作文升格教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是左浩，今年36岁，是一名老师，平时喜欢和学生、同事讨论国际象棋，下班后也会自己研究虚拟现实技术，经常会过度投入工作。最近我在指导高考作文升格时发现学生结构和立意提升挺难的，尤其议论文容易混乱。你能结合我的教学背景和兴趣，比如国际象棋的策略和虚拟现实的创新体验，帮我理解一下高考作文升格的核心要点和常见误区吗？帮我理解一下
+  - question: 我是一名高中语文老师，最近在高考作文升格辅导时发现学生素材单一、表达难以升华，还不太会自然融入传统文化和核心价值观。我自己对升格方法也有些迷糊，你能深入说说看高考作文升格的全流程吗？比如立意、结构、素材、语言升华这些，最好结合实际案例讲讲
+  - question: 我是高三学生，老师总说我作文结构混乱、表达平淡。高考作文升格到底该怎么做？简单说说就行
+  - question: 我是董道川，今年15岁，初三男生，喜欢无人机和MOBA电竞，在战队里做策略指挥但很在意队友评价，和妈妈关系挺好但学业压力大。写作文时经常焦虑，容易素材堆砌、思路不清，老师让用辩证思维但我总搞不懂怎么操作。你能全面深入地讲讲高考作文升格的系统方法吗？最好能结合我的兴趣和性格特点，把立意、结构、素材、语言、辩证思维这些都讲明白，还要帮我怎么自然融入传统文化和价值观
+  - question: 我是甘雨欣，28岁女老师，喜欢写作和钢琴，工作时擅长建立权威但保持距离，业余用文艺创作放松。带高考作文升格时发现学生对升格方法兴趣不高，有些只选择性倾听，效果一般。你作为教学专家，说说你的看法：怎么让学生更主动参与作文升格，提高兴趣和能力？希望能结合我的领导力和弹性边界特点，还能自然融入传统文化和价值观
+  - question: 我是高三学生，写作文时老觉得立意升格很难，老师让我多读经典和热点材料，但不知道怎么用在升格上。你能简短回答下吗？
+  - question: 我是胡锡吉，16岁高一男生，喜欢山地骑行和无人机设计，和同龄人交往时常迎合别人，但在骑行和无人机方面很自信。写高考作文时总容易受别人影响，立意和表达缺乏个性，老师建议我体现理想主义和创新，但我不会升格。你能全面分析一下高考作文升格的方法吗？希望能结合我的兴趣和性格，让我在写作里有理想和创新，还能自然融入传统文化和价值观
+  - question: 我是高三学生，最近写作文总是立意不深、语言没层次，老师让我升格但我不太懂怎么提升。你能解释一下高考作文升格的核心技巧吗？
+  - question: 我是高考考生，写作文时总觉得文章没深度没亮点，老师让我用高阶思维和传统文化但我不知道怎么做。你能详细说说高考作文升格的关键步骤和方法吗？
+  - question: 我是高三学生，老师总说我作文没创新、逻辑一般，内容很普通，很难升格到优秀。你作为语文专家，能全方位地讲解一下高考作文升格的系统流程吗？要把立意、结构、素材、语言、创新思路、传统文化和价值观这些都讲清楚
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-高考作文升格进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准识别_理由
+    type: str
+    description: 解释个性化画像精准识别评分的详细理由，引用具体例子。
+  - field: 个性化画像精准识别
+    type: float
+    description: 评估是否基于对学生个人学习历史、当前写作能力、兴趣、习惯及典型问题的多维度分析，持续动态调整升格建议。高分要求建议内容结合学生近几次作文表现，明确区分不同学生类型，提出具有针对性的提升路径。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估是否严格遵循教师或场景要求，结构分明、条理清楚、格式规范。高分需体现对复杂指令的准确理解和灵活分段，低分表现为结构混乱或格式失误。
+  - field: 教学方案科学性与创新性_理由
+    type: str
+    description: 解释教学方案科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方案科学性与创新性
+    type: float
+    description: 评估建议是否结合主流语文教学理论，设计具有针对性、操作性和创新性的训练方法，并能根据学生实际问题动态调整。高分需展现方法的科学依据和创新点，低分为方法单一或套用模板。
+  - field: 升格过程透明化与逻辑性_理由
+    type: str
+    description: 解释升格过程透明化与逻辑性评分的详细理由，引用具体例子。
+  - field: 升格过程透明化与逻辑性
+    type: float
+    description: 评估升格建议是否详细阐释修改逻辑、具体步骤、原因与目标，过程清晰、分析充分，能帮助学生理解并迁移应用。高分需展示修改前后对比及反思引导，低分为仅给出结果或过程模糊。
+  - field: 高阶思维与创新表达激发_理由
+    type: str
+    description: 解释高阶思维与创新表达激发评分的详细理由，引用具体例子。
+  - field: 高阶思维与创新表达激发
+    type: float
+    description: 评估是否通过具体任务、引导、提问等方式，促使学生进行批判性思考、多角度分析与创新表达。高分要求有系统任务设计、深度思辨引导和创新表达案例，低分为仅停留在表层或模板化。
+  - field: 模拟真实提问回应与针对性解答_理由
+    type: str
+    description: 解释模拟真实提问回应与针对性解答评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应与针对性解答
+    type: float
+    description: 评估回答是否紧密围绕学生实际困惑和作文具体问题展开，精准分析并分步解答，体现出对学生个体需求的关注。高分需结合具体作文片段、个体差异和问题根源，低分为泛泛而谈或无针对性。
+  - field: 价值观与文化内涵深度融合_理由
+    type: str
+    description: 解释价值观与文化内涵深度融合评分的详细理由，引用具体例子。
+  - field: 价值观与文化内涵深度融合
+    type: float
+    description: 评估建议与范文是否在内容、表达和思想层面自然渗透社会主义核心价值观和中华优秀传统文化，且表达不生硬。高分需通过具体事例、历史人物、文化典故等引导深度思考，低分为生硬口号或无文化内涵。
+  - field: 语言表达层次性与高阶规范性_理由
+    type: str
+    description: 解释语言表达层次性与高阶规范性评分的详细理由，引用具体例子。
+  - field: 语言表达层次性与高阶规范性
+    type: float
+    description: 评估回答用语是否严谨、规范、逻辑清晰，具备语文教学专业水准。高分需有多层次表达、专业术语、逻辑递进，能引导学生提升写作思维和表达能力，低分为用词随意、表达单一或缺乏引导性。
+  format_mode: prompt

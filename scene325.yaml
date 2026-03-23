@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-高中-了解不同心率区间的训练效果教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高中体育老师，最近班里学生都在备战校运动会，大家对不同心率区间的训练效果很感兴趣，但有些基础不扎实，总把有氧和无氧运动搞混了。你能讲清楚点，系统说说不同心率区间各自的训练效果吗？举点例子更好。
+  - question: 我是高三学生，最近备考压力大，但每天还坚持跑步锻炼，感觉体能提升效果一般。我主要想增强心肺功能、顺便减压。你能给我一份完整的分析吗？全面说说不同心率区间的训练效果，还有怎么科学安排训练计划。
+  - question: 我是高中体育教研员，最近有老师反馈，学生在自己设计训练计划时对心率区间理解还不够透彻。你能全面分析一下高中阶段不同心率区间的训练效果吗？最好结合教学实践，详细说说具体建议。
+  - question: 我是高一学生家长，我儿子最近参加学校篮球队训练，总问我不同心率区间有什么区别。我不是很懂，你能概括一下高中生在不同心率区间训练时主要能达到什么效果吗？简单说说就行。
+  - question: 我是姚思聪，生态保护员，平时喜欢数字游戏和脱口秀，也比较自律。你作为体育教育专家，能帮我深入了解一下不同心率区间的训练效果吗？最好结合我的职业和兴趣，详细说说科学的锻炼建议。
+  - question: 我是高中生，最近体育课老师讲了心率区间，但我觉得还是有点抽象。你是体育老师，能说说你的看法，让我更好理解不同心率区间的训练效果吗？讲清楚点。
+  - question: 我是余章，35岁，体育教研组长，平时喜欢茶道和AI绘画，也挺注重教学创新。你能全方位地讲解一下高中体育课程里心率区间训练效果的科学内涵和创新教学方法吗？最好结合我的背景，详细说说各方面内容。
+  - question: 我是体育课代表，最近班里同学都在讨论怎么通过不同心率区间训练提升体能。你能详细说说每个心率区间主要的训练效果吗？举点例子更好。
+  - question: 我是高二学生，刚开始用心率表，想知道不同心率区间主要有什么训练效果。你能说说主要的区别和各自的作用吗？简单讲讲就行。
+  - question: 我是高中生，最近在学校健身房锻炼，看到同学用手环监测心率。我也想弄明白不同心率区间有什么锻炼效果，你能帮我理解一下吗？详细说说吧。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-高中-了解不同心率区间的训练效果进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估内容能否充分识别并回应学生的年龄、体能、兴趣、健康等个体差异，针对不同学生提供具体、可操作的训练调整方案。高分需体现动态跟踪与差异化指导。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 内容是否严格按任务指令进行结构化分点，采用创新性格式（如流程图、表格、清单等），便于实际应用。高分要求格式清晰、表达创新。
+  - field: 科学性与专业性_理由
+    type: str
+    description: 解释科学性与专业性评分的详细理由，引用具体例子。
+  - field: 科学性与专业性
+    type: float
+    description: 内容须基于权威运动生理学、教育学理论，引用科学数据或标准，清晰解释原理与效果，明确训练安全与风险防控。高分需有权威数据/文献支撑。
+  - field: 教学方法多样性与创新性_理由
+    type: str
+    description: 解释教学方法多样性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法多样性与创新性
+    type: float
+    description: 教学设计需采用两种及以上教学方法（如实验、项目制、小组竞赛等），并结合创新手段（如数据可视化、智能设备），鼓励多角度参与。高分需体现方法创新和学生深度参与。
+  - field: 激发学生创造性思考_理由
+    type: str
+    description: 解释激发学生创造性思考评分的详细理由，引用具体例子。
+  - field: 激发学生创造性思考
+    type: float
+    description: 鼓励学生主动探索、提出问题、设计个性化方案，分析科学原理，提出优化建议。高分需有学生自主探究、创新表达及批判性思维培养。
+  - field: 模拟真实提问情境_理由
+    type: str
+    description: 解释模拟真实提问情境评分的详细理由，引用具体例子。
+  - field: 模拟真实提问情境
+    type: float
+    description: 内容需紧贴高中体育课堂与学生实际，回应真实兴趣、困惑或生活场景，激发参与欲。高分需涵盖多样化、典型的实际提问与情境。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 将社会主义核心价值观、健康理念、团队协作等自然融入教学，强化自律、互助、集体荣誉感。高分需在活动和案例中有机体现价值观引导。
+  - field: 表达清晰与逻辑性_理由
+    type: str
+    description: 解释表达清晰与逻辑性评分的详细理由，引用具体例子。
+  - field: 表达清晰与逻辑性
+    type: float
+    description: 内容结构层级分明、逻辑严密，前因后果清楚。高分要求有流程、案例、数据支持，并采用创新结构（如视觉表达、思维导图等）提升理解度。
+  - field: 反思与反馈机制_理由
+    type: str
+    description: 解释反思与反馈机制评分的详细理由，引用具体例子。
+  - field: 反思与反馈机制
+    type: float
+    description: 鼓励学生训练后记录心率与感受，参与小组交流，依据反馈持续调整训练方案。高分需有结构化反思模板、数据记录和小组互评机制，促进持续成长。
+  format_mode: prompt

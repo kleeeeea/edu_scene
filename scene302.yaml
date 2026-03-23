@@ -1,0 +1,122 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-小学-跳房子与平衡木挑战教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为体育教育专家，能结合我的情况详细解释一下在小学体育跳房子和平衡木挑战中，适合我这样学生的分层挑战方法和心理激励技巧吗？我是初三男生谢士，平时喜欢弹吉他和露营，但性格有点逃避，逻辑思维也不太强，跟父母关系有些疏远，和同学交流时也总是很退缩。能解释一下吗？
+  - question: 我是小学体育老师，班里孩子性格和能力差异很大，有胆小的、特别好动的，还有体能较弱的。你作为小学体育教学顾问，能彻底说清楚针对这些学生如何科学分层设计跳房子和平衡木挑战吗？请结合准备活动、游戏规则、分层挑战、安全提示和激励心理支持，还要融入中国传统体育精神与团队协作理念。彻底说清楚吧。
+  - question: 你作为小学体育教育专家，能解释一下在跳房子和平衡木挑战活动中，针对注意力容易分散、胆小、体能偏弱的小学生，应该怎么分别设计分层挑战和激励方法？能解释一下吗？
+  - question: 你作为体育教育专家，能简短回答下如何帮助那些在跳房子和平衡木挑战里害怕摔倒或被同学嘲笑的学生，帮助他们克服心理障碍，积极参与吗？简短回答下。
+  - question: 我是小学体育老师杜蕊蕊，今年51岁，性格比较被动，思考问题更依赖直觉，经常参与社区公益和广场舞活动。作为一位年长的女教师，我在班级体育教学中经常遇到胆小、好动、体能较弱的学生，组织跳房子和平衡木挑战时总觉得缺乏系统思路。你作为体育教学专家，我想深入了解如何科学分层、有效激励和安全管理这些活动，最好还能结合中国传统体育文化和团队合作精神。请详细讲讲，方便我实际操作。
+  - question: 你作为体育教育专家，能详细说说在跳房子和平衡木挑战活动中，怎么引导孩子健康竞争，培养团队协作和体育精神吗？最近我发现有些孩子竞争心很强，也有些害怕失败和被同学排斥。详细说说吧。
+  - question: I'm HarrisOliver, a passionate teacher who loves woodworking and karaoke,
+      but I'm often burnt out from trying to please parents and adapting to many demands.
+      In my elementary PE class, I want to run hopscotch and balance beam challenges,
+      but I'm struggling with balancing student engagement and my own energy, especially
+      since some students are highly energetic while others are anxious or withdrawn.
+      As a PE education expert, could you simply explain effective strategies for
+      differentiated hopscotch and balance beam activities that foster student growth,
+      teamwork, and safety, while helping me manage burnout and parental expectations?
+      Just a simple answer is fine.
+  - question: 我是小学体育教研员，最近在研究跳房子和平衡木挑战的课程方案。班级里学生差异很大，有注意力易分散、胆小、体能弱、特别好动的。你作为体育教学专家，能全面深入地讲讲如何从准备活动、游戏规则、分层挑战、安全提示、激励与心理支持等方面，系统设计科学分层的教学方案吗？最好结合实际案例和中国体育文化。能全面深入地讲讲吗？
+  - question: 我是小学体育老师，最近在跳房子和平衡木挑战教学中发现，孩子们的个性和能力差异很大，有注意力分散的、胆小的、体能弱的、也有好动爱表现的。你作为体育教育专家，能全面分析一下针对这些差异，如何科学分层设计教学活动，提升每个孩子的参与度和自信心？全面分析一下吧。
+  - question: 我是小学体育老师，最近班上孩子在跳房子和平衡木挑战时，有的特别怕摔倒，有的总是担心被同学笑话，导致不敢尝试。你作为体育教育专家，能解释一下针对这些心理障碍，老师和家长应该怎么帮助孩子勇敢尝试并保护他们的安全？能解释一下吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-小学-跳房子与平衡木挑战进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 系统持续、动态收集并更新每位学生的多维画像（如年龄、性别、体能、兴趣、性格、心理等），并据此对目标设定、活动内容、支持措施等进行个性化调整。全过程有机制追踪学生表现和需求变化，并及时作出响应和优化。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 教学方案结构分明、环节完整，严格按照任务要求组织内容，表达简明、规范，便于教师直接理解和实施。包含流程图、操作提示及注意事项，确保方案可操作性和实用性。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法基于小学生身心发展规律，动作分解科学，难度递进合理，安全措施具体细致。融合最新运动科学和教育理念，兼顾技能训练与心理成长，教学方法有据可查。
+  - field: 分层教学与差异化指导_理由
+    type: str
+    description: 解释分层教学与差异化指导评分的详细理由，引用具体例子。
+  - field: 分层教学与差异化指导
+    type: float
+    description: 根据学生能力、经验和兴趣层次进行科学分组，为不同层次设定具体任务、目标和评价标准，提供有针对性的支持和反馈，关注特殊和进步缓慢学生，持续追踪各层次进展。
+  - field: 创造力激发与自主探究鼓励_理由
+    type: str
+    description: 解释创造力激发与自主探究鼓励评分的详细理由，引用具体例子。
+  - field: 创造力激发与自主探究鼓励
+    type: float
+    description: 教学设计主动设定创新空间与开放性任务，鼓励学生提出新玩法、规则或改进建议，设有创新成果展示和评价机制，组织学生合作探究、反思与分享。创新性成果能在活动中实际应用并获得认可。
+  - field: 互动性与参与感设计_理由
+    type: str
+    description: 解释互动性与参与感设计评分的详细理由，引用具体例子。
+  - field: 互动性与参与感设计
+    type: float
+    description: 活动设计多样化小组合作、角色轮换、伙伴互助和师生互动机制，确保每位学生积极参与。互动贯穿全过程，有具体评价和激励，注重团队协作和归属感培养。
+  - field: 安全意识与心理关怀_理由
+    type: str
+    description: 解释安全意识与心理关怀评分的详细理由，引用具体例子。
+  - field: 安全意识与心理关怀
+    type: float
+    description: 在各环节系统融入安全措施和风险防控，设有专人持续关注学生情绪与心理，建立情绪表达与疏导机制。活动前后有安全检查与情绪关怀，持续提升自信与安全素养。
+  - field: 社会主义核心价值观与传统文化深度融入_理由
+    type: str
+    description: 解释社会主义核心价值观与传统文化深度融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与传统文化深度融入
+    type: float
+    description: 将社会主义核心价值观和中华优秀传统文化有机融入教学目标、活动流程、评价及反思，通过民间游戏、诚信积分、团队互评等具体活动实现价值体验和内化，避免流于表面化或口号化。
+  format_mode: prompt

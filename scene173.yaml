@@ -1,0 +1,116 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-高中-词汇的细微差别与语体辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高一英语老师，班里的学生总是把 'affect' 和 'effect' 用混了，写作和口语里都犯错。你作为教育专家，能帮我系统分析一下这两个词怎么区别吗？讲讲看，最好能结合学生的性格和常见问题给些建议。
+  - question: 我是高中英语辅导老师，学生总分不清 'discover'、'find out' 和 'detect' 的区别，你能帮我概括一下这几个词怎么用吗？简单说说主要的用法和场景就行。
+  - question: 我是一名高中生，最近做英语阅读时老是分不清 'suggest'、'recommend' 和 'advise'，尤其是在正式和非正式语体里怎么用。我想让你作为我的学习助手，帮我梳理一下这几个词的区别，帮我理解一下，最好能举些例子给点实用建议。
+  - question: 我是高中英语教研员，老师们反映学生在用 'responsible'、'accountable' 和 'liable' 时经常搞混，尤其在法律和道德语境下分不清。你作为教学顾问，能详细说说这几个词的区别吗？说说你的看法，并结合传统文化里责任担当的理念聊聊。
+  - question: 你是一位英语教育专家，我是MartinMelanie，16岁，高一女生，喜欢时尚造型、创意写作和诗歌创作，性格直觉判断、注重团队协作，做事经常短期聚焦。每次写英语作文或团队写作时，我总是搞不清
+      'imply'、'hint' 和 'suggest' 到底有什么区别，尤其搭配和语境容易用错。你能结合我的兴趣和性格详细讲讲这三个词的用法和实际应用吗？讲讲看，最好也能聊聊沟通表达里的价值观和文化启发。
+  - question: 我是高三学生，最近复习遇到 'rise'、'raise' 和 'arise' 总分不清怎么用，尤其写作和口语容易混淆。你作为英语教学助理，能大概讲讲这三个词的区别和常用场景吗？
+  - question: 我是高中英语教研员，正在编教材，需要对 'assure'、'ensure' 和 'insure' 做专业级分析。你能详细分析下各个方面吗？从词源、用法、语体到教学建议，再结合价值观和文化启发，全面讲讲。
+  - question: 我是高一英语老师，准备做词汇辨析公开课，想要一份关于 'borrow'、'lend' 和 'loan' 的完整分析。你作为教学顾问，能给我一份全面分析吗？包括词性、用法、文化差异到分层教学和诚信友善理念，全面说说吧。
+  - question: 作为英语教育专家，我是高中生，最近写作和阅读总是分不清 'economic' 和 'economical'，尤其语体和搭配容易混淆。能深入讲解一下吗？希望能多举些例子，还能结合分层学习建议和节约的文化理念聊聊。
+  - question: 你是一位英语教学专家，我是MorganNaomi，15岁，初三女生，喜欢茶道和烘焙，性格有选择性服从和自信，做事有明确界限，喜欢在结构化活动中保持独立。最近学英语时总是分不清
+      'sensible' 和 'sensitive'，尤其在表达自我界限和他人感受时容易用错。能深入讲解一下吗？希望能结合我的兴趣和性格给些具体建议，也聊聊理性和情感平衡的文化启示。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-高中-词汇的细微差别与语体辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学内容是否精准识别并满足高中生不同基础、兴趣和认知水平，能否针对学生差异进行分层讲解、举例和任务设计。高分要求主动收集学生学习反馈，动态调整教学策略。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估教学内容是否严格按照既定结构组织（如分层讲解、分点说明、举例说明等），且结构层次分明、逻辑递进，便于学生梳理知识。高分要求结构创新、内容层次丰富，能兼顾整体与细节。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估是否科学运用启发式、对比分析、情境创设、任务驱动等多元方法促进学生理解和应用。高分要求方法多样、互动性强，能结合学生实际自主参与和反思。
+  - field: 语体辨析专业度_理由
+    type: str
+    description: 解释语体辨析专业度评分的详细理由，引用具体例子。
+  - field: 语体辨析专业度
+    type: float
+    description: 评估词汇在不同语体（正式/非正式、书面/口语、学术/日常等）中的使用差异讲解是否准确、深入，能否结合真实语境、典型例句及语用障碍等多维度分析。高分要求不仅区分语体，还能分析语境、功能、语用层面细微差别，并指出常见误用。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估是否通过开放式问题、任务驱动、鼓励自创表达等方式，激发学生创新表达与高阶思维。高分要求活动具有开放性、挑战性，鼓励多元创造与批判性反思，学生能主动生成内容。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估问题和回答是否贴近高中英语课堂实际，能否反映学生常见困惑、考试需求及真实表达场景。高分要求结合教材、考试、生活实际和学生认知误区，精准回应学生真实问题和易错点。
+  - field: 社会主义核心价值观润入度_理由
+    type: str
+    description: 解释社会主义核心价值观润入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观润入度
+    type: float
+    description: 评估内容是否自然融合社会主义核心价值观或中华优秀传统文化，通过词汇教学引发价值思考。高分要求结合词义和实际生活案例，启发学生价值观共鸣与行动，避免生硬灌输。
+  - field: 表达规范与易懂性_理由
+    type: str
+    description: 解释表达规范与易懂性评分的详细理由，引用具体例子。
+  - field: 表达规范与易懂性
+    type: float
+    description: 评估教学内容语言是否规范、表达简明清晰、逻辑顺畅，避免生僻词、复杂结构，确保高中生易于理解和应用。高分要求用词准确、例子贴切、表达亲切自然，并能根据学生反馈优化表达。
+  format_mode: prompt

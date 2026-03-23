@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-高中-关于“公平与正义”的哲学探讨（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生范平晓，女生，最近在班里的手工制作和烘焙活动中，大家总是找我一起合作，因为我团队意识比较强，协调能力也不错。但我发现自己现在越来越在意活动成果的奖励，比如评比和表彰的时候，我会很介意分配是否公平，这让我有点困惑。你能帮我全面分析一下，在校园集体活动中，公平和正义到底有什么哲学意义？个人利益和集体贡献要怎么平衡？希望你能结合实际情况详细说说。
+  - question: 我们班最近在评选三好学生，有的同学觉得成绩和表现最重要，有的觉得应该看大家平时是不是乐于助人。我有点搞不懂，公平和正义在这种评优里到底意味着什么？你能详细说说吗？
+  - question: 我是高一学生，最近在小组合作做德育课作业时，发现有同学做得多，有的做得少，但成绩都一样，这让我有些不舒服。公平和正义在小组合作里该怎么体现？简要说明下吧。
+  - question: 我是老师蒋瑜沛，最近在班级分组活动中发现有同学因为分组分配的问题觉得不公平，情绪也有些激动。你能解释一下在高中团队活动中遇到公平和正义问题时，老师应该怎么引导和处理吗？希望你能结合实际案例详细说说。
+  - question: I'm RossIsabella, a 5th grader who loves ballet, Beijing Opera, and
+      origami. I learn best with routines and hands-on activities. Recently, during
+      a group art project, some of my classmates felt the grading was unfair because
+      different groups had different resources and help. Can you explain in detail
+      how fairness and justice work in school art and performance contexts? Please
+      include examples and help us reflect on this.
+  - question: 我是高三学生，最近班会讨论‘高考加分政策’，大家意见不一。我自己成绩不错，但看到有同学因为特殊条件加分，感觉有点不公平。你能详细说说，这种社会政策里的公平和正义应该怎么理解吗？希望你结合实际案例分析一下。
+  - question: 我是高一学生，喜欢篮球和历史。最近班里分组做社会调查，有人觉得分工不公平，大家关系有些紧张。你能大概讲讲，在集体活动中怎么体现公平和正义吗？
+  - question: 我是五年级的彭金，平时在电子竞技和机器人兴趣小组很活跃，不过跟同龄人交流不算多。最近班级在讨论小组竞赛奖励怎么分，有人说应该平分，也有人觉得要看每个人的贡献。我有时候会坚持自己的看法。你能详细分析下，集体活动中公平和正义都有哪些方面？怎么既能促进团队合作，又能让个人成长？希望你把各个角度都讲清楚，并给我们设计一个小任务让大家一起思考。
+  - question: 我是家长，女儿现在高二，最近在社团活动里因为分工问题有些情绪，觉得不公平。我该怎么引导她正确看待公平和正义，同时帮助她增强团队意识？详细说说你的建议。
+  - question: 我是新入职的高中德育老师，发现学生在评优和小组合作时经常因为公平和正义的分歧争论不休。你能全面深入地讲讲，在高中德育和美育中，应该怎么引导学生理解和践行公平与正义吗？希望你结合中国传统文化、现实案例和创新教学方法，把各个方面都说得系统透彻。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-高中-关于“公平与正义”的哲学探讨（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容与高中生的年龄阶段、认知水平、兴趣、成长需求及个体差异的精准契合度。要求教学方案能够持续动态调整，针对不同学生群体设计差异化支持，并能通过反馈机制不断优化教学过程。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学设计是否严格按照任务要求分段，主题突出，环节结构紧密支撑核心目标。要求互动环节具有明确目标与实际成效，整体流程逻辑清晰、易于执行，并能在实施过程中根据反馈优化环节设置。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学是否采用启发式、探究式、案例分析等科学方法，建立完善的过程性评价与反思机制，促进学生主动参与和深度理解。要求教学活动层次递进，能根据学生反馈调整教学策略。
+  - field: 思辨与探究引导力_理由
+    type: str
+    description: 解释思辨与探究引导力评分的详细理由，引用具体例子。
+  - field: 思辨与探究引导力
+    type: float
+    description: 评估教学内容能否持续激发学生批判性思维和哲学探究欲望。要求设计递进式多层次开放性问题，组织观点碰撞和持续追问，避免标准答案灌输，鼓励多角度分析和自我反思。
+  - field: 多样化教学资源整合度_理由
+    type: str
+    description: 解释多样化教学资源整合度评分的详细理由，引用具体例子。
+  - field: 多样化教学资源整合度
+    type: float
+    description: 评估是否整合多种教学资源（影视、历史、现实案例、故事、数据等），资源之间有机融合且与主题深度关联。要求资源使用有层次递进，能激发学生兴趣与多角度理解，并在教学过程中持续补充和优化资源。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学活动能否鼓励学生创造性表达，产出具有原创性和深度的作品或方案。要求有展示交流机会，评价作品的创新性和实际影响，能持续激发学生的创新欲望而非一次性活动。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估教学内容是否自然融入社会主义核心价值观（公平、正义、诚信等），结合中华优秀传统文化和当代社会实际。要求润物细无声、潜移默化地影响学生认知和实践，避免生硬植入或口号化，能与学生实际生活和思想深度结合。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评估教学中的问题设置是否贴近高中生实际体验和真实困惑，具备情境性、针对性和持续引发学生深度思考的潜力。要求问题能激发主动表达和持续探究，而非一次性或表面化提问。
+  format_mode: prompt

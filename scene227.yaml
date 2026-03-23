@@ -1,0 +1,142 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-初中-经纬网与时区计算教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: I'm MillerEmma, a 16-year-old high school student who loves piano and
+      painting, but I get distracted easily and struggle with self-learning. I try
+      to approach my studies rationally and often look for structured help. Can you
+      give me a really detailed explanation about latitude, longitude, and how time
+      zones work—including the history, logic, practical examples, and common mistakes?
+      Please also share some study strategies that might suit someone with my creative
+      interests and help me stay focused. Please expand on this in detail.
+  - question: I'm a junior high student and sometimes get distracted in geography
+      class. Can you help me simply explain what longitude and latitude are, and how
+      they connect to time zones? Simple explanation is fine.
+  - question: You’re my geography study assistant. Can you explain how the latitude
+      and longitude grid was formed and why it matters for calculating time zones?
+      Please tell me in detail with examples.
+  - question: I've been self-studying geography and got confused about why some countries'
+      time zones don't match their longitude. Can you explain why this happens, with
+      examples and practical reasons? Please explain in detail.
+  - question: I'm a junior high student's parent—my child often gets time zone calculation
+      problems wrong and gets nervous at test time. Can you explain how to correctly
+      use longitude and latitude for these problems, what common errors to avoid,
+      and share some confidence-building tips? Can you talk about this specifically?
+  - question: As an educational expert working with students of varying abilities,
+      can you explain the international date line and its connection to time zones?
+      Why was it created, and how does it affect daily life and travel? Please share
+      clear examples and any fun ways to help students remember this.
+  - question: You're helping a high school teacher plan a creative geography lesson
+      for a class with students of various interests and abilities. Could you deeply
+      explain some innovative ways to teach latitude, longitude, and time zone calculation—including
+      interactive activities, case studies, historical context, and methods for tackling
+      common misunderstandings? Please also discuss how these ideas connect to real-world
+      issues, artistic creativity, and critical thinking, and how to engage students
+      who are easily distracted or creatively inclined. Please expand on this in detail.
+  - question: I'm JonesYvonne, a 13-year-old junior high student who likes reading
+      and nature observation. I'm strong in arts and sports, love self-learning, but
+      get distracted easily and prefer team activities. Can you briefly explain what
+      the latitude and longitude grid is and how time zones are calculated? If possible,
+      use examples related to nature or creativity to help me understand. Just give
+      a general overview.
+  - question: You’re an education specialist and need to write a thorough, professional
+      explanation of latitude, longitude, and time zone calculation for geography
+      teachers. Please cover everything—history, scientific principles, real-life
+      uses, common student mistakes, creative teaching tips, and how these ideas connect
+      to Chinese traditional culture and values. Make sure the content is clear, organized,
+      and includes specific classroom examples. Could you explain this in depth?
+  - question: 我是廖云锦，34岁女老师，跨学科应用能力较强，平时和同事一起做很多跨学科教学项目，周末喜欢在家烘焙、邀请亲友聚会。你能详细分析一下初中地理'经纬网与时区计算'在跨学科教学中的应用吗？请从教学难点、创新方法、和数学物理历史融合的案例、学生常见误区与解决策略说说，还要自然融入中华优秀传统文化和社会主义核心价值观，结构要清晰、内容系统，适合教学研讨参考。请详细分析各个方面。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-初中-经纬网与时区计算进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应准确性_理由
+    type: str
+    description: 解释个性化画像识别与回应准确性评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应准确性
+    type: float
+    description: 能够根据学生的学习基础、兴趣、认知风格等多维信息，动态调整教学策略，针对不同学生给予差异化指导和支持。强调对学生个体需求的敏感性和回应的针对性。
+  - field: 格式与表达规范性_理由
+    type: str
+    description: 解释格式与表达规范性评分的详细理由，引用具体例子。
+  - field: 格式与表达规范性
+    type: float
+    description: 严格按照教学或答题要求结构进行内容组织，分段合理、条理清晰，语言简明规范，突出重点和关键术语，便于理解与评阅。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 采用多元化、科学化的教学方法，结合启发式、互动式、探究式等策略，促进学生深度理解和知识迁移，教学流程系统、专业。
+  - field: 知识点覆盖与逻辑完整性_理由
+    type: str
+    description: 解释知识点覆盖与逻辑完整性评分的详细理由，引用具体例子。
+  - field: 知识点覆盖与逻辑完整性
+    type: float
+    description: 系统、全面地覆盖经纬网与时区计算的核心知识点，重点突出，逻辑结构严密，内容环环相扣，帮助学生建立完整认知框架。
+  - field: 创新思维激发与自主探究引导_理由
+    type: str
+    description: 解释创新思维激发与自主探究引导评分的详细理由，引用具体例子。
+  - field: 创新思维激发与自主探究引导
+    type: float
+    description: 通过开放性问题、跨学科案例、实际情境等方式，激发学生的创新思维和自主探究兴趣，鼓励独立见解和多角度思考，支持学生设计探究方案和主动查阅资料。
+  - field: 真实教学情境适应性与互动反馈_理由
+    type: str
+    description: 解释真实教学情境适应性与互动反馈评分的详细理由，引用具体例子。
+  - field: 真实教学情境适应性与互动反馈
+    type: float
+    description: 能够灵活应对真实课堂中的多样化提问和学生实际困惑，针对具体问题进行及时、有效的反馈和纠错，主动发现并引导学生错误观念，促进深度互动和思维提升。
+  - field: 价值观引导与中华优秀传统文化融合_理由
+    type: str
+    description: 解释价值观引导与中华优秀传统文化融合评分的详细理由，引用具体例子。
+  - field: 价值观引导与中华优秀传统文化融合
+    type: float
+    description: 在知识讲解过程中自然融入社会主义核心价值观和中华优秀传统文化，体现团结协作、科学探索、爱国情怀等正面价值观，引发学生思考和认同，提升育人效果。
+  format_mode: prompt

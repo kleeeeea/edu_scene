@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-小学-简单机械的认识与应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名小学四年级的学生，最近在科学课上学到了简单机械，比如杠杆、滑轮和斜面。我有点迷糊，这些简单机械到底有什么用？它们是怎么帮助我们省力的？能不能讲清楚点，最好举些生活中的例子。
+  - question: 你作为一名小学科学老师，最近班里有同学问我，为什么使用滑轮搬东西会更轻松？你能详细说说滑轮的原理、分类和实际应用吗？我想给孩子们讲明白。
+  - question: 我是五年级学生，对科学挺感兴趣。老师让我们思考：为什么杠杆能省力？说说你的看法吧，最好结合一些生活里的例子帮我理解。
+  - question: 你是我的物理学习助手，我叫邵斓曦，今年10岁，是五年级女生。平时喜欢芭蕾舞、手机摄影和插花，但我性格比较边界模糊、竞争回避，也比较依赖老师和家长的提醒。我在芭蕾舞班经常一个人练习，站在最后一排不太引人注意。妈妈每天放学都会来接我，书包里经常带着插花用的花材和手机支架。最近科学课讲了'斜面'，但我还是不太明白，为什么用斜面搬重物会更容易？能具体说说吗，最好能结合我的兴趣帮我理解。
+  - question: 我是五年级学生，平时喜欢拆装玩具和做小实验。最近在课堂上学到了简单机械，比如杠杆、轮轴、滑轮、斜面等。老师布置了一个任务：要深入分析这些简单机械各自的工作原理、实际应用、优缺点以及它们在我们日常生活和社会发展中的意义。能深入讲解一下吗？希望能有丰富的例子和分析，帮助我写好这份作业。
+  - question: 你是小学物理老师，我是三年级学生，最近在家看到妈妈用开瓶器开饮料瓶，觉得很神奇。简单说说，开瓶器属于哪种简单机械，它是怎么帮我们省力的？
+  - question: 我是小学老师，名字叫终逸，今年42岁。平时喜欢攀岩和瑜伽冥想，压力大时会去参加跨校老师联谊，也喜欢用非传统、自由的教学方式。我最近在物理课上想结合攀岩活动，向学生介绍简单机械的实际应用。用几句话说说，如何用攀岩中的案例帮助学生理解滑轮和杠杆的原理？
+  - question: 我是四年级学生，最近对家里的各种工具很感兴趣，尤其是看到爸爸用螺丝刀和钳子修理东西。我想知道，简单机械在家庭生活中都有哪些常见应用？有哪些地方体现了劳动和创新精神？你能详细讲讲吗？希望能举一些贴近生活的例子。
+  - question: 我是一名小学科学教研员，正在准备一份关于简单机械（杠杆、轮轴、滑轮、斜面、螺旋等）的教学设计培训材料。详细分析下各个方面，比如基本原理、历史发展、科学精神、社会主义核心价值观融入、实际案例和教学活动设计等，内容要全面深入、系统。
+  - question: 我是小学科学课程的教材编写者，正在整理“简单机械的认识与应用”这一专题的深度资源包。能给我一份完整的分析吗？包括系统知识结构、功能特点、科学价值、价值观与劳动精神的自然融入、创新教学建议、跨学科整合和生活实践案例等，内容要详尽清晰。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-小学-简单机械的认识与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评价教学内容和表达能否充分识别并回应学生的年级、兴趣、认知风格、知识基础等个体差异。教学活动须针对不同学生特征作出有针对性的调整，体现差异化支持，明确避免一刀切和忽视学生主体性。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评价回应是否严格按照教学设计或题目要求的格式、步骤进行。内容需结构清晰、层次分明，便于理解与操作，特殊格式需完全遵守，任何环节缺失或混乱均扣分。
+  - field: 教学方法科学性与适宜性_理由
+    type: str
+    description: 解释教学方法科学性与适宜性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与适宜性
+    type: float
+    description: 评价教学方法是否符合小学生认知发展规律，能促进主动探究、动手实践与合作交流。教学活动应包含明确探究、实验或讨论环节，避免死记硬背和单向灌输，关注每位学生的参与度和主体性。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 评价知识讲解的科学性、严谨性和逻辑性。需涵盖核心知识点、递进层次、常见误区辨析及生活应用延展。对知识遗漏、混淆、错误或无误区辨析均扣分，要求知识结构系统、内容完整。
+  - field: 激发创新与创造性思考_理由
+    type: str
+    description: 解释激发创新与创造性思考评分的详细理由，引用具体例子。
+  - field: 激发创新与创造性思考
+    type: float
+    description: 评价教学是否通过鼓励学生提出问题、尝试新方法或设计新应用等方式，持续激发学生创新意识和创造性思维。需有过程参与、成果分享和多样化表达，创新活动不能流于形式。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 评价教学语言和互动是否贴近小学生真实提问场景，主动回应学生困惑和兴趣点，形成良好师生互动氛围。需鼓励学生提问、及时回应，避免机械式答复和忽视学生反馈。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评价教学过程中是否能将团结协作、勤劳创新、科学精神等核心价值观及中华优秀传统文化，自然融合于知识讲解、案例、活动或讨论中。应结合教学内容，润物细无声，避免生硬说教或仅口号化表达。
+  - field: 表达简明易懂与趣味性_理由
+    type: str
+    description: 解释表达简明易懂与趣味性评分的详细理由，引用具体例子。
+  - field: 表达简明易懂与趣味性
+    type: float
+    description: 评价语言表达是否贴合小学生认知水平，简明、生动、富有趣味，善用形象比喻、故事或幽默激发兴趣。避免晦涩、枯燥或堆砌术语，需结合生活实际和儿童兴趣点。
+  format_mode: prompt

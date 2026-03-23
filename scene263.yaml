@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-高中-中国共产党的领导地位与执政方式教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是夏明丽，41岁老师，喜欢园艺和戏剧表演，最近要上关于中国共产党领导地位和执政方式的课。你能结合我的兴趣和背景，帮我理解一下中国共产党为什么能成为中国最高领导力量，它主要是怎么执政的？帮我理解一下。
+  - question: Hi, I'm MillerAnna, a senior high school student who loves creative
+      writing, rock climbing, and DIY crafts. I really want to understand why the
+      Communist Party of China holds the top leadership position and how it governs.
+      As my educational mentor, can you explain this thoroughly for me, maybe connecting
+      it to my interests and personality? Can you really go in-depth and cover all
+      the important aspects?
+  - question: 我是高中的学生，最近学中国共产党领导地位和执政方式，感觉有点难懂。你能大概讲讲中国共产党为什么是中国的领导核心，它一般怎么执政的？
+  - question: 我是一名高三学生，最近复习中国共产党领导地位和执政方式这部分，有点糊涂。你作为政治老师，能详细说说中国共产党怎么确立领导地位，还有它执政的主要方式吗？详细说说。
+  - question: 我是班主任，班里学生在讨论中国共产党为什么能成为中国的领导核心，还有它具体怎么执政。你能简单说说就行，让学生容易懂，核心内容清楚。
+  - question: 我是韦爽雅，11岁五年级女生，喜欢诗歌和跆拳道，老师最近讲中国共产党领导地位和执政方式，我还不太明白。你能结合我的兴趣和特点，给我一份完整的分析吗？想知道它为什么能成为领导核心、主要怎么执政，还有这些内容跟我们生活和成长有什么联系。
+  - question: 我是新入职的高中政治老师，最近学生对中国共产党领导地位和执政方式有很多疑问。你作为教育专家，能帮我讲清楚中国共产党怎么确立领导地位，以及它执政时主要用哪些方法吗？讲清楚点。
+  - question: 我是家长，女儿最近学高考政治，问我中国共产党为什么能成为中国的领导核心，还有它怎么执政。你作为政治知识导师，能帮我讲清楚这些内容吗？讲清楚点。
+  - question: 你是政治教研员，最近老师们想深入了解中国共产党在中国政治中的领导地位和执政方式，尤其是理论依据、历史发展和现实案例。你能系统地、详细地介绍一下吗？我想深入了解。
+  - question: 我是高三学生，一直很好奇中国共产党为什么能成为中国的领导核心，还有它主要怎么执政。你作为学习顾问，能不能深入说说这些内容，还能结合我们当代青年成长谈谈？深入说说看。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-高中-中国共产党的领导地位与执政方式进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 教学设计应基于学生的学习基础、兴趣、认知水平等多维特征，动态调整内容、目标和表达方式。需有明确分层目标、差异化活动安排，并能根据学生反馈及时优化教学策略。
+  - field: 指令遵循与结构创新_理由
+    type: str
+    description: 解释指令遵循与结构创新评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构创新
+    type: float
+    description: 教学内容应严格遵循任务流程和格式要求，层次分明、逻辑清晰，并在结构安排上体现创新性，如跨章节整合、模块化设计等，超越简单分段。
+  - field: 科学多样的教学方法应用_理由
+    type: str
+    description: 解释科学多样的教学方法应用评分的详细理由，引用具体例子。
+  - field: 科学多样的教学方法应用
+    type: float
+    description: 教学过程应融合多种科学教学方法（如启发式、探究式、案例分析、合作学习等），并能根据内容与学情灵活选择，促进学生参与和深度思考。
+  - field: 知识结构与逻辑整合_理由
+    type: str
+    description: 解释知识结构与逻辑整合评分的详细理由，引用具体例子。
+  - field: 知识结构与逻辑整合
+    type: float
+    description: 教学内容需系统、层次分明，逻辑递进清晰，能够跨章节整合知识点，联系现实案例或相关学科，帮助学生建立全面认知框架和迁移能力。
+  - field: 创新思维激发与引导_理由
+    type: str
+    description: 解释创新思维激发与引导评分的详细理由，引用具体例子。
+  - field: 创新思维激发与引导
+    type: float
+    description: 教学设计需通过创意任务、挑战性问题等方式，有效激发学生提出新观点，进行创造性思考或多角度分析，鼓励突破常规认知，形成独特见解。
+  - field: 高质量开放性问题与深度讨论_理由
+    type: str
+    description: 解释高质量开放性问题与深度讨论评分的详细理由，引用具体例子。
+  - field: 高质量开放性问题与深度讨论
+    type: float
+    description: 教学应设计具有挑战性和多角度分析价值的开放性问题，组织深度讨论，鼓励学生表达不同观点，推动思想碰撞和观点拓展，评估学生参与度和讨论质量。
+  - field: 社会主义核心价值观与中华优秀传统文化融合_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化融合
+    type: float
+    description: 教学内容应将社会主义核心价值观与中华优秀传统文化有机融合，通过具体案例、情境活动展示其现实意义，并引导学生思考价值观在实际生活中的作用。
+  - field: 真实课堂互动与学生疑惑回应_理由
+    type: str
+    description: 解释真实课堂互动与学生疑惑回应评分的详细理由，引用具体例子。
+  - field: 真实课堂互动与学生疑惑回应
+    type: float
+    description: 教学内容应有效模拟真实课堂互动，主动回应学生可能的疑惑与追问，预设进一步探究环节，提升教学互动性和针对性，促进师生深度交流。
+  format_mode: prompt

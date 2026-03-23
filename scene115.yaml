@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene115/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 物理-高中-复杂物理问题的解题策略与流程指导教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是吴银鹤，二年级男生，喜欢虚拟现实游戏和跆拳道，性格有点逃避但遇到问题会主动纠错，做事比较目标导向，情绪和理性常交替。平时和同学、父母关系有些疏离。我在物理课上碰到复杂的问题时经常卡住，尤其需要用很多知识点的时候不太会分步骤。你能说说你的看法，详细讲讲高中物理复杂问题的解题策略、流程、常见易错点，还有适合我这种喜欢生活化例子和主动纠错的建议吗？
+    - question: 我是朱士，二年级男生，喜欢游泳、绘画、滑板，学习物理的时候自主学习能力比较弱，也没有很强的学习动力。妈妈主要照顾我，爸爸比较忙，和同龄孩子互动也不多，大多时候自己玩游泳和画画。我在学物理时遇到复杂题目经常不知道怎么下手，尤其是要自己分析和分步骤解决的时候就很迷糊。你能详细讲讲高中物理复杂问题的解题流程、思路、常见难点和易错点吗？也希望能结合我的兴趣和习惯，给我一些激发自主学习能力的建议。
+    - question: 我是一名高中物理老师，发现学生在做复杂物理题时不太会系统分析和分步解决。你能讲讲看如何帮助学生建立解题策略、流程和思维习惯吗？还有怎么在教学中分阶段培养他们的问题分析和综合运用能力？
+    - question: 我是高中生，最近物理成绩波动，遇到综合性强、步骤多的题目总是容易出错，不太懂怎么有条理地分析和解决。你能具体说说高中物理复杂问题的解题流程、常见易错点，还有提升系统解题能力的方法吗？
+    - question: 我是邹向，高二男生，喜欢国际象棋、科学实验和Python编程，性格有点过度自信但高度自律，经常参加棋类俱乐部，和同龄的程序员交流多但社交圈比较窄。最近学物理时遇到需要多步骤推理和多知识点融合的复杂题，总觉得自己思维容易陷入单一模式，忽略创新和多角度分析。你能给我一份完整的分析吗？从问题分析、解题思路、详细步骤、易错点、创新性方法和个性化建议等方面，系统讲讲高中物理复杂问题的解题流程，还希望能结合我的兴趣和性格特点，给我一些学习和成长建议。
+    - question: 我是一名物理教研员，经常要给老师培训复杂物理问题的解题策略，但时间有限。你能大概讲讲高中物理复杂问题解题流程的主要步骤和易错点吗？顺便提几条简明的教学建议。
+    - question: 我是姬芳嘉，五年级女生，喜欢乒乓球、英语学习和朗诵，平时学习比较情绪化，科创方面有特长但逻辑性不太强，理想和现实常常冲突但能持续专注。爸爸妈妈一直陪着我，周末会参加乒乓球和英语培训班，也经常去参加学校的朗诵比赛，家里很重视我的教育，成绩波动时情绪容易受影响。你能详细分析下各个方面吗？从高中物理复杂问题的解题策略、流程、问题分析、思路梳理、详细步骤、易错点和激发兴趣的方法，再结合我的特点，讲讲学习建议和情绪管理的方法。
+    - question: 我是高中物理老师，发现学生遇到复杂题目总是不太会分析和分步解决。你能用几句话说说高中物理复杂问题解题策略的主要流程、常见误区和提升方法吗？
+    - question: 我是高中学生，物理基础一般，最近做复杂物理题时总觉得思路乱，不会系统拆解和分步解决。你能帮我理解一下高中物理复杂问题的解题流程、常见难点和提升条理性的有效方法吗？
+    - question: You are an education expert and I am MartinezEliza, a 42-year-old female high school teacher. I lead classroom dynamics confidently, love dance and music, and tend to engage selectively but meaningfully in social situations. In my physics class, I want to help students master strategies for solving complex physics problems, especially those that need multi-step reasoning and synthesizing different concepts. Could you please give a detailed explanation, with examples and analysis, and also include advice tailored for teachers like me with strong leadership and creative hobbies?
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 物理-高中-复杂物理问题的解题策略与流程指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估回答是否充分结合学生的基础、兴趣、认知风格等个体特征，进行有针对性的策略调整。需体现对学生差异的敏感与响应，避免通用化模板式解答。
+    - field: 指令遵循与格式规范性
+      type: float
+      description: 评估内容是否完全按照题目或教学要求的结构、步骤、格式进行组织，信息分段清晰、逻辑顺序合理，且无遗漏关键环节。对于复杂问题，需体现完整的分析-解题-反思流程。
+    - field: 解题方法科学性与系统性
+      type: float
+      description: 评估解题方法是否遵循物理学核心原理，步骤严谨、推理闭环，并能兼顾边界条件、特殊情况和物理合理性。要求对关键假设、误差来源、方法适用范围等有明确说明，支持迁移。
+    - field: 思维过程透明度
+      type: float
+      description: 评估是否清晰展现每一步决策与推理过程，详细解释每步选择的依据、物理意义和必要性，帮助学生理解解题逻辑，促进迁移。
+    - field: 创新性思维引导
+      type: float
+      description: 评估是否主动引导学生尝试多种解法、提出假设、讨论变式，激发创新思维和科学探究精神。对问题变化、边界情况有探索性提示。
+    - field: 真实提问情境还原度
+      type: float
+      description: 评估问题与解答是否贴近真实高中物理课堂，反映学生常见表达、困惑和互动习惯，语言自然，能回应实际学习过程中的典型问题。
+    - field: 价值观自然融入度
+      type: float
+      description: 评估内容是否自然融入社会主义核心价值观或中华优秀传统文化元素，促进科学精神、合作、诚信等正向价值观的形成，且无生硬插入。
+    - field: 激发自主学习兴趣
+      type: float
+      description: 评估是否通过开放性提问、情境探究、鼓励讨论等方式激发学生主动学习和深度思考的兴趣，推动持续探索。
+    - field: 反思与迁移能力引导
+      type: float
+      description: 评估是否系统引导学生反思解题过程、总结通用方法、识别易错点，并思考如何将所学迁移应用到其他类型问题中。
+format_mode: prompt

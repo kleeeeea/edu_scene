@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-小学-燃烧现象的构成要素分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学新老师，最近备课时对燃烧现象的构成要素分析有点迷惑，你能讲讲看这个内容吗？最好能结合课堂实际和生活例子，谢谢！
+  - question: 我是五年级学生，家里看到做饭时火焰变化特别好奇，燃烧现象到底有哪些要素？能具体说说吗？最好举些生活中的例子，谢谢！
+  - question: 我叫权婷，高三学生，爱环保和历史研究，妈妈是环保组织成员，我们周末常一起参加社区环境清理。我最近在科学课上对燃烧现象的构成要素很感兴趣，特别想知道它和环保有什么联系。你能详细说说吗？最好结合实际案例和细节，谢谢！
+  - question: 我是小学科学教研员，准备组织全校科学探索活动，主题是燃烧现象的构成要素分析。你能彻底说清楚这个主题吗？包括科学原理、教学延展、生活实例、实验设计、安全教育，还有怎么自然融入核心价值观和中华传统文化。希望内容系统全面，谢谢！
+  - question: 我是小学三年级学生的家长，孩子对科学很有兴趣，但对燃烧现象的要素还不太懂。你能说说主要的内容，让我能简单给孩子解释吗？
+  - question: 我在准备小学科学课，想深入讲解燃烧现象的构成要素，既要科学严谨，又要结合学生生活。你能深入讲解一下吗？最好包括生活例子、实验方案，还要怎么融入核心价值观和传统文化。
+  - question: 我带小学科学兴趣小组，学生们很喜欢讨论燃烧现象。你能深入说说看燃烧现象的构成要素吗？希望既科学系统又有启发性，还能帮助孩子们做探究活动，同时自然融入核心价值观和传统文化。
+  - question: 我是小学科学课代表，老师让我们做燃烧现象构成要素的小报告。你可以帮我概括一下吗？主要内容要清楚，方便我做笔记。
+  - question: 我女儿四年级，喜欢做小实验，最近点蜡烛时问我燃烧为什么能发生，是不是有什么条件。我有点不会解释，你能解释一下燃烧现象的构成要素吗？最好举些孩子能理解的例子。
+  - question: 我负责小学科学教材编写，正在设计‘燃烧现象的构成要素分析’的教学内容。你能系统地讲解一下这个主题吗？包括科学原理、教学方法、生活案例、实验设计、延展思考，还有怎么自然融入核心价值观和中华传统文化。希望内容全面深入，谢谢！
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-小学-燃烧现象的构成要素分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化学生画像适配度_理由
+    type: str
+    description: 解释个性化学生画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化学生画像适配度
+    type: float
+    description: 评价教学内容是否充分结合目标学生的年龄特征、认知发展阶段、兴趣和学习基础，针对不同能力层次提供差异化支持，体现分层与个别化教学策略。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评价教学设计是否严格按照教学任务要求的结构与逻辑呈现，环节完整、分点清晰、表达简明，内容便于教师理解和复用，并体现环节间合理衔接。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评价教学设计是否采用启发式、探究式、合作式等科学教学方法，充分调动学生主动参与、观察、思考和实践，体现教育学原理，避免单向灌输和机械记忆。
+  - field: 知识点准确性_理由
+    type: str
+    description: 解释知识点准确性评分的详细理由，引用具体例子。
+  - field: 知识点准确性
+    type: float
+    description: 评价对核心知识点的表述是否科学、完整，术语准确无误，无错漏或歧义，能有效区分相关概念，并结合实际现象进行解释。
+  - field: 知识点系统性与延展性_理由
+    type: str
+    description: 解释知识点系统性与延展性评分的详细理由，引用具体例子。
+  - field: 知识点系统性与延展性
+    type: float
+    description: 评价对知识点的系统梳理和归纳，能体现要素间关系，并适度拓展至相关原理、应用或跨学科内容，帮助学生建立知识网络和迁移能力。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价教学内容是否通过开放性提问、实验设计或情境创设，鼓励学生提出新问题、假设并自主探究，激发科学思维和好奇心，体现创新能力培养。
+  - field: 生活化与真实提问模拟度_理由
+    type: str
+    description: 解释生活化与真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 生活化与真实提问模拟度
+    type: float
+    description: 评价教学内容是否紧密结合学生日常生活经验，模拟真实课堂互动，提出贴近生活且具有启发性的提问，能激发兴趣并促进理解，且提问具有一定思考深度。
+  - field: 中华优秀传统文化融入度_理由
+    type: str
+    description: 解释中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入度
+    type: float
+    description: 评价教学内容是否自然、恰当地融入中华优秀传统文化元素，结合科学原理介绍相关节日、古代科学家或传统工艺，促进文化自信和科学素养，避免生硬或表面化。
+  - field: 社会主义核心价值观渗透性_理由
+    type: str
+    description: 解释社会主义核心价值观渗透性评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观渗透性
+    type: float
+    description: 评价教学内容是否在知识传授过程中自然渗透科学精神、安全意识、合作互助等社会主义核心价值观，并与教学内容有机结合，促进学生全面发展。
+  format_mode: prompt

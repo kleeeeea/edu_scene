@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-学做小雷锋（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为小学德育美育专家，能不能系统地讲解一下‘学做小雷锋’活动怎么设计更科学、更有温度？比如要结合孩子的年龄特点、班级实际情况，还有怎么让家长也参与进来。活动目标、内容、师生互动、家校协同、评价和创新这些都麻烦你详细讲讲，最好能给点具体案例和反思建议。系统地讲解一下吧。
+  - question: 我是四年级学生的家长，学校在搞‘学做小雷锋’活动，孩子能有什么收获呀？用几句话说说就行。
+  - question: 我是三年级的新老师，班里有些同学对雷锋故事不感兴趣，参与度不高。你觉得主要是什么原因？应该怎么提高他们的兴趣和参与？说说主要的。
+  - question: 最近有老师说‘学做小雷锋’活动刚开始大家挺积极，时间长了学生参与热情就下降了。你作为德育课程设计顾问，能不能全面分析一下原因？比如课程设计、活动形式、师生互动、家校配合这些方面都讲讲，再说说怎么改进和创新。全面分析一下吧。
+  - question: 我是五年级班主任，班里有个性格比较内向的孩子，在‘学做小雷锋’活动中总是不太主动。我很想彻底说清楚，针对这种学生，要怎么个性化引导、怎么让同伴和家长一起帮忙，让他也能感受到帮助别人的快乐和成长？请你详细讲讲，彻底说清楚吧。
+  - question: 我是一名小学美育老师，最近在班里搞‘学做小雷锋’主题绘画活动。有些学生觉得这个题材太传统，不太有新意。你看怎么激发孩子们的创新思维，让他们在美育活动里更有创造力和主动性？讲清楚点。
+  - question: 我是雷莲，在小学当老师，平时喜欢种菜和画画，性格上思维比较固化，也不太参与学校社交。最近学校要求我组织‘学做小雷锋’活动，但我觉得自己的设计挺普通，学生也没太多兴趣。你能解释一下吗，怎么结合我的兴趣和孩子们的特点，把这活动搞得新颖点，还能让师生互动更好一点？
+  - question: 你作为德育美育专家，我想深入了解‘学做小雷锋’活动怎么把传统价值观和创新体验结合起来，让孩子们在实践中自然内化助人为乐，还能主动反思和评价自己的成长。请详细讲讲。
+  - question: 我是小学低年级家长，孩子性格比较害羞，‘学做小雷锋’活动快结束了，我怕他没什么收获。你能具体说说吗，怎么帮助孩子在活动里成长，还能引导他主动表达和创新？
+  - question: 我是唐云，在小学教书，喜欢数字艺术（AI绘画）和瑜伽冥想。最近班里在搞‘学做小雷锋’活动，我想把AI绘画和冥想也融合进德育美育教学，但不知道怎么兼顾创新和活动目标。你能详细说说有哪些融合方式和具体建议吗？详细说说吧。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-学做小雷锋（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像精准适配性_理由
+    type: str
+    description: 解释用户画像精准适配性评分的详细理由，引用具体例子。
+  - field: 用户画像精准适配性
+    type: float
+    description: 评估内容是否充分结合小学生不同年级的认知、兴趣、能力及校园生活实际，能根据学生多样化需求进行针对性、个性化设计，兼顾不同层次学生的参与和发展。
+  - field: 格式与流程规范度_理由
+    type: str
+    description: 解释格式与流程规范度评分的详细理由，引用具体例子。
+  - field: 格式与流程规范度
+    type: float
+    description: 内容结构是否严格分步、分点呈现，逻辑清晰，流程完整，包含引入、讲解、互动、总结等环节，所有环节均有明确目标与时间建议，便于教师高效实施。
+  - field: 教学目标细化与达成度_理由
+    type: str
+    description: 解释教学目标细化与达成度评分的详细理由，引用具体例子。
+  - field: 教学目标细化与达成度
+    type: float
+    description: 是否将‘学做小雷锋’主题拆解为具体、可观察、可评估的行为目标，并通过活动有效促进学生品德与实际行为的持续转变。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 教学方法是否基于小学生认知规律，融合启发式、体验式、合作探究等多样方法，并在活动设计与实施上具有明显创新性，能有效激发学生主动参与和深度思考。高分需体现独创性或跨学科整合。
+  - field: 互动与反馈有效性_理由
+    type: str
+    description: 解释互动与反馈有效性评分的详细理由，引用具体例子。
+  - field: 互动与反馈有效性
+    type: float
+    description: 是否设置多层次、多元化师生互动环节，能引导学生主动表达与深度讨论，并根据不同表现提供具体、及时、个性化反馈，促进学生持续改进和自我完善。
+  - field: 创新与自主行动激发度_理由
+    type: str
+    description: 解释创新与自主行动激发度评分的详细理由，引用具体例子。
+  - field: 创新与自主行动激发度
+    type: float
+    description: 是否为学生自主创新和个性化实践提供空间与资源，鼓励其提出新颖想法、设计并实施独特的‘小雷锋’行动，并支持其反思与持续改进。高分需体现学生主动性、创新性成果及持续行动。
+  - field: 多元评价与自我反思体系_理由
+    type: str
+    description: 解释多元评价与自我反思体系评分的详细理由，引用具体例子。
+  - field: 多元评价与自我反思体系
+    type: float
+    description: 是否建立涵盖自评、互评、师评的多元评价体系，并推动学生有深度、系统的自我反思，关注品德内化与持续成长。高分需体现评价过程的真实性、持续性和成长追踪。
+  - field: 价值观自然融合与行为转化度_理由
+    type: str
+    description: 解释价值观自然融合与行为转化度评分的详细理由，引用具体例子。
+  - field: 价值观自然融合与行为转化度
+    type: float
+    description: 是否将社会主义核心价值观和中华优秀传统文化通过真实情境、故事、实践活动自然融入教学，促进学生深刻理解、真诚信仰并在日常行为中主动践行。高分需体现价值观的内化和行为转化的真实案例。
+  format_mode: prompt

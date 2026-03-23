@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-小学-红绿灯下的安全教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级学生的家长，最近我发现我女儿放学回家路上总喜欢和小伙伴们在红绿灯路口打闹，根本不看信号灯。你能说说怎么才能让她意识到红绿灯下的安全重要性，并能主动遵守规则吗？能解释一下吗
+  - question: 我是一名小学老师，班上有几个性格特别活泼、爱开玩笑的孩子，经常在放学后结伴过马路时不守规矩。你作为安全教育专家，能讲讲看有哪些方法能让这类孩子真正学会在红绿灯下自觉遵守交通规则吗？讲讲看
+  - question: 我是二年级的小学生，性格有点胆小，看到红灯总是不敢走，但有时候看见同学都冲过去我也想跟着。你能大概讲讲在红绿灯下我应该怎么做才安全吗？大概讲讲
+  - question: 我是一名教研员，最近想整理一份关于小学生红绿灯下安全教育的核心要点。你能帮我概括一下在实际教学中最重要的知识和方法是什么吗？概括一下
+  - question: 我是四年级学生的家长，孩子平时很马虎，注意力不集中，经常在过马路等红绿灯时分心玩玩具或者发呆。我很担心他的安全。你能全面分析一下如何针对这样的孩子进行红绿灯下的安全教育吗？全面分析一下
+  - question: 我是一名小学安全教育专职老师，学校附近最近新修了一条马路，学生上学放学都要经过多个红绿灯。现在有不少家长反馈担心孩子安全。我想设计一套系统的红绿灯下安全教育课程。你作为教育专家，能全面深入地讲讲吗？
+  - question: 我是五年级的班主任，班里有几个学生特别喜欢用动画片里的情节模仿过马路的样子，有时候还会做些夸张动作。我担心他们会忽视交通安全。你能讲讲看怎么用学生喜欢的动画、游戏等方式，让他们更愿意遵守红绿灯下的安全规则吗？讲讲看
+  - question: 我是二年级学生家长，我女儿胆子很小，每次过红绿灯都不敢自己走，总是拉着我不松手。你怎么看待小学生在红绿灯下的胆怯心理？能不能说说你的看法和帮助孩子勇敢又安全过马路的方法？说说你的看法
+  - question: 我是小学副校长，最近想在全校推行红绿灯下安全教育的主题活动，但我发现不同年级、不同性格的孩子对规则的接受程度很不一样。你能从各个角度详细说说如何分层、分性格地设计这样的安全教育活动吗？从各个角度详细说说
+  - question: I'm DavisSofia, a teacher who enjoys rock climbing and writing, and
+      I tend to be very hands-on with my students. Could you share in detail how I
+      might weave red-light/green-light safety education into my elementary classroom
+      routine, considering my leadership style and interests? Can you explain it in
+      more depth?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-小学-红绿灯下的安全进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像精准识别_理由
+    type: str
+    description: 解释个性化画像精准识别评分的详细理由，引用具体例子。
+  - field: 个性化画像精准识别
+    type: float
+    description: 评估内容是否充分考虑学生年龄、认知发展、兴趣与生活经验，能针对不同个体特征灵活调整表达与活动设计。高分需针对具体学生群体（如年级、兴趣、性格差异）做出细致区分，低分则表现为内容模板化、忽略个体特征或采用成人化表达。
+  - field: 个性化指令遵循度_理由
+    type: str
+    description: 解释个性化指令遵循度评分的详细理由，引用具体例子。
+  - field: 个性化指令遵循度
+    type: float
+    description: 评估内容是否完全按照教学任务或题目要求的结构与格式进行设计，并能结合学生实际情况创新调整。高分为结构严谨且有针对性创新，低分为机械套用模板或随意脱离任务要求。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估是否采用多样化、科学且适合小学生认知的教学方法（如情景模拟、角色扮演、游戏化学习、项目式探究等），并鼓励方法创新。高分应有多种方法有机结合，能激发学生兴趣和思考，低分为单一说教或机械讲解，无新意。
+  - field: 教学内容层次递进与深度_理由
+    type: str
+    description: 解释教学内容层次递进与深度评分的详细理由，引用具体例子。
+  - field: 教学内容层次递进与深度
+    type: float
+    description: 评估内容是否分阶段、由浅入深、环环相扣，能引导学生逐步深化理解，并适度延伸到生活实际和思辨层面。高分为内容分层明确，有启发性问题和延伸思考，低分为一次性灌输，无递进或思考空间。
+  - field: 激发学生参与与创造力_理由
+    type: str
+    description: 解释激发学生参与与创造力评分的详细理由，引用具体例子。
+  - field: 激发学生参与与创造力
+    type: float
+    description: 评估是否通过开放式问题、创造性任务、学生自主表达等方式，激发学生主动参与和创新思维。高分为学生有创作、表达和合作机会，能提出新想法，低分为仅要求记忆或机械重复。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评估问题是否贴近真实小学课堂和学生生活，能反映学生真实疑问、兴趣和困惑，并鼓励学生主动提出问题。高分为问题生活化、具体，能引发学生共鸣，低分为脱离实际、过于成人化或抽象。
+  - field: 社会主义核心价值观与优秀传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与优秀传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与优秀传统文化自然融入
+    type: float
+    description: 评估内容是否将社会主义核心价值观和中华优秀传统文化以自然、生活化方式融入教学，能引发学生情感共鸣。高分为价值观润物细无声、紧密结合生活场景，低分为生硬灌输、口号化、与实际脱节。
+  - field: 语言表达简明生动与童趣性_理由
+    type: str
+    description: 解释语言表达简明生动与童趣性评分的详细理由，引用具体例子。
+  - field: 语言表达简明生动与童趣性
+    type: float
+    description: 评估表达是否简明、形象、富有童趣，贴近儿童生活，能吸引小学生注意力。高分为语言活泼、有画面感或拟人化，低分为生硬、学术化或成人化表达。
+  format_mode: prompt

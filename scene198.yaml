@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-初中-地理环境对历史进程的影响教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二学生，老师最近讲了地理环境对历史进程的影响，用黄河和长江流域做了例子，但我还是有点不懂地理环境到底怎么影响历史发展。能解释一下吗？
+  - question: 你是历史老师，我对地理环境对历史进程的影响很感兴趣，尤其想知道古代中国不同地区为什么会出现不同的文明和政权。详细展开说说吧，举些例子帮我分析一下，也给我一些学习建议。
+  - question: 我是初三学生，觉得地理环境影响历史进程这个话题有点太大了，你能帮我概括一下主要影响吗？核心要点讲清楚就好。
+  - question: 我是尚颖，30岁保安，喜欢钓鱼和下象棋，工作时习惯遵守流程但不太主动决策，休息也常在公园和老人交流。我挺想深入了解地理环境对历史进程的影响，能详细分析下各个方面吗？最好能结合我的兴趣和生活，帮我系统地讲讲。
+  - question: 我是一名初中生，最近在想地理环境为什么会影响中国历史，有的地方能发展强大王朝，有的却一直落后。能深入讲解一下吗？举些例子帮我分析，也给我点学习建议吧。
+  - question: 我是初一学生，老师让我们举例说明地理环境怎么影响历史进程，可我不会举例。你能解释一下吗？帮我用几个好懂的例子讲讲。
+  - question: 我最近在历史课上听老师讲地理环境影响历史进程，大家讨论挺多，但我还是有点迷糊。你能大概讲讲主要影响吗？让我快速理清思路。
+  - question: 我是初二学生，对地理环境和历史关系特别感兴趣，像气候、地形、河流这些因素到底怎么影响历史进程？能具体说说吗？最好举几个生活中能联想到的例子。
+  - question: 你是地理与历史跨学科专家，能系统地讲解一下地理环境对历史进程的影响吗？从古代到现代、从中国到世界，全面分析地形、气候、水源、资源分布这些因素对历史事件和社会变化的作用，也帮我设计些适合初中生的探究活动和思维方法。
+  - question: 我是初三学生，最近在复习地理环境影响历史进程，老师说要联系实际生活举例。我还是有点不太清楚怎么具体说明，你能具体说说吗？结合身边的例子帮我解释一下。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-初中-地理环境对历史进程的影响进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评价教学内容和方法是否针对不同学生的学习基础、兴趣、认知风格等进行分层和差异化设计，且能根据学生反馈动态调整，体现真正的个性化。包括任务、资源、评价方式等是否有针对性差异。
+  - field: 指令遵循与格式准确性_理由
+    type: str
+    description: 解释指令遵循与格式准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式准确性
+    type: float
+    description: 评价内容是否严格依照教学任务的结构、步骤和格式要求组织，逻辑清晰，条理分明，既有规范的形式也有合理的内容层次，便于学生理解和复盘。需区分结构完整性、条理性与内容深度。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价教学设计是否基于教育学原理，灵活运用启发式、探究式、合作学习等多种科学方法，系统促进学生主动建构和迁移知识。需关注教学方法的多样性、系统性和与目标的适配性。
+  - field: 学科知识准确性与专业性_理由
+    type: str
+    description: 解释学科知识准确性与专业性评分的详细理由，引用具体例子。
+  - field: 学科知识准确性与专业性
+    type: float
+    description: 评价教学内容是否严谨、无误，能系统且深入地揭示历史与地理之间的多维关联，体现学科的批判性和专业深度，并鼓励学生多角度思考和讨论。
+  - field: 创造性思维激发度_理由
+    type: str
+    description: 解释创造性思维激发度评分的详细理由，引用具体例子。
+  - field: 创造性思维激发度
+    type: float
+    description: 评价教学是否包含开放性任务、创新探究或项目式学习，鼓励学生提出独立见解和多种解决方案，激发创新思维和问题解决能力。关注任务开放性和创新表达的机会。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价任务和提问是否贴近初中生真实学习和生活情境，能够引发学生共鸣、兴趣和实际思考，关注学生常见困惑和生活经验。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价社会主义核心价值观和中华优秀传统文化是否在教学内容中自然渗透，结合知识点与实际案例，潜移默化地引导学生形成正确价值观，避免生硬灌输。
+  - field: 互动性与参与感设计_理由
+    type: str
+    description: 解释互动性与参与感设计评分的详细理由，引用具体例子。
+  - field: 互动性与参与感设计
+    type: float
+    description: 评价教学环节是否有多层次、系统性的互动与表达设计，能充分调动学生参与和合作，体现学生为中心。区分‘浅层互动’（如举手、回答问题）、‘中层互动’（如小组讨论）、‘深度互动’（如角色扮演、情景辩论、集体决策）。
+  format_mode: prompt

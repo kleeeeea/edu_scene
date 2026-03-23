@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene266/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 政治-高中-辨析社会主义核心价值观的内涵教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是RodriguezJacob，31岁男，做物理治疗师，平时喜欢踢足球和举重，生活方式挺有条理。你能概括一下社会主义核心价值观的内涵吗？最好能结合我的职业和兴趣，让我能更实际地理解。
+    - question: 我是龚嫣然，27岁女老师，喜欢写作和舞蹈，性格比较在规则与创新之间平衡，也容易受压力影响，社交圈选择性强。你作为教育专家，能不能彻底说清楚社会主义核心价值观的内涵？希望你能结合我的兴趣和老师身份，系统分析下它的理论基础、现实意义，以及在教学和生活中具体怎么体现。
+    - question: 我最近在学习高中政治，老师讲到社会主义核心价值观，但我觉得有点抽象。你能讲讲看，怎么辨析它的内涵？最好能结合社会热点和我们校园生活举几个例子，让我更容易理解。
+    - question: 我是邓欣荣，高三女生，喜欢服装设计、手帐和外语学习，性格有点疏离但也参与社团，平时社交圈比较跳跃，偶尔参加跨校设计沙龙。你能详细说说社会主义核心价值观的内涵吗？最好能结合我的这些兴趣和校园实际，讲讲它对学习、设计和社交的影响。
+    - question: 我是JacksonRyan，60岁的老师，喜欢草药疗法和打桥牌，教学中很注重民主协作和规则，也希望能更理想主义地影响学生。你能全方位地讲解一下社会主义核心价值观的内涵吗？希望你结合我的兴趣和教学风格，系统分析下理论、现实意义和在课堂及教师团队里怎么具体实践，还能给点创新建议促进学生理解。
+    - question: 我是一名高中政治老师，最近发现学生觉得社会主义核心价值观有点空洞，难以真正理解和践行。你能详细展开说说，怎么用生活化案例、社会热点和学生兴趣帮他们真正理解和落实这些价值观吗？希望你能深入分析下，给我一些可操作的思路。
+    - question: 我是一个高中生家长，发现孩子对社会主义核心价值观学习挺迷茫的，也不知道怎么在家里引导。你能详细展开说说，家长应该怎么帮孩子理解和践行这些价值观吗？希望能结合家庭实际和孩子成长特点，给我一些具体建议和方法。
+    - question: 我是DavisWilliam，18岁高三男生，平时玩街舞和攀岩，做事喜欢竞争也能专注，社交和独处都能适应。你能讲清楚点社会主义核心价值观的内涵吗？最好结合我的兴趣和性格，举些跟我校园生活、成长有关的例子。
+    - question: 我是一名高三学生，最近在复习政治，老师让我们记住社会主义核心价值观的内涵。你能用几句话说说主要内容吗？简单明了就好，方便我记住。
+    - question: 我是李琪亦，五年级女生，喜欢拉小提琴和跳中国风爵士舞，平时有点内外向混合，也常向老师和妈妈问问题。你能讲清楚点社会主义核心价值观的内涵吗？希望用我能听懂的话和例子，结合我平时的兴趣和生活说说，让我容易理解。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 政治-高中-辨析社会主义核心价值观的内涵进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估内容是否针对学生的具体学情（包括知识基础、兴趣、困惑、成长阶段等）进行精准设计，能否体现对学生个体差异和动态变化的持续关注与响应。
+    - field: 格式与指令遵循性
+      type: float
+      description: 评估内容是否严格按照教师或任务的具体要求（如结构、分段、要点、案例数量、思考题设置等）进行输出，条理清晰、结构完整，并在规范基础上适度创新。
+    - field: 教学方法科学性
+      type: float
+      description: 评估是否采用符合学生认知规律的教学方法，如启发式、案例分析、分层递进、对比讨论、合作探究等，促进学生主动思考和深度理解。
+    - field: 知识点准确性与深度
+      type: float
+      description: 评估对社会主义核心价值观的讲解是否准确、全面、深入，能否系统梳理相关知识点，结合历史、现实、词义、内在联系等多角度分析，避免片面或表面化。
+    - field: 创新思维激发程度
+      type: float
+      description: 评估内容是否通过设问、案例、讨论等方式激发学生多角度、创新性思考和表达，鼓励学生提出新问题和独特见解。
+    - field: 现实联系与生活化
+      type: float
+      description: 评估内容是否善于将核心价值观与学生日常生活、社会热点、校园事件等紧密结合，能够用具体事例引发共鸣，帮助学生体会现实意义。
+    - field: 价值观自然融入度
+      type: float
+      description: 评估是否能够通过故事、案例、情感共鸣等方式自然、潜移默化地传递社会主义核心价值观及中华优秀传统文化，避免生硬说教。
+    - field: 互动与真实困惑覆盖度
+      type: float
+      description: 评估语料中的提问和互动是否贴近真实课堂情境，能够覆盖学生实际困惑、兴趣点和真实问题，并针对学生反馈进行有效回应和引导。
+format_mode: prompt

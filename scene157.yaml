@@ -1,0 +1,117 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-小学-课堂指令的理解与执行教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名小学三年级英语老师，班里有些性格内向的孩子，面对像“Please stand up”或“Open your book”这样的指令总是犹豫或者反应慢，你能概括一下怎么帮助他们更好地理解和执行这些英语课堂指令吗？最好结合一个创新资源或方式。
+  - question: 我刚成为小学英语老师，发现有些孩子在执行英语指令，比如“Work in pairs”或“Listen and repeat”时经常会不明白老师的意思，尤其是英语基础差、注意力容易分散的学生。你能帮我理解一下这些情况的原因，以及怎么用具体活动或资源来解决吗？
+  - question: 我是一名小学英语教研员，最近调研发现班里既有很活泼爱互动的孩子，也有很安静不愿参与的学生，大家在面对“Raise your hand”、“Read
+      aloud”、“Close your book”这类指令时表现差异很大。你能详细分析下各个方面，说明不同学生在理解和执行英语课堂指令时会遇到哪些问题？希望能结合创新教学资源和方法，给出分层、个性化的建议，同时自然融入价值观和传统文化。
+  - question: 我在小学五年级教英语，有个学生很喜欢画画，在理解和执行英语指令时总是很积极，但另一个喜欢安静读书的孩子就经常对“Please answer
+      the question”这类指令没反应。说说你的看法，兴趣爱好会怎么影响他们的表现？能结合具体资源或活动给些建议吗？
+  - question: 我是卢朝善，今年48岁，是一名中学体育老师，在足球队和家长群体中有一定威望，但和学校管理层在教学改革上有些分歧。我性格比较权威依赖，工作中有点倦怠和动力交替，平时喜欢足球和游泳，也希望能渐进式推动课堂改革。你作为小学英语教育专家，能从各个角度详细说说我在推进小学英语课堂指令理解与执行方面可能会遇到哪些挑战和机会吗？希望能结合教师心理、学生特点、家校合作、资源整合、管理沟通等方面分析，并自然融入价值观和传统文化，突出创新和协同育人。
+  - question: 我在小学教英语，发现有些孩子对“Work in groups”这种让大家合作的指令不太适应，尤其是性格独立或者不太喜欢合作的学生。说说你的看法，这种情况要怎么应对？最好结合实际活动或资源给点建议。
+  - question: 我是小学英语老师，班里有几个英语基础差的孩子，每次听到“Read aloud”或“Answer the question”就很紧张，不敢开口。你能大概讲讲针对这种情况怎么调整指令表达和课堂设计，让他们更自信参与吗？最好结合一个具体资源或活动。
+  - question: 我是廖琪，36岁的小学老师，性格比较内敛，也喜欢渐进式改革和民主管理，平时喜欢学新技能、练太极和观察自然，跟同事关系比较安静，有时会组织太极晨练。你作为小学英语学科教学顾问，能全面分析一下我在英语课堂指令理解和执行方面可能遇到的难点吗？希望结合我的性格、兴趣、管理风格和社交特点，给一些创新、分层和实际可用的建议，具体说说活动和资源怎么用，也希望能自然融合核心价值观和传统文化，鼓励孩子们主动参与和合作。
+  - question: 我在小学四年级教英语，班里有几个孩子注意力总是分散，每次我说“Listen carefully”或“Follow me”这种指令，他们经常反应不过来。你能详细说说这种情况的原因，并给点实际可行的教学建议吗？最好结合具体资源或活动。
+  - question: 我是刚入职的小学英语老师，班里孩子们在理解和执行像“Open your book”、“Listen and repeat”、“Work
+      in pairs”这些英语课堂指令时总是有各种问题。你作为英语专家，能讲得详细点吗？希望能结合孩子们的性格、学习习惯、家庭背景，系统说说分层教学、资源整合、创新活动方案，还要自然融入价值观和传统文化，建议最好能落地。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-小学-课堂指令的理解与执行进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教师是否系统、持续地收集学生个体差异信息（如学习水平、兴趣、性格），并据此动态调整教学活动和反馈。高分要求教师能追踪并记录学生变化，针对性设置分层任务，个别指导贯穿课堂与课后，形成闭环，而非偶尔关注或表面差异化。
+  - field: 指令遵循与格式准确性_理由
+    type: str
+    description: 解释指令遵循与格式准确性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式准确性
+    type: float
+    description: 评估教师课堂指令是否具备分步骤、结构化、语言简明、操作性强的特点，并包含理解检查与执行反馈。高分要求指令能被绝大多数学生准确复述和执行，执行后有针对性反馈，低分表现为指令模糊、无分步、无理解核查。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估教学方法是否严格遵循小学生认知发展规律（如分层、具体化、循序渐进），并在此基础上持续引入创新方式（如跨学科、技术融合、游戏化）。高分要求科学性与创新性并重，创新贯穿全过程且提升学习效果，低分表现为机械灌输、创新偶发或流于表面。
+  - field: 课堂指令情境真实度_理由
+    type: str
+    description: 解释课堂指令情境真实度评分的详细理由，引用具体例子。
+  - field: 课堂指令情境真实度
+    type: float
+    description: 评估课堂指令和互动是否高度贴近小学英语真实教学场景，语言自然，表达方式适合小学生，任务与生活经验紧密相关。高分要求指令与实际课堂管理、师生互动、学生生活无缝衔接，低分表现为指令内容成人化、脱离实际或语言生硬。
+  - field: 创新思维与表达激发_理由
+    type: str
+    description: 解释创新思维与表达激发评分的详细理由，引用具体例子。
+  - field: 创新思维与表达激发
+    type: float
+    description: 评估教学活动是否系统、持续地为所有学生提供创造性思考与表达机会，鼓励多样观点、独特作品、问题解决。高分要求创新空间贯穿活动始终且覆盖全体学生，低分表现为创新仅限个别环节或部分学生，绝大多数学生未获创新表达机会。
+  - field: 多样化学习资源深度利用_理由
+    type: str
+    description: 解释多样化学习资源深度利用评分的详细理由，引用具体例子。
+  - field: 多样化学习资源深度利用
+    type: float
+    description: 评估教师是否根据教学目标与学生差异，系统性深度融合多种资源（如图片、音频、视频、实物、数字工具），资源贯穿活动全过程，并显著提升学习效果和兴趣。高分要求资源与任务环环相扣，低分表现为资源偶尔点缀，未形成有效学习闭环。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融合_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化自然融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融合
+    type: float
+    description: 评估教学内容是否通过具体活动、情景互动，持续、自然地渗透社会主义核心价值观和中华优秀传统文化（如团结协作、诚信、尊重），与英语教学目标有机结合。高分要求价值观贯穿全过程，体现在实际行为与评价中，低分表现为口头灌输或偶尔生硬插入。
+  - field: 学生参与度与互动设计_理由
+    type: str
+    description: 解释学生参与度与互动设计评分的详细理由，引用具体例子。
+  - field: 学生参与度与互动设计
+    type: float
+    description: 评估教学活动设计是否确保全体学生高频、深度参与，包含多样互动形式（如小组合作、角色扮演、互动问答），每位学生均有展示和表达机会。高分要求参与度覆盖率高且持续，低分表现为部分学生长期被边缘化或仅被动参与。
+  format_mode: prompt

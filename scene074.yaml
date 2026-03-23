@@ -1,0 +1,108 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-初中-化学基本定律的理解与应用教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名初中化学老师，你作为化学教育专家，能给我一份完整的分析吗？系统梳理一下初中化学基本定律（比如质量守恒定律、定比例定律等）的核心内容、历史发展、生活和实验应用、常见教学误区、培养学生科学精神的方法等。请结合初中生的认知特点，分点结构化讲解，并给出针对性的教学建议，同时自然融入社会主义核心价值观和中华优秀传统文化，提升学生科学素养。
+  - question: 我是一名初二学生，化学成绩一般，总觉得化学基本定律挺抽象的。你作为我的学习顾问，能帮我理解一下化学基本定律的内容、含义、生活中的例子吗？麻烦你详细说说，分点讲讲主要知识点，帮我更好掌握。
+  - question: 我是希望孩子能主动学化学的家长，他对化学基本定律理解有点困难。你是化学教学助手，能用几句话说说化学基本定律的主要内容和生活意义吗？尽量用通俗易懂的语言表达，帮我和孩子一起理解。
+  - question: 我是初中化学新教师，备课时发现学生经常把质量守恒定律和定比例定律弄混。你是有经验的教学顾问，能解释一下这两个定律的区别、联系和各自的典型应用吗？请分点详细讲讲，最好有生活化的例子，还能给些教学建议。
+  - question: 我是初三化学兴趣小组的辅导员，你是化学专家，能全方位地讲解一下初中化学基本定律的科学意义、历史典故、生活和生产实践里的应用、跨学科联系、常见学生疑惑和解决办法吗？小组成员都很活泼、喜欢动手实验，请结合这些特点，分点详细讲讲，还能给些创新活动方案。
+  - question: 你是化学AI专家，我是段岚菊，一名57岁的女老师，工作认真、反对繁文缛节，喜欢京剧和书法，平时常和票友研习京腔，闲暇时练字。我追求教学去形式化。能围绕初中化学基本定律，全面分析一下其核心内涵、现实意义、如何高效融入课堂、和中华传统文化的联系，以及怎么用简练有效的教学语言打动学生吗？请分点详细讲讲，贴合我的性格、兴趣和理念。
+  - question: 我是初中男生，动手能力还不错，就是不太喜欢背书，平常喜欢做点小实验。你是化学实验辅导员，能大概讲讲化学基本定律的主要内容吗？最好能举几个手边能做的小实验或生活中的现象。
+  - question: 你是化学AI专家，我是石宏，18岁高三男生，成绩优秀，喜欢数学建模竞赛和露营生存技能，性格理性和感性交替，有时情绪波动。我想更深入地理解化学基本定律，特别是它们在实际生活、科学研究和跨学科领域的应用。能全面分析一下吗？请分点详细讲讲，也能结合数学建模和野外生存方面举些例子，给我些激发理性和感性兴趣的建议。
+  - question: 我是初中化学兴趣班的学生，平常喜欢观察生活里的现象。你是化学学习助手，能讲讲看化学基本定律有哪些吗？还有这些定律为什么对我们的生活很重要？麻烦你详细说说，最好能举点例子，也鼓励我自己多思考和探究。
+  - question: 你是化学教育专家，我是MillerSofia，49岁的女性心理咨询师，注重个人成长和自我提升，平常通过瑜伽和冥想调节情绪，也喜欢研究情绪管理和自我成长。你能详细说说化学基本定律的核心内容、实际意义，以及这些定律怎么能启发我们在个人成长、自我调适和心理健康方面的思考吗？请分点讲讲，也结合一下心理咨询师的专业视角。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-初中-化学基本定律的理解与应用进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像适配度_理由
+    type: str
+    description: 解释用户画像适配度评分的详细理由，引用具体例子。
+  - field: 用户画像适配度
+    type: float
+    description: 评估内容是否针对学生的具体学习基础、兴趣、认知差异进行动态个性化调整。高分需持续响应学生反馈，调整教学策略、案例与互动方式，以实现精准匹配和差异化支持。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 评估回答是否严格、完整地按照题目或用户的指定格式（如分点、表格、流程图等）组织内容，结构层次清晰，逻辑严密。高分需展现对格式要求的高度敏感和精确执行，内容无遗漏。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估教学过程是否综合运用认知规律与教育学原理，包括启发式、情境创设、分步探究、反馈归纳等。高分需体现多样化方法协同，过程层层递进、互动充分，能有效促进学生主动理解、迁移和应用知识。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 评估内容是否准确覆盖化学基本定律的核心知识点，包括定义、适用范围、常见误区、应用拓展及知识间逻辑串联。高分需体现知识阐述全面细致，前后呼应，能有效指导学生辨析与迁移，杜绝片面或错误。
+  - field: 启发式提问与引导_理由
+    type: str
+    description: 解释启发式提问与引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与引导
+    type: float
+    description: 评估内容是否包含多层次、递进式启发性问题或引导，能激发学生深入思考、自主探索和表达。高分需体现问题设计从基础理解到实际应用、创新设想，鼓励学生反思、交流和自我评价。
+  - field: 创新思维鼓励度_理由
+    type: str
+    description: 解释创新思维鼓励度评分的详细理由，引用具体例子。
+  - field: 创新思维鼓励度
+    type: float
+    description: 评估教学是否鼓励学生用多样化、创新性方式理解和应用化学定律，包括跨学科联想、实际问题设计、实验创新等。高分需支持学生提出独特见解、方案或创新应用，并能引导其探索更广泛的科学与社会联系。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估内容是否自然融入社会主义核心价值观（诚信、科学精神、协作、环保等）及中华优秀传统文化。高分需结合具体科学案例、科学精神和生活实际，表达自然有层次，能引发学生共鸣和行动。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-小学-文化遗产我知道（如长城、故宫）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学五年级的班主任，最近准备带全班同学做“文化遗产我知道”主题探究课，你作为历史教育专家，能不能从各个角度详细讲讲中国著名文化遗产，比如长城、故宫这些——它们的历史、建筑、文化意义、现在的保护，还有适合孩子们参与的体验活动？从各个角度详细说说
+  - question: 我是贾燕，今年52岁，是一名法官，平时喜欢读法律文献、做园艺和下象棋。你作为历史学习助手，能不能结合我的经历，具体说说像长城、故宫这样的中国文化遗产，在法律保护、社会影响和文化传承方面都有哪些现实意义和实际挑战？能具体说说吗
+  - question: 我是小学历史老师，班上有同学喜欢画画、做手工，还有孩子对古代建筑特别感兴趣。你作为教育专家，能不能全方位地讲解一下中国的文化遗产，比如长城、故宫这些，包括历史、艺术和建筑特色、文化价值、保护措施，还有能激发小学生兴趣的课堂活动和家庭亲子共学建议？全方位地讲解一下
+  - question: 我是小学生，老师让我们了解中国的文化遗产，比如长城和故宫，你能帮我概括一下它们为什么重要，都有什么特别的地方吗？概括一下
+  - question: 我是李仪，高三女生，喜欢机器人编程、外语和舞蹈，经常和社团同学合作，家里平时是外婆照顾我。你作为历史学习助手，能不能用几句话说说长城作为中国文化遗产的意义？最好结合下科技或艺术角度，给我们这些爱科技和舞蹈的学生一点启发。用几句话说说
+  - question: 我是四年级的小学生，对长城特别好奇，可我不太明白为啥大家都说它是世界奇迹，你能说说你的看法吗？说说你的看法
+  - question: 我是小学历史老师，班上有同学总问我：‘故宫那么大，里面到底有什么？’你作为老师，能不能讲讲看？讲讲看
+  - question: 我是一名三年级小学生家长，女儿最近总问我文化遗产的事情。你能不能深入讲解一下中国文化遗产有哪些种类、分布在哪里、保护方式都有哪些，还有我们家庭平时生活里可以怎么参与文化遗产保护？能深入讲解一下吗
+  - question: 我是五年级学生，老师让我们做小组活动，要介绍故宫和长城的区别，你能解释一下吗？能解释一下吗
+  - question: 你是我的历史学习助手，我最近特别想知道中国的文化遗产对我们的生活和成长到底有什么帮助，你能详细分析一下吗？我想深入了解
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-小学-文化遗产我知道（如长城、故宫）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 内容表达与知识深度紧密贴合小学生的年龄、兴趣和认知特点，使用生动、具体、易于理解的语言，避免成人化或抽象表述。鼓励结合学生日常生活经验进行讲解。
+  - field: 指令遵循完整性_理由
+    type: str
+    description: 解释指令遵循完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循完整性
+    type: float
+    description: 严格按照题目或教师指令完成所有要求，句式、结构及内容无遗漏，能分步骤完成复合型任务。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 采用适合小学生的教学策略，如情境创设、故事引入、生活化类比、启发式提问等，能有效激发兴趣和理解。要求情境真实、贴近学生生活，避免单一事实陈述。
+  - field: 知识点准确性与适龄性_理由
+    type: str
+    description: 解释知识点准确性与适龄性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与适龄性
+    type: float
+    description: 历史文化知识准确无误，内容深度和难度适合小学生，既避免过度简化导致知识失真，也杜绝复杂或错误的信息。
+  - field: 互动语言与场景真实度_理由
+    type: str
+    description: 解释互动语言与场景真实度评分的详细理由，引用具体例子。
+  - field: 互动语言与场景真实度
+    type: float
+    description: 互动语言自然、亲切、贴近小学课堂或生活，能激发学生表达和思考。互动形式丰富，包括提问、引导分享、鼓励交流等，场景真实可信，避免机械或生硬表达。
+  - field: 启发与创造力激发_理由
+    type: str
+    description: 解释启发与创造力激发评分的详细理由，引用具体例子。
+  - field: 启发与创造力激发
+    type: float
+    description: 通过开放式问题、创意活动、鼓励多样表达等方式，激发学生主动思考和创造性表达。鼓励学生提出自己的观点或进行个性化创作，超越记忆层面。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 中华优秀传统文化和社会主义核心价值观通过真实故事、情感体验、具体行为自然融入历史内容，引发学生共鸣。避免生硬灌输或口号化表达，强调情感和行为联系。
+  - field: 表达结构与清晰度_理由
+    type: str
+    description: 解释表达结构与清晰度评分的详细理由，引用具体例子。
+  - field: 表达结构与清晰度
+    type: float
+    description: 表达结构完整，层次清晰，语言通顺易懂，逻辑严密。能让小学生迅速抓住重点内容，且条理分明。高分需体现创新表达或结构设计，低分则表现为内容杂乱或语言不通顺。
+  format_mode: prompt

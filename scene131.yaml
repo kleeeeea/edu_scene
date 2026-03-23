@@ -1,0 +1,108 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为生物-初中-核心生理过程的对比与辨析 (如光合作用与呼吸作用)教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你作为初中生物学科带头人，能彻底说清楚光合作用和呼吸作用的本质区别和联系吗？我想了解它们在初中教学中的重难点、学生易混点，以及怎么用科学精神和创新方法把这部分内容教好，麻烦你系统全面地讲讲
+  - question: 我是叶雅彤，55岁生物老师，平时喜欢阅读和烘焙，和同事相处有分寸，节假日喜欢给家人朋友做点心。现在班上学生总分不清光合作用和呼吸作用，你能简单说说它们的主要区别和联系吗？
+  - question: 我是胡嘉怡，初二女生，平时喜欢美妆、视频剪辑和益智游戏，分析能力比较强。生物老师让我们做光合作用和呼吸作用的对比分析，你能给我一份完整的分析吗？最好用表格、对比和生活例子，帮我归纳和批判性思考
+  - question: 我最近在复习初中生物，光合作用和呼吸作用总感觉容易搞混，你能详细讲讲它们的主要区别和联系吗？最好能从定义、原理、能量变化和实验等方面展开
+  - question: 我是初三女生谭真，喜欢养植物和折纸，平时比较内向，周末会和邻居一起照顾社区花园。最近生物课上学到光合作用和呼吸作用，我有点搞不清它们在植物生长中的关系和实际意义。你能深入说说看吗？希望能结合我的兴趣和日常经历，给我一些学习建议
+  - question: 你能用几句话说说光合作用和呼吸作用的核心区别和联系吗？我想快速抓住重点
+  - question: 你是科学学习顾问，能解释一下光合作用和呼吸作用有哪些主要不同点，它们之间有什么关系吗？最好举几个生活中的例子
+  - question: 你作为初中生物老师，在教学光合作用和呼吸作用时有什么经验和看法？能说说学生容易混淆的地方、有效的教学方法，还有怎么激发学生兴趣和融入科学精神吗？
+  - question: 我是初中生，最近老师讲的光合作用和呼吸作用有点难懂，尤其是反应式和能量变化，还有它们在生态系统里的作用。你能讲清楚点吗？
+  - question: 你能帮我理解一下光合作用和呼吸作用的根本区别、主要联系吗？还有在考试时怎么不容易混淆，帮我讲明白点
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 生物-初中-核心生理过程的对比与辨析 (如光合作用与呼吸作用)进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评估教学设计是否充分响应不同学生的学习基础、兴趣、认知风格等个性特征，体现在内容选择、表达方式、举例和任务设置等方面的多维度差异化。需明确针对至少两种学生类型，且调整具有实质性差异（如任务难度、学习方式、参与角色等）。
+  - field: 格式及指令遵循度_理由
+    type: str
+    description: 解释格式及指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式及指令遵循度
+    type: float
+    description: 评估教学内容是否严格按照教学要求组织，结构清晰、逻辑分明，涵盖所有核心环节（定义、过程、产物、场所、能量变化、实际应用、对比等），并合理使用表格、分步讲解、生活实例等表达形式，避免内容堆砌或遗漏。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估教学方法是否体现循序渐进、启发式、探究式、合作学习等科学教育理念，并能根据学生实际灵活调整，促进深度理解和知识迁移。创新性体现在教学流程、活动设计及师生互动方式上。
+  - field: 知识结构完整性与深度_理由
+    type: str
+    description: 解释知识结构完整性与深度评分的详细理由，引用具体例子。
+  - field: 知识结构完整性与深度
+    type: float
+    description: 评估内容是否系统覆盖所有核心环节（定义、过程、产物、场所、能量变化、实际应用等），并能深入揭示两过程的本质联系和关键区别，结合实际生活或跨学科情境进行分析和综合，体现批判性和迁移性思维。高分需体现知识跨界、生活联系及思维深度。
+  - field: 模拟真实提问还原度与互动性_理由
+    type: str
+    description: 解释模拟真实提问还原度与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度与互动性
+    type: float
+    description: 评估是否能准确捕捉并回应学生真实课堂中的疑惑，采用启发式追问、情境设问等方式促进互动。高分需体现多轮互动、师生共同探究、思维拓展与个性化回应。
+  - field: 激发创新与探究能力_理由
+    type: str
+    description: 解释激发创新与探究能力评分的详细理由，引用具体例子。
+  - field: 激发创新与探究能力
+    type: float
+    description: 评估是否通过开放性问题、探究任务、实验方案等设计，激发学生创新思考和自主学习动力，鼓励学生提出新问题、发表个人见解、设计改进方案。高分需体现学生主动设计实验、反思过程并提出创新观点。
+  - field: 价值观与文化自然融入度_理由
+    type: str
+    description: 解释价值观与文化自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观与文化自然融入度
+    type: float
+    description: 评估是否能结合学科内容，自然融入社会主义核心价值观和中华优秀传统文化，特别是生态观、人与自然和谐观等，通过知识讲解与实际生活、文化故事等有机结合，引导学生形成正确世界观与责任感，避免生硬灌输。
+  format_mode: prompt

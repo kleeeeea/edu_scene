@@ -1,0 +1,129 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: /inspire/hdd/project/ai4education/p-liuwentao/elmes/elmes/mapping/merged_metric_mapping.json
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-高中-排列组合问题建模教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名高二理科男生，最近正备战数学竞赛，但是排列组合问题的建模一直让我很头疼，尤其是遇到那些实际应用场景和多条件复杂题目时总容易卡住。你能全面系统地帮我分析一下高中排列组合问题的建模方法吗？讲讲常见场景、解题思路、易错点还有怎么培养创新思维，最好能结合我现在备赛压力给点学习建议，给我一份完整的分析。
+  - question: 你是高中数学老师，我是一名高一女生，数学成绩一般。最近学排列组合，建模分析题目条件总是搞不清排列和组合的区别，做题老出错。能详细讲讲这个问题吗？举举例子说说怎么分析，讲清楚点。
+  - question: 我是高三男生，数学成绩还行，就是排列组合建模遇到实际情境题就懵，比如分组、安排座位这类题目，文字一多就不会建模了。你能具体说说怎么把这些题目的描述变成数学模型吗？举个例子讲讲。
+  - question: 我是汝真涵，初三女生，喜欢折纸、益智游戏还有钢琴，是钢琴老师的得意门生，折纸在学校艺术节上也拿过奖。我的学习能力挺强，经常能灵活应变，但最近做排列组合建模题碰到瓶颈，特别是遇到多重限制条件时，总是不知道怎么把实际问题转成数学表达式。你能解释一下吗？讲讲具体怎么做，有例子最好。
+  - question: 我是高三文科女生，数学不太好但很认真。老师让我们做一个排列组合建模的实践活动，要自己设计生活中的实际问题然后用排列组合的方法建模分析。我很想做好这个作业，但就是理不清思路，不知道怎么把生活场景抽象成数学模型。你能帮我全面系统地讲讲这个过程吗？说说具体方法、案例、文科生容易出错的地方，还有学习建议，给我一份完整的分析。
+  - question: 你是高中数学教研员，我高二男生，喜欢自己探索问题。排列组合建模时，我的思路总是发散，面对综合性题目经常漏掉条件，不太会系统整理。你能详细讲讲怎么解决这个问题吗？说说具体方法和建议，能讲得详细点吗？
+  - question: 我是高一数学老师，准备设计一些排列组合的课堂活动，希望结合实际生活让学生更容易理解，但怕难度太高。你能说说主要的设计思路和注意事项吗？简要讲讲就行。
+  - question: 我是高三理科男生，对排列组合建模越来越感兴趣，特别想深入了解各种类型题目的建模方法和怎么培养创新思维。你能详细讲讲吗？我想深入了解。
+  - question: I'm SmithElijah, 11 years old in 5th grade, and I love skateboarding
+      and football. I usually solve problems logically and stay calm, but I'm confused
+      when trying to model real-world situations with permutation and combination
+      in math. Can you give me a brief overview of how to turn practical situations
+      into mathematical models using permutations and combinations?
+  - question: I'm RobinsonRaymond, 7 years old in 2nd grade, and I love playing guitar
+      and stargazing. I like working in teams and always follow rules, though sometimes
+      my confidence goes up and down. When we learn about permutation and combination
+      modeling in math, I get a bit confused, especially when working with others
+      or figuring out each step. Can you explain how to approach permutation and combination
+      modeling in a way that's easy to follow, maybe with some examples?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-高中-排列组合问题建模进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与指令遵循_理由
+    type: str
+    description: 解释个性化画像识别与指令遵循评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与指令遵循
+    type: float
+    description: 能精准分析并动态更新学生的学习水平、兴趣和困惑，针对性调整教学内容与策略，严格遵循题目要求的输出格式和个性化指令，体现显著的差异化教学。
+  - field: 个性化教学内容适配度_理由
+    type: str
+    description: 解释个性化教学内容适配度评分的详细理由，引用具体例子。
+  - field: 个性化教学内容适配度
+    type: float
+    description: 教学内容紧密结合学生的兴趣、目标和实际困惑，主动建立数学与学生生活场景的联系，内容高度针对性，能显著提升学习动力和理解深度。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学设计遵循教育学与学科逻辑，流程完整且环节丰富，系统引导建模思路，包含引导分析、误区纠正、易错点提示、互动讨论及多样化表达，鼓励学生深度参与和自主思考。
+  - field: 知识点讲解准确性与深度_理由
+    type: str
+    description: 解释知识点讲解准确性与深度评分的详细理由，引用具体例子。
+  - field: 知识点讲解准确性与深度
+    type: float
+    description: 排列组合建模相关知识讲解准确，能深入剖析原理、常见误区及拓展应用，结合实际题目展示建模流程与原理推导，体现学科深度与广度。
+  - field: 问题模拟真实性_理由
+    type: str
+    description: 解释问题模拟真实性评分的详细理由，引用具体例子。
+  - field: 问题模拟真实性
+    type: float
+    description: 提出的问题高度贴合真实教学场景，能反映学生常见困惑、兴趣和提问习惯，具备代表性和现实性，有助于个性化教学与针对性指导。
+  - field: 激发创造性思考能力_理由
+    type: str
+    description: 解释激发创造性思考能力评分的详细理由，引用具体例子。
+  - field: 激发创造性思考能力
+    type: float
+    description: 教学过程主动鼓励学生探索多样化建模方法和创新应用，引导学生提出新问题或跨学科联系，显著培养数学建模与创新能力。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 知识讲解过程中自然融入社会主义核心价值观和中华优秀传统文化，如团队协作、诚实守信、创新精神等，与学科内容有机结合，激励学生形成良好品格与探索精神。
+  - field: 表达清晰与结构完整性_理由
+    type: str
+    description: 解释表达清晰与结构完整性评分的详细理由，引用具体例子。
+  - field: 表达清晰与结构完整性
+    type: float
+    description: 内容表达条理清晰，结构完整，环节分明（如步骤、解释、例题、小结、思考题、反馈），语言简明易懂，逻辑递进明显，支持多模态表达（如图示/表格），便于学生理解和知识梳理。
+  - field: 形成性评价与反馈机制_理由
+    type: str
+    description: 解释形成性评价与反馈机制评分的详细理由，引用具体例子。
+  - field: 形成性评价与反馈机制
+    type: float
+    description: 教学过程中主动、及时收集多样化学生反馈（如提问、小测、互动讨论、即时纠错），能据反馈动态调整教学策略，个性化纠正误解，阶段性评价学生理解情况，有效促进学习效果。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-初中-教学难点突破教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级的学生石媛，喜欢插花和戏剧表演，但语文课上专注力总是有些波动，有时候会被老师表扬，也有时候因为分心被提醒。我和妈妈常一起学习插花。你能结合我的情况，讲讲看怎么帮我提升语文课上的专注力吗？
+  - question: 你是一位经验丰富的语文教育专家，我是57岁的老师RichardsonAvery，喜欢方言研究和绘画，但性格比较固化，动机周期性波动，教学中常被条理性和适应力困扰。我的教学难点是很难持续激发自己和学生的学习积极性，尤其在语文课堂上，创新教学经常被自己的惯性和组织混乱影响。能具体说说你的建议吗？
+  - question: 我叫邱绍，是27岁的男老师，团队协作型并有较强策略性和逻辑性，课余喜欢机械键盘改装、摄影和篮球。发现初中语文课堂上学生作文表达困难、创新性不足，虽然他们喜欢我的风格，作文课气氛却总是不够活跃。说说你的看法，怎样结合我的个人优势和团队协作能力突破学生在作文表达上的难点？
+  - question: 我是一名初中语文老师，发现学生对古诗词兴趣不高，课堂气氛经常比较沉闷。班里有喜欢体育的，也有喜欢阅读的，但大家对古诗词主动参与度都不理想。我想要系统分析一下这个问题，同时寻求创新的教学策略来激发学生兴趣。给我一份完整的分析吧。
+  - question: 我是老师金志，54岁，教学理念理想化、去形式化，平时喜欢旅游采风和放风筝。与同事保持适当距离，校领导对我的教学方法认可度一般。现在初中语文教学中遇到难点，比如学生作文缺乏真实体验、课堂互动流于表面。你能讲得详细点吗？
+  - question: 我叫满美琳，是重点中学初三女生，喜欢篮球和茶艺，性格比较功利驱动、竞争优先，遇到难题习惯依赖老师，也喜欢模仿优秀同学。现在在语文学习，特别是文言文理解和表达方面总是依赖老师，主动性不足。你能具体说说怎么改善吗？
+  - question: 我是高一女生魏碧，喜欢小提琴和历史研究，性格比较循规蹈矩。妈妈是音乐老师，班主任推荐我进了校历史兴趣小组。最近觉得语文里古文和现代文转化很难，不太会迁移知识。你能简要说明下，有什么学习建议吗？
+  - question: 我是初中语文老师，发现作文教学里学生创造力不足，许多同学写作很套路，缺乏个性表达。班里有性格活泼的，也有内向、偏理科的学生。我想深入了解怎么用创新教学方法激发他们的写作兴趣和创造力。你能详细说说吗？
+  - question: 我最近在初中语文教学里发现，学生写节约粮食、尊重劳动之类主题的作文很难真诚、有体验感。班里有城市和农村的学生，生活经历不同，讨论容易流于表面。怎么设计活动让他们主动参与、深度反思？简要说明下你的建议。
+  - question: 你是语文教育领域的专家，我想请你全面系统地分析如何帮助一年级男生WhiteRobert突破语文学习中的注意力不集中、过度自信和求助倾向这几个难点。他今年6岁，喜欢跆拳道和钢琴，性格既容易寻求帮助又有些过度自信。家长希望通过结构化活动引导他在语文学习中建立平衡的自信和正确的求助方式。能全面深入地讲讲吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-初中-教学难点突破进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估答案是否能基于学生的学习水平、兴趣、认知风格等，进行系统性分层教学设计，并在课前、课中、课后持续调整支持策略。需体现动态分层措施、个体追踪与反馈机制，支持学生多样发展。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估答案是否严格按照任务指令要求分点、分层、分步骤表达，结构完整、逻辑清晰，便于教学实施与复盘。需明确流程、环节与具体操作，避免内容杂乱或缺乏层次。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估答案所采用的教学方法是否结合教育学理论、语文学科特点，具备系统性与实效性。需阐明理论依据、核心流程，并结合实际案例或数据验证方法有效性。
+  - field: 教学策略创新性_理由
+    type: str
+    description: 解释教学策略创新性评分的详细理由，引用具体例子。
+  - field: 教学策略创新性
+    type: float
+    description: 评估答案是否融合跨学科、数字化、项目式等新颖教学策略，系统设计多元活动，持续提升学生参与度与学习效果。创新需具备周期性实施、成果展示与持续优化机制。
+  - field: 难点突破针对性_理由
+    type: str
+    description: 解释难点突破针对性评分的详细理由，引用具体例子。
+  - field: 难点突破针对性
+    type: float
+    description: 评估答案是否精准识别初中语文教学难点，并针对每项难点设计分环节、可操作、可持续跟进的突破方案，覆盖课前、课中、课后，附带具体任务与评价标准。
+  - field: 激发学生创造力能力_理由
+    type: str
+    description: 解释激发学生创造力能力评分的详细理由，引用具体例子。
+  - field: 激发学生创造力能力
+    type: float
+    description: 评估答案是否通过系统开放性任务、创新表达与探究活动，持续激发学生主动学习、创新思考和多样化表达，鼓励独特见解与多元成果呈现，形成周期性创造力成长机制。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估答案是否在教学内容与方法中自然渗透社会主义核心价值观及中华优秀传统文化，结合学生实际生活经验，持续引导学生形成正确价值观，并在互动和成果表达中体现内化与外化。
+  - field: 真实场景模拟度_理由
+    type: str
+    description: 解释真实场景模拟度评分的详细理由，引用具体例子。
+  - field: 真实场景模拟度
+    type: float
+    description: 评估答案是否能真实还原初中语文教学场景，具体描绘师生互动、学生真实反馈、课堂问题解决过程及教学实施细节，涵盖多课时或周期性动态变化，体现多样化互动与调整。
+  format_mode: prompt

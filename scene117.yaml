@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-高中-二级结论的推导与应用技巧教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你好，我叫龙颖，13岁，初一女生，喜欢摄影、街舞和唱歌，平时比较依赖老师和妈妈指导。最近物理课上老师说到‘二级结论’，比如牛顿定律怎么一步步推出来‘合力为零时物体匀速运动’这种结论，我有点不懂推导过程，也不太会在做题里用。你能帮我理解一下二级结论的推导和怎么用吗？举点简单例子让我好明白点。
+  - question: 我是高二理科生，最近学物理时，关于二级结论的推导和应用，比如动能定理、动量守恒那些，觉得有些地方很难把握。你作为物理老师，能不能深入说说看这些结论怎么推导、怎么用，最好结合题型、案例和常见误区，帮我系统提升理解和解题能力。
+  - question: 我是高一新生，物理基础一般，最近老师讲了摩擦力的二级结论，比如静摩擦力最大值跟压力成正比。我总是记不住推导过程，也不会在题里用。你作为物理教学顾问，能不能用几句话说说摩擦力二级结论怎么推导，怎么答题最实用？
+  - question: 我是一名高一学生，物理成绩一般，最近复习功和能时老师讲了‘物体在合外力作用下动能变化等于外力做的功’这个二级结论。我总是搞不清楚推导过程，也不懂做题时怎么灵活用。你作为学习助手，能帮我理解一下这个结论是怎么一步步推出来的，解题时怎么用吗？最好举个例子说明。
+  - question: I'm WhiteCharles, a 52-year-old archaeologist who loves hiking and hands-on
+      exploration in rugged terrains. My style is a bit rule-breaking and practical,
+      always balancing fieldwork with bigger ideals. When I see physical phenomena
+      in the field, can you briefly explain how to derive and use secondary conclusions
+      from Newton’s laws, especially for stuff like moving artifacts or dealing with
+      uneven ground? Just a quick rundown would be great.
+  - question: 我是刚开始做高中物理教研的新手老师，你作为资深物理教师，能全方位地讲解一下‘二级结论的推导与应用技巧’吗？包括怎么分步骤推导、教学建议、典型题型、易错点和怎么培养学生科学探究精神，麻烦系统说说，越全面越好。
+  - question: 我叫聂金，14岁，初二男生，喜欢观星、露营和游泳，平时在学校很爱跟同学合作搞活动，也喜欢帮家里做事。最近物理老师讲了‘二级结论的推导与应用技巧’，像能量守恒、功率之类的内容。我想从各个角度详细了解这些结论怎么推导、怎么在题目和生活里用，还有常见误区。你作为物理导师，能不能详细说说，最好结合案例和生活场景帮我深入理解。
+  - question: 我是高三学生，物理成绩还行，但做综合题时总是卡在怎么灵活用二级结论，比如机械能守恒和动量守恒到底什么时候用。你作为物理专家，能详细讲讲这些结论怎么系统推导、怎么结合题型和生活例子用，有哪些常见陷阱和实用技巧？
+  - question: 我是高二刚转理科的学生，物理基础不太好，老师最近讲了‘合外力为零时动量守恒’这种二级结论，我没太明白怎么推导，也不清楚做题时什么时候用。你作为学习助手，能具体说说这些结论怎么一步步推出来，做题和生活里到底怎么用吗？最好举点例题和实际场景帮我掌握。
+  - question: 我是一名高一男生，物理成绩中等，最近老师讲‘物体加速度等于合外力除以质量’这个二级结论。我想更全面地理解这个推导过程和做题时怎么用。你作为物理老师，能详细说说这个结论怎么推导、怎么用，有哪些常见易错点吗？帮我提升准确率。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-高中-二级结论的推导与应用技巧进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估教学内容是否基于学生的知识基础、兴趣点、常见困惑等个性化特征，动态调整讲解深度、举例和互动方式。要求在答复中显性分析学生画像，并能针对不同类型学生（如基础薄弱、兴趣导向、拔高需求）提供差异化、精准的教学策略和内容调整。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估教学内容是否严格按照任务要求的结构、分段、编号及视觉规范作答，并在此基础上，是否有结构创新和信息可检索性优化。内容需逻辑分明、层级清晰、重点突出，便于学生快速定位关键信息。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学方法是否契合物理学科特点及教育学原理，体现启发式、探究式、分层递进、互动引导等教学策略。要求方法有创新性，能针对不同学习阶段、认知层次设计分层任务，理论联系实践，促进学生主动思考与迁移应用。
+  - field: 推理过程完整性与严密性_理由
+    type: str
+    description: 解释推理过程完整性与严密性评分的详细理由，引用具体例子。
+  - field: 推理过程完整性与严密性
+    type: float
+    description: 评估推导过程是否环环相扣、逻辑严谨，涵盖所有关键步骤，并对每一步的物理意义、前提条件、局限性进行说明。高质量答复需包含误差分析、边界条件讨论，帮助学生全面理解推理链条及物理逻辑。
+  - field: 应用技巧针对性与实用性_理由
+    type: str
+    description: 解释应用技巧针对性与实用性评分的详细理由，引用具体例子。
+  - field: 应用技巧针对性与实用性
+    type: float
+    description: 评估应用技巧是否结合典型题型、学生实际问题和常见易错点，帮助不同层次学生高效解决物理问题。需包含分层解题建议、步骤化操作指导、易错点预警及实际操作案例。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估是否通过开放性提问、多元解法尝试、实际生活联系等方式，激发学生创新与批判性思维。优秀答复应鼓励学生提出新问题、尝试不同思路，并能引导学生进行条件变式、跨学科联想等创新实践。
+  - field: 价值观自然融入_理由
+    type: str
+    description: 解释价值观自然融入评分的详细理由，引用具体例子。
+  - field: 价值观自然融入
+    type: float
+    description: 评估教学过程中是否自然融入社会主义核心价值观和中华优秀传统文化，如科学精神、诚信、合作、爱国等，且方式细腻、润物细无声，能促进学生正确价值观形成。
+  - field: 模拟真实提问场景_理由
+    type: str
+    description: 解释模拟真实提问场景评分的详细理由，引用具体例子。
+  - field: 模拟真实提问场景
+    type: float
+    description: 评估教学内容是否贴近真实课堂或学生实际提问，体现互动性和真实需求。需包含模拟学生常见疑问、针对性回应及引导学生深入思考的互动环节。
+  format_mode: prompt

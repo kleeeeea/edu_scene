@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene207/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 历史-高中-全球史视野下的互动与交流教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是MillerDylan，22岁，是一名景观设计师，平时喜欢园艺和可持续实践，也喜欢亲自设计和打理户外空间。你作为历史教育专家，能全面深入地讲讲全球不同文明之间的互动与交流，如何影响了各个文化的园林、景观设计和户外空间发展吗？希望你能结合具体案例和跨文化影响，系统地分析下各方面。
+    - question: 我叫冯乐萱，今年51岁，是一名保安，平时喜欢钓鱼、听广播、下象棋，也有些焦虑，喜欢独处。你能结合我的情况，详细讲讲全球史中不同文明的互动交流怎样影响了我们普通人的日常生活和精神世界吗？能讲得详细点吗？
+    - question: 你作为历史专家，能详细分析下全球史视野下不同文明之间的互动与交流，对社会、科技、经济、文化等各个方面产生了哪些深远影响吗？详细分析下各个方面。
+    - question: 我是SmithAmber，16岁，10年级女生，平时喜欢羽毛球、吉他和跑步，也很注重自我管理和平衡学习和兴趣。你能帮我理解一下，从全球史角度看，不同文明之间的互动和交流是如何促进现代世界文化多样性和相互学习的吗？帮我理解一下。
+    - question: 我是司徒瑜，初三学生，喜欢机器人制作、乒乓球、摄影和视频剪辑，经常向高年级同学请教技术问题，也喜欢团队活动。能结合我的兴趣，讲讲全球史上科技和文化的交流是怎么推动社会进步，特别是对青少年创新和兴趣培养有什么启发吗？讲讲看。
+    - question: 我叫许冰琳，四年级女生，平时喜欢阅读、乐高和书法，还喜欢和同学们一起做团队活动。你能结合我的兴趣，深入讲解一下全球史上不同文明之间的交流合作，是怎么推动科技、艺术和教育共同进步的吗？能深入讲解一下吗？
+    - question: 我是WilliamsSadie，今年55岁，是一名教师，平时喜欢越剧和太极，工作中比较细致、权威，也很看重传统文化。能简要说明下全球史视角下，文明之间的互动交流对世界文化有哪些主要影响吗？简要说明下。
+    - question: 你作为历史学习助手，能简单说说全球史下不同文明的交流主要带来了哪些积极影响吗？简单说说就行。
+    - question: 我是RodriguezOliver，13岁，七年级学生，兴趣是围棋和动漫绘画，喜欢独立或小团队创作，不太喜欢竞争，有时容易分心。你能结合我的兴趣，讲讲在全球史视角下，不同文明交流是如何促进创意和非竞争性合作的吗？讲讲看。
+    - question: 我是JonesMaria，7岁，二年级女生，喜欢钢笔书法和乐高，喜欢和小伙伴一起合作，也经常主动寻求帮助，不太喜欢竞争。你能具体说说全球史视角下，不同文明的交流合作是怎么鼓励青少年团队协作和互助的吗？能具体说说吗？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 历史-高中-全球史视野下的互动与交流进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评估教学内容和方法是否根据学生的学习基础、兴趣、认知水平等个性化画像进行针对性调整，体现差异化教学。
+    - field: 格式指令遵循度
+      type: float
+      description: 评估答案是否严格按照教师或系统给定的格式、结构输出，体现规范性与条理性，包括分点、表格、案例分析等要求。
+    - field: 教学目标契合度
+      type: float
+      description: 评估内容是否紧扣全球史互动与交流的核心知识点，兼顾知识、能力、过程与价值观目标，且各目标落实有具体表现。
+    - field: 教学方法科学性
+      type: float
+      description: 评估教学方法是否采用启发式、探究式、合作学习等现代教育理念，过程设计是否合理促进学生自主建构知识。
+    - field: 案例与材料的多样性与代表性
+      type: float
+      description: 评估所选历史案例或材料是否具全球视野，涵盖不同大洲、文明或群体，能展现历史互动的多元复杂性，并具有代表性。
+    - field: 创新思维激发度
+      type: float
+      description: 评估内容与活动能否激发学生提出新问题、进行跨学科思考、创新表达，鼓励独立和创造性解决历史与现实问题。
+    - field: 真实提问模拟度
+      type: float
+      description: 评估问题是否贴近高中生真实学习与生活情境，能引发共鸣和深度思考，避免过于抽象或脱离实际。
+    - field: 社会主义核心价值观融入度
+      type: float
+      description: 评估教学内容是否自然渗透社会主义核心价值观（如和平、包容、公正、合作等），表达方式贴合历史语境，能引导学生联系现实思考，避免生硬灌输。
+format_mode: prompt

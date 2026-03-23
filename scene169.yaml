@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene169/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 英语-初中-常见应用文体写作指导教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为英语老师，能讲清楚点怎么教初中生写请假条吗？主要格式、常用句子和一些注意事项能举例说明下吗？
+    - question: 我是初中英语教研员，最近在做应用文体写作专题培训。你作为教学专家，能详细分析下各个方面吗？比如不同文体的结构、语言习惯、范文、误区、教学建议等，麻烦系统梳理下。
+    - question: 你好，我是钟浩，今年18岁，是一名厨师，业余喜欢踢足球和养珊瑚缸。一直觉得自己在筛选信息上容易混乱，工作喜欢务实合作但人际关系很复杂。你能帮我讲讲初中英语应用文体写作怎么和实际生活、职业场景结合起来吗？我想深入了解，最好结合我的情况举些例子。
+    - question: 你作为初中英语老师，能说说主要的英文通知写作格式和要点吗？简单讲讲就行。
+    - question: 你作为写作专家，能讲讲看怎么教初中生写英文感谢信吗？结构、句型和写作技巧能详细说说，最好举个例子。
+    - question: 我是刚入职的初中英语老师，你作为应用文教学顾问，能从各个角度详细说说怎么系统教学生写英文邀请函吗？像教学目标、写作步骤、课堂活动、评价标准和常见问题解决都帮我梳理一下。
+    - question: 你作为英语教学专家，能讲讲看初中英文书信写作中有哪些常见问题？怎么改进？举些典型错误和修正方法吧。
+    - question: 我是MartinIvy，一名31岁的女老师，喜欢诗歌和有氧运动，教学风格比较自信和保守，注重职业生活平衡。你能讲清楚点怎么在初中英语应用文体写作课里融入诗歌元素，提升学生写作兴趣和创造力吗？最好结合我的爱好和风格举点例子。
+    - question: 我是杨歆瑶，7岁女生，喜欢朗诵和折纸，老师常让我当课代表缓解焦虑。我想知道怎么鼓励像我这样的孩子用英语表达感谢，比如写简短的英文感谢信，说说主要的方法，能突出兴趣和自信培养吗？
+    - question: 你作为初中英语写作指导专家，能详细讲讲英文申请信（比如请假、报名、活动申请）该怎么写吗？想系统了解结构、表达、范文和教学中提升学生表达能力的方法。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 英语-初中-常见应用文体写作指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 评价写作指导是否充分结合学生的具体画像（如英语水平、兴趣、性格、学习习惯、常见错误等），并据此调整内容和方法，避免千篇一律。
+    - field: 格式与指令遵循度
+      type: float
+      description: 评价写作指导是否严格、细致地遵循应用文体（如书信、通知、日记等）格式要求和题目指令，包括结构、语言、称呼、结尾等细节，且能解释各部分作用。
+    - field: 分层教学与差异化策略
+      type: float
+      description: 评价是否根据学生能力分层，提供基础、提升、拓展等不同层级任务和指导，鼓励能力提升，明确不同层次目标与支持措施。
+    - field: 教学方法科学性
+      type: float
+      description: 评价写作指导是否采用结构化、科学的教学流程，如‘示范-讲解-仿写-自评-反馈’，并结合具体范文、典型错误分析，保证教学过程清晰、递进。
+    - field: 应用文体实用性与情境真实性
+      type: float
+      description: 评价写作指导是否紧密结合学生真实生活情境，模拟校园、家庭、社会等常见应用文需求，内容具备实际可操作性和现实意义。
+    - field: 创新思维激发度
+      type: float
+      description: 评价是否鼓励学生表达个人观点、尝试多样化表达方式、运用创意与独特视角，避免机械模仿和模板化写作。
+    - field: 自主学习与反思引导
+      type: float
+      description: 评价指导中是否包含自我评估、反思和修订环节，引导学生主动发现问题、改进表达，培养自主学习与写作习惯。
+    - field: 社会主义核心价值观自然融入
+      type: float
+      description: 评价写作指导是否自然、润物细无声地融入社会主义核心价值观及中华优秀传统文化，鼓励学生结合实际生活与情感表达相关价值观，而非生硬灌输。
+format_mode: prompt

@@ -1,0 +1,124 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-小学-词语运用与造句教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我叫韦梦，16岁高一女生，偏理性但偶尔情绪化，喜欢书法和外语，还很爱搞科创。语文造句时我发现自己容易思路单一、表达套路化，想提升词语运用和造句的创造力。你是语文教育专家，可以详细展开说说，结合我的兴趣和性格，怎么系统提升表达水平？最好能举些例子，生活和文化方面都说说，多给一些不同风格的造句示范。
+  - question: 我是WilliamsRiley，今年45岁，是一名材料工程师，平时喜欢动手做原型、金属加工和复合材料制造。你作为小学语文学习与表达专家，能不能从各个角度详细说说，小学生词语运用与造句的系统训练方法？我想了解课程设计、教学策略、家庭怎么支持、具体案例、文化元素融入等方面的内容，最好有实际示例和多样表达方式，内容越全面越好。
+  - question: 我是陈雄锦，58岁小学老师，平时喜欢园艺和太极拳，教学严谨但和学生距离感比较强。我发现孩子们写句子总是生搬硬套，缺乏新意。你作为小学语文教学顾问，能不能讲讲看，怎么引导他们更灵活地用词造句，让表达更生动有创造力？最好结合生活和中华文化举些可操作例子，多给几种表达方式。
+  - question: 我是五年级女生牟珠，喜欢插花和书法，做事喜欢自己规划，平时比较专注。用新词语造句时总觉得词语用得不够灵活，有时候句子也不够有趣。你作为小学语文学习助手，能解释一下怎样才能更准确、灵活地用词造句吗？最好结合我的兴趣和性格，给几个实际例子。
+  - question: 我是蔡梦，57岁小学老师，平时喜欢插花和园艺，做事一向严谨细致。最近在教学生词语运用和造句时，发现大家表达有点单一、句式也不丰富，缺少生活和文化气息。你作为语文教学专家，能不能彻底说清楚，小学阶段词语运用与造句能力该怎么科学培养？希望从理论到实践、分层指导、个性化策略、评价方式等各方面系统讲讲，最好举些具体案例，多给点表达示范，还能自然融入中华文化就更好了。
+  - question: 我是杨可，食品科学家，兴趣比较广泛，喜欢唱歌、数模竞赛和航模。最近对小学语文的词语运用和造句教学挺感兴趣，尤其想知道老师们怎么根据不同孩子的兴趣和性格，帮助他们学会灵活有创造性地表达。你作为语文教学专家，能帮我理解一下吗？最好有实际方法和例子。
+  - question: 我在教学中发现，有些小学生用词造句时总是千篇一律、不太敢创新，也很少把生活和文化内容融进句子。你作为语文表达专家，能讲得详细点吗？怎么科学引导他们提升兴趣和创造力，最好有具体策略、活动和多种例子，对不同类型学生也说说怎么适配。
+  - question: 最近我注意到有些小学生用词和造句不太自然，句型也比较单一。你作为语文教学顾问，能讲清楚点，怎么让孩子们更好地理解词语、用丰富的句子表达吗？最好结合生活例子，多举几种造句方式。
+  - question: 老师，我想知道小学生怎么才能在日常学习和生活里灵活用新词造句，既表达准确又有趣？能概括一下，多举几种不同表达方式吗？
+  - question: Hi, I'm JamesAbigail, a teacher who loves baking and fitness and brings
+      lots of energy into my classroom. Sometimes my students struggle to use new
+      vocabulary creatively and end up making similar sentences. Could you use a few
+      sentences to suggest how I can help them make their sentences with new words
+      more lively and varied? Some practical examples would be great!
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-小学-词语运用与造句进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否基于学生的年级、兴趣、学习基础等个性化特征进行针对性调整，并能动态响应学生变化，体现深度关注和实质性差异化教学，而非表面化处理。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 评估教学内容是否严格、完整地按照教学流程和分步要求展开，结构清晰、顺序合理，细节无遗漏，且每一步均有明确操作指引，保证学生易于理解和执行。
+  - field: 教学引导科学性_理由
+    type: str
+    description: 解释教学引导科学性评分的详细理由，引用具体例子。
+  - field: 教学引导科学性
+    type: float
+    description: 评估教学方法是否符合小学生认知发展规律，采用层次化提问、适度示范、正向反馈、情境创设等科学手段，既能激发兴趣，又不过于简单或超纲，兼顾启发性与可操作性。
+  - field: 知识点讲解准确性_理由
+    type: str
+    description: 解释知识点讲解准确性评分的详细理由，引用具体例子。
+  - field: 知识点讲解准确性
+    type: float
+    description: 评估词语含义、用法、语境、近义词辨析等讲解是否准确、规范，紧扣小学语文教材标准，能针对学生常见误区进行及时纠正，确保知识点传递无偏差。
+  - field: 任务分解与步骤清晰度_理由
+    type: str
+    description: 解释任务分解与步骤清晰度评分的详细理由，引用具体例子。
+  - field: 任务分解与步骤清晰度
+    type: float
+    description: 评估教学任务是否被合理细致地分解为易懂、易操作的小步骤，每一步目标明确、逻辑清晰，符合小学生思维和行为模式，便于学生逐步完成和自我检查。
+  - field: 创造力激发度_理由
+    type: str
+    description: 解释创造力激发度评分的详细理由，引用具体例子。
+  - field: 创造力激发度
+    type: float
+    description: 评估教学是否通过开放性提问、情境创设、鼓励多元表达等方式，有效激发学生的想象力和创造性思维，支持学生突破标准答案，展现个性与新意。
+  - field: 多样化表达示范_理由
+    type: str
+    description: 解释多样化表达示范评分的详细理由，引用具体例子。
+  - field: 多样化表达示范
+    type: float
+    description: 评估是否提供多样化、层次丰富的造句示范，涵盖不同生活场景、句型、表达方式，并引导学生尝试多角度表达，避免模板化、单一化。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评估教学内容是否将社会主义核心价值观和中华优秀传统文化自然、恰当地融入词语运用，传递积极健康的价值观，表达贴近学生生活，避免生硬口号式灌输。
+  - field: 互动反馈有效性_理由
+    type: str
+    description: 解释互动反馈有效性评分的详细理由，引用具体例子。
+  - field: 互动反馈有效性
+    type: float
+    description: 评估教师是否根据学生表达给予具体、及时的正向反馈，既肯定亮点，又针对不足提出可操作的改进建议，促进学生能力提升和自信心增强，避免机械或敷衍回应。
+  format_mode: prompt

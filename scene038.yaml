@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-小学-数学故事创作教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学数学教研员，最近在组织三年级学生创作数学故事时，发现有些孩子设计的情节容易和数学主题脱节，难以把数学知识系统融合进去。你作为教育专家，能深入说说看该怎么引导他们在故事里既能准确系统地用上数学知识，又能兼顾趣味和现实吗？
+  - question: 我是杨勇耀三年级的数学老师，他喜欢观星、书法和围棋，平时专注力有些波动，书法老师说他认真但注意力不太持久，还经常参加天文社团。你作为数学教学顾问，说说你的看法：怎么为他定制适合的数学故事创作方案，既能激发兴趣，又能提升专注力，还能融入团结协作和传统文化？
+  - question: 我做小学班主任，最近教数学故事创作时发现有些孩子故事和数学知识结合得不太好，容易偏题。能概括一下怎么让学生把握好故事和数学知识的结合点吗？
+  - question: 我是咸锐泽的家长，他现在高一，喜欢山地骑行和视频剪辑，平时很重视社交归属感，和骑行社团的同学老师交流很多。你作为教育专家，帮我理解一下：小学阶段的数学故事创作活动怎么能为像他这样的人早期培养数学兴趣？结合他的兴趣和社交特点具体说说。
+  - question: 我是刚入职的小学数学老师，最近让学生写数学故事，发现有的孩子只会把知识点堆在一起，故事没什么情节和人物特点。你能详细说说用哪些分层教学办法，帮助不同水平的孩子提升故事情节构建能力，同时把诚实守信、合作这些价值观融进去吗？
+  - question: 申曼今年50岁，是社交媒体运营，喜欢短视频和摄影修图，性格偏理论，喜欢延迟满足，适应力比较弱，平时线上社交为主，很少参加线下活动。你作为小学数学学习指导专家，能从各个角度详细说说怎么为申曼设计适合她的数学故事创作体验吗？比如内容选题、活动形式、激励机制、情感支持等，既能激发她参与兴趣，又能帮助她提高适应力，还能自然融入家国情怀和传统文化。
+  - question: 我是小学数学老师，想在故事创作课上围绕“尊重劳动”做主题设计。你作为资深教师，能详细讲讲怎么把数学知识和尊重劳动的传统文化结合起来，让学生既学好数学又懂得这些价值观吗？
+  - question: 你作为小学数学课程设计专家，能系统地讲解一下数学故事创作活动的完整流程吗？比如怎么选主题、构建情节、融入数学知识、分组合作、成果展示和家校协同，还要自然融合核心价值观和中华传统文化。
+  - question: 我是小学数学老师，最近在故事创作课里加了围棋的内容，发现孩子们对数学策略很感兴趣。你能详细说说怎么把围棋思维和数学故事创作系统结合起来，让学生逻辑和合作能力都提升，还能自然融入团结协作这些价值观吗？
+  - question: 我是小学家长代表，最近在家委会讨论数学故事创作活动，大家都想知道这种活动对孩子数学兴趣和综合能力有什么主要好处。能大概讲讲吗？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-小学-数学故事创作进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学画像精准度_理由
+    type: str
+    description: 解释个性化教学画像精准度评分的详细理由，引用具体例子。
+  - field: 个性化教学画像精准度
+    type: float
+    description: 评估故事创作是否能在年龄、兴趣、学习水平、认知风格等多维度深度定制，内容设计须体现针对性、差异化，避免仅表层适配。评分时需关注是否有具体画像信息驱动情节、难度、角色塑造。
+  - field: 教学指令精准遵循度_理由
+    type: str
+    description: 解释教学指令精准遵循度评分的详细理由，引用具体例子。
+  - field: 教学指令精准遵循度
+    type: float
+    description: 评估故事是否在结构（分段、情节）、内容（知识点融入）、任务（开放性结尾等）等各方面完整、细致贯彻教学指令，且对特殊要求有创新性回应。高分需在每一细节都能溯源指令，并有超出常规的创造性执行。
+  - field: 教学方法系统与创新性_理由
+    type: str
+    description: 解释教学方法系统与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法系统与创新性
+    type: float
+    description: 评估故事是否系统运用多种教学方法（如情境导入、递进问题、启发式提问、分层反馈等），并有真正突破传统的创新设计，如跨学科融合、数字化互动等。高分需体现方法多元、环环相扣且有显著创新。
+  - field: 知识点融合深度与自然度_理由
+    type: str
+    description: 解释知识点融合深度与自然度评分的详细理由，引用具体例子。
+  - field: 知识点融合深度与自然度
+    type: float
+    description: 评估数学知识点是否与故事情节、人物行为紧密结合，推动故事发展，知识点融入需自然流畅而非生硬插入。高分要求知识点成为推动故事的关键，低分则表现为割裂或机械灌输。
+  - field: 学生创造力激发与表达空间_理由
+    type: str
+    description: 解释学生创造力激发与表达空间评分的详细理由，引用具体例子。
+  - field: 学生创造力激发与表达空间
+    type: float
+    description: 评估故事是否通过开放性情节、悬念、多元解法等方式，鼓励学生续写、改编、表达新思路，推动创新思维和自主表达。高分需留有丰富表达空间，能激发不同学生的创造性参与。
+  - field: 真实课堂/学生提问呼应度_理由
+    type: str
+    description: 解释真实课堂/学生提问呼应度评分的详细理由，引用具体例子。
+  - field: 真实课堂/学生提问呼应度
+    type: float
+    description: 评估故事是否紧密结合真实课堂常见提问、学生疑惑、实际学习需求，主动回应和化解学生困惑，增强故事现实教学价值。高分需能主动捕捉学生真实问题并在故事中解决。
+  - field: 社会主义核心价值观自然渗透度_理由
+    type: str
+    description: 解释社会主义核心价值观自然渗透度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然渗透度
+    type: float
+    description: 评估故事是否以润物细无声的方式融合诚信、友爱、合作等核心价值观，贯穿人物行为与情节发展，成为故事主线不可或缺部分。高分要求价值观内化于情节，无口号式、生硬灌输。
+  - field: 中华优秀传统文化融合创新度_理由
+    type: str
+    description: 解释中华优秀传统文化融合创新度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融合创新度
+    type: float
+    description: 评估故事是否将中华传统文化（如成语、节日、历史典故、非遗等）与数学知识巧妙融合，并鼓励学生创新表达传统文化。高分要求文化元素与数学知识、情节深度融合且有创新表达，低分则为机械罗列或无实际联系。
+  format_mode: prompt

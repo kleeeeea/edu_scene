@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为物理-初中-光学现象的作图与原理解释教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初一男生，平时喜欢画画但物理难题让我有些害怕。最近在课堂上遇到光的反射作图很头疼，总感觉步骤搞不清楚。你能给我一份完整的分析，系统、细致地分步骤讲讲光的反射现象的作图方法和原理吗？能结合激发兴趣、克服难点，还有点生活例子和传统文化启发就更好了。
+  - question: 我是初二女生，每次老师讲到光的折射现象作图我就有点搞不懂，做作业总纠结。你作为物理老师，能具体说说光的折射现象作图的关键步骤和原理吗？还有怎么在家里用简单材料做实验帮助理解？
+  - question: 我是一名初中物理教研员，最近在组织光学现象教学设计的分享。有老师反馈学生在画光的反射和折射现象时容易出错。你能详细说说如何规范地指导学生作图吗？最好还能结合激发兴趣的方法和传统文化背景。
+  - question: 我是初三学生的家长，孩子对物理很感兴趣但在光的全反射现象作图方面有点困惑。你作为物理教育顾问，能详细展开说说光的全反射现象的作图方法、原理，还有怎么利用家庭生活现象和亲子互动帮助孩子理解这个知识点吗？如果能兼顾培养责任感和科学探究精神就更好了。
+  - question: 我是初一学生，最近老师教我们画光在空气和玻璃中传播的路径图，但我总是画错。你能简短回答下光线在不同介质传播时的作图要点和原理吗？能举个小例子帮我记住就更好了。
+  - question: 王岚菊老师您好！我知道您团队协作能力很强、灵活变通，在学校教师群体中人缘特好，还经常组织插花活动。最近有学生在光的反射和折射现象的作图与原理解释上有点困惑。您能帮我理解一下，怎么用创新教学方法（比如插花、脱口秀元素等）帮助学生掌握光学现象的作图和原理，提升他们的兴趣和科学素养吗？
+  - question: Hi, I'm HarrisOlivia, a teacher who aims for an organized and empathetic
+      teaching approach, balancing confidence with hobbies like gardening and dialect
+      study. Some students in my physics class are struggling with drawing and explaining
+      light reflection and refraction phenomena. Could you please provide a comprehensive
+      analysis, fully elaborating on effective strategies for accurate diagram drawing
+      and principle explanation? I'd appreciate practical classroom activities, cultural
+      references, and recommendations for fostering scientific curiosity and responsibility.
+  - question: 我是二年级女生杜美淑，理想主义、逻辑性强，喜欢中国风爵士舞和尤克里里。最近爷爷奶奶帮我复习光学现象，但我还是不太明白光在水或玻璃里为什么会弯曲，作图总画不好。你能从各个角度详细说说光在不同介质中传播时弯曲的原因、作图方法和生活例子吗？如果能结合舞蹈、音乐等兴趣激发我学习光学现象，还能融入传统文化和科学精神，那就太好了。
+  - question: 我是初中物理小组长，课上发现同学们在画光的反射和折射现象时总是漏掉入射线和法线的关系。你能讲清楚点，光线和法线的关系在作图中为什么重要，还有怎么帮大家注意这个细节吗？
+  - question: 我是物理老师，最近在讲光学现象时，学生对作图和原理解释还是有点混乱。你能概括一下光学现象作图的常见误区和改进建议吗？我想在课堂上快速提醒学生注意。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 物理-初中-光学现象的作图与原理解释进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化教学适配度_理由
+    type: str
+    description: 解释个性化教学适配度评分的详细理由，引用具体例子。
+  - field: 个性化教学适配度
+    type: float
+    description: 评价教学内容是否根据学生的知识基础、兴趣、学习风格和薄弱环节进行针对性分层设计和动态调整，能及时响应学生差异，促进每位学生最佳发展。
+  - field: 格式与指令遵循度_理由
+    type: str
+    description: 解释格式与指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循度
+    type: float
+    description: 教学内容结构严谨，严格按照教学要求的格式、步骤与表达方式呈现，包含明确标题、分步编号、图例、重点标注等关键要素，便于学生理解与操作。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学活动采用多样且科学的教学方法，结合认知发展阶段，促进学生主动建构和迁移知识。教学包含探究、实验、讨论、情境引入等环节，鼓励学生自主发现和表达理解。
+  - field: 科学概念准确性与深度_理由
+    type: str
+    description: 解释科学概念准确性与深度评分的详细理由，引用具体例子。
+  - field: 科学概念准确性与深度
+    type: float
+    description: 物理概念、原理和规范表达准确无误，能深入讲解原理，纠正和预防常见误区，体现科学严谨性。教学能将基础知识与高阶理解（如规律形成、知识迁移）结合。
+  - field: 启发式提问与引导_理由
+    type: str
+    description: 解释启发式提问与引导评分的详细理由，引用具体例子。
+  - field: 启发式提问与引导
+    type: float
+    description: 通过层次丰富、针对性强的启发性问题、情境设问和开放性讨论，激发学生多角度思考，追问学生推理过程，鼓励表达不同观点，促进主动探索。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 教学鼓励学生提出新问题、尝试多种作图或创新应用物理原理解决实际问题，促进创新能力和知识迁移，支持学生设计实验或跨学科探索。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 教学内容自然、适度融入社会主义核心价值观（如诚信、友善、敬业等），结合物理学科特点和实际生活，促进学生形成积极价值认同，避免生硬灌输。
+  - field: 中华优秀传统文化渗透_理由
+    type: str
+    description: 解释中华优秀传统文化渗透评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化渗透
+    type: float
+    description: 教学有机融合中国传统文化元素（如历史故事、成语、古代科技等），结合物理知识与文化背景，提升科学素养与文化认同，避免表面化和机械罗列。
+  format_mode: prompt

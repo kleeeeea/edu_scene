@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为历史-高中-宏观历史知识网络的构建与整合教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高三历史老师，最近发现学生在构建宏观历史知识网络时总是停留在表面，难以将不同历史时期、地域和主题整合起来，缺乏时空观和历史思维能力。你作为历史教育研究专家，能不能从知识体系整合、时空观念培养、方法论迁移、批判性思维训练、历史观与价值观引导等角度，系统说说在高中阶段怎么帮助学生构建和整合宏观历史知识网络？从各个角度详细说说。
+  - question: 我是肖泉茂，三年级男生，平常喜欢电子竞技、钢琴和编程，性格比较自律但逻辑性不太强，和同学玩游戏时会有点小竞争，课后经常参加钢琴和编程班。最近老师让我们学会把历史知识像网络一样连起来，可我觉得每个历史事件都记不太住，感觉很碎。你作为我的历史学习顾问，能不能结合我的兴趣和情况，详细讲讲怎么把历史知识像网络一样串起来，变得有趣、更容易理解？能讲得详细点吗？
+  - question: 我是范书鸣，53岁，现在在老年大学教声乐和摄影，喜欢声乐、摄影、太极拳和3D建模。性格有点偶尔疏忽，偏革新派，习惯单向教学。平时自己练太极或做建模，和别人交流不多。我最近在学高中历史的知识网络构建，想结合兴趣和跨学科方法让课程更系统创新。你能结合我的情况，具体说说怎么用跨学科和兴趣驱动帮助学生构建历史知识网络吗？能具体说说吗？
+  - question: 我是初二女生余丽，性格比较内向，喜欢安静地做园艺和阅读，也喜欢打乒乓球但多为替补，很少主动和同学合作。有点不喜欢参与小组活动。最近历史老师让我们整理中国近现代史的知识网络，我觉得很多历史事件和人物很难串起来。你作为我的历史学习助手，能结合我的兴趣和性格，深入讲解一下适合我的宏观历史知识网络构建方法吗？能深入讲解一下吗？
+  - question: 我是一名高一学生，最近学世界史总觉得很多重大历史事件之间的联系很复杂，分不清因果和影响，也不会比较不同地区的历史。能不能讲清楚点，怎么通过构建知识网络提升历史理解力和整体把握能力？讲清楚点。
+  - question: I'm JacksonBenjamin, a 60-year-old teacher who enjoys forest bathing,
+      photography, and attending Senior University classes. My teaching style is pretty
+      informal, and I like to keep active and engaged with my students. When helping
+      adult learners understand big-picture historical knowledge networks, many find
+      it hard to connect events and themes across different times and places. Could
+      you talk me through how to guide adult learners to build and integrate a historical
+      knowledge network that taps into their own experiences and interests? Just explain
+      it clearly.
+  - question: 我是高二文科生，最近复习中国古代史时总觉得历史事件都很零散，难以形成整体框架。你作为我的学习顾问，能详细说说怎么系统构建中国古代史的宏观知识网络吗？详细说说。
+  - question: 我是高一学生，历史成绩一般，总觉得知识很零散，背了就忘，怎么才能把历史知识串成体系？你作为历史老师，简单说说历史知识网络构建的方法就行。
+  - question: 我是高三学生，正在准备历史综合考试，觉得知识点太多太杂，记忆压力很大。你能不能简单说说高效整合历史知识网络的实用方法？简单说说就行。
+  - question: 我是左丘敬，17岁，高二男生，喜欢无人机设计和武术，性格情绪稳定，抗干扰也比较强。平时和无人机爱好者有技术社群交流，在武术训练中有稳定的师徒关系。你作为历史素养提升专家，能不能结合我的兴趣和社交特点，详细分析下宏观历史知识网络构建与整合方面有什么适合我的具体策略和创新方法？详细分析下各个方面。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 历史-高中-宏观历史知识网络的构建与整合进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 用户画像精准识别与个性化设计_理由
+    type: str
+    description: 解释用户画像精准识别与个性化设计评分的详细理由，引用具体例子。
+  - field: 用户画像精准识别与个性化设计
+    type: float
+    description: 教学方案需基于学生的学习数据（背景、兴趣、认知风格、阶段表现等）进行持续动态调整，个性化内容和方法需有明确调整记录和反馈机制。要求教学决策对学生成长轨迹有敏锐响应，能针对不同学生设定具体目标和个性化任务。
+  - field: 指令格式遵循与结构化输出_理由
+    type: str
+    description: 解释指令格式遵循与结构化输出评分的详细理由，引用具体例子。
+  - field: 指令格式遵循与结构化输出
+    type: float
+    description: 教学内容输出需严格遵循任务指令，结构分明，层次清晰。每一环节都有标题、核心要点和具体操作建议。针对不同任务灵活调整结构化程度，确保学生易于理解和执行。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 教学方法需有明确理论依据（如认知目标层次理论、建构主义等），并结合历史学科特点设计分阶段操作流程。要求能针对不同学生差异化应用，方法有可执行性和检验机制，注重知识迁移和系统建构。
+  - field: 知识网络构建的系统性与完整性_理由
+    type: str
+    description: 解释知识网络构建的系统性与完整性评分的详细理由，引用具体例子。
+  - field: 知识网络构建的系统性与完整性
+    type: float
+    description: 需帮助学生构建多维度（时间、空间、主题、因果、比较等）的历史知识网络，知识点间逻辑清晰、结构完整，能跨章节、跨时期整合，形成宏观历史视野。高分要求有知识地图、主题线索及创新整合展示。
+  - field: 创新思维激发与开放性提问引导_理由
+    type: str
+    description: 解释创新思维激发与开放性提问引导评分的详细理由，引用具体例子。
+  - field: 创新思维激发与开放性提问引导
+    type: float
+    description: 教学过程中需通过开放性问题、跨学科探究、假设性讨论等方式，持续激发学生创新和批判性思维。鼓励多角度表达、主动提出新观点，对历史事件进行创造性解读。高分要求有学生主动探究、创新表达成果。
+  - field: 模拟真实提问与互动性_理由
+    type: str
+    description: 解释模拟真实提问与互动性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问与互动性
+    type: float
+    description: 需模拟真实课堂中多样化学生提问场景，针对性回应并持续追问，引发深入讨论。互动过程需体现师生共建、个性化反馈，鼓励学生补充观点或质疑。高分要求师生多轮互动，学生主动参与、反思和补充。
+  - field: 社会主义核心价值观与中华文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华文化自然融入
+    type: float
+    description: 在历史教学中需结合具体事件和语境，自然融入社会主义核心价值观与中华优秀传统文化，潜移默化影响学生世界观、人生观、价值观。表达方式需与教学内容紧密结合，避免生硬灌输，高分要求学生能自主体会和表达相关价值。
+  - field: 价值观表达的隐性与适度性_理由
+    type: str
+    description: 解释价值观表达的隐性与适度性评分的详细理由，引用具体例子。
+  - field: 价值观表达的隐性与适度性
+    type: float
+    description: 价值观表达需融入历史分析过程，自然、适度、不影响历史事实客观性。要求在讨论中潜移默化引导学生积极评价和自主思考，鼓励多元视角，避免过度强调或生硬灌输。高分要求学生能独立评价历史现象与价值观。
+  format_mode: prompt

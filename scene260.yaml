@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中-理解国家的“五年规划”教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名来自西部小城市的初三学生，对中国的“五年规划”只知道是国家发展的蓝图，但具体内容和背后的意义不太清楚。你作为政治学科教学专家，能不能全方位地讲解一下五年规划的历史背景、主要内容、制定流程、实际作用，以及它对我们普通人生活的影响？能全方位地讲解一下吗？我想彻底理解五年规划的方方面面。
+  - question: 我是一位刚刚接手初中政治课的新老师，之前主修历史，对于五年规划的教学感到有些迷茫。你作为一名有经验的政治教研员，能不能解释一下五年规划在初中课堂中的教学重点和难点，以及怎么通过实际案例帮助学生理解？能解释一下吗？
+  - question: 我是初二学生，最近上课学到了“五年规划”，但还是有些不太懂。你能帮我概括一下五年规划到底是什么，主要作用是什么？概括一下吧。
+  - question: 我是一名沿海城市的初中政治教师，班上有不少学生家长从事外贸和制造业。你作为政治学科教学专家，能不能深入讲解一下五年规划在推动区域经济发展，尤其是对沿海地区和普通家庭的实际影响？能深入讲解一下吗？
+  - question: 我是来自农村的初中学生，对国家政策总觉得离自己很远。你作为学习成长导师，能不能详细讲讲五年规划是如何影响我们农村的发展和乡村振兴的？能讲得详细点吗？
+  - question: 我是初一学生，最近老师布置了一个小组讨论，让我们了解五年规划的基本内容。你作为AI学习助手，能解释一下五年规划主要包括哪些方面，以及为什么要制定这样的规划吗？能解释一下吗？
+  - question: 我是一个对时事政策很感兴趣的初三学生，平时喜欢看新闻。你能不能具体说说五年规划是怎么制定出来的，哪些部门参与，以及制定过程中会考虑哪些方面？能具体说说吗？
+  - question: 我是一名县级教育局的教研员，负责组织区域内初中政治教师的教研活动。你作为政治教育领域的专家，能否给我一份完整的分析，系统梳理五年规划的历史演变、主要内容、落实机制以及它对青少年价值观培养的作用？给我一份完整的分析吧。
+  - question: 我是初一学生，刚刚接触到五年规划这个概念，感觉有点抽象。你能不能用几句话说说五年规划最重要的内容和它对我们日常生活的关系？用几句话说说吧。
+  - question: I'm GarciaSarah, a 53-year-old teacher who loves painting, language
+      learning, and counseling. I tend to get over-involved and am quite sensitive
+      to stress, but I value structured professional development and gradual reform.
+      As I work to help my multicultural classroom understand China's Five-Year Plans,
+      can you, as a political science education expert, explain the educational significance,
+      main content, and practical teaching strategies to make this topic engaging
+      for diverse learners? Can you explain this for me?
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中-理解国家的“五年规划”进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 答案需充分结合学生的学习基础、兴趣、认知风格和实际需求，主动提供差异化讲解、举例和资源推荐，针对不同学生画像有明显适配调整。须体现教师对个体差异的敏感度和应变能力。
+  - field: 格式指令遵循度_理由
+    type: str
+    description: 解释格式指令遵循度评分的详细理由，引用具体例子。
+  - field: 格式指令遵循度
+    type: float
+    description: 内容严格按照指定结构（如定义-意义-实例-思考）分点、分层展开，每一环节紧扣主题，层次递进、条理清楚。不得遗漏结构要点或出现内容混乱。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 采用多样、科学的教学方法（如启发式提问、案例分析、角色扮演、合作探究、任务驱动等），促进学生思考、互动和知识迁移。应有明确的学生参与环节和思维激励环节，避免单一灌输。
+  - field: 知识点准确性与系统性_理由
+    type: str
+    description: 解释知识点准确性与系统性评分的详细理由，引用具体例子。
+  - field: 知识点准确性与系统性
+    type: float
+    description: 内容应准确、完整覆盖五年规划的核心知识（如定义、历史沿革、主要内容、现实作用、最新进展等），逻辑严密、无错误或重要遗漏。拓展内容应与主题密切相关，能联系实际生活。
+  - field: 模拟真实提问回应能力_理由
+    type: str
+    description: 解释模拟真实提问回应能力评分的详细理由，引用具体例子。
+  - field: 模拟真实提问回应能力
+    type: float
+    description: 能针对学生提出的具体问题，结合实际生活和场景做出深入、个性化回应，帮助学生将知识与现实生活、个人体验相联系，解答疑惑并引发进一步思考。
+  - field: 创新思维引导性_理由
+    type: str
+    description: 解释创新思维引导性评分的详细理由，引用具体例子。
+  - field: 创新思维引导性
+    type: float
+    description: 主动设计开放性问题、探究任务或讨论，鼓励学生表达不同观点、提出新想法或独立判断，激发创新与批判思维。应有明确的创新任务或思考空间。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 在知识讲解和案例中自然而然融入社会主义核心价值观和中华优秀传统文化，通过实际情境、故事或案例加深学生价值认同，避免生硬灌输或形式化表达。
+  - field: 表达清晰性与易懂性_理由
+    type: str
+    description: 解释表达清晰性与易懂性评分的详细理由，引用具体例子。
+  - field: 表达清晰性与易懂性
+    type: float
+    description: 语言简明通俗、结构清楚，避免复杂术语和长句，结合生活实例帮助理解，充分考虑初中生认知特点，确保内容易于理解和记忆。
+  format_mode: prompt

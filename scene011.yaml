@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene011/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 语文-初中-文言文深度解析教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是孟琴，一名38岁的女老师，平时喜欢阅读和园艺，性格比较内敛，不太喜欢参加学校的社交活动。你能结合我的教学风格，讲讲看《出师表》在初中文言文教学中的重要性，以及怎么引导学生体会诸葛亮的忠诚和忧国忧民的情怀吗？
+    - question: I'm JonesCharlotte, a 17-year-old high school student who enjoys programming and baking. I tend to approach things innovatively but sometimes find myself only doing surface-level analysis when reading classical Chinese texts. Can you, as a learning advisor, help me deeply understand and interpret the structure and rhetorical devices in 'Peach Blossom Spring'? Please elaborate and go into depth.
+    - question: 我叫潘滨，男，高二学生，喜欢武术和滑板，性格有点功利，也常常情绪和理性交替。最近在学《岳阳楼记》，我对“先天下之忧而忧，后天下之乐而乐”这句话不是很懂。你能结合我的情况帮我理解一下这句话的意思，以及它对我们青少年的启发吗？
+    - question: 我是刚入职的初中语文老师，最近开始负责文言文教学。你作为教育专家，能系统地讲解一下初中文言文教学的整体设计思路吗？希望能从教学目标、重点难点、方法、兴趣激发和评价方式等方面全面说说。
+    - question: 你能解释一下《陋室铭》里“山不在高，有仙则名；水不在深，有龙则灵”这两句话的意思吗？最好结合初中生的理解特点，举个例子说明现实意义。
+    - question: 我是初中语文老师，最近学生在学《出师表》时，对诸葛亮的忠诚和忧国情怀有点困惑。你能详细说说怎么通过课堂和课外活动帮助他们理解这些情感及其现实价值吗？
+    - question: 你作为我的学习助手，我最近在复习《桃花源记》，想更深入地理解作者如何通过环境和人物描写来表现理想社会。你能详细讲讲具体用了哪些描写手法，举例分析一下吗？
+    - question: 我是初中语文教研员，想请你全方位地讲解一下文言文教学的常见难点、学生心理障碍、有效教学策略以及家校协作建议。可以结合实际案例详细说说吗？
+    - question: 我是初中生，老师让我们简短回答《生于忧患，死于安乐》的核心思想，还要举个例子说明现实意义。你能帮我简短回答下吗？
+    - question: 你能简单说说《愚公移山》这个文言文故事的主题思想吗？作者通过愚公到底想表达什么？简单说说就行。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 语文-初中-文言文深度解析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 教学内容、方法和反馈能根据学生的学习水平、兴趣和具体困惑进行调整，至少针对不同群体（如成绩层次、兴趣方向）有差异化措施；优良实践包括针对个别学生的定制指导。
+    - field: 指令遵循准确性
+      type: float
+      description: 教学流程、内容和环节严格按照设定要求展开，步骤完整、顺序合理，且能根据实际情况灵活补充但不遗漏核心环节。
+    - field: 教学方法科学性
+      type: float
+      description: 采用启发式、探究式等多元化教学方法，鼓励学生主动参与、表达和交流，教学活动中体现互动与思考，不仅依赖讲授。
+    - field: 文言文深度解析能力
+      type: float
+      description: 解析不仅包括字面翻译，还能结合作者背景、写作目的、修辞手法、思想内涵等多角度进行讲解，帮助学生建立对文本的多维理解。
+    - field: 创新思维激发度
+      type: float
+      description: 教学过程中通过开放性问题、跨学科类比、创意表达等方式激发学生创新思考，鼓励多元解读和个性化表达，并提供展示机会。
+    - field: 模拟真实提问契合度
+      type: float
+      description: 所设问题贴合初中课堂实际和学生常见疑惑，具有真实情境感和针对性，能引导学生主动提出与学习内容相关的问题。
+    - field: 中华优秀传统文化融入度
+      type: float
+      description: 教学内容和过程能自然融入中华优秀传统文化及核心价值观，结合文本和学生体验，促进情感共鸣与实际联系，避免表面化。
+    - field: 学生主体性体现
+      type: float
+      description: 教学设计中有环节让学生主动参与，如提问、讨论、表达观点、参与评价等，学生在学习中有自主选择和表达机会。
+    - field: 个性化反馈具体性
+      type: float
+      description: 反馈针对学生具体问题或困惑，具有详细、个性化、可操作的建议，帮助学生有针对性地提升，反馈内容具体而非空泛。
+format_mode: prompt

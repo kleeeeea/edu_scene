@@ -1,0 +1,121 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-高中-奥运精神与体育文化探讨教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高中体育老师，最近班里同学对奥运精神和体育文化很感兴趣，大家在备战校运动会时也特别在意团队协作和拼搏精神，不过有学生觉得奥运精神在现实生活里有点抽象。你作为体育教育专家，能帮我们深入讲讲奥运精神的内涵、发展历史、跟体育文化的联系，以及这些精神在我们校园活动里的具体体现吗？别忘了结合实际示例，还能设计点互动环节让学生主动参与，一起分析分析。
+  - question: 我是一名高二学生，体育课上老师讲了奥运精神和体育文化，但我还没弄清楚它们的主要内容。麻烦你简单说说奥运精神有哪些核心方面，跟体育文化主要有什么关系？
+  - question: Hi, I’m LongMia, a 6th grade girl who really enjoys recitation, yoga,
+      and watercolor painting. I’m pretty proactive but my confidence goes up and
+      down. I try to balance my studies with creative hobbies, and sometimes I’m a
+      bit of a perfectionist and people-pleaser, while staying active in school groups.
+      As a sports education mentor, could you specifically talk about how the Olympic
+      spirit and sports culture might help someone like me build self-confidence,
+      balance academics and hobbies, and grow positively in school? Please give some
+      practical examples and ideas I could try.
+  - question: 我是高中体育教研员，我们学校正筹备‘奥运精神与体育文化’主题月，师生、家长、校领导都要参与。你作为体育文化导师，能帮我全面深入地讲讲奥运精神的内涵、历史发展、跟中华优秀传统文化的融合，以及在高中校园里怎么通过创新教学、活动设计、家校协作等方式有效弘扬奥运精神吗？希望能有详细系统的分析和切实可行的活动方案，越具体越好。
+  - question: 你作为高中体育文化专家，我是高三学生，最近在写毕业论文，想彻底说清楚奥运精神对现代青少年体育活动到底有什么意义和影响。能不能系统地讲讲奥运精神的核心理念，它怎么和社会主义核心价值观结合，对我们青少年的心理和行为有什么积极作用，以及在校园体育文化建设里的具体实践？最好有案例分析和互动建议，详细说清楚。
+  - question: 我是高一学生，老师让我们体育课上大概讲讲奥运精神和体育文化的主要价值，可我还搞不太懂这两个到底有什么重要意义。你能帮我简单说说它们的核心价值和现实作用吗？
+  - question: 你作为体育教育专家，我是五年级女生蔡素，平时喜欢益智游戏和跆拳道，性格外向又喜欢合作，学习时情绪很稳定，兴趣驱动型，容错率也挺高。最近我们班在讨论奥运精神和体育文化，我特别想知道奥运精神里有哪些值得我们小学生学习的品质，还有它和跆拳道、益智游戏之间有没有什么联系？能详细说说吗？顺便帮我设计点互动活动吧。
+  - question: 我是高二学生，体育课老师讲了奥运精神和体育文化之间的关系，不过我还是有些不太明白。你作为体育学习助手，能帮我理解一下奥运精神具体有哪些内容，它和体育文化怎么联系起来，还有我们学生平时能怎么践行这些精神？举点例子，顺便给点互动建议吧。
+  - question: 我是高中体育老师，你作为体育教育专家，能详细说说奥运精神在我们高中校园体育文化建设里具体是怎么运用的吗？最好结合一些实际案例、活动方案和师生互动方式，再分析一下奥运精神怎么帮助学生全面发展、团队协作和价值观养成。
+  - question: 我是黄丽，今年37岁，是一名老师，喜欢健身、旅行和心理辅导，平时在教学和社交圈都挺活跃，比较喜欢改革创新，爱和同事一起探讨新教学方法。最近我在准备奥运精神和体育文化的主题活动，想梳理一下奥运精神的核心理念、它和体育文化怎么结合，以及在班级里可以用什么创新方法鼓励学生主动参与。你作为体育文化导师，能详细说说吗？最好有些具体细节和对老师的建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-高中-奥运精神与体育文化探讨进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评价教学设计是否充分基于学生多维特征（兴趣、学业水平、性格、体育基础等），针对不同群体制定差异化方案，并提出具体可落实的个性化建议。高分要求能动态调整教学内容与方法，精准回应个体需求。
+  - field: 格式与结构规范性_理由
+    type: str
+    description: 解释格式与结构规范性评分的详细理由，引用具体例子。
+  - field: 格式与结构规范性
+    type: float
+    description: 评价教学内容是否严格遵循既定结构（如分点阐述、小标题、层级递进），表达清晰、条理分明。高分要求每一部分结构完整、逻辑严密，且字数达标，无冗余或遗漏。
+  - field: 教学目标契合度与深度_理由
+    type: str
+    description: 解释教学目标契合度与深度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度与深度
+    type: float
+    description: 评价内容是否紧密围绕体育课程目标，深入挖掘奥运精神与体育文化的内涵，结合实际问题进行多角度分析。高分要求理论与现实结合，案例丰富，能提出深刻见解。
+  - field: 教学方法科学性与多样性_理由
+    type: str
+    description: 解释教学方法科学性与多样性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与多样性
+    type: float
+    description: 评价是否运用多样化、科学的教学方法（如启发式、探究式、案例分析、小组合作等），并合理搭配促进学生主动参与和深度思考。高分要求方法创新且有效，能根据学生反馈优化流程。
+  - field: 知识结构与逻辑层次_理由
+    type: str
+    description: 解释知识结构与逻辑层次评分的详细理由，引用具体例子。
+  - field: 知识结构与逻辑层次
+    type: float
+    description: 评价内容结构是否清晰、逻辑递进，理论与实际结合，层层展开、逐步深入。高分要求有明晰的知识结构、合理的展开顺序，便于学生理解吸收。
+  - field: 创新思维激发与跨界联系_理由
+    type: str
+    description: 解释创新思维激发与跨界联系评分的详细理由，引用具体例子。
+  - field: 创新思维激发与跨界联系
+    type: float
+    description: 评价是否通过开放性问题、跨学科联系、创新活动等激发学生创造性思考和个性表达，鼓励提出独特见解。高分要求能引导学生跨界思考并产出创新成果。
+  - field: 学生参与度与体验设计_理由
+    type: str
+    description: 解释学生参与度与体验设计评分的详细理由，引用具体例子。
+  - field: 学生参与度与体验设计
+    type: float
+    description: 评价是否设计多样且有效的学生参与环节（如互动提问、分组合作、情景模拟、实践活动等），确保每位学生有实际体验和表达机会。高分要求全员参与，活动流程能根据反馈动态优化。
+  - field: 社会主义核心价值观有机融合_理由
+    type: str
+    description: 解释社会主义核心价值观有机融合评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观有机融合
+    type: float
+    description: 评价是否将社会主义核心价值观（团结、奋斗、公平、友爱等）与体育文化、奥运精神自然融合，通过具体案例或情境说明其现实意义。高分要求融合自然、案例具体、有深度反思。
+  format_mode: prompt

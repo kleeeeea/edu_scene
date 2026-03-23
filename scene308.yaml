@@ -1,0 +1,120 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-小学-小皮球找朋友（运球练习）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级体育老师，最近教小皮球找朋友这个运球练习，班里有几个性格内向、运动能力一般的孩子不太愿意主动参加集体活动。你能详细说说怎么用有趣的游戏化方式激发他们积极性吗？还有怎么在过程中给他们个别反馈和激励，让他们体会到团队协作和尊重规则的意义？讲清楚点。
+  - question: 我是一个家长，孩子在小学体育课上做“小皮球找朋友”的运球练习时总是很被动，兴趣不高，也不太跟同伴交流。你作为体育教学专家，能帮我深入分析一下原因吗？还有哪些具体办法能让他变得更积极？比如过程评价、个性化激励、家校协作、团队精神这些方面都聊聊，我想深入了解。
+  - question: 我是刚入职的小学体育老师，最近教小皮球找朋友运球练习，班里有运动基础好的孩子也有比较腼腆、能力弱一些的学生。你觉得怎么设计分层活动让每个人都能参与进来？课堂评价和激励方面怎么做到个性化和公平？讲讲看。
+  - question: 我是三年级学生，上体育课做小皮球找朋友运球练习总是跟不上大家节奏，也不敢主动找同伴。你有什么简单的方法能帮我变得更自信、参与得更好？简单说说就行。
+  - question: 你作为体育教育专家，能帮我给能建军（男，18岁，高三学生，喜欢跆拳道和编程，分析浅表化、边界感明确、短时专注，社交圈有限）系统梳理一下小学体育课“小皮球找朋友”运球练习的全方位教学设计吗？比如教学目标、学生差异、分层练习、创新活动、过程评价和激励、家校协作、传统体育精神、科学依据和具体操作建议这些方面都能详细讲讲吗？从各个角度详细说说。
+  - question: 你是体育教学专家，能简要说说小学“小皮球找朋友”运球练习里怎么用过程性评价帮助不同性格和兴趣的孩子成长吗？比如针对邹国强这种抗干扰强、社交圈窄、喜欢独立活动的学生，个性化评价和科学激励有哪些关键点？简短回答下。
+  - question: 你作为小学体育老师，最近在做小皮球找朋友运球练习时发现班里有的孩子特别积极，有的却很被动甚至抗拒。能帮我系统分析影响他们参与积极性的各种因素吗？结合不同学生特点、创新游戏设计、分层任务、评价反馈、团队精神、家校协作和传统体育精神这些方面，能详细分析下各个方面吗？
+  - question: Hi, I’m ThompsonAmelia, 14 years old, grade 8, and I love writing and
+      dance. I’m a perfectionist, always trying to balance school and my creative
+      hobbies. As a PE expert, can you explain in detail how the 'Little Rubber Ball
+      Finds Friends' dribbling exercise in elementary PE could be adapted for someone
+      like me? I want to know about personalized strategies, process-oriented feedback,
+      motivation, and how teamwork, respect for rules, and Chinese traditional sports
+      culture can be integrated. Can you elaborate in detail?
+  - question: 我是小学体育老师，最近在做小皮球找朋友运球练习时，有些孩子不太积极，甚至会主动回避。你觉得他们为什么会这样？有没有什么创新和科学的方法可以调整教学，让他们更愿意参与？过程评价和团队协作方面能举个例子吗？说说你的看法。
+  - question: 你作为小学体育老师，在教小皮球找朋友运球练习时遇到几个特别害羞、不爱表达的孩子，他们总是很拘谨。你能结合实际例子，详细说说怎么通过个性化鼓励和过程评价帮他们慢慢融入集体、体会体育的乐趣和团队精神吗？讲清楚点。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-小学-小皮球找朋友（运球练习）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估教学设计是否基于学生年龄、运动能力、兴趣、性别等多维特征，精准识别学生差异，并针对性调整目标、内容、方法和评价，实现深度因材施教。要求有明确分层目标、分层任务、个别支持和动态调整方案。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 评估答案是否按要求的结构（如教学目标、教学过程、评价方法）分段组织，逻辑清晰。内容应分段独立，顺序合理，无混杂或遗漏，但允许适度灵活表达以保证内容完整和连贯。
+  - field: 教学目标与内容契合度_理由
+    type: str
+    description: 解释教学目标与内容契合度评分的详细理由，引用具体例子。
+  - field: 教学目标与内容契合度
+    type: float
+    description: 评估教学内容是否紧密围绕‘小皮球找朋友（运球练习）’主题，突出小学生运球技能、合作能力和相关素养培养。要求内容涵盖动作技能、团队协作及规则意识，环节递进，目标清晰具体。
+  - field: 教学方法科学性与适宜性_理由
+    type: str
+    description: 解释教学方法科学性与适宜性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与适宜性
+    type: float
+    description: 评估教学方法是否结合小学生身心发展规律，注重安全、趣味、互动与创新。要求采用分组协作、游戏化、分层指导等，并根据学生表现动态调整任务难度，具体方法具有可操作性和创新性。
+  - field: 过程性评价与反馈机制_理由
+    type: str
+    description: 解释过程性评价与反馈机制评分的详细理由，引用具体例子。
+  - field: 过程性评价与反馈机制
+    type: float
+    description: 评估是否设置具体、可执行的过程性评价工具（如观察量表、学生互评、自评），并有明确即时反馈机制。要求能动态跟踪学生进展、及时调整教学策略，评价与反馈促进每个学生持续成长。
+  - field: 创新思维与创造力激发_理由
+    type: str
+    description: 解释创新思维与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新思维与创造力激发
+    type: float
+    description: 评估教学活动是否主动引导学生探索和创新表达，包括规则变式、角色互换、合作创新等。要求有具体创新环节，支持学生设计新玩法、实践和展示，并鼓励成果优化与分享。
+  - field: 模拟真实提问的情境还原度_理由
+    type: str
+    description: 解释模拟真实提问的情境还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问的情境还原度
+    type: float
+    description: 评估教学设计是否回应真实教学场景需求，充分考虑班级人数、场地大小、器材数量等实际条件，提出具体可行的组织与应对方案。高分要求应对措施细致、具备实际可操作性和安全预案。
+  - field: 社会主义核心价值观与传统文化润化_理由
+    type: str
+    description: 解释社会主义核心价值观与传统文化润化评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与传统文化润化
+    type: float
+    description: 评估教学内容是否将团结协作、诚信友善等社会主义核心价值观和中华优秀传统文化自然融入教学环节，通过具体行为引导学生实践，价值观融入活动过程、规则制定与师生互动，避免口号化。
+  format_mode: prompt

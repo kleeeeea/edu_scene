@@ -1,0 +1,126 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-发现身边的美（美育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是三年级学生的家长，最近孩子学校开展了‘发现身边的美’美育主题活动，你作为教育专家，能简单说说家长在生活中怎么引导孩子主动观察和发现生活中的美吗？要具体一点，也希望能自然融入一些正确的价值观。
+  - question: 你作为小学美育教研员，最近负责指导‘发现身边的美’主题课程的开展。能全面分析一下这个主题的课程设计目标、教学难点、教学方法和评价方式吗？最好结合一些实际案例，也希望能说说怎么在美育中自然融入正确的价值观和中华传统文化。
+  - question: 我是五年级学生苏成，平时喜欢羽毛球和自然探索，理解比较慢，有点拖延，作业要老师提醒，周末会和父母一起出去玩。老师让我们参加‘发现身边的美’活动，你能讲清楚点怎么结合我的兴趣和性格，让我更好发现和表达生活里的美吗？最好给些具体建议和活动。
+  - question: 我是刚入职的小学美术老师，最近要组织‘发现身边的美’主题班会。你能具体说说怎么通过有趣的活动和课堂设计，带动学生参与、表达他们发现的美吗？希望能兼顾不同孩子的性格和兴趣，也能自然融入一些正面的价值观。
+  - question: I'm JacksonNora, a 5th grade girl who really loves playing guitar, violin,
+      and doing drama. I’m quite a perfectionist and only get interested in things
+      I truly like, usually focusing all my energy on music and drama. For the ‘Discovering
+      Beauty Around Us’ activity at school, can you give me some concrete ideas on
+      how I can find and express beauty in daily life, not just in music or acting?
+      I’d like some detailed suggestions and examples, and hope they can also help
+      me become a better person.
+  - question: 你作为小学美育活动的指导老师，能简单说说‘发现身边的美’这个活动对小学生有哪些积极影响吗？想听听你怎么理解它对孩子审美能力、观察力和价值观的帮助。
+  - question: 我是初三男生周乐锋，平时喜欢摄影、视频剪辑、打电子竞技和乒乓球，比较有创新性，和同学关系也不错，就是自主学习能力弱，妈妈比较督促我。你能针对我，深入说说像我这样兴趣广泛的学生，怎么在‘发现身边的美’这个美育主题里，结合兴趣深入体验和表达美，同时提升自我修养吗？希望你讲得具体、有启发性，也能自然带点中华美育和正面价值观。
+  - question: 你作为资深小学美育专家，能彻底说清楚‘发现身边的美’这个主题在小学美育里的重要性、课程设计思路、教学流程、评价机制、家校配合方法，以及怎么把中华传统文化和核心价值观自然融合进去吗？也请举些创新实践案例，并谈谈未来美育的发展方向。
+  - question: 我是小学美育骨干教师，负责校里的‘发现身边的美’课程整体设计。你作为专家，能全方位地讲解一下这个课程体系的目标、内容、实施方法、怎么兼顾个性化和全员参与、校本资源开发、师资建设、家校社会协同、价值观和中华美育理念的融合创新吗？希望能有典型案例和后续优化建议，讲得系统全面一点。
+  - question: I'm BrownPatrick, a fifth-grade boy who likes playing piano, esports,
+      and stargazing. I usually prefer working alone and don't like group activities
+      much, focusing more on my own goals. For the school's ‘Discovering Beauty Around
+      Us’ theme, can you give me a detailed explanation of how someone like me can
+      effectively find and appreciate beauty in daily life? Also, how does this process
+      help build good values and self-growth? Please share practical suggestions and
+      some examples.
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-发现身边的美（美育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估内容须基于学生多元特征（兴趣、能力、性格等）做出差异化设计。高水平表现需根据学生实时反馈动态调整方案，体现个体支持和成长记录，关注边缘群体。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 内容组织须严格按照教学指令结构（分点、分步、互动、总结等）呈现。高水平表现需在每一环节明确标识、逻辑清晰，并能灵活兼顾实际教学需要。
+  - field: 教学方法科学性与适宜性_理由
+    type: str
+    description: 解释教学方法科学性与适宜性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与适宜性
+    type: float
+    description: 教学方法须充分考虑小学生认知与情感特点，包含体验、参与、合作、表达等环节。高分需体现方法多样、分层、能激发主动探索与深度理解，并有学生自评或反思环节。
+  - field: 互动与启发性设计_理由
+    type: str
+    description: 解释互动与启发性设计评分的详细理由，引用具体例子。
+  - field: 互动与启发性设计
+    type: float
+    description: 须设置多层次、开放性互动环节（如启发性提问、小组讨论、情景对话等），促进学生思考、表达和合作。高分要求至少三类不同互动方式，并根据学生反馈灵活调整。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 须通过多样化、开放性表达（绘画、手工、诗歌、摄影、表演等）激发创新思维。高分要求至少三种创造性表达路径，鼓励原创、个性展示，并设置创新评价或分享环节。
+  - field: 真实场景模拟与情境贴合度_理由
+    type: str
+    description: 解释真实场景模拟与情境贴合度评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与情境贴合度
+    type: float
+    description: 内容须与‘发现身边的美’主题紧密结合，活动涵盖至少三个与学生实际生活相关的场景（校园、家庭、社区、自然等）。高分要求引导学生主动挖掘并记录生活中的美好，鼓励多角度观察和分享。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 在美育过程中，将社会主义核心价值观与中华优秀传统文化自然融合于具体活动或案例中，通过真实情境引导学生理解和践行核心价值观。高分要求价值观融入具体行为体验，避免口号化，体现情感认同。
+  - field: 表达清晰度与易理解性_理由
+    type: str
+    description: 解释表达清晰度与易理解性评分的详细理由，引用具体例子。
+  - field: 表达清晰度与易理解性
+    type: float
+    description: 语言表达须简明、生动、具体，贴合小学生理解水平。高分要求用多种辅助方式（例子、比喻、图示、故事等）帮助学生理解，内容富有感染力，能照顾不同理解水平学生。
+  format_mode: prompt

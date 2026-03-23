@@ -1,0 +1,131 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-高中-地理信息技术（GIS/RS）的应用分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二地理老师，班里有些学生对地理信息技术很感兴趣，也有不少基础薄弱甚至完全没接触过GIS/RS的同学。你能详细说说GIS/RS在高中地理里的应用吗？最好能结合分层教学，针对不同学生类型给些个性化建议和资源推荐，并顺便讲讲怎么把核心价值观和传统文化融进去。
+  - question: 我是家长，我孩子学地理信息技术时碰到难题，完全不会编程，但对环境保护很有兴趣。你能简单说说GIS/RS在环境监测上的应用吗？顺便给零基础学生一些入门和激发兴趣的建议，简要说说就行。
+  - question: 我是一名高中地理骨干老师，正在负责教研组的地理信息技术课程改革。你作为地理教育专家，能给我一份完整的分析吗？请从教材、教学方法、分层评价、资源整合、跨学科创新等方面全面系统地讲讲，特别要关注因材施教、学生创新实践，以及怎么把核心价值观和传统文化自然融进去。
+  - question: 我是市地理教研员，要给全市高中老师做GIS/RS应用培训。你能帮我一份完整的分析吗？请从教学理论、分层指导、创新项目设计、学生差异发展、核心价值观融入等方面系统说说，最好有案例和具体操作建议。
+  - question: I'm BellAnthony, a high school geography teacher known for strong logical
+      thinking and decisive leadership in reform. I enjoy mountaineering and Tai Chi,
+      and tend to approach education with a rational mindset. Could you detailedly
+      explain how GIS/RS can be applied in high school geography teaching reform?
+      Please focus on innovative strategies, logical curriculum design, differentiation
+      for different student capabilities, and ways to encourage both solitary and
+      group learning. Also, I'd appreciate how core values and traditional culture
+      can be naturally woven in.
+  - question: 我刚开始教高中地理，班里有几位对技术很感兴趣但编程基础很弱，还有一些同学对GIS/RS完全不感兴趣。你能讲得详细点吗？请分析一下怎么设计分层和多元化的GIS/RS课堂活动，既照顾零基础和进阶学生，又能激发创新和社会责任感，最好结合具体案例和资源推荐，并把核心价值观和传统文化自然融进去。
+  - question: 我是高一女生利亦，爱好书法、小提琴、羽毛球，逻辑思维比较跳跃，也喜欢参加艺术和体育活动。你能说说主要的GIS/RS在艺术、体育和生活里的实际应用吗？顺便给我这种兴趣多元、逻辑活跃的学生一些学习建议和创新方法。
+  - question: I'm AndersonGrace, a 7th grader who enjoys swimming and Guzheng, and
+      likes to challenge conventional ways of thinking. Could you say your thoughts
+      on innovative applications of GIS/RS in junior high geography? Especially, how
+      can students like me, who mix artistic and athletic interests, explore GIS/RS
+      creatively in real-world projects? Please include ideas for strengthening critical
+      thinking and naturally blending core values and traditional culture.
+  - question: I'm BrownJonathan, a 6th grader who loves Sudoku, programming, and badminton,
+      and I'm pretty competitive—sometimes just skimming the surface. Could you do
+      a comprehensive analysis of how GIS/RS can be introduced and applied in middle
+      school geography to get students like me really interested? Please focus on
+      ways to deepen understanding, foster competition, and encourage innovation,
+      and also touch on how core values and traditional culture can be naturally integrated.
+  - question: 我是高中生，最近学GIS/RS，里面一些概念我总是搞不明白，像遥感在地理实际问题里的应用。你能帮我理解一下GIS和遥感技术解决地理问题的核心原理和典型案例吗？最好结合生活例子详细说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-高中-地理信息技术（GIS/RS）的应用分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 评估教学是否基于学生的知识基础、兴趣、能力和成长目标，动态进行分层指导与资源推荐，并能持续追踪学习进展，根据反馈及时调整教学方案。要求至少体现三类学生差异化安排，并有阶段性调整记录。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 评估教学内容是否严格按照指定结构和流程（如分步法、要素齐全、分段清晰）组织，所有环节均有明确指示和操作说明。要求每个环节内容完整、逻辑连贯，且格式统一规范。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估教学设计是否系统采用科学教学法（如案例教学、探究学习、项目实践等），内容逻辑严密，贴合地理信息技术学科特点。要求至少有两个教学法结合，并能促进学生认知、技能与实践能力提升。
+  - field: 学科融合与应用真实度_理由
+    type: str
+    description: 解释学科融合与应用真实度评分的详细理由，引用具体例子。
+  - field: 学科融合与应用真实度
+    type: float
+    description: 评估教学内容是否深度融合地理与信息技术，采用真实、复杂地理问题或跨学科情境开展任务。要求任务需涉及至少两个学科知识点，且与实际社会问题强相关。
+  - field: 创造力激发与创新引导_理由
+    type: str
+    description: 解释创造力激发与创新引导评分的详细理由，引用具体例子。
+  - field: 创造力激发与创新引导
+    type: float
+    description: 评估教学是否分层次激发学生创新意识，包括自主问题发现、方法探索和成果表达。要求学生能提出创新想法或方法，并在成果展示环节表达个性化观点，教师有创新评价机制。
+  - field: 反馈与差异化指导_理由
+    type: str
+    description: 解释反馈与差异化指导评分的详细理由，引用具体例子。
+  - field: 反馈与差异化指导
+    type: float
+    description: 评估教师是否根据学生表现和作业结果，给予具体、针对性的反馈和个性化改进建议，能持续追踪学生成长，并调整教学方案。要求每次反馈包含问题分析、个性化建议和后续提升计划。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观与中华优秀传统文化自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观与中华优秀传统文化自然融入
+    type: float
+    description: 评估教学内容是否将社会主义核心价值观及中华优秀传统文化有机融合于地理应用场景，通过案例、讨论等环节引导学生关注社会责任、生态文明、可持续发展。要求至少有一个与核心价值观或传统文化相关的讨论或实践环节。
+  - field: 语言表达规范与易懂性_理由
+    type: str
+    description: 解释语言表达规范与易懂性评分的详细理由，引用具体例子。
+  - field: 语言表达规范与易懂性
+    type: float
+    description: 评估教学内容语言是否规范、表达清晰、逻辑严谨，适合高中生认知水平。要求专业术语均有解释，复杂概念辅以类比、举例或图示，内容易于理解，无晦涩生硬表达。
+  format_mode: prompt

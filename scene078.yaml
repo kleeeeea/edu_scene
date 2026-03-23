@@ -1,0 +1,144 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene078/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 化学-初中-未知物质的推断与鉴定教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是初中化学老师，最近在教学中想让学生多参与一些推断和鉴定未知物质的实验活动。你觉得该怎么引导他们？说说你的看法。
+    - question: 我是一名初中生，最近学到推断和鉴定未知物质，你能大概讲讲主要的方法和思路吗？
+    - question: 你作为我的化学学习助手，能讲得详细点吗？我想了解初中阶段怎么系统培养学生推断和鉴定未知物质的能力，包括教学方法、活动设计和容易出错的地方。
+    - question: My name is KellyTheodore, I'm a male 11th grader who likes math modeling competitions and badminton. Sometimes I need structured guidance and frequent feedback, and I don't mind making mistakes. Can you help me understand how I can efficiently learn and apply the process of inferring and identifying unknown substances in chemistry? Help me understand it, please.
+    - question: 我是一名初中化学老师，发现有些学生对未知物质的推断和鉴定总是搞不清楚。你能帮我讲清楚这部分内容吗？
+    - question: 你作为化学学科的教研员，有没有什么好方法能结合生活实际，让学生更感兴趣地学会推断和鉴定未知物质？说说你的看法。
+    - question: 我的女儿WilsonCaroline今年6岁，上小学一年级，她喜欢尤克里里、学英语和下围棋，也比较容易模仿别人，但不太喜欢和别人合作，情绪有时会波动，逻辑思维还比较弱。你作为教育专家，能不能给我一份完整的分析，怎么用适合她的方式，在化学启蒙时介绍未知物质的推断和鉴定？要系统、全面一些。
+    - question: 我是一名初中生，最近对化学实验很感兴趣，特别想知道怎么通过实验和推理来判断未知物质。你能讲得详细点吗？
+    - question: 你是初中化学老师，能不能系统地讲解一下未知物质推断与鉴定的核心方法、实验流程、容易出错的地方，还有怎么在教学中培养学生的科学思维？
+    - question: 我是初中生，老师让我们学会推断和鉴定未知物质，你能简单说说就行，主要步骤和要注意什么？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 化学-初中-未知物质的推断与鉴定进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与针对性回应
+      type: float
+      description: 评估教学内容是否基于学生个体的学习基础、兴趣和认知差异，主动识别学生画像并采用差异化支持策略。优秀表现应体现对学生成长需求的动态把握和实时调整，能针对具体困惑提出有针对性、可操作的引导方案。
+    - field: 格式与结构规范性
+      type: float
+      description: 评估教学设计是否分点清晰、结构合理、逻辑严密，核心知识点突出。优秀表现应体现层层递进、条理分明，步骤明确，便于学生自主梳理和操作。仅有基本分点不够，需体现内容递进与关键节点提示。
+    - field: 教学方法科学性与安全规范
+      type: float
+      description: 评估教学方法是否科学、系统，严守初中化学教育和实验安全规范。优秀表现应体现实验流程设计合理、变量控制明确、原理解释到位，并主动提示安全风险与防范措施。仅仅不危险不够，需体现科学探究流程。
+    - field: 知识点覆盖广度与系统性
+      type: float
+      description: 评估教学内容是否全面覆盖未知物质鉴定的核心知识点（物理性质、化学反应、实验现象、科学原理等），并能系统整合，前后连贯。优秀表现应体现知识的内在联系和多角度分析，避免碎片化。
+    - field: 激发学生创造性与探究精神
+      type: float
+      description: 评估教学是否通过启发式提问、情境模拟、任务驱动等方式，鼓励学生自主假设、设计多样实验方案、分析现象并反思改进。优秀表现应引导学生独立思考、创新设计，主动查找资料、讨论方案，培养科学探究习惯。
+    - field: 真实情境与可行性回应能力
+      type: float
+      description: 评估教学是否能针对学生提出的具体、真实情境（如家庭可用材料、实验条件受限等）设计安全、可行且创新的解决方案，并解释科学原理。优秀表现应主动适配实际条件，提供多种方案选择，讲清原理与注意事项。
+    - field: 核心价值观与优秀传统文化融合
+      type: float
+      description: 评估教学设计是否自然融入社会主义核心价值观（如诚实守信、团队合作、尊重科学）及中华优秀传统文化（慎思明辨、尊重自然、创新精神），且与教学内容有机结合。优秀表现应通过具体情境和行动体现价值观，避免生硬口号化。
+format_mode: prompt

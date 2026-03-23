@@ -1,0 +1,150 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene311/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 体育-初中-篮球三对三战术演练教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 你作为初中体育老师，能大概讲讲三对三篮球战术演练的核心要点吗？就是基本战术、分工和配合这些，简单说说就行。
+    - question: 我是初中体育教研员，你作为教育专家，能彻底说清楚三对三篮球战术演练的所有细节吗？包括理论、教学流程、常见战术、团队协作和评价这些，想听你系统全面地讲讲。
+    - question: 作为初中体育老师，能详细说说三对三篮球战术演练里常见的攻防配合方法吗？最好能举些课堂上的实际例子，详细讲讲。
+    - question: 我是刚入职的初中体育老师，你作为篮球教学专家，能从各个角度详细说说三对三篮球战术演练的教学设计吗？包括目标、分层指导、学生问题、战术选择、团队协作、课堂活动和评价这些，想听你系统讲讲。
+    - question: 我是贾珠诗，初二女生，喜欢乐高和瑜伽，性格比较批判、目标明确，有点焦虑但行动力还不错，也经常组织同学做集体任务。你能深入讲解一下三对三篮球战术演练怎么能帮我提升团队协作、领导力和自我调节能力吗？想听听你的具体建议和实践方案。
+    - question: 我叫范娟娟，四年级女生，喜欢乐高和越剧，比较独立，参与小组活动主动性不强，也不喜欢竞争。你能解释一下三对三篮球战术演练对我社交能力和团队合作有什么帮助吗？还有哪些适合我的参与建议？
+    - question: 你作为初中体育老师，能讲清楚点三对三篮球战术演练怎么培养学生的合作意识和沟通能力吗？最好有具体的课堂活动例子。
+    - question: 我是初中篮球兴趣班的学生，你作为篮球教学顾问，我想深入了解三对三篮球战术演练的常见攻防战术、配合技巧和实战方法，还有常见问题怎么解决，能详细讲讲吗？最好结合案例分析一下。
+    - question: 你作为初中体育老师，能讲清楚点三对三篮球战术演练是怎么帮助学生提升场上判断力和快速反应能力的吗？还有哪些有效的训练方法可以举例说明一下？
+    - question: 你是初中体育老师，能说说三对三篮球战术演练里最常用的三种基础战术吗？主要作用是什么，概括一下就行。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 体育-初中-篮球三对三战术演练进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像适配度
+      type: float
+      description: 评价教学设计是否充分考虑学生的性别、体能、技能基础等差异，并据此调整教学内容与方法，体现个别化教学和动态适应。
+    - field: 指令遵循与结构规范性
+      type: float
+      description: 评价回答是否严格按任务要求组织，结构清晰、分段明确，便于教师和学生理解、执行，并能体现逻辑流程。
+    - field: 教学目标与内容契合度
+      type: float
+      description: 评价教学内容是否精准围绕三对三战术演练目标展开，涵盖关键技能与战术点，且能根据目标动态调整内容深度与广度。
+    - field: 教学方法科学性与实操性
+      type: float
+      description: 评价教学方法是否系统、科学，符合初中生身心特点，具备实操性与安全保障，能有效促进学生战术理解与技能提升。
+    - field: 战术讲解与分解细致度
+      type: float
+      description: 评价战术讲解是否条理清晰，分步骤细致，结合图示或动作演示，便于初中生理解与模仿，能针对常见误区及时纠正。
+    - field: 创新与创造力激发
+      type: float
+      description: 评价教学是否鼓励学生自主探索、创新战术、角色变换或提出新方案，支持学生团队讨论、实验，并能对创新成果进行评价与引导。
+    - field: 真实提问与场景模拟度
+      type: float
+      description: 评价问答内容是否贴近实际教学场景，能反映真实学生、教师在三对三战术演练中的常见疑问、问题和实际需求。
+    - field: 价值观融入的自然度与实际影响
+      type: float
+      description: 评价教学内容是否能自然融入团队协作、公平竞争、尊重对手等社会主义核心价值观，并通过具体教学行为或情境引导学生践行。
+    - field: 中华优秀传统文化润化与深度
+      type: float
+      description: 评价教学内容是否能在合适情境下，灵活结合中华传统美德（团结、礼让、坚韧等），并通过具体行为、环节或反思促进学生内化，表达自然不生硬。
+format_mode: prompt

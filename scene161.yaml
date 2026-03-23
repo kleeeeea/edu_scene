@@ -1,0 +1,123 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为英语-初中-复合句结构分析与构建教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初二学生，对英语复合句结构一直有些困惑。你是一位有耐心的英语学习顾问，能不能讲清楚点：复合句的基本定义、常见类型、结构要点、容易出错的地方，还有怎么通过例句和日常练习提升？最好能结合生活例子和鼓励，让我更有信心学习，谢谢！
+  - question: 我是一名初中英语老师，班里有几个基础薄弱的学生，他们在写作时经常用不对复合句。你作为英语教学专家，能解释一下如何系统地教学生理解和构建英语复合句吗？请结合教学实践，具体说说教学流程、常见难点、易混淆点，以及有针对性的练习建议。
+  - question: 我是初三学生，平时英语不是很自信，老师说复合句很重要但我总觉得很难。你作为我的AI学习助手，能不能用几句话说说英语复合句的核心结构和简单用法，让我抓住重点？
+  - question: 我是一个初中生家长，发现孩子写作时复合句用得很少，表达也不够丰富。你作为英语写作成长导师，能说说你的看法吗？初中阶段复合句能力培养重要吗，有哪些误区，家长怎么辅助孩子？最好举几个生活例子。
+  - question: My name is JonesAmber. I’m a 29-year-old pharmacist with a strong interest
+      in herbal therapy and athletics, and I like to pursue things independently.
+      As someone who values self-reliance and lifelong learning, I’m hoping to deepen
+      my understanding of English complex sentences for better communication at work
+      and in my personal life. As an AI language education specialist, could you systemically
+      explain complex sentences in English for me? Please cover the definition, structure,
+      types, functions, common pitfalls, advanced usage, and practical examples (especially
+      from healthcare and sports). Also, give advice for independent learners like
+      me and talk about why precise communication matters for personal growth and
+      cross-disciplinary work. I’d appreciate a thorough and inspiring answer.
+  - question: 我是刚升初二的学生，英语作文里不会用复合句，老师说这样表达不够高级。你是AI英语写作助手，可以用几句话说说初中常用复合句的几种类型和简单例句吗？
+  - question: 我是一名刚入职的初中英语教师，最近在备课时发现复合句教学很难让学生真正理解和掌握。你作为英语教育专家，能不能讲得详细点，分析一下如何帮助学生突破复合句的难点？最好结合教学流程、具体案例、学生常见错误、有效练习和激励建议，帮我提升教学效果。
+  - question: 我是初三学生，马上中考了，但复合句总是学不扎实，写作和阅读都经常出错。你作为英语学科成长导师，能不能讲得详细点，帮我分析一下复合句在考试中常考哪些内容，容易错在哪，结构该怎么拆解，有什么攻克技巧？能不能顺便给我制定个考前复合句专项提升计划？
+  - question: 我是一名资深初中英语教研员，学校正在推进复合句教学的课程改革，希望通过科学系统的方法提升学生的语言表达力。你作为英语课程设计专家，能不能全方位地讲解一下复合句的理论基础、结构体系、教学重难点、典型误区、跨学科融合、创新教学案例、分层练习设计和评价机制等，给我一份前瞻性和实操性强的课程方案建议？
+  - question: 我是曾依娜，39岁，是一名初中英语老师，平时喜欢烘焙和电影欣赏，工作中常与同事进行跨学科合作，但最近有些职业倦怠。你作为AI英语学习支持专家，能不能讲清楚点，从跨学科教学视角出发，讲讲复合句结构分析与构建的教学重点、创新方法和实际操作建议？希望能结合我的兴趣，给我一些激励和新鲜感，帮我重新点燃教学热情。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 英语-初中-复合句结构分析与构建进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与回应_理由
+    type: str
+    description: 解释个性化画像识别与回应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与回应
+    type: float
+    description: 能够根据学生的英语水平、兴趣、学习习惯和常见障碍，制定分层教学方案，灵活调整内容难度、例题类型和支持方式。教学过程中需体现对不同学生群体的差异化关注和具体资源推荐，强调动态调整与持续追踪。
+  - field: 指令遵循与格式规范性_理由
+    type: str
+    description: 解释指令遵循与格式规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范性
+    type: float
+    description: 严格按照教学任务要求分步完成，包括定义、结构分析、例句展示、练习设计、总结反思等环节，内容完整、排版清晰、逻辑顺畅。任何环节缺失或顺序混乱、内容表述不清、格式不规范均视为不达标。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 采用启发式、递进式、分层教学法，结合错例分析、情境引入、小组互动等环节，有明确教学逻辑和创新设计，方法贴合初中生认知特点。需至少包含两种互动/递进设计，并有针对性错例分析，避免机械灌输。
+  - field: 知识点覆盖与准确性_理由
+    type: str
+    description: 解释知识点覆盖与准确性评分的详细理由，引用具体例子。
+  - field: 知识点覆盖与准确性
+    type: float
+    description: 全面、准确覆盖复合句结构分析与构建的核心知识点，包括主从句关系、常见连接词、语序、错例分析与纠正、表达多样性等，内容无知识性错误。必须系统讲解全部要素，遗漏任一核心知识点或出现任何语法/表述错误即为不达标。
+  - field: 创新性与创造力激发_理由
+    type: str
+    description: 解释创新性与创造力激发评分的详细理由，引用具体例子。
+  - field: 创新性与创造力激发
+    type: float
+    description: 通过开放性问题、情境创作、多样表达方式等激发学生创新思维和表达欲望，设计鼓励自主创作、评价和反思的环节。需体现学生主动探索、自主表达空间，避免机械模仿和单一练习。
+  - field: 真实场景模拟与问题贴合度_理由
+    type: str
+    description: 解释真实场景模拟与问题贴合度评分的详细理由，引用具体例子。
+  - field: 真实场景模拟与问题贴合度
+    type: float
+    description: 教学内容紧密结合初中生真实学习、生活、考试场景，关注实际表达需求与常见困惑。例题和练习需来源于学生实际或兴趣领域，能有效解决学生在真实表达中的难题，避免脱离生活的抽象内容。
+  - field: 价值观融入的自然性与积极性_理由
+    type: str
+    description: 解释价值观融入的自然性与积极性评分的详细理由，引用具体例子。
+  - field: 价值观融入的自然性与积极性
+    type: float
+    description: 在实例、练习等环节自然而积极地融入社会主义核心价值观和中华优秀传统文化，例句、情境设计具备文化内涵，能够引发学生共鸣。避免生硬灌输或形式化表达，应与教学内容自然融合。
+  - field: 反馈与激励机制_理由
+    type: str
+    description: 解释反馈与激励机制评分的详细理由，引用具体例子。
+  - field: 反馈与激励机制
+    type: float
+    description: 提供具体且有针对性的反馈，肯定学生亮点，指出改进空间，并提出下一步提升建议。反馈需关注个体差异，兼具激励和指导功能，避免泛泛而谈或仅表扬。需有针对性点评及后续成长建议。
+  format_mode: prompt

@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-高中-赛前心理调适与压力管理教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我叫郝珍，是高一女生，性格有点疏离，情绪和理性经常交替。我比较喜欢独处，也和父母关系比较疏远。最近要参加学校运动会，作为选手我总觉得赛前压力大，紧张又不想和同学多交流。你作为心理辅导老师，能不能给我一份完整的分析，结合我的性格和实际情况，讲讲高中体育比赛前怎么进行心理调适和压力管理？
+  - question: 我叫姚滨，是初三男生，喜欢打篮球和玩电竞游戏，平时和队友一起训练比赛，经常因为自信过头和他们有点小争执。你作为体育教练，能不能简要说明下像我这种情况下，赛前怎么做好心理调适和压力管理？
+  - question: 我是钭琳，初二女生，性格比较内向而且有点完美主义，喜欢戏剧表演和手工制作。平时和同学关系一般，比赛前总觉得压力大，有点难以自我调节。你作为成长顾问，能不能讲讲看像我这种情况赛前怎么进行心理调适和压力管理？
+  - question: My name is WilsonClaire, I'm a 4th Grade girl who really likes puzzle
+      games and street dance, but I get nervous about team activities and pressure
+      before school sports competitions, especially because I care a lot about personal
+      boundaries. As a school counselor, can you help me understand how someone with
+      my personality can handle mental stress and pressure before sports events? Help
+      me understand with some details and examples.
+  - question: 我是一名高中体育老师，最近发现不少学生在赛前情绪波动很明显，压力也挺大。你作为心理教育专家，能不能深入说说看老师赛前该怎么科学引导学生进行心理调适和压力管理？
+  - question: 我是高三学生的家长，我孩子平时挺外向，但一遇到体育比赛前就特别紧张，还会自我怀疑。你作为心理健康教育顾问，能不能讲讲看家长在赛前该怎么陪伴和支持孩子，帮助他们调适心理和压力？
+  - question: 我是许裕，43岁高中老师，平时课堂管理比较粗放但控制欲比较强，课后喜欢攀岩和弹吉他，社交也比较回避。最近发现班里学生在体育比赛前压力很大，情绪波动明显。我想知道，作为老师，赛前怎么科学管理和激发学生积极参与体育比赛，做好心理调适和压力管理？你能彻底说清楚，结合我的性格和班级实际，系统分析一下各方面吗？
+  - question: 我是高一女生，这次第一次要参加学校跳远比赛，没什么经验，心里特别紧张怕自己表现不好。你作为体育心理专家，能不能系统讲讲高中生第一次参加体育比赛时该怎么做好心理调适和压力管理？我想深入了解。
+  - question: 我是高二男生，是体育队员，最近要参加校田径接力赛。队里有些同学因为成绩压力大，训练氛围也受影响。你作为体育教练，可以讲清楚点赛前怎么通过团队互助和集体精神帮助大家调适心理和管理压力吗？
+  - question: 我是高一女生，喜欢羽毛球，但比赛一来就容易紧张，总怕自己发挥失常。你作为成长顾问，能不能简要说明下高中生比赛前缓解紧张的方法？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-高中-赛前心理调适与压力管理进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估是否能综合分析学生的性格、压力来源、运动项目、参赛经验等多维画像，针对不同类型学生提出差异化、定制化建议。高分需体现对复杂或特殊画像的精准识别与个性响应，避免模板化、一刀切。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估答案是否严格遵循教师或评估要求的结构，包括分点列举、标题分明、逻辑递进。高分需体现层级清晰、重点突出，同时鼓励创新表达和结构优化（如图表、流程图等多样表达）。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评估所用心理调适与压力管理方法是否有权威理论依据，方法科学有效，操作流程明确。高分需结合实证研究、理论原理，并对方法选择的科学性进行简明解释。
+  - field: 方法应用场景契合度_理由
+    type: str
+    description: 解释方法应用场景契合度评分的详细理由，引用具体例子。
+  - field: 方法应用场景契合度
+    type: float
+    description: 评估所推荐方法是否紧密结合高中体育赛前真实情境，针对学生面临的具体问题（如比赛紧张、团队协作、规则压力）有效落地。高分需方案可操作、能解决实际问题并体现情境敏感性。
+  - field: 激发创新思维能力_理由
+    type: str
+    description: 解释激发创新思维能力评分的详细理由，引用具体例子。
+  - field: 激发创新思维能力
+    type: float
+    description: 评估是否鼓励学生主动探索、设计并测试个性化压力管理策略，激发创新尝试和自我优化。高分需引导学生提出新方案、记录效果、进行持续迭代，并能反思和改进。
+  - field: 创造性表达与互动_理由
+    type: str
+    description: 解释创造性表达与互动评分的详细理由，引用具体例子。
+  - field: 创造性表达与互动
+    type: float
+    description: 评估是否通过多层次表达和互动（如提问、经验分享、小组讨论、团队共创等）引导学生主动表达，促进团队合作与创新。高分需体现学生间互相挑战、完善彼此思路，并有实际成果输出（如共创方案）。
+  - field: 社会主义核心价值观自然融入_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入
+    type: float
+    description: 评估内容是否将诚信、友善、拼搏、团结等核心价值观自然、细腻地融入建议或活动，与场景和方法有机结合。高分需在实际活动中体现价值观，形成正向行为引导，避免口号化或生硬灌输。
+  - field: 中华优秀传统文化渗透度_理由
+    type: str
+    description: 解释中华优秀传统文化渗透度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化渗透度
+    type: float
+    description: 评估内容是否巧妙融合中华优秀传统文化，如引用古诗词、传统智慧、典故等，帮助学生领会压力管理的深层意义。高分需将文化元素与心理调适方法有机结合，提升心理素养与文化认同。
+  format_mode: prompt

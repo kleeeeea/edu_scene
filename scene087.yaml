@@ -1,0 +1,125 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-高中-化学反应中能量变化的计算与分析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二学生，最近在学习化学反应中能量变化的计算与分析时遇到了一些困惑，特别是热化学方程式和反应热计算总感觉难理解。你作为化学教学专家，能帮我讲清楚点吗？希望结合我基础一般、喜欢实际案例的特点，给我一些学习建议。
+  - question: 我是刚入职的高中化学老师，最近班里学生在化学反应能量变化的计算和分析这块普遍有疑问，特别是能量守恒和分层教学方面。你作为资深化学教育专家，能彻底说清楚这部分知识体系、常见误区和分层教学策略吗？希望能结合生活化案例和创新教学设计，帮助我更好地开展差异化教学。
+  - question: 我是一名家长，我女儿刚开始学化学反应里的能量变化，她学得比较慢，容易紧张，但很喜欢生活里的科学现象。你作为化学学习顾问，能讲讲看化学反应的能量变化怎么回事吗？最好能结合一些实际生活例子和适合初学者的学习方法。
+  - question: 我是一名骨干高中化学教师，学校要求我设计一节关于化学反应能量变化计算和分析的公开课，班里既有基础薄弱的学生也有拔尖生。你作为化学教学专家，能彻底说清楚化学反应能量变化计算的原理、教学难点和分层分组的差异化教学策略吗？希望能系统地给我建议，并结合如何自然融入科学精神和探究意识，举些案例分析。
+  - question: I'm GarciaSamantha, a 12-year-old 6th grader who likes tea ceremony,
+      recitation, and dance. I'm still building confidence and can procrastinate sometimes
+      but I try to accept mistakes. Can you, as a patient chemistry learning advisor,
+      explain how energy changes happen in chemical reactions with practical examples?
+      Please detailedly say how I could balance my hobbies and science learning with
+      gentle advice.
+  - question: 我是一名高三学生，准备参加化学竞赛，但化学反应的能量变化计算这块还有不少疑问，特别是焓变、反应热和能量转化分析。你作为有经验的竞赛辅导老师，能具体说说相关计算方法、易错点和提升策略吗？希望能包含细节和例题分析。
+  - question: 我是高一学生，老师刚讲完化学反应里的能量变化，我对反应热、焓变的计算和分析还是不太明白。你作为化学学习专家，能深入讲解一下这些内容吗？希望你结合我学习细心但容易分神的特点，给我一些专注的小建议。
+  - question: 我是高二学生，基础一般，最近在学化学反应的能量变化，老师说要掌握反应热的计算和分析方法，但我总觉得公式太多容易混。你作为化学学习顾问，能不能概括一下这部分的核心要点，帮我理清思路？
+  - question: 我是新入职的高中化学老师，班里学生基础参差不齐，有的很感兴趣能量变化计算，有的觉得难以入门。你作为化学教育专家，能详细讲讲如何针对不同层次学生开展差异化教学吗？希望能提供分层教学策略、分组活动、生活例子和探究任务设计，也希望能自然融入科学精神和合作交流的价值观。
+  - question: 我是一名高二学生，最近在学化学反应能量变化计算时总是混淆焓变和反应热的概念。你作为化学学习顾问，能不能简短回答下这两者的区别和计算方法？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-高中-化学反应中能量变化的计算与分析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像匹配度_理由
+    type: str
+    description: 解释个性化画像匹配度评分的详细理由，引用具体例子。
+  - field: 个性化画像匹配度
+    type: float
+    description: 评价教学设计与实施是否基于学生的学业基础、兴趣、认知风格和成长轨迹，持续动态调整教学内容与方法，支持每位学生的个性化进步与发展。
+  - field: 指令遵循规范度_理由
+    type: str
+    description: 解释指令遵循规范度评分的详细理由，引用具体例子。
+  - field: 指令遵循规范度
+    type: float
+    description: 评价教学内容是否严格依照教学任务要求，环节分明、步骤完整，并对特殊要求（如分层、拓展、思辨）有明确落实和高质量呈现，拒绝表面化应付。
+  - field: 差异化教学策略呈现_理由
+    type: str
+    description: 解释差异化教学策略呈现评分的详细理由，引用具体例子。
+  - field: 差异化教学策略呈现
+    type: float
+    description: 评价教师是否根据学生差异，制定并灵活调整分层、分组或个别化教学策略，任务设计具体、可操作，并持续跟进学生反馈，确保策略落地和有效性。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评价教学方法是否紧密结合化学学科本质与教育学原理，采用多样、科学且高效的方式促进学生深度理解、探究和迁移应用，避免机械灌输和表面化学习。
+  - field: 知识点逻辑严密性_理由
+    type: str
+    description: 解释知识点逻辑严密性评分的详细理由，引用具体例子。
+  - field: 知识点逻辑严密性
+    type: float
+    description: 评价知识点讲解是否逻辑清晰、结构递进，前因后果自然衔接，内容体系化，帮助学生建立系统知识网络并能灵活应用，避免碎片化和跳跃式教学。
+  - field: 激发创造性思维引导度_理由
+    type: str
+    description: 解释激发创造性思维引导度评分的详细理由，引用具体例子。
+  - field: 激发创造性思维引导度
+    type: float
+    description: 评价教学是否持续营造探索、质疑和创新氛围，主动引导学生提出新问题、设计实验、反思改进，激发创造性思维和实践能力，突破标准答案限制。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价课堂互动是否能够真实反映学生疑惑，教师回应具体、自然、有针对性，促进深入交流和理解，形成良性反馈机制和学习共同体氛围。
+  - field: 价值观润物细无声融入度_理由
+    type: str
+    description: 解释价值观润物细无声融入度评分的详细理由，引用具体例子。
+  - field: 价值观润物细无声融入度
+    type: float
+    description: 评价教学内容是否自然融合社会主义核心价值观、中华优秀传统文化和科学精神，贯穿于知识讲解、案例分析与课堂讨论，促进学生形成正确价值观与社会责任感。
+  - field: 反馈与改进响应度_理由
+    type: str
+    description: 解释反馈与改进响应度评分的详细理由，引用具体例子。
+  - field: 反馈与改进响应度
+    type: float
+    description: 评价教师是否密切关注学生表现，及时收集并分析学生反馈，动态调整教学内容与方法，给予具体、个性化建议与鼓励，促进学生持续进步与自我反思。
+  format_mode: prompt

@@ -1,0 +1,108 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-初中-化学方程式相关计算方法指导教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是AndersonZara，今年28岁，是一名咖啡师，平时喜欢下象棋和玩MOBA电竞，对目标和沟通都很注重精准和阶段性。我最近想系统提升初中化学方程式的计算能力。你作为化学教育专家，能详细展开说说相关计算方法吗？希望你能结合我的兴趣和性格，比如象棋思维、电竞策略，以及咖啡师的工作场景，给我一些实际案例和学习建议。
+  - question: 我是归海凡豪，今年6岁，一年级学生，喜欢书法和数独，理解速度有点慢，做事习惯依赖家教和老师监督。你作为化学教学专家，能系统地讲解一下初中化学方程式计算的方法吗？希望你能结合我喜欢书法和数独的兴趣，设计一些适合我的实践活动和案例，并告诉家教和老师怎么针对我这样的孩子进行辅导。
+  - question: 我最近在学初中化学方程式计算，总感觉有点难，能解释一下计算的基本步骤和常见的学习难点吗？最好举点实际例子和易错点，帮我分析分析。
+  - question: 你作为化学教学专家，能从各个角度详细说说初中化学方程式相关计算吗？想了解知识体系、常见错误、生活应用、创新教学活动和不同类型学生的学习建议，麻烦你全面讲讲看。
+  - question: 我是肖超，六年级学生，喜欢机器人和吉他，平时课外活动比较多，成绩一般但很喜欢团队合作。你能讲清楚点初中化学方程式的计算方法吗？最好结合我的兴趣和学习特点，举几个实际例子和建议。
+  - question: 我最近刚开始学化学方程式的计算，大概讲讲主要步骤和容易出错的地方吧，简单点就行。
+  - question: 我是景金，一名48岁的老师，喜欢航模设计和野外生存训练，有时教学会觉得有点倦怠。你作为有经验的化学老师，讲讲看初中化学方程式计算的教学流程、常见误区和怎么结合我的兴趣做创新教学吧，也顺便说说怎么给自己加点动力。
+  - question: 你作为化学教育专家，能深入讲解一下初中化学方程式计算吗？希望你能分析下学生常见的困惑和错误，怎么改进，有没有生活实际的例子和创新建议，详细说说。
+  - question: 最近在复习初中化学方程式的计算，能简短回答下主要方法和常见误区吗？说说核心点就行。
+  - question: 老师让我多练习初中化学方程式计算，讲清楚点相关的标准流程和容易出错的地方吧，麻烦举点实际的例子和学习建议。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-初中-化学方程式相关计算方法指导进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学内容是否基于学生的学习基础、兴趣、认知风格和实时反馈进行动态调整。高分要求能针对不同学生群体持续优化教学策略，提供差异化支持，并根据学生反馈灵活调整内容和进度。中等分数为部分考虑个体差异，但调整有限。低分为完全一刀切，无视个体差异和反馈。
+  - field: 格式与指令遵循性_理由
+    type: str
+    description: 解释格式与指令遵循性评分的详细理由，引用具体例子。
+  - field: 格式与指令遵循性
+    type: float
+    description: 评估教学内容是否严格按照指定流程、格式和要求组织。高分为步骤编号、标题、说明、总结齐全且清晰，便于操作与检查。中分为大体流程正确，但细节不完整或有遗漏。低分为内容杂乱、无步骤或难以理解。
+  - field: 教学方法科学性与创新性_理由
+    type: str
+    description: 解释教学方法科学性与创新性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与创新性
+    type: float
+    description: 评估教学方法是否系统遵循教育科学原理，包含分层讲解、启发式引导、及时反馈与矫正、例题练习结合等。高分表现为方法多元、能因材施教、鼓励学生创新，且能根据学生实际表现持续调整。中分为方法较单一但有基本互动。低分为机械灌输，无互动或反馈。
+  - field: 知识点覆盖、深度与准确性_理由
+    type: str
+    description: 解释知识点覆盖、深度与准确性评分的详细理由，引用具体例子。
+  - field: 知识点覆盖、深度与准确性
+    type: float
+    description: 评估内容是否全面覆盖化学方程式相关计算的所有核心知识点、常见易错点及原理延展，并确保无科学性错误。高分要求知识点系统、原理深入、细节到位。中分为基础内容覆盖但深度或细节不足。低分为重要知识遗漏或有科学性错误。
+  - field: 引导式提问与思维激发_理由
+    type: str
+    description: 解释引导式提问与思维激发评分的详细理由，引用具体例子。
+  - field: 引导式提问与思维激发
+    type: float
+    description: 评估是否通过多层次、开放性、探究性提问激发学生主动思考、联想和创新。高分为能结合情境、提出深度问题、引导讨论并鼓励多元解答。中分为有部分引导但问题简单或单一。低分为只给标准答案，无任何引导性问题或思维挑战。
+  - field: 实践与创新应用鼓励_理由
+    type: str
+    description: 解释实践与创新应用鼓励评分的详细理由，引用具体例子。
+  - field: 实践与创新应用鼓励
+    type: float
+    description: 评估是否鼓励学生主动将所学知识应用于实际生活，设计创新活动或实验，提升解决实际问题和创造能力。高分为设计多样化实践活动，鼓励自主改进和分享。中分为有部分实践但内容单一或创新性弱。低分为完全无实际应用环节。
+  - field: 社会主义核心价值观融入度_理由
+    type: str
+    description: 解释社会主义核心价值观融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观融入度
+    type: float
+    description: 评估是否将社会主义核心价值观（如合作、诚信、科学精神、创新等）自然、深度地融入教学实践，落实到具体活动、评价和反思环节。高分为在教学各环节有机融合，师生共同践行。中分为部分环节提及但未深度落实。低分为机械灌输或完全未体现。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-高考备考心理与策略支持教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是一名英语老师，叫SmithEvelyn，今年39岁，平时喜欢戏剧和阅读。现在经常靠兴趣爱好来缓解压力，但还是觉得职业倦怠挺严重的，你作为心理支持专家，能大概讲讲该怎么更好应对压力和倦怠，同时还能顾好工作和兴趣吗？
+  - question: 我叫赵梓萱，44岁，是一名初中语文老师，性格比较严谨细致但逻辑性有点弱，平时还会教太极拳、做公益。我发现自己教学时容易循规蹈矩，遇到新问题就有点不知所措。你作为高考语文备考心理与策略支持专家，能解释一下怎么结合我的特点和经验，让语文教学更灵活，还能更好地支持学生心理吗？
+  - question: 我是一名高三学生，最近高考冲刺压力大，焦虑、失眠，还和父母有些矛盾。你作为高考语文备考心理与策略专家，能不能帮我详细讲讲，怎么科学管理压力、缓解焦虑、改善和父母的沟通？还有在语文备考时，怎么用传统文化的智慧给自己找点内心支撑？我想深入了解。
+  - question: 我是一名高中语文老师，班里有些学生高考复习期间总是焦虑自我否定，成绩也不稳定。你是心理和学习策略专家，能不能讲清楚点，这种情况常见的原因是什么？作为语文老师我可以用哪些方法帮他们缓解压力、增强自信？
+  - question: 我是高三学生家长，最近孩子语文备考情绪波动特别大，有点厌学和拖延，也总自我怀疑。我很担心他的心理健康，也希望他语文成绩能提升。你作为高考语文备考心理与策略专家，能不能详细分析下各个方面，包括家庭环境、亲子沟通、学习方法、时间管理、心理调适、激励机制什么的，给点系统建议？
+  - question: 我是高三班主任，感觉班里语文成绩提升得慢，大家备考自信心不足，主动性也不强。你作为高考语文备考心理与策略专家，能详细展开说说，这种情况背后可能有哪些深层原因？怎么结合心理调适、学科策略和传统文化智慧，系统地帮学生提升信心和学习动力？
+  - question: 我是高考语文备考教研员，最近调研发现有些学生在备考时容易‘内卷’焦虑、自我否定，还喜欢和别人消极比较。你作为心理支持和策略专家，能帮我理解一下这些现象背后的心理机制吗？结合语文学科怎么具体引导和调适？
+  - question: 我是一名高三学生，最近语文备考总是没动力，注意力也老是不集中，不知道怎么提升。你作为高考语文备考心理与策略专家，能简短回答下，有哪些具体建议让我重新找回学习的动力和方向？
+  - question: 我是高考语文老师团队负责人，最近老师们反映学生备考时情绪低落、厌学、考前焦虑很常见，老师自己压力也大。你作为心理支持和策略专家，能不能全方位地讲解一下高考语文备考中学生、家长、老师各自容易遇到的心理困扰和原因？分别有哪些系统的心理调适和学科策略？还能结合传统文化，帮助大家共同成长吗？
+  - question: 我叫邓峰，44岁，是老师，不太爱社交，喜欢研究充电头、航模和收藏，更多时间都在自己兴趣上。同事们尊重我，但我性格有点保守，常常在学校决策里比较被动。你是高考语文备考心理与策略专家，能讲讲看，像我这样的人在语文教学和心理支持上有哪些优势和局限？怎么结合我的特点和传统文化智慧，让自己更好成长？
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-高考备考心理与策略支持进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估答复是否根据学生的具体背景（如成绩水平、学习习惯、心理状态、兴趣特长等）进行针对性分析，提出差异化、动态调整的建议，体现对学生个体成长的持续关注与支持，避免一刀切。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估答复是否严格按用户指定的表达结构（如分标题、分点、重点突出等）组织内容，且条理清晰、逻辑严密。对高级要求，需在结构规范基础上体现创新（如信息可视化、流程图等），便于查阅和执行。
+  - field: 教学策略科学性_理由
+    type: str
+    description: 解释教学策略科学性评分的详细理由，引用具体例子。
+  - field: 教学策略科学性
+    type: float
+    description: 评估建议是否基于教育学、心理学、认知科学等权威理论与最新研究，能结合高中语文实际场景具体说明理论依据、作用机制，并解释为何有效，避免经验主义或无科学支撑的建议。
+  - field: 干预建议实用性_理由
+    type: str
+    description: 解释干预建议实用性评分的详细理由，引用具体例子。
+  - field: 干预建议实用性
+    type: float
+    description: 评估建议是否具体、可操作，包含详细实施步骤、时间规划、工具/资源推荐、反馈机制，能让学生在实际备考中易于执行和持续优化，避免空泛口号。
+  - field: 心理支持专业性_理由
+    type: str
+    description: 解释心理支持专业性评分的详细理由，引用具体例子。
+  - field: 心理支持专业性
+    type: float
+    description: 评估心理调适建议是否基于科学理论，细致梳理压力来源、情绪表现，提供多样化、科学且可行的调适措施，充分尊重个体差异，并提出追踪与动态调整方案，避免标签化或简单化处理。
+  - field: 创造力激发引导_理由
+    type: str
+    description: 解释创造力激发引导评分的详细理由，引用具体例子。
+  - field: 创造力激发引导
+    type: float
+    description: 评估答复是否通过多样化、创新性方法激发学生语文学习兴趣与创造力，鼓励主动探索、个性表达，推荐新颖实用的学习工具、活动或项目，超越机械训练。
+  - field: 模拟真实提问还原度_理由
+    type: str
+    description: 解释模拟真实提问还原度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问还原度
+    type: float
+    description: 评估问题是否贴近真实高中生备考语文的实际场景，语言自然具体，能真实反映学生在高考过程中的困惑、压力或实际需求，涵盖多元表达方式，避免过度宽泛或虚假场景。
+  - field: 中华优秀传统文化与价值观融入_理由
+    type: str
+    description: 解释中华优秀传统文化与价值观融入评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化与价值观融入
+    type: float
+    description: 评估答复是否能自然、恰当地将中华优秀传统文化和社会主义核心价值观融入建议或分析中，通过典故、故事、理念等正面引导，且与语文备考实际结合紧密，避免生硬引用或口号化。
+  format_mode: prompt

@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene309/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 体育-小学-赛后握手礼仪学习教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是一名小学老师，平时喜欢用跨学科的方法教学，也重视和学生之间的情感连接。你作为教育专家，能详细说说在体育课后如何引导孩子们学习赛后握手礼仪吗？详细说说
+    - question: 你是我的学习助手，能讲得详细点吗？小学体育课后，应该怎样系统地教孩子们赛后握手礼仪？希望你能多说一些，比如握手礼仪的意义、教学流程、活动设计、常见问题和解决办法，还可以举些例子说明。
+    - question: 我是新入职的小学体育老师，你作为教研员，能不能彻底说清楚赛后握手礼仪怎么教？希望你能从价值观、心理发展、课堂氛围、师生互动、家校合作等方面系统讲讲，包括教学意义、方法、活动细节、难点和可持续发展策略，还可以结合国内外一些案例和研究。
+    - question: 你能帮我理解一下小学体育课后赛后握手礼仪怎么具体开展吗？比如老师该怎么引导、学生要注意什么，有哪些细节？帮我理解一下
+    - question: 我是朱沛，摄影师，平时喜欢咖啡、旅行和音乐，也很注重职场的规则和专业边界。你作为体育教育专家，能详细讲讲小学体育课后赛后握手礼仪的意义和具体做法吗？详细讲讲
+    - question: 我是万荣轩，初三学生，平时喜欢露营和玩无人机，也有艺体特长。你作为体育老师，能全方位地讲解一下小学体育课后赛后握手礼仪吗？希望能说清楚它的核心价值、流程、文化意义、心理影响、活动创新，还有怎么结合兴趣特长让大家更愿意参与，最好能举些案例和发展建议。
+    - question: 你作为小学体育老师，能简短回答下赛后握手礼仪该怎么引导吗？主要有哪些步骤和注意事项？
+    - question: 你是我的学习助手，能不能概括一下小学体育赛后握手礼仪主要包括什么内容？为什么重要？
+    - question: 我是小学体育老师，最近在考虑怎么培养学生的赛后握手礼仪。你能讲清楚点吗？比如教学流程、常见问题和改进建议。
+    - question: 麻烦你帮我理解一下为什么小学体育课后要重视赛后握手礼仪？这个礼仪对孩子成长有哪些好的影响？
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 体育-小学-赛后握手礼仪学习进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像识别与响应
+      type: float
+      description: 评价教学内容是否能细致识别学生的年龄、性格、经验等个体差异，并据此调整教学策略、表达方式和互动设计，真正实现以生为本的差异化教学。
+    - field: 指令格式遵循度
+      type: float
+      description: 评价教学方案是否严格按照题目或场景要求的结构、步骤和内容进行表达，逻辑清晰、环节完整，无遗漏或随意增减。
+    - field: 教学方法科学性与专业性
+      type: float
+      description: 评价教学方法是否基于教育学、心理学原理，过程科学、层次递进，能有效促进学生理解和内化礼仪行为，同时体现专业的活动设计与适宜性。
+    - field: 教学目标与评价机制明确性
+      type: float
+      description: 评价教学目标是否具体、可衡量，评价机制是否多元、过程化，能全面检验学生对握手礼仪的认知、技能与态度变化。
+    - field: 互动性与参与度设计
+      type: float
+      description: 评价教学中是否设计了多样化、层次化的互动环节，能充分调动学生积极性，促进全员主动参与和情感交流。
+    - field: 创造力激发与创新表达
+      type: float
+      description: 评价是否鼓励学生用多样方式表达自己的理解、创新实践赛后礼仪，激发他们的主动思考、个性表达与团队协作能力。
+    - field: 模拟真实提问场景贴合度
+      type: float
+      description: 评价教学内容是否紧贴小学体育课堂真实情境，包含学生可能提出的实际问题和困惑，并有针对性地引导和解答。
+    - field: 社会主义核心价值观自然融入
+      type: float
+      description: 评价教学内容是否以润物细无声的方式，将团结、友爱、公平等社会主义核心价值观与中华优秀传统文化自然融合进教学活动和语言表达中，避免生硬灌输。
+format_mode: prompt

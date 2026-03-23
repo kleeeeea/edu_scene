@@ -1,0 +1,119 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为语文-高中-复杂文言文研读教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是高二的学生，最近在研读《兰亭集序》时，发现像“死生亦大矣，岂不痛哉”这样的句子不太懂意思，也不清楚它在整篇文章里有什么作用。你能说说你的看法吗？最好结合全篇帮我分析一下，给我一些详细的建议和例子。
+  - question: 我是一名比较寡言的男老师，平时喜欢攀岩和收藏邮票钱币，压力大时会独自去运动。最近在教《逍遥游》，发现学生对“鹏之徙于南冥也，水击三千里”这样的句子理解很困难。你能简要说明下，怎么帮学生突破这类文言文的难点吗？最好结合我的教学风格和兴趣给点建议。
+  - question: 我是高一学生，最近在学韩愈的《师说》，总觉得“师者，所以传道受业解惑也”这句话很难完全理解。你能详细说说这句话的深层意思吗？还有它对我们今天学语文有没有什么启示？
+  - question: 我是高中语文老师，最近带学生深入学习《赤壁赋》，希望他们能真正体会苏轼的情感和哲理。你作为语文教育专家，能不能系统地讲解一下，怎么设计一节高质量的《赤壁赋》研读课？请从各个方面详细说说。
+  - question: 我是高三学生，对文言文有兴趣，最近读《滕王阁序》时觉得辞藻很美，但结构和内容有些复杂。你能具体说说，像我这样想进一步提升文言文解读能力的学生，该怎么读懂并欣赏这类复杂文言文吗？
+  - question: I'm WhiteElena, an 11th grade student passionate about science, taekwondo,
+      and history. As an idealist, I recently read 'The Peach Blossom Spring' and
+      was captivated by its utopian world, but I can't quite grasp the deeper philosophical
+      ideas or how they relate to today's world. Could you explain in detail, from
+      different perspectives, what this text means and how to appreciate it as someone
+      like me? Please give a thorough and thoughtful answer.
+  - question: 我是准备参加语文竞赛的高中生，最近在读《出师表》和《谏太宗十思疏》，想深入比较它们在劝谏、用典、情感表达等方面的不同和联系。你作为语文竞赛辅导老师，能详细分析下各个方面，帮我理清这两篇文言文的独特价值和时代精神吗？
+  - question: 我是五年级女生朱淇，平常喜欢玩益智游戏、弹吉他，也喜欢做些自然观察。最近妈妈让我提前接触文言文，但像《陋室铭》里有很多词我看不懂。你能解释一下，有没有什么好玩的方法能帮我学会文言文？最好结合我的兴趣讲讲看。
+  - question: 我是高二学生，复习文言文阅读题时经常分不清主旨和修辞，有没有什么方法能让我快速判断复杂文言文的主旨和常见修辞？用几句话说说就行。
+  - question: 我是高三家长，我女儿马上高考了，但她总觉得复杂文言文很难读懂，信心也不太足。你作为语文老师，能不能全面分析一下，怎么帮像我女儿这样缺乏信心的学生一步步攻克复杂文言文？请详细说说，包括心理、学习方法和家庭支持等方面。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 语文-高中-复杂文言文研读进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 教学设计需基于学生前测、学习档案等多维信息，科学分层并动态调整教学内容、方法及反馈机制。高分要求分层方案针对性强，反馈及时有效，能显著提升不同层次学生的学习体验与成果。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 教学设计应严格依照流程，环节齐全且顺序合理。各环节需有明确标识，内容结构层次分明，环节之间有逻辑衔接，表达规范，便于教师和学生理解与执行。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 教学活动须围绕复杂文言文研读的核心目标展开，包括文本主旨理解、结构分析、文言知识掌握、阅读能力提升，任务与评价方式均需紧扣目标，层层递进，避免与目标脱节。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 教学方法应结合分层递进、启发式、合作探究、应用实践等，注重学生主体性与互动，多元评价，避免单一讲授或机械训练。高分需体现方法多样、高效互动和针对性分层。
+  - field: 文本解读深度与准确性_理由
+    type: str
+    description: 解释文本解读深度与准确性评分的详细理由，引用具体例子。
+  - field: 文本解读深度与准确性
+    type: float
+    description: 文本解读需涵盖主旨、结构、修辞、文化背景等多维度，分析需深入、细致且无明显误读。高分要求能辨析学生常见误区，提出多元但有依据的见解，并能结合当代视角展开批判性思考，仅表层翻译或注释不能得高分。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 教学内容和活动需有意识设计开放性问题、跨文本比较、个性化表达和创新任务，激发学生独立思考及原创表达。高分需体现多样化创新活动，学生能提出新见解或创作成果，避免仅机械记忆或死板答题。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 所设计问题需贴近真实高中语文课堂，反映学生实际困惑、兴趣及理解难点，涵盖理解、分析、应用、评价等多层级。高分需问题具体、针对性强，能引发讨论和深度思考，避免空泛或机械化问题。
+  - field: 中华优秀传统文化融入度_理由
+    type: str
+    description: 解释中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入度
+    type: float
+    description: 教学需自然融合中华优秀传统文化元素，将社会主义核心价值观与文本内涵有机结合，通过实际案例或情境引导学生思考传统美德与现实生活关联。高分要求文化内涵融入自然，联系现实且能启发学生价值观思考，避免生硬灌输或表面化。
+  format_mode: prompt

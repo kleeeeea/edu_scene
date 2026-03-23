@@ -1,0 +1,147 @@
+# 一些全局字段
+globals:
+  # 并发
+  concurrency: 10
+  # 模型调用限制次数
+  recursion_limit: 50
+  # 重试（下面是默认）
+  retry:
+    # 重试次数
+    attempt: 3
+    # 重试间隔（秒）
+    interval: 10
+  # 脚本运行期间记忆配置
+  mapping_file: None
+  memory:
+    # 所有记忆、对话记录、评测结果等信息的存储路径
+    # 默认和配置文件同名目录
+    # 记忆存放的位置，推荐命名为 任务名/模型名
+    path: ./Scene261/Qwen2.5-7B-1121
+
+# 定义任务中需要用到的模型
+models:
+  test_model:
+    type: openai
+    # api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: http://49.51.37.239:3006/v1
+    # model: gpt-5
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+    # 如果需要指定特殊参数
+    #kargs: 
+     # temperature: 0.5
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    # api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/e6f4a0c5-385a-4306-a2bf-6ca83c64578e/aeace085-a5e3-4643-a657-ed9c594108c0/proxy/9001/v1
+    # api_base: http://49.51.37.239:3006/v1
+    api_base: http://0.0.0.0:8001/v1
+    # model: claude-4-sonnet
+    # model: gpt-4.1
+    # model: InnoSpark
+    # model: kimi-k2-turbo-preview
+    model: Gemini 2.5 Pro
+    # model: gemini-2.5-pro-all    
+    # 如果需要指定特殊参数
+    kargs: 
+      temperature: 0
+
+
+# 定义任务中需要使用的agent
+agents:
+  # agent名，字段可自定义，在本例中为teacher
+  test_model: 
+    # 该agent用到的模型
+    model: test_model
+    # 提示词
+    prompt: 
+      # 填写完整的openai格式的提示词
+      - role: system
+        # content: You are a helpful assistant.
+        content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院） and East China Normal University(华东师范大学). You are a helpful assistant.
+      - role: user
+        content: "你的任务是场景: 政治-高中-市场与政府：“看不见的手”与“看得见的手”教学场景。{question}"
+    # 以下memory配置为默认配置
+    memory:
+      enable: false # 是否启用记忆
+      id: null # 记忆的id号，建议不填或留空，除非需要多次运行时保留记忆
+      # 调用时携带多少轮上下文对话，一个user一个assistant记作一轮
+      keep_turns: 3 # 默认3轮，即上方配置的prompt-[user-assistant-user-assistant-user-assistant]-user
+
+# 信息传递方向
+directions:
+  # 从一个agent到另一个agent
+  # START和END是两个特殊节点，也算作Agent
+  - START -> test_model # 程序开始后，首先激活teacher这个agent用于生成数据
+  - test_model -> END 
+
+tasks:
+  # 由START进入第一个agent的prompt
+  # start_prompt可选，如果未指定就只传agent中的prompt
+  # task模式， 可选union和iter
+  # union指将content下所有字段各选一项排列组合，例如在本例中，就形成了len(image) * len(question)个task
+  mode: iter
+  content:
+    # content中的字段将被用于动态生成agents中的prompt，例如image将替换提示词中所有{image}
+    - question: 我是高二学生，最近在复习‘市场与政府’这部分，特别是‘看不见的手’和‘看得见的手’，一直搞不清楚两者的原理和区别，也不太明白它们在中国现实里是怎么用的。你作为政治学科专家，能讲得详细点吗？最好结合下我们的社会主义核心价值观和实际情况分析一下。
+    - question: 我是一名刚入职的高中政治老师，发现学生总是把‘看不见的手’和‘看得见的手’混淆，特别是它们的调节方式和作用。你是教育专家，能解释一下这两者的核心区别和联系吗？最好举点实际案例，也结合下咱们的传统文化和价值观。
+    - question: 我是高一学生曾峻熙，滑板和骑行是我的爱好，理解东西有点慢但会积极去学。最近政治课讲‘看不见的手’和‘看得见的手’，我老是分不清。你作为我的学习助手，简要说明下这两个概念的主要区别，让我能快速理解。
+    - question: 你作为高中政治学科的专家，能把‘市场与政府’里‘看不见的手’和‘看得见的手’彻底说清楚吗？麻烦从理论、历史、现实应用、在中国经济中的作用和挑战都详细讲讲，最好结合具体案例和我们的核心价值观、传统文化。
+    - question: 我快高考了，复习‘市场与政府’这块的时候，对‘看不见的手’和‘看得见的手’还是觉得有点抽象，尤其是它们到底怎么影响经济。你是我的学习顾问，能帮我理解一下这两个调节机制在社会经济发展中的作用吗？最好结合咱们中国的实际说说。
+    - question: 你是政治领域的专家，我最近对‘市场与政府’特别感兴趣，尤其是‘看不见的手’和‘看得见的手’这块。能不能讲讲看这两个调节机制的特点和什么时候用，各自有什么具体例子？
+    - question: 我在做‘市场与政府’的专题讲座材料，特别想把‘看不见的手’和‘看得见的手’这两个调节机制各个方面详细分析下。你作为政治学科专家，能不能系统地讲讲理论、功能、局限、它们的关系，还有在中国的实际作用和意义，最好能结合我们的核心价值观和传统文化。
+    - question: 我是初一学生魏韵诗，喜欢园艺、轮滑和钢琴，记忆力主要靠听觉。最近上政治课学到‘看不见的手’和‘看得见的手’，感觉挺抽象的。你是我的学习助手，能不能概括一下这两个调节机制的主要内容和区别，让我好记一点？
+    - question: 我是记者衡淇美，最近在写一篇有关中国经济调节机制的深度报道，对‘看不见的手’和‘看得见的手’特别感兴趣。你是政治学科专家，能不能深入说说看这两个调节机制的理论和现实应用，尤其结合中国实际和一些创新、批判性的视角？最好多举例分析。
+    - question: 我是高三学生，备考政治时学到‘市场与政府’里的‘看不见的手’和‘看得见的手’，但总觉得有点模糊。你作为我的学习顾问，帮我理解一下这两个调节机制的本质和区别吧，举点例子详细说说。
+  
+# 设定用于评估的模型和提示词，以及输出的格式
+evaluation:
+  # 评估任务名称, 推荐命名为 任务名_模型名
+  name: cross_235b
+  # 选择用于评估的模型
+  model: judge_model
+  # 设置用于评估的提示词
+  # 可以使用模板，在评估时将动态修改
+  prompt:
+    # - role: system
+    #   content: |
+    #     你是一个教育领域的专家，擅长对小学语文教育进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 “完全不符合”，5 分为 “完全符合”）进行打分。
+    - role: user
+      content: |
+        你是一个教育领域的专家，擅长对场景: 政治-高中-市场与政府：“看不见的手”与“看得见的手”进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为 "完全不符合"，5 分为 "完全符合"）进行打分。以下是问题和相应的回答内容：
+        问题: {task.question}
+        回答: {messages.as_dialog()}
+
+  # 输出格式
+  # format下面写每个字段
+  # 每个字段需要包含type和description，分别表示数据类型和描述
+  # type可以是以下几种类型：str, int, float, bool, dict
+  # description可以是任意字符串，用于描述字段的意思
+  format:
+  format:
+    - field: 个性化画像匹配度
+      type: float
+      description: 评估回答是否根据学生的具体画像（如学习水平、兴趣、认知风格、学习障碍等）进行有针对性的深度定制。高分要求不仅体现差异化响应，还能灵活调整内容、方法或案例以适配不同学生的独特需求。
+    - field: 指令遵循准确性
+      type: float
+      description: 评估回答是否严格、完整地按照题目或教师的格式、内容、深度等要求作答。高分要求不仅满足基本指令，还能在细节、结构、逻辑顺序等方面做到精确和超越，如主动补充必要信息或优化表达。
+    - field: 教学方法科学性
+      type: float
+      description: 评估回答是否采用多样化、科学的教学方法，注重启发、探究、互动等原则。高分不仅体现方法多元，还能根据教学目标和学生特点灵活组合，促进深度参与和思考。
+    - field: 知识结构清晰度
+      type: float
+      description: 评估回答是否具备清晰、系统的知识结构，包括概念解释、逻辑递进、层级分明、重点突出。高分要求复杂知识能被有效拆解并以流程图、思维导图等形式辅助呈现，便于学生理解。
+    - field: 创新思维激发
+      type: float
+      description: 评估是否通过设问、开放性任务、情境设计等方式，激发学生创新和批判性思考，鼓励学生提出独立见解与多元观点。高分要求能引导学生提出新颖、独特的思考或方案，并进行深度探讨或反思。
+    - field: 模拟真实提问场景
+      type: float
+      description: 评估问题设计是否贴近真实生活与课堂情境，能引发学生兴趣和参与。高分要求问题与学生生活紧密相关，具备复杂性、挑战性，能引发深入讨论和共鸣。
+    - field: 社会主义核心价值观融入度
+      type: float
+      description: 评估回答在内容和案例中是否自然融入社会主义核心价值观和中华优秀传统文化。高分要求能将核心价值观与知识内容深度结合，通过真实案例或情境体现价值观，不流于口号或形式。
+    - field: 价值观表达自然性
+      type: float
+      description: 评估涉及价值观内容时表达是否自然、潜移默化，通过故事、案例、情境等方式影响学生。高分要求表达方式润物细无声，能引发学生情感共鸣和思考，而非强制灌输。
+format_mode: prompt

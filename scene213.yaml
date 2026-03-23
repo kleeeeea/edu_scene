@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为地理-小学-基本地形类型的辨认（山地、平原、丘陵等）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学三年级学生，最近在地理课上学习了山地、平原、丘陵这些地形，但我总是分不清它们的特点。你作为地理知识助手，能说说你的看法吗？记得举一些生活中的例子，还能帮我想想家乡有哪些地形类型吗？
+  - question: 你是一名小学地理教研员，最近在培训老师如何帮助学生辨认山地、平原、丘陵这些地形类型。能从各个角度详细说说小学阶段怎么样才能让学生有效区分这些地形吗？记得结合教学方法、互动活动、生活中的例子和价值观方面的内容。
+  - question: 我是四年级学生，老师让我们简要说明山地、平原和丘陵的主要特点和生活中常见的例子。你能简要说明下吗？主要说说核心要点就行。
+  - question: 你是小学地理老师，我班里有几个学生特别喜欢户外活动，比如爬山和骑自行车，但他们在分辨地形类型时还是有些迷糊。你能深入说说看，怎么帮助他们更好地理解和辨认山地、平原、丘陵这些地形？最好结合教学方法、活动设计和中华优秀传统文化的内容。
+  - question: 我是小学五年级老师，班里有几个学生总是注意力不集中，学地理很容易分心。你作为地理教育专家，能全方位地讲解一下，怎么通过兴趣激发、游戏化和互动活动等方法，让他们更好地辨认山地、平原、丘陵这些地形？内容越全面越好，还能带上一些价值观引导的建议。
+  - question: Hi, I'm HarrisAndrew, a 15-year-old boy in 9th grade. I love esports,
+      stargazing, and basketball. I learn by myself a lot, but sometimes I find logical
+      thinking hard. As my geography mentor, could you talk about how to tell the
+      difference between mountains, plains, and hills? Maybe use some vivid examples,
+      compare with sports, and connect it to Chinese culture if possible. Just讲讲看。
+  - question: 我是三年级学生，最近在地理课上学到地形类型，但我还是分不太清山地、平原和丘陵之间的具体差别。你作为地理学习助手，能具体说说吗？举点生活中的例子会更好。
+  - question: 我是五年级学生，最近学习了山地、平原、丘陵这些地形类型，但总觉得很抽象，难理解。你作为地理老师，可以说说你的看法吗？如果能用形象比喻或者举例就更好了。
+  - question: 你是一名小学地理老师，班里学生对地形类型很感兴趣，尤其喜欢讨论生活中的地形和家乡的变化。能详细讲讲山地、平原、丘陵的区别和特征，以及它们和我们生活的关系吗？最好结合一些生活实例、图像联想，还有中华传统文化的内容。
+  - question: 我是四年级学生，老师让我们简要说明下山地、平原和丘陵这三种地形的定义和区别。你能简要说明下吗？主要说清楚核心要点就行。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 地理-小学-基本地形类型的辨认（山地、平原、丘陵等）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估内容是否充分根据目标学生的年龄、兴趣、认知差异进行分层设计，并能动态调整表达方式和任务难度，特别关注特殊需求和学习障碍学生的支持措施，确保每个学生都能获得适合的学习体验。
+  - field: 指令遵循完整性与深度_理由
+    type: str
+    description: 解释指令遵循完整性与深度评分的详细理由，引用具体例子。
+  - field: 指令遵循完整性与深度
+    type: float
+    description: 评估教学内容是否严格按照教学指令组织，不仅涵盖全部环节，还需结构清晰、逻辑严密，内容深入，能针对教学目标进行反馈和补充，无遗漏、无随意变动。
+  - field: 教学方法科学性与适龄性_理由
+    type: str
+    description: 解释教学方法科学性与适龄性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与适龄性
+    type: float
+    description: 评估是否采用多样化、循证有效且适合小学生认知特点的教学方法（如情境模拟、图示、游戏、分组讨论等），方法与内容紧密结合，能有效促进深度理解、迁移和学习兴趣。
+  - field: 概念准确性与层次递进_理由
+    type: str
+    description: 解释概念准确性与层次递进评分的详细理由，引用具体例子。
+  - field: 概念准确性与层次递进
+    type: float
+    description: 评估地形相关概念表达是否准确无误，讲解过程是否体现由浅入深、逐步递进，明确各类型地形的异同，及时纠正常见误区，并帮助学生建立系统知识结构。
+  - field: 互动性与引导性思考_理由
+    type: str
+    description: 解释互动性与引导性思考评分的详细理由，引用具体例子。
+  - field: 互动性与引导性思考
+    type: float
+    description: 评估教学内容是否设置多样化、高质量的互动环节，提出启发性和开放性问题，鼓励学生主动表达、互相提问与讨论，并能有效引导学生深入思考地形知识及其应用。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评估教学内容是否鼓励学生用多样、创新的方式观察和表达地形知识，提出开放性任务，支持个性化见解和独特表达，并促进跨学科、批判性思考。
+  - field: 社会主义核心价值观自然融入度_理由
+    type: str
+    description: 解释社会主义核心价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观自然融入度
+    type: float
+    description: 评估教学内容是否自然融合社会主义核心价值观（如爱国、敬业、生态文明等），通过具体地形知识和生活案例激发学生认同与践行，避免生硬灌输和脱离实际。
+  - field: 中华优秀传统文化渗透性与解释深度_理由
+    type: str
+    description: 解释中华优秀传统文化渗透性与解释深度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化渗透性与解释深度
+    type: float
+    description: 评估教学内容是否自然融合中华优秀传统文化（如古诗词、历史故事、传统地理观念），并能结合地形知识进行解释和启发，提升学生文化素养，避免机械引用或忽略文化内涵。
+  format_mode: prompt

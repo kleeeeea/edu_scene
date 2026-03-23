@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为体育-小学-运动前的准备与放松教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是AndersonLola，12年级女生，性格比较被动合作，喜欢历史、跑步和写作，平时社交主要围绕学业，喜欢独自运动。你作为体育教育专家，能解释一下针对我这种情况，运动前的准备和放松有哪些适合我的科学方法？最好结合我的兴趣和性格，举些具体例子。
+  - question: 我是小学体育老师，班里有孩子运动前很紧张，也有注意力不集中的。你作为体育教育专家，能用几句话说说运动前的准备和放松有哪些核心方法能帮到他们吗？要操作性强，重点突出。
+  - question: 我是小学四年级学生，喜欢画画，但体育课前总会紧张，你作为体育教育专家，能具体说说针对我这种情况，运动前的准备和放松有哪些有趣又有效的方法吗？最好结合我的兴趣举些例子。
+  - question: 我是刚入职的小学体育老师，班里不少孩子体质弱，性格又很不一样。你作为体育教育专家，能详细讲讲运动前的准备和放松环节怎么针对不同体质和性格的孩子设计吗？请结合实际案例和分析，说得全面些。
+  - question: 我是小学教研员，最近在研究运动前准备和放松对学生健康和课堂氛围的作用。你作为体育教育专家，能不能系统地讲解一下小学体育课里这部分的理论、科学流程、差异化和创新设计、团队协作培养、评价方式以及家校共育建议？内容要全面深入，适合专业参考。
+  - question: 我是小学体育课程负责人，想全方位提升运动前准备和放松的科学性和趣味性，促进学生积极参与和健康成长。你作为体育教育专家，能不能全方位地讲解一下这部分的最新理论、实践流程、个性化设计、师生互动、创新趣味活动、主动性培养、价值观融合，以及家校社区联动的方法？内容要有深度和系统性，适合课程改革。
+  - question: 我是小学体育老师，班里学生运动兴趣低、容易分心，家长也不太重视运动前准备。你作为体育教育专家，能深入说说看怎么科学设计准备和放松环节，既能激发学生兴趣、提升专注力，也能让家长重视吗？最好举些具体做法和沟通方法的例子。
+  - question: 我是梁倩雪，初二女生，喜欢书法、羽毛球、篮球，理解有点慢，偶尔拖延，家里爸爸参与少，团队运动时社交比较活跃。你作为体育教育专家，用几句话说说运动前准备和放松对我这种性格和兴趣有什么作用？能举个例子吗？
+  - question: 我是郑顺，高二男生，喜欢游泳、摄影和3D建模，性格内向、兴趣驱动，习惯独自训练，和同学关系偏疏离更注重个人竞争。你作为体育教育专家，讲讲看像我这样偏好个人项目、社交距离大的学生，运动前准备和放松怎么科学安排？有什么能提升体验和身心健康的建议？最好结合我的兴趣和性格举例说明。
+  - question: 我是小学三年级班主任，班里有几个孩子体质弱、运动兴趣不高，还有学生运动前总是紧张。你作为体育教育专家，能具体说说运动前的准备和放松环节对这些孩子应该怎么设计吗？最好结合他们的特点，给出可操作的建议和具体方法。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 体育-小学-运动前的准备与放松进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估回答是否能基于小学生的年龄、身体素质、兴趣、性格、健康状况等多个维度，主动收集、分析并区分不同学生的特点，针对性提出多层次、具体可执行的活动推荐与调整方案。高分需体现对个别差异的深入洞察与动态适应，避免仅表面化分组或泛泛而谈。
+  - field: 指令遵循与格式规范_理由
+    type: str
+    description: 解释指令遵循与格式规范评分的详细理由，引用具体例子。
+  - field: 指令遵循与格式规范
+    type: float
+    description: 回答内容必须严格按照教师或任务要求的结构、步骤和用词进行，条理清晰、分段明确、语言简明，便于直接操作。高分需无格式、顺序、术语等错误，所有环节均有编号、标题、详细说明。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 所推荐的准备与放松活动需基于最新体育教育理论，适应小学生生理心理特点，动作顺序、强度、时间、难度安排合理，安全措施到位。高分需体现创新性或适应性，如针对注意力、体能变化的差异化安排。
+  - field: 教学内容专业深度_理由
+    type: str
+    description: 解释教学内容专业深度评分的详细理由，引用具体例子。
+  - field: 教学内容专业深度
+    type: float
+    description: 对准备与放松活动的科学原理、作用机制、适用范围及注意事项有系统、深入的阐述，能够结合实际案例、数据或最新研究，体现理论联系实际。高分需有多角度、层次化分析，能解释‘为什么’及‘如何’。
+  - field: 模拟真实提问适应性_理由
+    type: str
+    description: 解释模拟真实提问适应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问适应性
+    type: float
+    description: 能针对学生、家长、教师在真实教学场景下的具体、互动性提问，做出贴切、易懂、亲和力强的回应。高分需主动引导、启发思考，善用生活化例子，表达符合提问对象特点。
+  - field: 创造力激发与自主引导_理由
+    type: str
+    description: 解释创造力激发与自主引导评分的详细理由，引用具体例子。
+  - field: 创造力激发与自主引导
+    type: float
+    description: 通过引导、任务设计或激励措施，鼓励学生自主思考、创新设计准备与放松活动，支持个性表达和团队合作。高分需有具体自主空间、创新激励和协作机制，体现培养创造力的具体做法。
+  - field: 开放性与包容性表达_理由
+    type: str
+    description: 解释开放性与包容性表达评分的详细理由，引用具体例子。
+  - field: 开放性与包容性表达
+    type: float
+    description: 尊重学生多样兴趣、能力、文化背景，主动支持多元化活动选择与表达方式。高分需有多样化具体方案、鼓励学生分享不同体验，并对特殊需求学生有实际支持措施。仅被动提及多样性或避免排斥性语言为中等表现，需主动促进包容性。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 在传授体育知识过程中，自然融入团结协作、尊重他人、积极向上等核心价值观和中华优秀传统文化。高分需结合具体活动、情境或故事，促进学生情感共鸣和实际行动，避免生硬说教。
+  format_mode: prompt

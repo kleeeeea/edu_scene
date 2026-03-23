@@ -1,0 +1,118 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为德育美育-小学-分享的快乐（德育）教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是四年级二班的李明，男生，平时比较开朗，喜欢踢足球，也很爱和同学们玩。最近班会上老师让我们分享自己的小零食，我一开始其实有点舍不得，后来分给了同桌和前后排，大家都很开心。我想知道，像我这样的小学生，在分享东西的时候，为什么会感到快乐？能讲得详细点吗？
+  - question: 我是三年级的小学生王可欣，女生，平时喜欢画画，但有点内向，不太敢主动和同学玩。昨天我把自己画的小熊送给同桌，她很喜欢，我心里也特别高兴。你能帮我概括一下，为什么分享自己的东西会让人觉得开心吗？概括一下就行。
+  - question: 我是五年级的孙宇豪，男生，最近刚转学到新学校，有点紧张也有点孤单。我喜欢下围棋和画漫画，但还没找到合适的朋友。有一天我把漫画书借给同桌，他特别高兴，还说以后也借我看他的书，我们还约好一起画画。你作为AI学习助手，能深入讲解一下，在我这样的情况下，分享能带来哪些快乐？还有什么具体做法能让我通过分享交到更多朋友？能深入讲解一下吗？
+  - question: 我是二年级的小学生李雨欣，女生，喜欢跳舞和唱歌。上周班级才艺展示，我把发卡借给了表演的小伙伴，她还夸我大方。大家都说分享是一种快乐，你能解释一下吗？
+  - question: 你作为一名小学德育教育专家，我是一名刚入职的小学班主任，性格外向，平时也很喜欢组织社团活动。现在我要带班级做一次‘分享的快乐’主题班会，班里既有活泼的孩子，也有比较内向、不太愿分享的学生。你能给我一份完整的分析，讲讲小学阶段‘分享的快乐’的心理机制、发展阶段、家庭和学校的影响、常见问题、活动设计和评价方法吗？给我一份完整的分析。
+  - question: 我是六年级的赵梓萱，女生，喜欢写手账和做手工，经常把小饰品送给同学。最近有个同学总收我的东西但不太愿意分享自己的，我有点不开心。你能解释一下，遇到这种情况应该怎么做，才能既保护自己的感受又能继续体验分享的快乐吗？
+  - question: 我是三年级的刘泽宇，男生，喜欢玩积木。上周我带自己拼的小机器人到学校和同学玩，结果被人不小心弄坏了，我很伤心，但后来大家一起帮我修，还说以后一起拼别的。我有点好奇，为什么有时候分享会遇到不顺利，但最后还是会感到快乐？你能解释一下吗？
+  - question: 你作为小学德育美育领域的AI教育顾问，我是熊丽仪，一位50岁的女法官，喜欢下棋和园艺，平时在社交上既有疏离感，也能适度融入。我最近在想，怎样结合我的职业和兴趣，为小学生设计一场‘分享的快乐’德育活动，让孩子们能通过体验理解分享的意义、体会别人的感受，还能学会在不同社交场合平衡自己和集体。你能彻底说清楚这个主题活动的设计理念、具体方案、流程、创新亮点，以及怎么结合我的个人特质和法官背景引导孩子们吗？彻底说清楚。
+  - question: I'm JacksonAmelia, an 18-year-old senior high student who loves learning
+      languages, painting, and anime design. I'm a team-oriented person and often
+      work on creative projects with others. Can you briefly explain why sharing brings
+      happiness, especially for someone like me who enjoys teamwork and creative collaboration?
+      Just a brief explanation, please.
+  - question: 我是五年级的宋嘉怡，女生，喜欢舞蹈和朗诵，性格很乐观。最近班里搞了旧书分享会，我把最喜欢的故事书送给了刚转来的同学，她特别感动，还和我成了好朋友。你能详细说说，像我这样的同学，通过分享可以收获哪些快乐和成长，还能带来哪些意想不到的收获吗？详细说说。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 德育美育-小学-分享的快乐（德育）进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评价内容是否充分结合学生的年龄、性格、兴趣、能力等差异，针对不同学生群体设计多样化的表达与活动方式，能具体体现对特殊群体（如内向、表达障碍、学习困难等）的关注与支持措施，促进每位学生积极参与并获得体验。
+  - field: 指令遵循完整性_理由
+    type: str
+    description: 解释指令遵循完整性评分的详细理由，引用具体例子。
+  - field: 指令遵循完整性
+    type: float
+    description: 评价内容是否严格按照教师或系统给定的步骤、格式和内容要求展开，各环节顺序合理、逻辑清晰，无遗漏或随意更改。优质方案应能在不偏离指令的前提下，补充适度细节或优化流程。
+  - field: 教学目标契合度_理由
+    type: str
+    description: 解释教学目标契合度评分的详细理由，引用具体例子。
+  - field: 教学目标契合度
+    type: float
+    description: 评价内容是否紧扣‘分享的快乐’主题，层层递进挖掘分享行为的意义、体验与影响。高分需体现对主题的多角度分析（如心理体验、同伴关系变化、社会意义等），避免流于表面。
+  - field: 教学方法科学性_理由
+    type: str
+    description: 解释教学方法科学性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性
+    type: float
+    description: 评价所采用的教学策略是否符合现代教育学原理，充分调动学生主动参与、体验和反思。高分需体现多样化互动与差异化指导，关注学生主体性和过程体验，低分为单向灌输。
+  - field: 互动引导有效性_理由
+    type: str
+    description: 解释互动引导有效性评分的详细理由，引用具体例子。
+  - field: 互动引导有效性
+    type: float
+    description: 评价是否设置了层次丰富、递进性强的问题或活动，有效激发学生主动思考、表达与交流，并能根据学生反应灵活追问、深入探讨，提升课堂互动质量。
+  - field: 创新思维激发度_理由
+    type: str
+    description: 解释创新思维激发度评分的详细理由，引用具体例子。
+  - field: 创新思维激发度
+    type: float
+    description: 评价是否鼓励学生以多样化、创造性的方式表达和分享快乐，支持不同表达渠道（如语言、艺术、科技等），激发学生自主探索新颖的分享方式。高分需有具体创新案例或学生原创成果。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 评价社会主义核心价值观及中华优秀传统文化是否通过故事、生活案例、情境模拟等方式自然融入教学，影响学生行为选择和态度形成，避免生硬灌输。高分需有学生自发认同和践行的表现。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 评价提问或活动是否贴近小学生真实生活场景和认知水平，具有趣味性、情境感，易于理解和表达。高分需体现与学生日常经验紧密结合，低分为抽象、成人化或脱离实际。
+  format_mode: prompt

@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为政治-初中（道德与法治）(10个场景)教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是小学二年级女生宁儿，喜欢绘画和串珠，老师说我在这些课上很专注，但其他时候容易分心，还需要提醒才能集中。我有时候自信心会波动，思考问题喜欢跳着来。你作为政治学科专家，能详细展开说说怎么帮助我在道德与法治课上集中注意力、提升自信，并养成好的学习习惯吗？
+  - question: 我是初中生，最近我们班有同学在网络上发了些不当言论，大家都在讨论这事。你作为道德与法治老师，能解释一下网络言论自由和法律责任的关系吗？我们初中生应该怎么规范自己的网络行为？
+  - question: 我是初二男生罗光明，摄影、视频剪辑和街舞都很喜欢，平时拍摄活动视频时，有些同学对隐私和肖像权挺在意的。你是我的学习助手，简单说说在拍摄和分享视频时要注意哪些道德和法律问题吧。
+  - question: 我是刚入职的道德与法治老师，班里学生家庭背景很不一样，有单亲、外来务工、二孩家庭等。大家在讨论社会公平和个人努力时，观点差异挺大的。你作为教育专家，能详细讲讲怎么引导学生正确理解社会公平、个人奋斗和集体责任吗？最好结合这些家庭背景分析一下，并给些具体的教育策略。
+  - question: 我是初三班主任，有几个成绩中等但很有创新精神的学生，他们特别喜欢参加社会实践，但遇到失败时容易自我怀疑。你作为班主任顾问，能具体说说怎么在道德与法治课上帮他们正确面对失败、激发创新精神，并把社会主义核心价值观自然融入吗？
+  - question: 我是初一女生，性格有点内向，最近在班级活动里和同学沟通有点困难。你作为政治学科专家，帮我理解一下道德与法治学里怎么提升人际沟通能力，让我在集体生活里更自信、融入班级？能结合实际案例说说吗？
+  - question: 我是初中道德与法治教研员，最近收到老师们反馈说学生对环保、网络安全、公共卫生这些社会热点很感兴趣，但课堂讨论总是停留在表面，缺乏深度和多角度分析。你作为专家，能详细分析下各个方面，怎么在道德与法治教学中系统培养学生的社会责任感、批判性思维和创新能力吗？从目标、活动设计、评价、家庭和社会支持这些角度全面说说，并结合案例具体讲讲。
+  - question: 我是刚入职的道德与法治老师，班里有些同学老是用网络热词表达自己，有时候影响了课堂氛围。你能简要说明下老师在课上怎么引导学生正确用网络语言，保持积极健康的交流吗？
+  - question: 我是初二学生，最近因为学习压力和父母沟通时有些矛盾。你作为政治学科专家，说说你的看法吧，怎么在家庭里有效沟通、化解冲突，同时在道德与法治学习中提升家庭成员的理解和信任？
+  - question: 你是一位有经验的道德与法治老师，我想请你彻底说清楚，怎么系统设计一套适合初中生的道德与法治课程体系？请包括课程目标、内容安排、教学方法、评价体系、家校社协同、创新实践活动这些方面，最好能充分体现社会主义核心价值观和中华传统美德。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 政治-初中（道德与法治）(10个场景)进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化回应深度_理由
+    type: str
+    description: 解释个性化回应深度评分的详细理由，引用具体例子。
+  - field: 个性化回应深度
+    type: float
+    description: 评估教学内容是否基于学生多元画像（兴趣、认知、性格、成长需求等）动态设计教学方案，并在过程性反馈中持续调整，真正促进个体差异发展。高分要求体现对学生独特需求的深度挖掘和方案迭代，避免标签化或表面调整。
+  - field: 指令遵循与优化_理由
+    type: str
+    description: 解释指令遵循与优化评分的详细理由，引用具体例子。
+  - field: 指令遵循与优化
+    type: float
+    description: 评估教学内容是否严格执行教学指令（结构、环节、分点等），并能根据实际情况灵活优化结构或补充环节，使内容逻辑更清晰、流程更顺畅。高分要求不仅遵循指令，还能提出合理创新或改进，提升教学效果。
+  - field: 教学方法科学性与融合_理由
+    type: str
+    description: 解释教学方法科学性与融合评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与融合
+    type: float
+    description: 评估是否采用多样化、科学、适龄的教学方法（如探究、合作、项目式学习、情境模拟等），并能根据班级实际灵活融合、分层设计，促进学生深度理解和能力发展。高分要求方法创新、组合合理，体现针对性和过程性支持。
+  - field: 互动与启发性_理由
+    type: str
+    description: 解释互动与启发性评分的详细理由，引用具体例子。
+  - field: 互动与启发性
+    type: float
+    description: 评估教学内容是否设计了多层次、深度互动环节，包括开放性问题、角色扮演、辩论、反思、同伴互评等，能激发学生主动思考、表达和观点碰撞。高分要求互动具挑战性、开放性，引导多元见解和批判性思维。
+  - field: 案例与情境应用_理由
+    type: str
+    description: 解释案例与情境应用评分的详细理由，引用具体例子。
+  - field: 案例与情境应用
+    type: float
+    description: 评估是否选用贴近学生实际的原创案例、社会热点或生活化情境，并能深度融合课程主题，引导学生迁移知识、创新应用。高分要求案例新颖、与学生生活紧密相关，能激发共鸣和解决实际问题。
+  - field: 创新思维激发_理由
+    type: str
+    description: 解释创新思维激发评分的详细理由，引用具体例子。
+  - field: 创新思维激发
+    type: float
+    description: 评估教学内容是否有意识设计任务驱动，要求学生提出新观点、独立见解或创新方案，鼓励批判、改进和个性表达，并有具体创新输出要求。高分要求学生产出有独创性、批判性或改进性的成果（方案、建议、作品等）。
+  - field: 社会主义核心价值观深度融入_理由
+    type: str
+    description: 解释社会主义核心价值观深度融入评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观深度融入
+    type: float
+    description: 评估核心价值观（法治、公正、诚信等）是否自然、深入地贯穿在教学内容、案例、互动和任务中，实现知识点、生活实际与价值观的深层融合，并能促进学生认同和实际行动。高分要求价值观引发学生自主反思与践行，避免表面说教或口号化。
+  - field: 表达清晰与适龄化_理由
+    type: str
+    description: 解释表达清晰与适龄化评分的详细理由，引用具体例子。
+  - field: 表达清晰与适龄化
+    type: float
+    description: 评估教学内容用语是否通俗易懂、结构清晰，并结合初中生认知特点，分层解释、举例辅助、引导学生思考，表达有逻辑和启发性。高分要求语言亲切、分层递进、便于学生理解和表达，避免表面简化或专业化生硬。
+  format_mode: prompt

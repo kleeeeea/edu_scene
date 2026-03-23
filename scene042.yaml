@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-函数概念深度讲解教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是MartinezDennis，一名28岁的男老师，最近在教学中对怎么向学生讲清楚函数概念很迷茫。你作为数学教育专家，能说说你的看法吗？希望能结合我喜欢音乐制作、PC组装和露营这些兴趣，帮我找到更贴近学生的讲解方式，同时也能缓解我的职业压力。
+  - question: 我是贺皓，57岁的老师，性格比较防备，平时喜欢八段锦、家庭聚餐和园艺。你作为数学教学顾问，能详细说说函数这个知识点吗？希望讲讲主要概念和怎么用生活例子帮助学生理解，也给我一些适合我的教学建议。
+  - question: 我是一名初中生，最近数学课讲到函数有些不太懂，你能简单说说函数是什么吗？最好举个生活里的例子。
+  - question: 我最近时间紧，想快速掌握函数的主要内容，你能说说主要的知识点和常见误区吗？我是初中生。
+  - question: 我是黄志伟，初三男生，跆拳道和3D建模特别感兴趣，批判思维强但专注力有时波动。你作为数学学习助手，能说说你的看法吗？希望你把函数和我的兴趣结合起来讲讲，并给我一些个性化的学习建议。
+  - question: 我是一名初中数学老师，最近在备课函数这一章。你作为数学知识导师，能不能深入说说看函数的概念、特点和教学方法？最好能结合生活实际和中国传统文化谈谈怎么讲得更生动、分层。
+  - question: 我是MartinJohn，高二男生，喜欢3D建模和数字绘画，但分析问题总是停留在表面。你是我的数学学习助手，能不能讲清楚点函数的概念和实际应用？最好多举点和我的兴趣相关的例子，也给我些学习建议。
+  - question: 我是金伯，33岁的环境科学家，平时喜欢观鸟、徒步，也常参与环保辩论。你作为数学教育专家，能详细展开说说函数的本质和应用吗？希望多举点科学和生活的例子，也给我些交流和成长方面的建议。
+  - question: 我是一名初中数学老师，最近准备教研分享函数这一章节。你作为教研员，能详细分析下各个方面吗？希望内容系统全面，涵盖知识体系、教学建议和文化联系。
+  - question: 我是初中数学老师，准备做函数专题培训。你作为数学知识导师，能全面深入地讲讲吗？希望讲得系统些，内容包括理论讲解、实际应用和教学建议，还能结合生活和传统文化。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-函数概念深度讲解进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应_理由
+    type: str
+    description: 解释个性化画像识别与响应评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应
+    type: float
+    description: 评估讲解是否基于学生的知识基础、兴趣、困惑等个体差异，进行针对性调整，包括差异化的举例、问题设置、反馈与支持，体现因材施教的深度和灵活性。
+  - field: 指令遵循与结构规范性_理由
+    type: str
+    description: 解释指令遵循与结构规范性评分的详细理由，引用具体例子。
+  - field: 指令遵循与结构规范性
+    type: float
+    description: 评估讲解内容是否严格按照教学目标分步推进，结构分明（如定义-本质-应用-总结），逻辑连贯，各环节完整，无遗漏或混乱，且每一环节均有明确教学意图。
+  - field: 教学方法科学性与专业性_理由
+    type: str
+    description: 解释教学方法科学性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与专业性
+    type: float
+    description: 评估是否采用科学、有效的教学方法（如启发式、探究式、情境化、分层递进、互动反思等），能够激发学生参与和自主思考，教学设计具备专业性和适切性。
+  - field: 知识点逻辑与严谨性_理由
+    type: str
+    description: 解释知识点逻辑与严谨性评分的详细理由，引用具体例子。
+  - field: 知识点逻辑与严谨性
+    type: float
+    description: 评估讲解内容是否逻辑严密、术语准确，能区分相关概念（如关系与函数），对易混淆点有清晰辨析，避免表述模糊或误导。
+  - field: 创造性思维激发_理由
+    type: str
+    description: 解释创造性思维激发评分的详细理由，引用具体例子。
+  - field: 创造性思维激发
+    type: float
+    description: 评估讲解过程中是否有意识设置开放性问题、创新类比、跨学科联系等，鼓励学生自主探究、质疑和创新，激发数学思维与主动学习兴趣。
+  - field: 模拟真实提问的适应性_理由
+    type: str
+    description: 解释模拟真实提问的适应性评分的详细理由，引用具体例子。
+  - field: 模拟真实提问的适应性
+    type: float
+    description: 评估教师能否敏锐捕捉并回应学生真实问题、困惑或误区，针对性调整讲解，采用多样化解释方法，帮助学生深化理解和转化思路。
+  - field: 价值观自然融入与学科结合_理由
+    type: str
+    description: 解释价值观自然融入与学科结合评分的详细理由，引用具体例子。
+  - field: 价值观自然融入与学科结合
+    type: float
+    description: 评估讲解是否自然融入社会主义核心价值观与中华优秀传统文化理念，并与学科内容有机结合（如合作、诚信、探索精神等），激发学生正向品格和科学精神。
+  - field: 表达清晰易懂与反馈检测_理由
+    type: str
+    description: 解释表达清晰易懂与反馈检测评分的详细理由，引用具体例子。
+  - field: 表达清晰易懂与反馈检测
+    type: float
+    description: 评估讲解是否用通俗易懂、贴近生活的语言、类比、图示等多元方式帮助学生理解复杂概念，并通过提问、练习等及时检测学生理解，调整教学策略。
+  format_mode: prompt

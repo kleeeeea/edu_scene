@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为化学-初中-物质分类标准与辨析教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 我是初中化学新手老师，最近发现班里的学生总把纯净物和混合物、单质和化合物搞混，你作为教育专家，能深入讲解一下初中化学里物质分类的标准、常见误区、辨析方法和生活中的实际案例吗？能深入讲解一下吗？
+  - question: 我女儿在初中化学学物质分类的时候，总是分不清单质、化合物和混合物。你是我的学习助手，能解释一下这些分类的标准还有哪些地方容易混淆吗？能解释一下吗？
+  - question: 我是JacksonEvelyn，一名52岁的女教师，喜欢书法、旅行和语言学习，教学风格既权威又有逻辑。我想在课堂上系统讲解初中化学物质分类标准以及实际辨析，既要结构清晰又能启发学生批判性思考。你作为教育顾问，能帮我全面分析一下物质分类的标准、常见误区、如何区分和有代表性的例子吗？全面分析一下吧。
+  - question: 我是初中生，最近在复习物质分类的知识点。能帮我概括一下初中化学里物质分类的主要标准和怎么分辨吗？概括一下吧。
+  - question: 你作为初中化学教研员，学校最近让你给教师团队做物质分类标准和辨析的培训。能不能全方位地讲解一下，包括分类标准、辨析流程、教学策略、易错点、生活案例和分层教学建议？全方位地讲解一下吧。
+  - question: 我是WilsonCharles，60岁男老师，喜欢象棋、晒太阳和木工，平时喜欢跨学科教学。你作为化学学习助手，能解释一下初中化学里怎么清楚地区分纯净物和混合物吗？最好举一些能和其他学科联系起来的例子，能解释一下吗？
+  - question: 我是刘明辉，高三学生，平时喜欢跆拳道和摄影，但逻辑性有点弱，对自己没什么自信。最近复习初中化学时，物质分类标准和辨析总感觉有点混乱。你作为知识导师，能不能系统地讲解一下物质分类的定义、标准、怎么具体辨析、常见误区和生活中的实际应用？希望能帮我提升逻辑思维和自信心，系统地讲解一下吧。
+  - question: 我是初中生，老师刚讲了物质分类但我还是有点迷糊。你能简短回答下初中化学里物质分类的主要内容和怎么区分吗？简短回答下吧。
+  - question: 我是MurphySamuel，57岁男老师，喜欢组织家庭活动也爱打门球。在课堂上我想和学生讲清楚初中化学物质分类的标准、容易混淆的地方和一些生活里的实际例子。你作为化学顾问，能详细说说吗？
+  - question: 我是刚入职的初中化学老师，发现学生总记不住物质分类标准，还经常搞混不同类型的物质。你作为我的教学顾问，能帮我理解一下物质分类的核心标准、常见易混点和怎么教学生更容易掌握吗？帮我理解一下吧。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 化学-初中-物质分类标准与辨析进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像识别与响应能力_理由
+    type: str
+    description: 解释个性化画像识别与响应能力评分的详细理由，引用具体例子。
+  - field: 个性化画像识别与响应能力
+    type: float
+    description: 教师能主动收集并分析学生在学业水平、兴趣、认知障碍等方面的差异，依据学生反馈动态调整讲解深度、表达方式和支持策略，针对不同学生提供分层指导与关怀。
+  - field: 格式与结构遵循度_理由
+    type: str
+    description: 解释格式与结构遵循度评分的详细理由，引用具体例子。
+  - field: 格式与结构遵循度
+    type: float
+    description: 教学内容严格按照教学目标和题目要求的结构展开，包含所有核心环节，顺序合理，逻辑清晰，各环节有明确界定且相互衔接，无随意增减或遗漏。
+  - field: 教学方法科学性与互动性_理由
+    type: str
+    description: 解释教学方法科学性与互动性评分的详细理由，引用具体例子。
+  - field: 教学方法科学性与互动性
+    type: float
+    description: 教学采用结构化引导与分层互动，兼顾知识讲解与学生参与，鼓励学生通过讨论、操作、反馈等多种形式积极表达和思考，教师能及时回应和调节互动氛围。
+  - field: 概念辨析与误区纠正能力_理由
+    type: str
+    description: 解释概念辨析与误区纠正能力评分的详细理由，引用具体例子。
+  - field: 概念辨析与误区纠正能力
+    type: float
+    description: 教师能主动识别学生易混淆或错误理解的关键概念，结合实例或对比进行清晰辨析，及时纠正并鼓励学生分享常见误区及其原因，促进深层理解。
+  - field: 真实提问模拟度_理由
+    type: str
+    description: 解释真实提问模拟度评分的详细理由，引用具体例子。
+  - field: 真实提问模拟度
+    type: float
+    description: 课堂提问贴近初中生实际思考路径，语言自然、具体，具有探索性和互动性，教师能引导或鼓励学生提出真实问题并充分探讨，反映学生的真实疑惑和兴趣。
+  - field: 创新与自主探究激发度_理由
+    type: str
+    description: 解释创新与自主探究激发度评分的详细理由，引用具体例子。
+  - field: 创新与自主探究激发度
+    type: float
+    description: 教师主动激发学生提出新问题、开展自主探究、跨学科联想，鼓励学生参与实际分类或分析复杂情境，培养创新思维和自主学习能力，允许部分学生尝试更高阶任务。
+  - field: 价值观自然融入度_理由
+    type: str
+    description: 解释价值观自然融入度评分的详细理由，引用具体例子。
+  - field: 价值观自然融入度
+    type: float
+    description: 教师在知识讲解过程中自然融入社会主义核心价值观或中华优秀传统文化，如尊重科学、合作交流、环保节约等，与教学内容紧密结合，通过活动或案例引导学生体验和认同相关价值观。
+  - field: 表达清晰与可理解性_理由
+    type: str
+    description: 解释表达清晰与可理解性评分的详细理由，引用具体例子。
+  - field: 表达清晰与可理解性
+    type: float
+    description: 教学语言简明、层次分明，结构清晰，表达贴近初中生认知水平，结合生活实例与多层次解释，能根据学生反馈动态调整难度和表达方式，确保绝大多数学生真正理解核心内容。
+  format_mode: prompt

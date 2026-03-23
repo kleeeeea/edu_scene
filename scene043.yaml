@@ -1,0 +1,114 @@
+globals:
+  concurrency: 10
+  recursion_limit: 50
+  retry:
+    attempt: 3
+    interval: 10
+  mapping_file: None
+  memory:
+    path: ./Scene04/Qwen2.5-7B-1121
+models:
+  test_model:
+    type: openai
+    api_key: piKghQvAGxrCWiZWUdRD:VmIDjzynNpCzKrktBsTD
+    api_base: https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-b795c114-135a-40db-b3d0-19b60f25237b/user-8c70c2fa-5dd5-4f01-b07a-c8e75a057933/vscode/be2bb839-ac96-49d9-868a-b261beb01c2c/7a0c569a-2618-41b8-b21a-4263b3e98100/proxy/6008/v1
+    model: Qwen2.5-7B-Instruct
+  judge_model:
+    type: openai
+    api_key: sk-r72zKonGjsvzF50W9fOAVc8F9GN6CQnS91nL0nQ51HJUGofM
+    api_base: http://0.0.0.0:8001/v1
+    model: Gemini 2.5 Pro
+    kargs:
+      temperature: 0
+agents:
+  test_model:
+    model: test_model
+    prompt:
+    - role: system
+      content: You are InnoSpark（启创）, created by Shanghai Innovation Institute （上海创智学院）
+        and East China Normal University(华东师范大学). You are a helpful assistant.
+    - role: user
+      content: 你的任务是为数学-初中-易混淆概念对比教学场景。{question}
+    memory:
+      enable: false
+      id: null
+      keep_turns: 3
+directions:
+- START -> test_model
+- test_model -> END
+tasks:
+  mode: iter
+  content:
+  - question: 你是数学学习专家，我是初三学生，最近复习时总是分不清“相似三角形”和“全等三角形”，能不能讲清楚点它们的定义、区别和常见误区？最好举些生活例子，还能结合点中国古代数学家的故事或者成语之类，帮我提升兴趣。
+  - question: 我是刚入职的初中数学老师，你作为资深教师，能不能全面分析一下学生为什么总是分不清“有理数”和“整数”？想听听你对这两个概念的区别、常见误区、生活应用和教学方法的深入看法，最好还能结合点传统文化启发我怎么设计课堂。
+  - question: 我是二年级学生WhiteStella，7岁女生，喜欢烘焙、养植物和街舞，性格有时感性有时理性。你作为AI数学老师，能解释一下“乘法交换律”和“乘法结合律”的区别吗？如果能结合我的兴趣，比如烘焙或舞蹈举例就太好了，也希望你能帮我在生活中培养逻辑和创造力。
+  - question: 我的学生EdwardsMarcus，四年级，喜欢跆拳道、田径和围棋，逻辑很好但容易分心。你作为数学教育专家，能不能概括一下“面积”和“体积”的定义和主要区别？最好能结合运动或围棋举个简单的例子，让他一眼看懂重点。
+  - question: 我是一名初中生家长，孩子数学时经常分不清“分数”和“百分数”，你能不能大概讲讲它们的主要区别和联系？能举个生活里的例子帮助孩子理解吗？
+  - question: 我是初中数学老师，最近发现学生在学“一次函数”和“二次函数”时特别容易混淆。你作为数学教研员，能不能从各个角度详细说说这两个概念的区别、表达式、图像、应用和误区？最好结合创新教学和传统文化，帮我提升学生理解和兴趣。
+  - question: 你是我的数学学习助手，我最近做题总是分不清“质数”和“合数”，能帮我理解一下它们的定义、区别和常见误区吗？最好能举几个生活例子，还能结合下中国传统故事或成语，帮我加深印象。
+  - question: 我是动物饲养员周颖，喜欢户外徒步、宠物训练和园艺种植，性格实用又有情怀。你作为数学知识导师，能不能详细说说“统计平均数”和“中位数”的区别和常见误区？最好结合动物饲养或园艺管理举个实际例子，还能自然带入点中华传统文化或核心价值观，帮我在工作和生活中灵活用上。
+  - question: 我是初中数学老师，发现学生经常把“勾股定理”和“相似三角形定理”弄混。你作为教学顾问，能不能从各个角度详细说说这两个定理的区别、应用、证明和易错点？最好还能带点传统文化元素，帮我优化教学设计。
+  - question: 你是我的数学学习助手，我最近学“绝对值”和“相反数”总是分不清它们的区别，能详细展开说说定义、区别、常见误区和生活应用吗？如果能有点趣味化比喻或者传统文化故事就更好了，帮我彻底理解。
+evaluation:
+  name: cross_235b
+  model: judge_model
+  prompt:
+  - role: user
+    content: '你是一个教育领域的专家，擅长对场景: 数学-初中-易混淆概念对比进行评估。请你对下面的回答进行评分，采用量表（1 - 5 分，1 分为
+      “完全不符合”，5 分为 “完全符合”）进行打分。以下是问题和相应的回答内容：
+
+      问题: {task.question}
+
+      回答: {messages.as_dialog()}
+
+      '
+  format:
+  - field: 个性化画像适配度_理由
+    type: str
+    description: 解释个性化画像适配度评分的详细理由，引用具体例子。
+  - field: 个性化画像适配度
+    type: float
+    description: 评估教学设计是否充分结合学生多元画像（基础水平、兴趣、认知风格、学习习惯等），实现动态分层、差异化教学，并通过持续反馈调整内容与方法。高分要求教学决策有据可依，能主动响应学生个体需求。
+  - field: 指令格式遵循度_理由
+    type: str
+    description: 解释指令格式遵循度评分的详细理由，引用具体例子。
+  - field: 指令格式遵循度
+    type: float
+    description: 评估教学内容是否严格按照指定结构、流程和内容输出，分段清晰，环节齐全，逻辑严密。高分要求无遗漏、无错乱、无随意扩展，格式规范且易于理解。
+  - field: 易混概念对比清晰度_理由
+    type: str
+    description: 解释易混概念对比清晰度评分的详细理由，引用具体例子。
+  - field: 易混概念对比清晰度
+    type: float
+    description: 评估对易混数学概念的对比是否系统、科学、深入，涵盖定义、性质、本质区别、典型应用、推理过程等多维度。高分要求使用表格、图示、类比等多元表达，能有效消除学生混淆。
+  - field: 教学方法创新性与专业性_理由
+    type: str
+    description: 解释教学方法创新性与专业性评分的详细理由，引用具体例子。
+  - field: 教学方法创新性与专业性
+    type: float
+    description: 评估教学方法是否融合现代教育学理论，采用创新性策略（如思维导图、情境模拟、项目式学习、分组探究等），促进学生主动探索和多元表达。高分要求方法科学、趣味性强、能显著激发学生参与和思考。
+  - field: 模拟真实提问契合度_理由
+    type: str
+    description: 解释模拟真实提问契合度评分的详细理由，引用具体例子。
+  - field: 模拟真实提问契合度
+    type: float
+    description: 评估教学内容是否能准确回应学生在真实课堂中的常见疑惑、追问和误区，体现对学生思维规律和易错点的深刻把握。高分要求能预判多样化问题，针对性解答并引导进一步思考。
+  - field: 激发创新思维引导性_理由
+    type: str
+    description: 解释激发创新思维引导性评分的详细理由，引用具体例子。
+  - field: 激发创新思维引导性
+    type: float
+    description: 评估教学设计是否通过开放性问题、引导式提问、任务驱动等方式激发学生创新思维、问题意识和自主探索。高分要求鼓励多样化解法、表达和反思，促进高阶能力发展。
+  - field: 中华优秀传统文化融入度_理由
+    type: str
+    description: 解释中华优秀传统文化融入度评分的详细理由，引用具体例子。
+  - field: 中华优秀传统文化融入度
+    type: float
+    description: 评估教学内容是否自然、深入地融入中华优秀传统文化元素（如成语、历史故事、古代数学家事迹、传统思想等），并与数学知识点有机结合。高分要求文化元素与知识深度融合，能启发学生思考文化与科学的关系。
+  - field: 社会主义核心价值观体现度_理由
+    type: str
+    description: 解释社会主义核心价值观体现度评分的详细理由，引用具体例子。
+  - field: 社会主义核心价值观体现度
+    type: float
+    description: 评估教学过程中是否有机融入社会主义核心价值观（如诚信、友善、敬业、创新），通过案例、合作活动、评价引导等方式培养学生品格。高分要求价值观融入自然、具体，能激发学生共鸣与行动。
+  format_mode: prompt
